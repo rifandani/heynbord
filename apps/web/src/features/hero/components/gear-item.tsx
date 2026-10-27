@@ -19,6 +19,7 @@ import {
   HERO_MISSING,
   HERO_SHEEN,
   HERO_UPGRADE_OFF,
+  HERO_UPGRADE_OFF_PAINT,
 } from "@/features/hero/tokens";
 import { useStatFormat } from "@/features/hero/use-stat-format";
 import { CoinPrice } from "@/features/packs/components/pack-art";
@@ -206,9 +207,9 @@ const GearIcon = ({
               glyph={GEAR_GLYPH[item.slot]}
               className={cn(
                 "size-[54%] drop-shadow-[0_2px_0_rgba(0,0,0,0.5)]",
-                HERO_GEAR_GLYPH,
                 GEAR_GLYPH_TURN[item.slot]
               )}
+              style={{ color: HERO_GEAR_GLYPH }}
             />
           </span>
         )}
@@ -281,7 +282,7 @@ const GearLevel = ({
 };
 
 /** A requirement of the upgrade that is missing: a warm red. */
-const MISSING = HERO_MISSING;
+const MISSING = { color: HERO_MISSING } as const;
 
 /**
  * All that the next level needs, in the upgrade: its Coin, and 1 Forge Stone
@@ -310,17 +311,17 @@ const UpgradeCost = ({
   const tone = short ? (upgrade.missingCoin > 0 ? null : "dark") : "light";
   return (
     <>
-      <CoinPrice
-        parts={coinDenominations(upgrade.coin)}
-        format={format}
-        tone={tone}
-        className={cn("font-bold", short && upgrade.missingCoin > 0 && MISSING)}
-      />
+      <span style={short && upgrade.missingCoin > 0 ? MISSING : undefined}>
+        <CoinPrice
+          parts={coinDenominations(upgrade.coin)}
+          format={format}
+          tone={tone}
+          className="font-bold"
+        />
+      </span>
       <span
-        className={cn(
-          "inline-flex items-center gap-0.5 font-bold tabular-nums",
-          short && !upgrade.hasStone && MISSING
-        )}
+        className="inline-flex items-center gap-0.5 font-bold tabular-nums"
+        style={short && !upgrade.hasStone ? MISSING : undefined}
         aria-hidden
         data-testid="gear-upgrade-stone"
         data-tier={upgrade.tier}
@@ -549,6 +550,7 @@ export const GearPlate = ({
             upgrade.kind === "max" && "text-gold-light",
             upgrade.kind === "short" && "text-cream-dim"
           )}
+          style={upgrade.kind === "ready" ? undefined : HERO_UPGRADE_OFF_PAINT}
           data-testid={`gear-upgrade-${item.slot}`}
           data-gear-upgrade={item.slot}
           data-state={upgrade.kind}

@@ -19,7 +19,7 @@ import { HeroScene } from "@/features/hero/components/hero-scene";
 import type { ForgeStoneCount, HeroHpParts } from "@/features/hero/hero";
 import { upgradeFocusAfter } from "@/features/hero/hero";
 import { GEAR_GLYPH } from "@/features/hero/hero-art";
-import { HERO_GROOVE } from "@/features/hero/tokens";
+import { HERO_GROOVE, HERO_GROOVE_PAINT } from "@/features/hero/tokens";
 import { useHero } from "@/features/hero/use-hero";
 import { useStatFormat } from "@/features/hero/use-stat-format";
 import { BalancePlate } from "@/features/town/components/balance-plate";
@@ -263,6 +263,7 @@ const StatusBar = ({
           HERO_GROOVE,
           "[@media(max-height:500px)]:@max-[44rem]:pt-2"
         )}
+        style={HERO_GROOVE_PAINT}
       >
         <ForgeStoneTray counts={counts} spent={spent} />
       </div>

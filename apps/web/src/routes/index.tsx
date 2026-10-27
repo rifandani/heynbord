@@ -33,7 +33,7 @@ export const Route = createFileRoute("/")({
   head: () =>
     buildSeoHead({
       description:
-        "Welcome to our React.js application. Explore our modern, feature-rich web platform with theme customization and multi-language support.",
+        "A browser-based MMO collectible card strategy game. Plan your timing, watch the lanes, and build your deck.",
       path: "/",
       title: "Home",
     }),

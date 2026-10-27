@@ -1,3 +1,5 @@
+import type { CSSProperties } from "react";
+
 /**
  * The paint of the Hero (DESIGN.md, "The Token Guard Rule").
  *
@@ -51,18 +53,29 @@ export const FORGE_STONE_FACETS = {
 } as const;
 
 /** The parchment of a Gear glyph on its dark badge, in the Standard kit. */
-export const HERO_GEAR_GLYPH = "text-[#f3e6c4]";
+export const HERO_GEAR_GLYPH = "#f3e6c4";
 
 /** A requirement of an upgrade that is missing: a warm red. */
-export const HERO_MISSING = "text-[#ff9b85]";
+export const HERO_MISSING = "#ff9b85";
 
-/** The off state of an upgrade: an engraved plate with no drop. */
-export const HERO_UPGRADE_OFF =
-  "border-gold-trim/50 bg-[#120c08]/70 shadow-[inset_0_1px_3px_rgba(0,0,0,0.75)]";
+/** The border of an off upgrade: a Gold Trim at half strength. */
+export const HERO_UPGRADE_OFF = "border-gold-trim/50";
+
+/** The engraved plate of an off upgrade: no drop and no press. */
+export const HERO_UPGRADE_OFF_PAINT: CSSProperties = {
+  backgroundColor: "rgb(18 12 8 / 70%)",
+  boxShadow: "inset 0 1px 3px rgb(0 0 0 / 75%)",
+};
 
 /** The groove over the Forge Stone tray when it goes under the Hero HP. */
 export const HERO_GROOVE =
-  "@max-[44rem]:before:bg-[#0c0805]/70 @max-[44rem]:before:shadow-[0_1px_0_rgba(231,187,106,0.3)]";
+  "@max-[44rem]:before:bg-[var(--hero-groove)] @max-[44rem]:before:shadow-[0_1px_0_rgba(231,187,106,0.3)]";
+
+/** The dark cut of the groove, with its 70% strength. */
+// SAFETY: React CSSProperties has no index signature for a custom property.
+export const HERO_GROOVE_PAINT = {
+  "--hero-groove": "rgb(12 8 5 / 70%)",
+} as CSSProperties;
 
 /** The line of light across a painted Gear icon, as across a Pack. */
 export const HERO_SHEEN =

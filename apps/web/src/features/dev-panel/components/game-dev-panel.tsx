@@ -663,20 +663,14 @@ const CampaignBlock = () => {
  * finished voyage.
  * Development only.
  */
-export const GameDevPanel = ({
-  theme,
-}: {
-  readonly theme: "light" | "dark";
-}) => {
+export const GameDevPanel = () => {
   const { active, storageAvailable, clear } = useDevOverrides();
   return (
     <div
       className={cn(
-        theme === "dark" && "dark",
         "bg-bg text-fg min-h-full text-sm",
-        // The devtools theme can differ from the page theme. `--color-*` tokens
-        // resolve at `:root`, so the kit sees the nested `.dark` only after
-        // they resolve again here.
+        // The kit maps the semantic aliases in `:root`, not in the devtools
+        // panel, so it maps them again here.
         "[--color-border:var(--border)] [--color-fg:var(--fg)] [--color-muted-fg:var(--muted-fg)] [--color-primary-fg:var(--primary-fg)] [--color-primary:var(--primary)] [--color-ring:var(--ring)] [--color-secondary-fg:var(--secondary-fg)] [--color-secondary:var(--secondary)] [--color-warning:var(--warning)]"
       )}
     >
