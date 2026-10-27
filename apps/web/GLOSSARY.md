@@ -56,7 +56,7 @@ React app on TanStack Start. The server renders and streams each page.
 
 ### Battle screen
 
-**Top Bar**: The panel at the top of the Battle screen. It holds the two Heroes, the Turn number, the Battle controls, the Handbook button and the Key Guide button. _Avoid_: header, HUD top, status bar
+**Top Bar**: The panel at the top of the Battle screen. It holds the two Heroes, the Turn number, the Battle controls, the Handbook button and the Controls Guide button. _Avoid_: header, HUD top, status bar
 
 **Boss Plate**: The plate of one enemy Boss in the Top Bar of a Dungeon Battle: its Lane Strip, name, HP with a notch at each Boss Rule threshold, and the Countdowns of its Hand. A Defeated Boss keeps its plate. _Avoid_: boss bar, boss card, hero panel (a Stage has one Hero panel for each Side)
 
@@ -80,7 +80,9 @@ React app on TanStack Start. The server renders and streams each page.
 
 **Spell Bolt**: The glow that flies from the caster Hero to the target Squares of a Skill Card, in the color of its effect. _Avoid_: projectile, missile
 
-**Key Guide**: The list of the keys that play a full Battle and what each key does. It opens from the info button in the Top Bar, on hover, on keyboard focus and on press. "Read more" on a Hint for a screen control opens it at the line of its key, and marks that line. _Avoid_: keyboard help, hotkeys, shortcuts, accessibility info, controls hint
+**Controls Guide**: The list of the keys and the controller buttons that play a full Battle, and what each input does. It opens from the info button in the Top Bar, on hover, on keyboard focus and on press. "Read more" on a Hint for a screen control opens it at the line of its input, and marks that line. _Avoid_: key guide, keyboard help, hotkeys, shortcuts, accessibility info, controls hint
+
+**Controller button**: One button of a controller, named by its position: south, east, west, north, the two bumpers, the two triggers, Select and Start. The name stays the same on every controller: the Controls Guide shows the label of the connected controller for that position (web ADR-0015). _Avoid_: A button, X button, face button, gamepad key
 
 **Battle Log**: The view-only mode of the Battle screen that shows the past moments of the current Battle, or of a Replay that the Player watches. It has the list of Log Entries, and the Board, the Hand Bar and the Heroes show the selected Log Entry. It shows only what the Player of that Battle saw at that moment. It never changes the Battle, and it goes away when the Player leaves the Battle. _Avoid_: replay, rewind, history, combat log, turn history, undo
 
