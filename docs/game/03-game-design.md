@@ -613,7 +613,7 @@ The **Tutorial** is one guided session in Stage 1-1. It teaches only the core of
 
 We keep the Tutorial short. The old plan had 6 steps across Stages 1-1 to 1-3 and player levels 2 and 3. A new player forgets most of a long tutorial, and a tutorial that shows again on a replay is annoying.
 
-A **Hint** is a one-line tip. It shows one time, when the player first meets something that the Tutorial does not teach. A Hint is a small banner near its subject. It has no arrow and does not stop the game. It closes on a tap, or by itself after some seconds. There is no setting to turn Hints off. The Profile keeps the list of Hints that the player has seen. Each Hint has a "Read more" link that opens the Handbook at the Entry of its subject. When the subject is a screen control and not a game concept (for example the Battle Log), "Read more" opens the Key Guide at the line of its key.
+A **Hint** is a one-line tip. It shows one time, when the player first meets something that the Tutorial does not teach. A Hint is a small banner near its subject. It has no arrow and does not stop the game. It closes on a tap, or by itself after some seconds. There is no setting to turn Hints off. The Profile keeps the list of Hints that the player has seen. Each Hint has a "Read more" link that opens the Handbook at the Entry of its subject. When the subject is a screen control and not a game concept (for example the Battle Log), "Read more" opens the Controls Guide at the line of its input.
 
 | Hint | When it shows |
 | --- | --- |
@@ -778,7 +778,7 @@ A **Dungeon** is a named place outside the Campaign. In a Dungeon, the player fi
 - Hover (desktop) or long press (touch) shows the full card details.
 - The Board shows Unit Attack and HP above each Unit at all times.
 - The enemy Hand shows the number of cards and the Countdown of each card, but not the card faces.
-- The Top Bar has a Handbook button next to the Key Guide button, and the H key does the same. In the Battle, the Handbook is one page at one side of the Board, so that most of the Board stays in view. The Battle does not pause. The Key Guide lists H.
+- The Top Bar has a Handbook button next to the Controls Guide button, and the H key does the same. In the Battle, the Handbook is one page at one side of the Board, so that most of the Board stays in view. The Battle does not pause. The Controls Guide lists H.
 - A Settings button is at the left of End Turn, above the Hand. It opens the same Settings dialog as the Town Bar (11.4), with the same options, but with no progress export and import. The Battle does not pause. The Top Bar has no separate sound button.
 - In the keyboard Inspect mode (the I key), Tab goes into the Card Details of the Unit. There, the names of the Keywords, Statuses and Damage Types are links to their Handbook Entries. Card Details that show only on hover or long press have no links.
 - When the enemy Side has more than one Hero, each enemy Hero shows at the end of its Front, with its own HP and Hand. A Defeated Hero shows as Defeated, and the Board shows its Front go to the next Hero.
@@ -786,7 +786,7 @@ A **Dungeon** is a named place outside the Campaign. In a Dungeon, the player fi
   - On the Board, each Boss stands at the middle of its Front, on a Front Bracket on the ground across its Lanes ([web ADR-0010](../../apps/web/docs/adr/0010-a-boss-front-is-a-code-drawn-bracket-on-the-ground.md)).
   - A Skill Card that targets an enemy Hero targets one Boss that is not Defeated: its marker goes across the Lanes of that Boss's Front, and a press on its plate also plays the card.
   - A Defeat, a Front move and a Boss Rule each have a short animation, and Skip jumps over it. The Battle Log lists them.
-- **Battle Log** (4.12): The Top Bar has a Battle Log button, and the L key does the same. The Key Guide lists L. It opens at any time in a Solo Battle, also in the enemy Turn, and from the result screen after the Battle ends. While it is open, the Live playback pauses. "Back to Live" (Esc) continues from the same point.
+- **Battle Log** (4.12): The Top Bar has a Battle Log button, and the L key does the same. The Controls Guide lists L. It opens at any time in a Solo Battle, also in the enemy Turn, and from the result screen after the Battle ends. While it is open, the Live playback pauses. "Back to Live" (Esc) continues from the same point.
   - A panel at the right side lists the **Log Entries** under one header for each Turn of a Side. The header shows the Turn number, the Side and the HP of each Hero at the end of that Turn. On a narrow screen, the panel is a sheet over the bottom of the Board, with a "Show Board" toggle.
   - A Log Entry is one card play, one Unit Action or one Phase effect, with all its results. Its text names the Hero, the card, the Units, the Squares, the damage (Damage Type, Crit, Block, Ward) and each Keyword and Status that occurred. A card name opens the Card Details. A Keyword or Status name opens its Handbook Entry.
   - When the player selects a Log Entry, the Board, the Hand Bar and the Heroes show the Battle at the end of that entry at once. "Play" animates the next entries at the current Speed. ←/→ go back or forward one Log Entry, and Shift+←/→ go back or forward one Turn.

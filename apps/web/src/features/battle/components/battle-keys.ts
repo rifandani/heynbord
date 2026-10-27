@@ -1,3 +1,5 @@
+import type { PadButton, PadControl } from "@/core/input/gamepad";
+import type { PadLabels } from "@/core/input/pad-family";
 import type { InspectDirection } from "@/features/battle/unit-inspect";
 
 /** What a key or a controller button does in a Battle (UI-02). */
@@ -45,28 +47,69 @@ const COMMANDS: ReadonlyMap<string, Omit<BattleKeyCommand, "source">> = new Map(
 );
 
 /**
- * One line of the Key Guide: a Battle key action, or a key of the open Battle
- * Log. In the Battle Log, ←/→ go one Log Entry and Shift+←/→ one Turn.
+ * One line of the Controls Guide: a Battle action, or an input of the open
+ * Battle Log. In the Battle Log, ←/→ go one Log Entry and Shift+←/→ one Turn.
  */
-export type KeyGuideLine = BattleKeyAction | "logEntry" | "logTurn";
+export type ControlsGuideLine = BattleKeyAction | "logEntry" | "logTurn";
 
-/** The Key Guide: the keys for each action, in the order that the Top Bar shows them. */
-export const KEY_GUIDE: readonly {
+/** The Controls Guide uses positions, so a connected pad supplies its own labels. */
+export const CONTROLS_GUIDE: readonly {
   readonly keys: readonly string[];
-  readonly action: KeyGuideLine;
+  readonly action: ControlsGuideLine;
+  readonly padControls: readonly PadControl[];
 }[] = [
-  { keys: ["←", "→"], action: "moveSelection" },
-  { keys: ["↑", "↓"], action: "focusTarget" },
-  { keys: ["Enter"], action: "play" },
-  { keys: ["E"], action: "endTurn" },
-  { keys: ["S"], action: "skip" },
-  { keys: ["I"], action: "inspect" },
-  { keys: ["H"], action: "handbook" },
-  { keys: ["L"], action: "battleLog" },
-  { keys: ["←", "→"], action: "logEntry" },
-  { keys: ["Shift", "←", "→"], action: "logTurn" },
-  { keys: ["Esc"], action: "cancel" },
+  { keys: ["←", "→"], action: "moveSelection", padControls: ["left", "right"] },
+  { keys: ["↑", "↓"], action: "focusTarget", padControls: ["up", "down"] },
+  { keys: ["Enter"], action: "play", padControls: ["south"] },
+  { keys: ["E"], action: "endTurn", padControls: ["r2"] },
+  { keys: ["S"], action: "skip", padControls: ["l2"] },
+  { keys: ["I"], action: "inspect", padControls: ["west"] },
+  { keys: ["H"], action: "handbook", padControls: ["north"] },
+  { keys: ["L"], action: "battleLog", padControls: ["l1", "r1"] },
+  { keys: ["←", "→"], action: "logEntry", padControls: ["left", "right"] },
+  { keys: ["Shift", "←", "→"], action: "logTurn", padControls: ["l1", "r1"] },
+  { keys: ["Esc"], action: "cancel", padControls: ["east"] },
+  { keys: [], action: "controlsGuide", padControls: ["start"] },
 ];
+
+/** Directions share the D-pad and left stick labels, once per action row. */
+export const controlsGuidePadLabels = (
+  controls: readonly PadControl[],
+  labels: PadLabels
+): readonly string[] => [
+  ...new Set(
+    controls.flatMap((control) => {
+      switch (control) {
+        case "up":
+        case "down":
+        case "left":
+        case "right": {
+          return [labels.dpad, labels.stick];
+        }
+        default: {
+          return [labels[control]];
+        }
+      }
+    })
+  ),
+];
+
+const CONTROLLER_BUTTONS = [
+  "south",
+  "east",
+  "west",
+  "north",
+  "l1",
+  "r1",
+  "l2",
+  "r2",
+  "start",
+  "select",
+] as const satisfies readonly PadButton[];
+
+/** The legend includes Select without claiming that it has a Battle action. */
+export const controlsGuideButtons = (labels: PadLabels): readonly string[] =>
+  CONTROLLER_BUTTONS.map((control) => labels[control]);
 
 /** What a key does while the Battle Log is open. */
 export type LogKeyAction =

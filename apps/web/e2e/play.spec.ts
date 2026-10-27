@@ -460,11 +460,20 @@ test.describe("Battle bot playtest", () => {
     await expect(page.getByTestId("tutorial-text")).toBeHidden();
   });
 
-  test("shows the Key Guide from the Top Bar on hover", async ({ page }) => {
+  test("shows the Controls Guide from the Top Bar on hover", async ({
+    page,
+  }) => {
     await startBattle(page, "1-2", "vanguard", 9);
-    await expect(page.getByTestId("key-guide")).toBeHidden();
-    await page.getByRole("button", { name: "Key Guide" }).hover();
-    await expect(page.getByTestId("key-guide")).toContainText("End the Turn");
+    await expect(page.getByTestId("controls-guide")).toBeHidden();
+    await page.getByRole("button", { name: "Controls Guide" }).hover();
+    await expect(page.getByTestId("controls-guide")).toContainText(
+      "End the Turn"
+    );
+    await expect(
+      page.getByTestId("controls-guide-endTurn").locator("kbd")
+    ).toHaveText("E");
+    await expect(page.getByTestId("controls-guide-controller")).toBeHidden();
+    await expect(page.getByTestId("controls-guide-controlsGuide")).toBeHidden();
   });
 
   test("the Settings button left of End Turn opens the Settings without the progress row", async ({
@@ -671,19 +680,19 @@ test.describe("Handbook (issue #25)", () => {
     );
   });
 
-  test("in the Battle, H and the Top Bar button open it at one side, and the Key Guide lists H", async ({
+  test("in the Battle, H and the Top Bar button open it at one side, and the Controls Guide lists H", async ({
     page,
   }) => {
     await openBoardWithAUnit(page);
-    // A real pointer move first, so that the hover opens the Key Guide.
+    // A real pointer move first, so that the hover opens the Controls Guide.
     await page.mouse.move(10, 300);
-    await page.getByRole("button", { name: "Key Guide" }).hover();
-    await expect(page.getByTestId("key-guide")).toContainText(
+    await page.getByRole("button", { name: "Controls Guide" }).hover();
+    await expect(page.getByTestId("controls-guide")).toContainText(
       "Open the Handbook"
     );
     // The tooltip takes Esc while it is open, so the test waits until it closes.
     await page.mouse.move(10, 300);
-    await expect(page.getByTestId("key-guide")).toBeHidden();
+    await expect(page.getByTestId("controls-guide")).toBeHidden();
     await page.keyboard.press("h");
     const dialog = page.getByTestId("handbook-dialog");
     await expect(dialog).toHaveAttribute("data-form", "side");
@@ -1398,7 +1407,7 @@ test.describe("Region 1 rewards (issue #54)", () => {
 });
 
 test.describe("Battle Log Hint (issue #76)", () => {
-  test("the first Stage loss shows the Battle Log Hint, and Read more opens the Key Guide at L", async ({
+  test("the first Stage loss shows the Battle Log Hint, and Read more opens the Controls Guide at L", async ({
     page,
   }) => {
     // A loss of Stage 1-10: not the Tutorial.
@@ -1422,12 +1431,14 @@ test.describe("Battle Log Hint (issue #76)", () => {
     expect(banner?.y).toBeGreaterThan((button?.y ?? 0) + (button?.height ?? 0));
     await page.getByTestId("hint-read-more").click();
     await expect(hint).toBeHidden();
-    await expect(page.getByTestId("key-guide")).toBeVisible();
-    await expect(page.getByTestId("key-guide-battleLog")).toHaveAttribute(
+    await expect(page.getByTestId("controls-guide")).toBeVisible();
+    await expect(page.getByTestId("controls-guide-battleLog")).toHaveAttribute(
       "data-marked",
       "true"
     );
-    await expect(page.getByTestId("key-guide-battleLog")).toContainText("L");
+    await expect(page.getByTestId("controls-guide-battleLog")).toContainText(
+      "L"
+    );
   });
 });
 
@@ -1647,19 +1658,29 @@ test.describe("Card Details of a Unit on a phone (UI-05)", () => {
   });
 });
 
-test.describe("Key Guide on a phone", () => {
+test.describe("Controls Guide on a phone", () => {
   test.use({
     viewport: { width: 844, height: 390 },
     hasTouch: true,
     isMobile: true,
   });
 
-  test("opens and closes the Key Guide with taps", async ({ page }) => {
-    await startBattle(page, "1-2", "vanguard", 3);
-    await page.getByTestId("key-guide-button").tap();
-    await expect(page.getByTestId("key-guide")).toContainText("End the Turn");
+  test("opens and closes the Controls Guide with taps", async ({ page }) => {
+    // Start in a Battle so the offline-ready toast cannot block Campaign setup.
+    await page.goto("/play?state=active-play&seed=7");
+    await expect(page.locator("[data-battle-canvas] canvas")).toBeVisible({
+      timeout: 30_000,
+    });
+    await page.getByTestId("controls-guide-button").tap();
+    await expect(page.getByTestId("controls-guide")).toContainText(
+      "End the Turn"
+    );
+    await test.info().attach("phone-controls-guide", {
+      body: await page.screenshot(),
+      contentType: "image/png",
+    });
     await page.getByTestId("turn-number").tap();
-    await expect(page.getByTestId("key-guide")).toBeHidden();
+    await expect(page.getByTestId("controls-guide")).toBeHidden();
   });
 });
 

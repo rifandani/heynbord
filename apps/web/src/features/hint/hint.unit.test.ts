@@ -7,7 +7,7 @@ import type { LanguageMessages } from "@/core/libs/i18n/init";
 import enUS from "@/core/libs/i18n/locales/en-US";
 import idID from "@/core/libs/i18n/locales/id-ID";
 import type { HandCardView } from "@/features/battle/battle-view";
-import { KEY_GUIDE } from "@/features/battle/components/battle-keys";
+import { CONTROLS_GUIDE } from "@/features/battle/components/battle-keys";
 import { getEntry } from "@/features/handbook/handbook";
 import type { BattleFacts } from "@/features/hint/hint";
 import {
@@ -258,8 +258,8 @@ describe("the Hint text", () => {
     }
   });
 
-  it("opens the Handbook at an Entry, or the Key Guide at a line, that exists", () => {
-    const lines = KEY_GUIDE.map((line) => line.action);
+  it("opens the Handbook at an Entry, or the Controls Guide at a line, that exists", () => {
+    const lines = CONTROLS_GUIDE.map((line) => line.action);
     for (const hint of HINTS) {
       const target = HINT_TARGET[hint];
       if (target._tag === "Entry") {
@@ -270,13 +270,13 @@ describe("the Hint text", () => {
     }
   });
 
-  it("opens the Key Guide at the Battle Log key for the Battle Log Hint", () => {
+  it("opens the Controls Guide at the Battle Log key for the Battle Log Hint", () => {
     expect(HINT_TARGET.battleLog).toEqual({
-      _tag: "KeyGuide",
+      _tag: "ControlsGuide",
       line: "battleLog",
     });
-    expect(KEY_GUIDE.find((line) => line.action === "battleLog")?.keys).toEqual(
-      ["L"]
-    );
+    expect(
+      CONTROLS_GUIDE.find((line) => line.action === "battleLog")?.keys
+    ).toEqual(["L"]);
   });
 });

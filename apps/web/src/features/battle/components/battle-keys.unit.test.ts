@@ -1,12 +1,16 @@
 import { describe, expect, it } from "vitest";
 
+import { padFamily, padLabels } from "@/core/input/pad-family";
 import {
+  controlsGuideButtons,
+  controlsGuidePadLabels,
   inspectDirection,
-  KEY_GUIDE,
+  CONTROLS_GUIDE,
   keyCommand,
   logKeyAction,
   nextReadyCard,
 } from "@/features/battle/components/battle-keys";
+import { padBattleCommand } from "@/features/battle/components/pad-battle";
 
 const press = (
   key: string,
@@ -59,16 +63,119 @@ describe("keyCommand", () => {
   });
 });
 
-describe("KEY_GUIDE", () => {
+describe("CONTROLS_GUIDE", () => {
   it("shows each Battle key action one time", () => {
     const keys = ["ArrowLeft", "ArrowUp", "Enter", "e", "s", "i", "h", "l"];
     const actions = keys.map((key) => press(key)?.action);
-    expect(KEY_GUIDE.map((row) => row.action)).toEqual([
-      ...actions,
-      "logEntry",
-      "logTurn",
-      "cancel",
+    expect(
+      CONTROLS_GUIDE.filter((row) => row.keys.length > 0).map(
+        (row) => row.action
+      )
+    ).toEqual([...actions, "logEntry", "logTurn", "cancel"]);
+  });
+
+  it("names the controls that perform each action in Live or in the Battle Log", () => {
+    for (const row of CONTROLS_GUIDE) {
+      expect(row.padControls.length).toBeGreaterThan(0);
+      for (const control of row.padControls) {
+        const command = padBattleCommand({ control, repeat: false });
+        if (!command) {
+          throw new Error(`No Battle command for ${control}`);
+        }
+        if (row.action === "logEntry" || row.action === "logTurn") {
+          expect(logKeyAction(command, false)).toEqual({
+            _tag: "step",
+            step: command.step,
+            byTurn: row.action === "logTurn",
+          });
+        } else {
+          expect(command.action).toBe(row.action);
+        }
+      }
+    }
+  });
+
+  it("shows Start as the input for the Controls Guide without adding a keyboard key", () => {
+    expect(
+      CONTROLS_GUIDE.find((row) => row.action === "controlsGuide")
+    ).toEqual({
+      action: "controlsGuide",
+      keys: [],
+      padControls: ["start"],
+    });
+  });
+
+  it("keeps Select in the legend without claiming a Battle action", () => {
+    expect(padBattleCommand({ control: "select", repeat: false })).toBeNull();
+    expect(CONTROLS_GUIDE.flatMap((row) => row.padControls)).not.toContain(
+      "select"
+    );
+    expect(controlsGuideButtons(padLabels("generic"))).toContain("Select");
+  });
+});
+
+describe("controlsGuidePadLabels", () => {
+  it("shows both direction sources once per row", () => {
+    const labels = padLabels("xbox");
+    expect(controlsGuidePadLabels(["left", "right"], labels)).toEqual([
+      "D-pad",
+      "Left stick",
     ]);
+    expect(controlsGuidePadLabels(["up", "down"], labels)).toEqual([
+      "D-pad",
+      "Left stick",
+    ]);
+  });
+
+  it("reads button labels by position from the connected family", () => {
+    expect(
+      controlsGuidePadLabels(
+        ["south", "east", "start"],
+        padLabels("playstation")
+      )
+    ).toEqual(["×", "○", "Options"]);
+    expect(controlsGuidePadLabels(["l1", "r1"], padLabels("xbox"))).toEqual([
+      "LB",
+      "RB",
+    ]);
+  });
+});
+
+describe("controlsGuideButtons", () => {
+  it.each([
+    {
+      family: "xbox",
+      buttons: ["A", "B", "X", "Y", "LB", "RB", "LT", "RT", "Menu", "View"],
+    },
+    {
+      family: "playstation",
+      buttons: [
+        "×",
+        "○",
+        "□",
+        "△",
+        "L1",
+        "R1",
+        "L2",
+        "R2",
+        "Options",
+        "Create",
+      ],
+    },
+    {
+      family: "generic",
+      buttons: ["A", "B", "X", "Y", "L1", "R1", "L2", "R2", "Start", "Select"],
+    },
+  ] as const)("lists all ten $family labels", ({ family, buttons }) => {
+    expect(controlsGuideButtons(padLabels(family))).toEqual(buttons);
+  });
+
+  it("uses generic labels for a Nintendo id, with no Nintendo layout", () => {
+    expect(
+      controlsGuideButtons(
+        padLabels(padFamily("Nintendo Switch Pro Controller"))
+      )
+    ).toEqual(["A", "B", "X", "Y", "L1", "R1", "L2", "R2", "Start", "Select"]);
   });
 });
 

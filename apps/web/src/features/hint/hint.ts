@@ -8,7 +8,7 @@ import { getCard } from "@workspace/rules";
 import { Schema } from "effect";
 
 import type { HandCardView } from "@/features/battle/battle-view";
-import type { KeyGuideLine } from "@/features/battle/components/battle-keys";
+import type { ControlsGuideLine } from "@/features/battle/components/battle-keys";
 import type { EntryId } from "@/features/handbook/handbook";
 
 /** The Hints of the features that are in the game (GDD 8.3, issue #4). */
@@ -46,11 +46,11 @@ export const addSeenHints = (
 
 /**
  * What "Read more" opens (GDD 8.3): the Handbook at the Entry of a game
- * concept, or the Key Guide at the line of the key of a screen control.
+ * concept, or the Controls Guide at the line of the input of a screen control.
  */
 export type HintTarget =
   | { readonly _tag: "Entry"; readonly entry: EntryId }
-  | { readonly _tag: "KeyGuide"; readonly line: KeyGuideLine };
+  | { readonly _tag: "ControlsGuide"; readonly line: ControlsGuideLine };
 
 const toEntry = (id: EntryId): HintTarget => ({ _tag: "Entry", entry: id });
 
@@ -63,7 +63,7 @@ export const HINT_TARGET: Readonly<Record<HintId, HintTarget>> = {
   packs: toEntry("pack"),
   workshop: toEntry("workshop"),
   craft: toEntry("workshop"),
-  battleLog: { _tag: "KeyGuide", line: "battleLog" },
+  battleLog: { _tag: "ControlsGuide", line: "battleLog" },
   gear: toEntry("gear"),
   sweep: toEntry("sweep"),
   dungeons: toEntry("dungeon"),

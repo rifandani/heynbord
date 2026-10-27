@@ -133,9 +133,11 @@ export default {
     noWebgl:
       "This game needs WebGL 2. Your browser or device does not support it.",
     loading: "Loading the Board…",
-    keyGuide: {
-      label: "Key Guide",
-      title: "Keys",
+    controlsGuide: {
+      label: "Controls Guide",
+      title: "Controls Guide",
+      controller: "Controller",
+      controlsGuide: "Open the Controls Guide",
       moveSelection: "Select a card",
       focusTarget: "Select a target",
       play: "Play the card",
@@ -143,7 +145,7 @@ export default {
       skip: "Skip the animation",
       inspect: "See the Card Details of the Units",
       handbook: "Open the Handbook",
-      battleLog: "Open or close the Battle Log",
+      battleLog: "Open the Battle Log",
       logEntry: "Battle Log: one Log Entry back or forward",
       logTurn: "Battle Log: one Turn back or forward",
       cancel: "Cancel, or go Back to Live",

@@ -13,10 +13,10 @@ import type { HandCardView } from "@/features/battle/battle-view";
 import { hasManyHeroes, heroOf } from "@/features/battle/battle-view";
 import { shownSessionAtom } from "@/features/battle/battle.atoms";
 import { BossPlates } from "@/features/battle/components/boss-plates";
+import { ControlsGuide } from "@/features/battle/components/controls-guide";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { countdownLabel } from "@/features/battle/components/hand-card";
 import { HeroPanel } from "@/features/battle/components/hero-panel";
-import { KeyGuide } from "@/features/battle/components/key-guide";
 import { LeaveBattle } from "@/features/battle/components/leave-battle";
 import { BOSS_CHIP_READY } from "@/features/battle/tokens";
 import type { useBattle } from "@/features/battle/use-battle";
@@ -56,7 +56,7 @@ const TurnBadge = ({
 };
 
 /**
- * The Handbook button (issue #25), next to the Key Guide. The H key does the
+ * The Handbook button (issue #25), next to the Controls Guide. The H key does the
  * same. The Battle does not pause while the Handbook is open.
  */
 const HandbookButton = () => {
@@ -104,7 +104,7 @@ const BattleLogButton = ({ battle }: { readonly battle: Battle }) => {
 };
 
 /**
- * Speed, Skip, the Battle Log, the Handbook and the Key Guide (UI-02). The
+ * Speed, Skip, the Battle Log, the Handbook and the Controls Guide (UI-02). The
  * sound is in the Settings, next to End Turn.
  */
 const BattleControls = ({
@@ -144,7 +144,7 @@ const BattleControls = ({
       )}
       <BattleLogButton battle={battle} />
       <HandbookButton />
-      <KeyGuide />
+      <ControlsGuide />
     </div>
   );
 };
