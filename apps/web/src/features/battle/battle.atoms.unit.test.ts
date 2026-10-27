@@ -17,8 +17,6 @@ import {
   legalTargetsAtom,
   selectedCardAtom,
   shownSessionAtom,
-  soundOnAtom,
-  soundVolumeAtom,
   targetFocusByKeyAtom,
   tutorialMarksAtom,
   tutorialStageWonAtom,
@@ -217,29 +215,15 @@ describe("tutorialMarksAtom", () => {
 });
 
 describe("player settings", () => {
-  it("starts at speed ×1 with sound on, and keeps a change", () => {
+  it("starts at speed ×1, and keeps a change", () => {
     const registry = AtomRegistry.make();
     expect(registry.get(battleSpeedAtom)).toBe(1);
-    expect(registry.get(soundOnAtom)).toBe(true);
     registry.set(battleSpeedAtom, 2);
-    registry.set(soundOnAtom, false);
     expect(registry.get(battleSpeedAtom)).toBe(2);
-    expect(registry.get(soundOnAtom)).toBe(false);
-    // A server render has no localStorage: it uses the defaults.
-    expect(Atom.getServerValue(battleSpeedAtom, registry)).toBe(1);
-    expect(Atom.getServerValue(soundOnAtom, registry)).toBe(true);
-    registry.dispose();
-  });
-
-  it("starts at volume 100, and keeps a change", () => {
-    const registry = AtomRegistry.make();
-    expect(registry.get(soundVolumeAtom)).toBe(100);
-    registry.set(soundVolumeAtom, 40);
-    expect(registry.get(soundVolumeAtom)).toBe(40);
     // A server render has no localStorage: it uses the default.
-    expect(Atom.getServerValue(soundVolumeAtom, registry)).toBe(100);
+    expect(Atom.getServerValue(battleSpeedAtom, registry)).toBe(1);
     // The value goes to localStorage: put the default back for other tests.
-    registry.set(soundVolumeAtom, 100);
+    registry.set(battleSpeedAtom, 1);
     registry.dispose();
   });
 });

@@ -6,32 +6,19 @@ import {
 } from "@effect/atom-react";
 import { lazy, Suspense, useContext, useEffect, useRef } from "react";
 
+import { musicTrackFor } from "@/core/audio/music-catalog";
+import type { MusicFeature } from "@/core/audio/music-catalog";
 import { useEverOpened } from "@/core/hooks/use-ever-opened";
 import { useAchievementNotices } from "@/features/achievements/use-achievement-notices";
-import {
-  setEffectsVolume,
-  setMusicEnabled,
-  setMusicVolume,
-  setSoundEnabled,
-  setSoundVolume,
-  unlockAudio,
-} from "@/features/battle/battle-audio";
 import { battleStage } from "@/features/battle/battle-content";
-import { soundOnAtom, soundVolumeAtom } from "@/features/battle/battle.atoms";
 import {
   dialogOpen,
   isTyping,
 } from "@/features/battle/components/battle-input";
 import { PortraitGuard } from "@/features/battle/components/portrait-guard";
-import { musicTrackFor } from "@/features/battle/music-catalog";
-import type { MusicFeature } from "@/features/battle/music-catalog";
 import { playMusicSting, playMusicTrack } from "@/features/battle/music-player";
 import { qaEnabled, stateFromSearch } from "@/features/battle/qa";
 import { installQaHooks } from "@/features/battle/qa-hooks";
-import {
-  setReducedMotionPreference,
-  useReducedMotion,
-} from "@/features/battle/scene/reduced-motion";
 import { useBattle } from "@/features/battle/use-battle";
 import { useGameText } from "@/features/battle/use-game-text";
 import {
@@ -48,11 +35,7 @@ import {
 import { profileReadyAtom } from "@/features/profile/profile.atoms";
 import { useProfileStore } from "@/features/profile/use-profile-store";
 import { useReplayLink } from "@/features/replay/use-replay-link";
-import {
-  effectsVolumeAtom,
-  musicOnAtom,
-  musicVolumeAtom,
-} from "@/features/settings/settings.atoms";
+import { useSettings } from "@/features/settings/use-settings";
 import { TownBar } from "@/features/town/components/town-bar";
 import {
   TownScreen,
@@ -195,29 +178,6 @@ const useCampaignRegion = (battle: ReturnType<typeof useBattle>) => {
   return { region, setRegion, withRegion };
 };
 
-/** Unlocks the Web Audio context on the first Player gesture. */
-const useAudioUnlock = () => {
-  useEffect(() => {
-    const unlock = () => {
-      unlockAudio();
-      window.removeEventListener("pointerdown", unlock);
-      window.removeEventListener("keydown", unlock);
-      window.removeEventListener("touchstart", unlock);
-    };
-    window.addEventListener("pointerdown", unlock, { once: true });
-    window.addEventListener("keydown", unlock, { once: true });
-    window.addEventListener("touchstart", unlock, {
-      once: true,
-      passive: true,
-    });
-    return () => {
-      window.removeEventListener("pointerdown", unlock);
-      window.removeEventListener("keydown", unlock);
-      window.removeEventListener("touchstart", unlock);
-    };
-  }, []);
-};
-
 /** Picks the music loop for the screen and plays the result sting. */
 const useBattleMusic = (
   battle: ReturnType<typeof useBattle>,
@@ -264,12 +224,6 @@ const useBattleMusic = (
 export const PlayScreen = () => {
   const battle = useBattle();
   const registry = useContext(RegistryContext);
-  const soundOn = useAtomValue(soundOnAtom);
-  const soundVolume = useAtomValue(soundVolumeAtom);
-  const effectsVolume = useAtomValue(effectsVolumeAtom);
-  const musicOn = useAtomValue(musicOnAtom);
-  const musicVolume = useAtomValue(musicVolumeAtom);
-  const reducedMotion = useReducedMotion();
   const [screen, setScreen] = useAtom(gameScreenAtom);
   const campaign = useCampaignRegion(battle);
   const { leaving, open: handleOpen } = useTownLeave(
@@ -283,6 +237,7 @@ export const PlayScreen = () => {
   const handbookShown = useEverOpened(handbook.isOpen);
 
   useProfileStore();
+  useSettings();
   useAchievementNotices();
   // A Replay Link opens Watching a Replay in place of the screen (web ADR-0011).
   useReplayLink({ show: battle.watch, leave: battle.leave });
@@ -302,20 +257,7 @@ export const PlayScreen = () => {
   usePacksHints(ready && !battle.session && screen === "packs");
   useHeroHints(ready && !battle.session && screen === "hero");
 
-  useEffect(() => setSoundEnabled(soundOn), [soundOn]);
-  useEffect(() => setSoundVolume(soundVolume), [soundVolume]);
-  useEffect(() => setEffectsVolume(effectsVolume), [effectsVolume]);
-  useEffect(() => setMusicEnabled(musicOn), [musicOn]);
-  useEffect(() => setMusicVolume(musicVolume), [musicVolume]);
-  useAudioUnlock();
   useBattleMusic(battle, screen);
-  // The modules outside React, and the CSS, follow the same choice.
-  useEffect(() => {
-    setReducedMotionPreference(reducedMotion);
-    document.documentElement.dataset.reducedMotion = reducedMotion
-      ? "true"
-      : "false";
-  }, [reducedMotion]);
   // The QA states change the Profile, so the hooks wait for it to load. The
   // chunk starts at once, when this module loads, so a test can press a
   // control as soon as the Town opens.

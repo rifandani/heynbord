@@ -67,8 +67,10 @@ That is not a stylistic preference here. The [Consequences](#consequences) secti
 
 ## Amendments
 
-**2026-10-03 — Effect `HttpClient` replaces ky.** `FetchHttpClient` calls `fetch`, so MSW intercepts it with no change to the lifecycle above. The rule of thumb stays. The Network Boundary files are now `core/http/api-error.unit.test.ts`, `features/cdn/cdn.service.unit.test.ts` and `features/cdn/cdn.atoms.unit.test.ts`.
+**2026-10-03 — Effect `HttpClient` replaces ky.** `FetchHttpClient` calls `fetch`, so MSW intercepts it with no change to the lifecycle above. The rule of thumb stays. The Network Boundary files were then `core/http/api-error.unit.test.ts`, `features/cdn/cdn.service.unit.test.ts` and `features/cdn/cdn.atoms.unit.test.ts`.
 
 One case in `api-error.unit.test.ts` is at the Module Boundary on purpose: an error body that breaks while it is read. MSW buffers bodies, so that failure never reaches the client through it. The test builds the response with `HttpClientResponse.fromWeb(...)` instead. It builds no request, so the rule of thumb agrees.
 
 A server function is not an HTTP request that a unit test can see: TanStack Start compiles it into an RPC. `features/i18n/locale.atoms.unit.test.ts` replaces the `*.functions.ts` module at the Module Boundary. The wire format itself is tested without a network in `core/runtime/server-fn.unit.test.ts`.
+
+**2026-10-27 — the CDN client removed.** `CdnClient` and `cdnFileAtom` had no product caller. The Audio service loads music files with `HttpClient`, and `core/audio/audio.layer.unit.test.ts` is the network boundary test now. This supersedes the file list in the amendment above.

@@ -1,8 +1,8 @@
 import { getStarterDeck } from "@workspace/rules";
 import { describe, expect, it } from "vitest";
 
-import { eventSound } from "@/features/battle/battle-audio";
 import { startSession } from "@/features/battle/battle-session";
+import { eventSound } from "@/features/battle/battle-sound";
 import { qaTwoBossDungeon, startDungeon } from "@/features/battle/qa-dungeons";
 import { NEW_PLAYER } from "@/features/profile/profile";
 

@@ -55,7 +55,10 @@ const persist = (url: string) => {
   const { cookieWrites, service } = request({});
   return persistLocaleCookie("id-id").pipe(
     Effect.provideService(ServerRequest, service),
-    Effect.provideService(AppConfig, AppConfig.of({ title: "Heynbord", url })),
+    Effect.provideService(
+      AppConfig,
+      AppConfig.of({ assetBaseUrl: "/", title: "Heynbord", url })
+    ),
     Effect.as(cookieWrites)
   );
 };
