@@ -131,7 +131,6 @@ v2:
 - add server side feature flag
 - Asynchronous online: an account, a server
 - Login rewards, Daily Activity + Rewards, add limit to how many challenge can be taken daily for dungeons and heynspire then introduce entry ticket for both for extra challenge,
-- Story scenes at the start and end of each Region (need to install some claude motion skills first)
 - https://kingsandlegends-archive.fandom.com/wiki/Auction_House
 - https://kingsandlegends-archive.fandom.com/wiki/Guild
 - https://kingsandlegends-archive.fandom.com/wiki/Buildings Ranking Board + Arena Real-time PvP or PvP against other players' _saved defense decks_ (the AI controls them)
