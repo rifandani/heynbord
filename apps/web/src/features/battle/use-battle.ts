@@ -91,6 +91,35 @@ const playSelectSound = (handIndex: number | null) => {
   }
 };
 
+/** True while the Player watches a Replay: there is no Live (web ADR-0011). */
+const watchingOf = (session: BattleSession | null): boolean =>
+  session?.watching ?? false;
+
+/** A Replay plays at its own Speed: it does not change the choice of the Player. */
+const speedOf = (
+  watching: boolean,
+  log: BattleLogState | null,
+  storedSpeed: BattleSpeed
+): BattleSpeed => (watching && log ? log.shown.speed : storedSpeed);
+
+/** A Command goes to Live, and none goes while the Battle Log is open. */
+const canCommand = (
+  log: BattleLogState | null,
+  liveSession: BattleSession | null,
+  allowed: (session: BattleSession) => boolean
+): boolean => log === null && whenSession(liveSession, allowed, false);
+
+/** The session at the stored Speed, or `null` when that Speed is already in force. */
+const speedChange = (
+  session: BattleSession | null,
+  speed: BattleSpeed
+): BattleSession | null => {
+  if (!session || session.watching || session.speed === speed) {
+    return null;
+  }
+  return setSpeed(session, speed);
+};
+
 const noteSelect = (
   handIndex: number | null,
   current: BattleSession | null,
@@ -146,9 +175,8 @@ export const useBattle = () => {
   } = useBattleState();
   const storedSpeed = useAtomValue(battleSpeedAtom);
   const setStoredSpeed = useAtomSet(battleSpeedAtom);
-  const watching = liveSession?.watching ?? false;
-  // A Replay plays at its own Speed: it does not change the choice of the Player.
-  const speed = watching && log ? log.shown.speed : storedSpeed;
+  const watching = watchingOf(liveSession);
+  const speed = speedOf(watching, log, storedSpeed);
 
   // When the result shows (`ResultOverlay`), before the paint, so that it
   // shows with its rewards. The stored session, not the scene clock: after a
@@ -165,11 +193,11 @@ export const useBattle = () => {
   // The Settings dialog changes the stored speed: apply it to the Battle on
   // the screen, and to its Battle Log. A Replay keeps its own speed.
   useEffect(() => {
-    const current = registry.get(battleSessionAtom);
-    if (!current || current.watching || current.speed === storedSpeed) {
+    const next = speedChange(registry.get(battleSessionAtom), storedSpeed);
+    if (next === null) {
       return;
     }
-    publishBattle(registry, setSpeed(current, storedSpeed));
+    publishBattle(registry, next);
     const shownLog = registry.get(battleLogAtom);
     if (shownLog) {
       registry.set(battleLogAtom, setBattleLogSpeed(shownLog, storedSpeed));
@@ -259,7 +287,7 @@ export const useBattle = () => {
     targets,
     focused,
     speed,
-    canAct: log === null && whenSession(liveSession, canAct, false),
+    canAct: canCommand(log, liveSession, canAct),
     /** True in the keyboard Inspect mode, while its Unit is on the Board. */
     inspecting: keyboardInspect(inspected, detailsUnit),
     /** The I key: starts the keyboard Inspect mode at the first Unit, or stops it. */
@@ -378,7 +406,7 @@ export const useBattle = () => {
         );
       }
     },
-    canEndTurn: log === null && whenSession(liveSession, canEndTurn, false),
+    canEndTurn: canCommand(log, liveSession, canEndTurn),
     endTurn: () => {
       const current = live();
       if (!current) {
