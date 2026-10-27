@@ -80,6 +80,7 @@ export default defineConfig({
         "**/*.server.ts",
         "apps/web/src/core/config/env.ts",
         "apps/web/src/core/runtime/client.ts",
+        "apps/web/src/core/runtime/browser.ts",
         // Audio seams: `audio.ts` is the plain bridge from React and the
         // scene to the runtime, and `testing.ts` is the fake Web Audio context
         // for the service tests. The service is the tested sibling.

@@ -18,6 +18,11 @@ All logic in `apps/web` that is not rendering runs as Effect v4 programs: I/O, v
 
 ## Amendments
 
+**2026-10-27 — the browser service runtime.**
+
+- There are now three atom runtimes. `browserRuntime` (`core/runtime/browser.ts`) holds the browser-only services that effect atoms need, starting with `ProfileStore` and IndexedDB. `appRuntime` stays SSR-safe, and `storageRuntime` stays `localStorage`. The Play route is `ssr: false`, so no server render builds `browserRuntime`.
+- `makeProfileStoreAtoms(runtime)` takes the runtime, so the browser uses `browserRuntime` and a unit test uses the same atoms on a `KeyValueStore.layerMemory` runtime. `ProfileStore` keeps the write queue; `startProfileStore` owns the load, the save subscription and the errors.
+
 **2026-10-03 — what the first implementation changed.**
 
 - There are two atom runtimes, not one. `appRuntime` holds services that also build during a server render. `storageRuntime` holds `BrowserKeyValueStore.layerLocalStorage` for `Atom.kvs` atoms. A server render must never build it, because the server has no `localStorage`.
