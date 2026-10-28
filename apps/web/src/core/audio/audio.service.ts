@@ -26,7 +26,21 @@ export const DEFAULT_MIX: Mix = {
   soundVolume: 100,
 };
 
+/** A file owned by a temporary presentation, on an existing Mix channel. */
+export interface PresentationAudio {
+  readonly url: string;
+  readonly bus: "music" | "effects";
+  readonly gain?: number;
+  readonly delaySeconds?: number;
+}
+
 export interface AudioService {
+  readonly presentation: (
+    files: readonly PresentationAudio[] | null
+  ) => Effect.Effect<void>;
+  readonly cue: (
+    files: readonly PresentationAudio[] | null
+  ) => Effect.Effect<void>;
   readonly music: (track: MusicTrack) => Effect.Effect<void>;
   readonly play: (name: SoundName, minGap?: number) => Effect.Effect<void>;
   readonly setMix: (mix: Mix) => Effect.Effect<void>;
@@ -107,6 +121,18 @@ const loadAudio = (
     )
   );
 
+const stopSource = (source: AudioBufferSourceNode | null): void => {
+  if (!source) {
+    return;
+  }
+  try {
+    source.stop();
+  } catch {
+    // A finished source needs no further stop.
+  }
+  source.disconnect();
+};
+
 const makeAudio = (options: AudioOptions): AudioService => {
   const { context } = options;
   const master = context?.createGain() ?? null;
@@ -131,6 +157,12 @@ const makeAudio = (options: AudioOptions): AudioService => {
   let desiredTrack: MusicTrack | null = null;
   let activeSting: AudioBufferSourceNode | null = null;
   let stingPlaying = false;
+  let presentationFiles: readonly PresentationAudio[] | null = null;
+  let presentationRevision = 0;
+  let startingPresentation = -1;
+  let cueRevision = 0;
+  const cueSources = new Set<AudioBufferSourceNode>();
+  const presentationSources = new Set<AudioBufferSourceNode>();
   const lastPlayed = new Map<SoundName, number>();
 
   const setChannel = (channel: GainNode | null, target: number): void => {
@@ -157,6 +189,7 @@ const makeAudio = (options: AudioOptions): AudioService => {
     Effect.gen(function* () {
       if (
         !context ||
+        presentationFiles !== null ||
         !musicChannel ||
         context.state !== "running" ||
         active?.track === track
@@ -169,6 +202,7 @@ const makeAudio = (options: AudioOptions): AudioService => {
       if (
         !buffer ||
         desiredTrack !== track ||
+        presentationFiles !== null ||
         context.state !== "running" ||
         active?.track === track
       ) {
@@ -195,6 +229,113 @@ const makeAudio = (options: AudioOptions): AudioService => {
       }
     });
 
+  const startFile = Effect.fn("Audio.startFile")(function* (
+    file: PresentationAudio,
+    current: () => boolean
+  ) {
+    if (!context || context.state !== "running") {
+      return null;
+    }
+    const buffer = yield* options.loadBuffer(file.url);
+    const channel = file.bus === "music" ? musicChannel : effectsChannel;
+    if (!buffer || !channel || !current() || context.state !== "running") {
+      return null;
+    }
+    const source = context.createBufferSource();
+    const gain = context.createGain();
+    source.buffer = buffer;
+    gain.gain.value = file.gain ?? 1;
+    source.connect(gain).connect(channel);
+    source.start(context.currentTime + (file.delaySeconds ?? 0));
+    return source;
+  });
+
+  const startPresentation = Effect.fn("Audio.startPresentation")(function* () {
+    const revision = presentationRevision;
+    if (
+      !presentationFiles ||
+      presentationSources.size > 0 ||
+      startingPresentation === revision
+    ) {
+      return;
+    }
+    startingPresentation = revision;
+    try {
+      yield* Effect.forEach(
+        presentationFiles,
+        (file) =>
+          startFile(file, () => revision === presentationRevision).pipe(
+            Effect.map((source) => {
+              if (source) {
+                presentationSources.add(source);
+              }
+              return source;
+            })
+          ),
+        { concurrency: "unbounded" }
+      );
+    } finally {
+      if (startingPresentation === revision) {
+        startingPresentation = -1;
+      }
+    }
+  });
+
+  const cue = Effect.fn("Audio.cue")(function* (
+    files: readonly PresentationAudio[] | null
+  ) {
+    cueRevision += 1;
+    const revision = cueRevision;
+    for (const source of cueSources) {
+      stopSource(source);
+    }
+    cueSources.clear();
+    if (files && presentationFiles !== null) {
+      yield* Effect.forEach(
+        files,
+        (file) =>
+          startFile(
+            file,
+            () => revision === cueRevision && presentationFiles !== null
+          ).pipe(
+            Effect.map((source) => {
+              if (revision !== cueRevision) {
+                stopSource(source);
+                return null;
+              }
+              if (source) {
+                cueSources.add(source);
+              }
+              return source;
+            })
+          ),
+        { concurrency: "unbounded" }
+      );
+    }
+  });
+
+  const presentation = Effect.fn("Audio.presentation")(function* (
+    files: readonly PresentationAudio[] | null
+  ) {
+    presentationRevision += 1;
+    presentationFiles = files;
+    yield* cue(null);
+    for (const source of presentationSources) {
+      stopSource(source);
+    }
+    presentationSources.clear();
+    if (files) {
+      stopSource(active?.source ?? null);
+      active = null;
+      stopSource(activeSting);
+      activeSting = null;
+      stingPlaying = false;
+      yield* startPresentation();
+    } else if (desiredTrack) {
+      yield* startTrack(desiredTrack);
+    }
+  });
+
   const unlock = Effect.fn("Audio.unlock")(function* () {
     if (!context) {
       return;
@@ -205,7 +346,9 @@ const makeAudio = (options: AudioOptions): AudioService => {
         catch: () => null,
       }).pipe(Effect.ignore);
     }
-    if (desiredTrack) {
+    if (presentationFiles !== null) {
+      yield* startPresentation();
+    } else if (desiredTrack) {
       yield* startTrack(desiredTrack);
     }
   });
@@ -239,13 +382,24 @@ const makeAudio = (options: AudioOptions): AudioService => {
   const sting = Effect.fn("Audio.sting")(function* (
     result: "victory" | "defeat"
   ) {
-    if (!context || !musicChannel || context.state !== "running") {
+    if (
+      !context ||
+      presentationFiles !== null ||
+      !musicChannel ||
+      context.state !== "running"
+    ) {
       return;
     }
+    const revision = presentationRevision;
     const buffer = yield* options.loadBuffer(
       musicUrl(options.baseUrl, STING_FILES[result])
     );
-    if (!buffer || context.state !== "running") {
+    if (
+      !buffer ||
+      revision !== presentationRevision ||
+      presentationFiles !== null ||
+      context.state !== "running"
+    ) {
       return;
     }
 
@@ -295,7 +449,7 @@ const makeAudio = (options: AudioOptions): AudioService => {
     })
   );
 
-  return { music, play, setMix, sting, unlock };
+  return { music, play, setMix, sting, unlock, presentation, cue };
 };
 
 /**

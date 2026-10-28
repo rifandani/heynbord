@@ -15,7 +15,7 @@ import { STAR_CHESTS } from "../content/star-chests";
  * shape, or to the meaning of a saved value, adds 1 and a migration step from
  * the old version.
  */
-export const PROFILE_SCHEMA_VERSION = 14;
+export const PROFILE_SCHEMA_VERSION = 15;
 
 /** The longest name that the Player can give a Deck. */
 export const DECK_NAME_MAX = 24;
@@ -172,6 +172,8 @@ export const Profile = Schema.Struct({
   rewardRandomState: RandomState,
   /** The IDs of the Hints that the Player has seen. Hints are a web term. */
   seenHints: Schema.Array(Schema.String),
+  /** Story Scenes completed, skipped, or made replay-only for an old Profile. */
+  seenStoryScenes: Schema.Array(Schema.String),
   /**
    * The IDs of the Completed Achievements, in the order that the Player
    * completed them (Achievements 1.1). An ID stays, also when the goal is no

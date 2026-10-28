@@ -184,6 +184,7 @@ The game docs do not keep the image prompts of the Region Maps. Run `bun campaig
 - `map-style-reference.png`: the Town painting. It sets the style and the camera.
 - `map-set-reference.png`: the Hearthvale Region Map. Regions 2 to 5 attach it, so that the set matches.
 - `<region>/prompts.md`: the Region Map conversation, then the Battle Painting conversation ([13 — Battlefield Concepts](./13-battlefield-concepts.md)).
+- `hearthvale/story-prompts.md`: the fframes production prompt for the opening and ending, with the current text in both Locales. Its source is `scripts/campaign-art/hearthvale-story-prompts.md`; the text comes from the [Hearthvale storyboard](./hearthvale-storyboard.md).
 
 The Region Map prompts come from the brief of the Region in section 2, the clearing centers in 1.1, and the scene line of the Region in `scripts/campaign-art/scenes.ts`: the land, the road, the ground of the clearings and the Boss landmark, in a few words. Add a scene line when you add a Region. To change an image, change the brief or the scene line, then run the script again.
 

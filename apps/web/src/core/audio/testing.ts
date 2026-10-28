@@ -28,6 +28,7 @@ export interface FakeSource {
   buffer: AudioBuffer | null;
   connect: <T>(next: T) => T;
   end: () => void;
+  disconnect: () => void;
   loop: boolean;
   start: (time?: number) => void;
   stop: (time?: number) => void;
@@ -94,6 +95,9 @@ const sourceNode = (): FakeSource => {
     buffer: null,
     connect: <T>(next: T): T => next,
     end: () => ended?.(),
+    disconnect: () => {
+      // This fake has no connection graph.
+    },
     loop: false,
     start: () => {
       // A fake source starts at once.

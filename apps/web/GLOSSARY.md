@@ -150,6 +150,10 @@ React app on TanStack Start. The server renders and streams each page.
 
 ### Campaign screen
 
+**Story Scene**: A fixed part of the Campaign story shown outside a Battle: the opening of a Region, the Boss scene before the first Fight on its Boss Stage, or the ending after the first Boss win. _Avoid_: cutscene, cinematic, story video
+
+**Story Moment**: One part of a Story Scene, with its own illustration and one or more lines of text. A line is narration or a character's dialogue. The Player chooses when to continue to the next line and Story Moment. _Avoid_: Stage, Phase, frame, scene (for one part)
+
 **Region Map**: The painted map of one Region, with its Trail and its Stage Markers. The Campaign screen shows one Region Map at a time. It is a flat 2D image. _Avoid_: Campaign map, world map, level map, stage map, battlefield map
 
 **Trail**: The road on a Region Map from the first Stage to the Boss Stage, with one stop for each Stage. _Avoid_: path, route, track

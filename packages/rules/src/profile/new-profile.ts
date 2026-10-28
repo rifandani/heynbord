@@ -45,6 +45,7 @@ export const newProfile = (seed: number): Profile => ({
   // The first value of the seed, so that the two random states differ.
   rewardRandomState: seedState(nextRandom(seedState(seed))[0]),
   seenHints: [],
+  seenStoryScenes: [],
   completedAchievements: [],
   claimedAchievements: [],
   cosmetics: [],

@@ -1,0 +1,19 @@
+uniform float3 iResolution;
+uniform float2 uOrigin;
+uniform float uPhase;
+uniform float uStrength;
+uniform float uReach;
+uniform float3 uColor;
+
+half4 main(float2 coord) {
+    float2 d = coord - uOrigin;
+    float r = length(d) / iResolution.x;
+    float2 dir = d / max(length(d), 0.001);
+    float th = uPhase * 6.2831853;
+    float2 q = float2(cos(th), sin(th)) * 0.45;
+    float s = vnoise(dir * 4.5 + q + float2(7.0, 3.0)) * 0.62 + vnoise(dir * 11.0 + q * 1.6) * 0.38;
+    float beam = smoothstep(0.42, 0.88, s);
+    float fall = smoothstep(0.0, 0.06, r) * (1.0 - smoothstep(0.1, uReach, r));
+    float a = clamp(beam * fall * uStrength, 0.0, 1.0);
+    return half4(half3(uColor * a), half(a));
+}

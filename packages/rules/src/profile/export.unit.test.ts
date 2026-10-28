@@ -18,6 +18,7 @@ const played: Profile = {
   campaignSweepTickets: 4,
   dungeonSweepTickets: 2,
   seenHints: ["stagePanel"],
+  seenStoryScenes: ["region-1-opening", "region-1-ending"],
   seaport: { cargo: "xp", hours: 12, startedAt: 1_792_314_000_000 },
 };
 
@@ -88,6 +89,7 @@ describe("exportProfile and importProfile", () => {
     expect(Result.getOrThrow(importProfile(text))).toEqual({
       ...played,
       seaport: { cargo: null, hours: null, startedAt: null },
+      seenStoryScenes: ["region-1-opening", "region-5-boss", "region-5-ending"],
     });
   });
 });

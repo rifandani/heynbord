@@ -1,7 +1,10 @@
 import { Result, Schema } from "effect";
 
+import { STAGES } from "../content/stages";
+import { CAMPAIGN_REGIONS } from "../content/star-chests";
 import { owedCosmetics } from "./cosmetics";
 import { ImportError } from "./import-error";
+import { isRegionUnlocked } from "./regions";
 import { Profile, PROFILE_SCHEMA_VERSION } from "./schema";
 import { AT_BERTH } from "./seaport";
 
@@ -70,6 +73,23 @@ const withNoFuses = (tallies: Schema.JsonObject): Schema.JsonObject => ({
   ...tallies,
   fuses: 0,
 });
+
+/** Old progress gets replay access without automatic Story Scenes. */
+const legacyStoryScenes = (results: Schema.JsonObject): string[] => {
+  const scenes: string[] = [];
+  // SAFETY: only key presence is read here. The Profile decoder checks Stars.
+  const wins = results as Profile["stageResults"];
+  for (let region = 1; region <= CAMPAIGN_REGIONS; region += 1) {
+    if (isRegionUnlocked(wins, region)) {
+      scenes.push(`region-${region}-opening`);
+    }
+    const boss = STAGES.find((stage) => stage.region === region && stage.boss);
+    if (boss && results[boss.id] !== undefined) {
+      scenes.push(`region-${region}-boss`, `region-${region}-ending`);
+    }
+  }
+  return scenes;
+};
 
 /**
  * The migration steps, by the version that each step starts from. A change to
@@ -177,6 +197,13 @@ export const PROFILE_MIGRATIONS = {
    * selected none: each family shows its Standard look.
    */
   13: (profile) => ({ ...profile, activeCosmetics: {} }),
+  /** Version 15 adds Story viewing records. Old progress stays replay-only. */
+  14: (profile) => ({
+    ...profile,
+    seenStoryScenes: isJsonObject(profile.stageResults)
+      ? legacyStoryScenes(profile.stageResults)
+      : [],
+  }),
 } satisfies Readonly<Record<number, ProfileMigration>>;
 
 const isVersion = Schema.is(Schema.Int);

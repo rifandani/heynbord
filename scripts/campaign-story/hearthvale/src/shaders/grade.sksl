@@ -1,0 +1,45 @@
+uniform float3 iResolution;
+uniform shader uImg;
+uniform float2 uImgSize;
+uniform float uPhase;
+uniform float uFire;
+uniform float uSmoke;
+uniform float uHeat;
+uniform float uStorm;
+uniform float uRed;
+uniform float uGold;
+uniform float uDusk;
+uniform float uDark;
+uniform float uFlash;
+uniform float3 uFlashColor;
+
+half4 main(float2 coord) {
+    float2 uv = coord / iResolution.xy;
+    float2 p = uv * float2(6.0, 3.4);
+    float heat = (flow(p * 1.7, float2(0.0, -1.6), uPhase) - 0.5) * uHeat;
+    float2 s = clamp(uv + float2(heat * 0.010, heat * 0.007), 0.0, 1.0) * uImgSize;
+    float3 c = uImg.eval(s).rgb;
+    float l = dot(c, float3(0.299, 0.587, 0.114));
+
+    float smoke = smoothstep(0.42, 0.78, flow(p * 0.9, float2(0.4, -1.4), uPhase));
+    float flick = flow(p * 0.55, float2(0.0, -2.0), uPhase);
+    float3 fire = mix(float3(0.07, 0.012, 0.01), float3(0.88, 0.24, 0.05), smoothstep(0.04, 0.55, l));
+    fire = mix(fire, float3(1.0, 0.8, 0.42), smoothstep(0.58, 0.95, l));
+    fire *= 0.5 + 0.95 * smoothstep(0.1, 1.0, uv.y) * (0.55 + 0.7 * flick);
+    fire = mix(fire, float3(0.05, 0.025, 0.02), smoke * uSmoke);
+    c = mix(c, fire, uFire);
+
+    float cloud = smoothstep(0.3, 0.75, flow(p * 0.7, float2(-1.0, -0.25), uPhase));
+    float3 storm = mix(float3(l) * float3(0.42, 0.5, 0.72), c * float3(0.45, 0.52, 0.72), 0.35);
+    storm *= 0.9 - 0.4 * cloud;
+    storm = mix(storm, storm * float3(1.55, 0.62, 0.55), uRed);
+    c = mix(c, storm, uStorm);
+
+    float3 gold = pow(c, float3(0.88)) * float3(1.12, 1.01, 0.8) + float3(0.035, 0.02, 0.0);
+    c = mix(c, gold, uGold);
+    float3 dusk = c * mix(float3(1.28, 0.8, 0.58), float3(0.72, 0.5, 0.7), uv.y);
+    c = mix(c, dusk, uDusk);
+    c *= 1.0 - uDark;
+    c += uFlash * uFlashColor;
+    return half4(half3(clamp(c, 0.0, 1.0)), 1.0);
+}

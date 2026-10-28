@@ -23,6 +23,37 @@ describe("migrateProfile", () => {
     expect(Result.getOrThrow(migrateProfile(profile))).toEqual(profile);
   });
 
+  it("makes reached openings and won Boss scenes and endings replay-only for version 14", () => {
+    const { seenStoryScenes: _, ...old } = newProfile(3);
+    const migrated = Result.getOrThrow(
+      migrateProfile({
+        ...old,
+        schemaVersion: 14,
+        stageResults: { "1-10": 1, "2-10": 2, "3-1": 1 },
+      })
+    );
+    expect(migrated.seenStoryScenes).toEqual([
+      "region-1-opening",
+      "region-1-boss",
+      "region-1-ending",
+      "region-2-opening",
+      "region-2-boss",
+      "region-2-ending",
+      "region-3-opening",
+    ]);
+    expect(migrated.stageResults).toEqual({ "1-10": 1, "2-10": 2, "3-1": 1 });
+    expect(migrated.coin).toBe(old.coin);
+  });
+
+  it("preserves current viewing records and pending scenes on load", () => {
+    const profile = {
+      ...newProfile(3),
+      seenStoryScenes: ["region-1-opening"],
+      stageResults: { "1-10": 1 },
+    };
+    expect(Result.getOrThrow(migrateProfile(profile))).toEqual(profile);
+  });
+
   it("runs each step from the version of the Profile, then decodes", () => {
     // A fake version 0 that kept the Coin in "gold".
     const v0 = { ...newProfile(3), schemaVersion: 0, gold: 250 };
@@ -33,6 +64,7 @@ describe("migrateProfile", () => {
     expect(Result.getOrThrow(migrateProfile(v0, steps))).toEqual({
       ...newProfile(3),
       coin: 250,
+      seenStoryScenes: ["region-1-opening"],
     });
   });
 
@@ -45,7 +77,10 @@ describe("migrateProfile", () => {
     const migrated = Result.getOrThrow(migrateProfile(v1));
     expect(migrated.campaignSweepTickets).toBe(0);
     expect(migrated.dungeonSweepTickets).toBe(0);
-    expect(migrated).toEqual(newProfile(3));
+    expect(migrated).toEqual({
+      ...newProfile(3),
+      seenStoryScenes: ["region-1-opening"],
+    });
   });
 
   it("doubles each Gear level of a version 2 Profile, so the stats stay the same (ADR-0035)", () => {
