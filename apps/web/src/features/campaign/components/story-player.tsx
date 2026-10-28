@@ -7,10 +7,11 @@ import { useReducedMotion } from "@/features/battle/scene/reduced-motion";
 import { useGameText } from "@/features/battle/use-game-text";
 import type { StoryKind, StorySpeaker } from "@/features/campaign/story-scenes";
 import {
-  STORY_LINES,
   STORY_LOOP_START,
   STORY_MOMENTS as MOMENTS,
   storyLineKey,
+  storyLines,
+  storyMap,
   storyMedia,
 } from "@/features/campaign/story-scenes";
 import { useStoryAudio } from "@/features/campaign/use-story-audio";
@@ -66,22 +67,24 @@ const StoryMotion = ({
 
 /** A poster remains behind the silent video; a failed load keeps the poster. */
 const StoryPainting = ({
+  region,
   kind,
   moment,
 }: {
+  readonly region: number;
   readonly kind: StoryKind;
   readonly moment: number;
 }) => {
   const still = useReducedMotion();
   const [held, setHeld] = useState(false);
-  const media = storyMedia(kind, moment);
+  const media = storyMedia(region, kind, moment);
   return (
     <div
       className="bg-night-plate absolute inset-0 overflow-hidden"
       aria-hidden
     >
       <img
-        src="/battle/hearthvale-region.webp"
+        src={storyMap(region)}
         alt=""
         className="absolute inset-0 size-full object-cover"
       />
@@ -117,9 +120,9 @@ const SpeakerPlate = ({ speaker }: { readonly speaker: StorySpeaker }) => {
       ) : null}
       <span
         className={
-          speaker === "baron"
-            ? "font-display text-shadow-night-plate text-damage-fire text-lg font-bold text-shadow-md [@media(max-height:500px)]:text-base"
-            : "font-display text-shadow-night-plate text-gold text-lg font-bold text-shadow-md [@media(max-height:500px)]:text-base"
+          speaker === "hero"
+            ? "font-display text-shadow-night-plate text-gold text-lg font-bold text-shadow-md [@media(max-height:500px)]:text-base"
+            : "font-display text-shadow-night-plate text-damage-fire text-lg font-bold text-shadow-md [@media(max-height:500px)]:text-base"
         }
       >
         {tr(`story.speaker.${speaker}`)}
@@ -136,10 +139,12 @@ const SpeakerPlate = ({ speaker }: { readonly speaker: StorySpeaker }) => {
  * Fight.
  */
 export const StoryPlayer = ({
+  region,
   kind,
   onFinish,
   toBattle = false,
 }: {
+  readonly region: number;
   readonly kind: StoryKind;
   readonly onFinish: () => void;
   readonly toBattle?: boolean;
@@ -147,8 +152,8 @@ export const StoryPlayer = ({
   const { tr } = useGameText();
   const [place, setPlace] = useState({ moment: 0, line: 0 });
   const { moment, line } = place;
-  useStoryAudio(kind, moment);
-  const lines = STORY_LINES[kind][moment] ?? ["narrator"];
+  useStoryAudio(region, kind, moment);
+  const lines = storyLines(region, kind, moment);
   const speaker = lines[line] ?? "narrator";
   const last = moment === MOMENTS - 1 && line === lines.length - 1;
   const back = () =>
@@ -157,7 +162,7 @@ export const StoryPlayer = ({
         ? { moment, line: line - 1 }
         : {
             moment: moment - 1,
-            line: (STORY_LINES[kind][moment - 1]?.length ?? 1) - 1,
+            line: storyLines(region, kind, moment - 1).length - 1,
           }
     );
   const next = () =>
@@ -178,17 +183,22 @@ export const StoryPlayer = ({
     >
       <Modal className="size-full">
         <Dialog
-          aria-label={`${tr("campaign.regions.1")} · ${tr(`story.${kind}`)}`}
+          aria-label={`${tr(`campaign.regions.${region}`)} · ${tr(`story.${kind}`)}`}
           data-testid="story-player"
           className="text-cream relative h-dvh w-full overflow-hidden outline-none"
         >
-          <StoryPainting key={moment} kind={kind} moment={moment} />
+          <StoryPainting
+            key={moment}
+            region={region}
+            kind={kind}
+            moment={moment}
+          />
           <header className="from-night-plate/85 absolute inset-x-0 top-0 flex items-center justify-end gap-4 bg-linear-to-b to-transparent px-[max(1.25rem,env(safe-area-inset-left))] pt-[max(0.75rem,env(safe-area-inset-top))] pb-10 [@media(max-height:500px)]:pt-[max(0.375rem,env(safe-area-inset-top))] [@media(max-height:500px)]:pb-6">
             <Heading
               slot="title"
               className="font-display text-shadow-night-plate mr-auto text-lg font-bold text-shadow-md [@media(max-height:500px)]:sr-only"
             >
-              {tr("campaign.regions.1")} · {tr(`story.${kind}`)}
+              {tr(`campaign.regions.${region}`)} · {tr(`story.${kind}`)}
             </Heading>
             <GameButton onPress={onFinish} data-testid="story-skip">
               {tr("story.skip")}
@@ -206,7 +216,7 @@ export const StoryPlayer = ({
                   data-testid="story-text"
                   data-speaker={speaker}
                 >
-                  {tr(storyLineKey(kind, moment, line))}
+                  {tr(storyLineKey(region, kind, moment, line))}
                 </p>
               </div>
               <footer className="mt-4 flex items-center justify-between gap-3 [@media(max-height:500px)]:mt-2">

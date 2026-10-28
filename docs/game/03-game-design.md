@@ -843,7 +843,7 @@ The Campaign screen shows one **Region Map** at a time: a flat 2D painting of on
 - **Stage Panel.** A modal dialog in the center of the screen. The map is dim behind it. It shows the Stage ID, the enemy Hero, the first-win reward or the repeat-win reward, the best Stars, the 3 Star conditions with the Star Turn of the Stage (see 4.11), the Deck and a **Fight** button. The Deck is a choice of the Deck slots that have cards, with the active Deck selected: the last Deck that the Player used. "Edit Decks" opens the Deck builder. A Deck that is not valid cannot start a Battle, and the panel shows the first reason. Fight takes the focus when the panel opens. Esc, a close button and a click outside close the panel.
 - **Keyboard.** Focus moves through the Stage Markers in the order of the Trail. Esc closes the Stage Panel. When no panel is open, Esc goes back to the Town (see 11.4).
 - **Motion.** The Stage Markers rise onto their clearings in Trail order, and the solid part of the progress line draws in from the Trail entry. The Open Stage Marker pulses. After a win opens a Stage, its marker wakes up once. With reduced motion, all of this stops.
-- Story Scenes (MOD-07) are a v2 feature. A [Hearthvale trial is designed](./region-story-scenes.md), with fframes motion clips and Player-controlled text. Stage names are not part of this screen now.
+- Story Scenes (MOD-07) are a v2 feature. A [trial is designed](./region-story-scenes.md) for Hearthvale and the Red Mesas, with fframes motion clips and Player-controlled text. Stage names are not part of this screen now.
 
 ## 12. Content for v1
 

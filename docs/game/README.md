@@ -33,7 +33,7 @@ One person (the solo developer) has all the roles. The roles show which point of
 
 ## Related files
 
-- [Region Story Scenes](./region-story-scenes.md): the agreed MOD-07 trial, its Hearthvale storyboard and its fframes production prompt.
+- [Region Story Scenes](./region-story-scenes.md): the agreed MOD-07 trial, its [Hearthvale](./hearthvale-storyboard.md) and [Red Mesas](./red-mesas-storyboard.md) storyboards and its fframes production prompt.
 - [`packages/rules/GLOSSARY.md`](../../packages/rules/GLOSSARY.md): the game glossary. All documents use its terms.
 - [Performance records](./performance.md): the dated First Load and bundle measurements.
 - [ADR-0006](../adr/0006-game-rules-are-a-deterministic-package.md): why the game rules are a separate deterministic package.

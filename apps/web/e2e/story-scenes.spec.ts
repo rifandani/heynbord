@@ -259,12 +259,17 @@ test("Boss rewards precede the ending; reload retains it; replay adds no rewards
   );
   await page.reload();
   await ready(page);
-  // The Town Gate goes to Region 2 after the win. The ending waits for Region 1.
+  // The Town Gate goes to Region 2 after the win, and its opening plays on the
+  // first visit. The Hearthvale ending waits for Region 1.
   await page.getByTestId("building-townGate").click();
   await expect(page.getByTestId("region-banner")).toHaveAttribute(
     "data-region",
     "2"
   );
+  await expect(page.getByTestId("story-text")).toContainText(
+    "The trail of painted gold leads you east"
+  );
+  await page.getByTestId("story-skip").click();
   await expect(page.getByTestId("story-player")).toHaveCount(0);
   await page.getByRole("button", { name: /Previous Region/u }).click();
   await expect(page.getByTestId("story-text")).toContainText(
@@ -276,7 +281,12 @@ test("Boss rewards precede the ending; reload retains it; replay adds no rewards
     ...rewards,
     // Returning through Town can also record a newly available Hint.
     seenHints: after.seenHints,
-    seenStoryScenes: ["region-1-opening", "region-1-boss", "region-1-ending"],
+    seenStoryScenes: [
+      "region-1-opening",
+      "region-1-boss",
+      "region-2-opening",
+      "region-1-ending",
+    ],
   });
   await page.getByTestId("region-story").click();
   await page.getByRole("button", { name: "Ending", exact: true }).click();
@@ -346,7 +356,7 @@ for (const locale of ["en-us", "id-id"] as const) {
     await seedProfile(page, {
       ...newProfile(42),
       stageResults: { "1-10": 1 },
-      seenStoryScenes: ["region-1-opening"],
+      seenStoryScenes: ["region-1-opening", "region-2-opening"],
     });
     await page.getByTestId("building-townGate").click();
     await page
@@ -366,6 +376,70 @@ for (const locale of ["en-us", "id-id"] as const) {
         await page.screenshot({
           path: testInfo.outputPath(`${locale}-ending-phone.png`),
         });
+      }
+      await page.getByTestId("story-continue").click();
+    }
+    await expect(page.getByTestId("story-player")).toBeHidden();
+  });
+}
+
+for (const locale of ["en-us", "id-id"] as const) {
+  test(`Red Mesas Boss conversation fits a landscape phone: ${locale}`, async ({
+    page,
+    context,
+  }, testInfo) => {
+    test.setTimeout(60_000);
+    await context.addCookies([
+      {
+        name: "app-locale",
+        value: locale,
+        url: testInfo.project.use.baseURL ?? "http://localhost:4000",
+      },
+    ]);
+    await page.setViewportSize({ width: 667, height: 375 });
+    await seedProfile(page, {
+      ...newProfile(42),
+      stageResults: { "1-10": 1, "2-9": 2 },
+      seenStoryScenes: [
+        "region-1-opening",
+        "region-1-boss",
+        "region-1-ending",
+        "region-2-opening",
+      ],
+    });
+    await page.getByTestId("building-townGate").click();
+    await expect(page.getByTestId("region-banner")).toHaveAttribute(
+      "data-region",
+      "2"
+    );
+    await expect(page.getByTestId("story-player")).toHaveCount(0);
+    await page.getByTestId("region-story").click();
+    await page
+      .getByRole("button", {
+        name: locale === "en-us" ? "Boss" : "Bos",
+        exact: true,
+      })
+      .click();
+    const text = page.getByTestId("story-text");
+    await expect(text).toContainText(
+      locale === "en-us" ? "Snikkit's Throne Hall" : "Throne Hall milik Snikkit"
+    );
+    // 14 lines over 5 moments; Grukka speaks once, before the Battle.
+    for (let line = 0; line < 14; line += 1) {
+      const box = await text.boundingBox();
+      expect(box && box.y >= 0 && box.y + box.height <= 375).toBe(true);
+      if (line === 9) {
+        await expect(page.getByTestId("story-speaker")).toHaveText(
+          "Boss Snikkit"
+        );
+        await page.screenshot({
+          path: testInfo.outputPath(`${locale}-red-mesas-boss-phone.png`),
+        });
+      }
+      if (line === 12) {
+        await expect(page.getByTestId("story-speaker")).toHaveText(
+          "Warchief Grukka"
+        );
       }
       await page.getByTestId("story-continue").click();
     }

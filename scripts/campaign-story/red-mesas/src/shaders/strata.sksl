@@ -1,0 +1,23 @@
+// The red rock of the mesas in a cut-away view: bands of sandstone that get
+// darker with depth. uOffset moves the rock with the camera.
+uniform float3 iResolution;
+uniform float uOffset;
+uniform float uGlow;
+uniform float uPhase;
+
+half4 main(float2 coord) {
+    float2 w = float2(coord.x, coord.y + uOffset);
+    float2 p = w / 60.0;
+    float n = fbm(p * float2(0.6, 1.4));
+    float band = sin(w.y * 0.045 + n * 5.0 + sin(w.x * 0.004) * 2.0);
+    float3 light = float3(0.78, 0.36, 0.2);
+    float3 deep = float3(0.36, 0.12, 0.07);
+    float3 c = mix(deep, light, 0.5 + 0.5 * band);
+    c = mix(c, float3(0.86, 0.55, 0.32), smoothstep(0.62, 0.8, fbm(p * 2.3 + 4.0)) * 0.35);
+    float crack = smoothstep(0.03, 0.0, abs(fbm(p * float2(1.6, 0.7) + 9.0) - 0.5));
+    c *= 1.0 - 0.35 * crack;
+    float depth = clamp((w.y - 700.0) / 900.0, 0.0, 1.0);
+    c *= mix(0.95, 0.42, depth);
+    c += uGlow * float3(0.35, 0.12, 0.02);
+    return half4(half3(c), 1.0);
+}

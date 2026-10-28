@@ -76,7 +76,9 @@ export const RegionStory = ({ region }: { readonly region: number }) => {
           ))}
         </div>
       </GameDialog>
-      {kind ? <StoryPlayer kind={kind} onFinish={finish} /> : null}
+      {kind ? (
+        <StoryPlayer region={region} kind={kind} onFinish={finish} />
+      ) : null}
     </>
   );
 };
@@ -101,6 +103,7 @@ export const useBossStory = (
   };
   const scene: ReactNode = fight ? (
     <StoryPlayer
+      region={region}
       kind="boss"
       toBattle
       onFinish={() => {
