@@ -42,8 +42,8 @@ describe("Region Story Scenes", () => {
     // Regions without produced Story Scenes have none.
     expect(
       availableStories(
-        { ...profile, stageResults: { "1-10": 1, "2-10": 1 } },
-        3
+        { ...profile, stageResults: { "1-10": 1, "2-10": 1, "3-10": 1 } },
+        4
       )
     ).toEqual([]);
   });

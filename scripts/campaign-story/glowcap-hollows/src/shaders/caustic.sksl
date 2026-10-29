@@ -1,0 +1,20 @@
+// Slow light that moves inside amber, a glowing pool or a vision: bright folds
+// of a flowing noise. uPhase loops every 4 s, so the hold of a moment is seamless.
+uniform float3 iResolution;
+uniform float uPhase;
+uniform float uScale;
+uniform float3 uDeep;
+uniform float3 uLight;
+uniform float uOpacity;
+
+half4 main(float2 coord) {
+    float2 p = coord / iResolution.y * uScale;
+    float a = flow(p, float2(0.35, -1.1), uPhase);
+    float b = flow(p * 1.9 + float2(4.0, 2.0), float2(-0.6, -0.8), uPhase);
+    // Thin bright folds where the two layers cross the middle value.
+    float fold = 1.0 - smoothstep(0.0, 0.07, abs(a - b));
+    float body = smoothstep(0.25, 0.85, a);
+    float3 c = mix(uDeep, uLight, body * 0.55 + fold * 0.6);
+    float alpha = clamp(0.55 + 0.45 * body + 0.4 * fold, 0.0, 1.0) * uOpacity;
+    return half4(half3(c * alpha), half(alpha));
+}

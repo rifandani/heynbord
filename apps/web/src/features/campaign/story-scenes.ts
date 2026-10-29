@@ -4,7 +4,14 @@ import { isRegionUnlocked, STAGES } from "@workspace/rules";
 export type StoryKind = "opening" | "boss" | "ending";
 
 /** Who says a line. Narration has no name plate. */
-export type StorySpeaker = "narrator" | "baron" | "snikkit" | "grukka" | "hero";
+export type StorySpeaker =
+  | "narrator"
+  | "baron"
+  | "snikkit"
+  | "grukka"
+  | "glimmerbough"
+  | "lethiel"
+  | "hero";
 
 /** Stable IDs belong to the Profile. Media and text stay in the web app. */
 const storyId = (region: number, kind: StoryKind): string =>
@@ -273,10 +280,157 @@ const RED_MESAS: StoryRegion = {
   },
 };
 
+const GLOWCAP_HOLLOWS: StoryRegion = {
+  key: "glowcapHollows",
+  root: "/story/glowcap-hollows/v1",
+  map: "/battle/glowcap-hollows-region.webp",
+  lines: {
+    opening: narration,
+    boss: [
+      ["narrator", "glimmerbough"],
+      ["hero", "glimmerbough"],
+      ["glimmerbough", "glimmerbough", "hero"],
+      ["hero", "glimmerbough", "hero"],
+      ["glimmerbough", "hero"],
+    ],
+    ending: [
+      ["narrator"],
+      ["narrator"],
+      ["narrator"],
+      ["narrator", "glimmerbough", "lethiel"],
+      ["narrator"],
+    ],
+  },
+  cues: {
+    opening: [
+      [
+        { file: "rumble", at: 0, gainDb: -8 },
+        { file: "wind", at: 1.2, gainDb: -4 },
+        { file: "whoosh", at: 1.55, gainDb: -4 },
+        { file: "shimmer", at: 2, gainDb: -5 },
+        { file: "chime", at: 2.45, gainDb: -8 },
+        { file: "chime-high", at: 2.95, gainDb: -9 },
+        { file: "magic", at: 3.2, gainDb: -6 },
+        { file: "boom", at: 3.95, gainDb: -12 },
+      ],
+      [
+        { file: "chime", at: 0.9, gainDb: -10 },
+        { file: "chime-high", at: 1.6, gainDb: -11 },
+        { file: "chime", at: 2.3, gainDb: -12 },
+        { file: "shimmer", at: 3.4, gainDb: -8 },
+        { file: "creak", at: 3.6, gainDb: -6 },
+        { file: "drip", at: 5.7, gainDb: -6 },
+      ],
+      [
+        { file: "shimmer", at: 1.25, gainDb: -6 },
+        { file: "slam", at: 1.9, gainDb: -3 },
+        { file: "thud", at: 1.9, gainDb: -6 },
+        { file: "slam", at: 2.25, gainDb: -4 },
+        { file: "slam", at: 2.6, gainDb: -4 },
+        { file: "snap", at: 3.75, gainDb: -2 },
+      ],
+      [
+        { file: "bow", at: 1.35, gainDb: -4 },
+        { file: "whoosh", at: 1.95, gainDb: -2 },
+        { file: "hit", at: 2.3, gainDb: 0 },
+        { file: "drip", at: 5.8, gainDb: -8 },
+      ],
+      [
+        { file: "chime", at: 0.7, gainDb: -10 },
+        { file: "chime-high", at: 1.5, gainDb: -10 },
+        { file: "chime", at: 2.2, gainDb: -9 },
+        { file: "chime-high", at: 2.9, gainDb: -9 },
+        { file: "chime", at: 3.6, gainDb: -8 },
+        { file: "shimmer", at: 4.4, gainDb: -6 },
+      ],
+    ],
+    boss: [
+      [
+        { file: "chime", at: 0.5, gainDb: -10 },
+        { file: "chime-high", at: 1.3, gainDb: -10 },
+        { file: "chime", at: 2.1, gainDb: -9 },
+        { file: "creak", at: 2.8, gainDb: -3 },
+        { file: "shimmer", at: 3, gainDb: -5 },
+        { file: "magic", at: 4, gainDb: -8 },
+      ],
+      [
+        { file: "magic", at: 0.2, gainDb: -5 },
+        { file: "shimmer", at: 1, gainDb: -6 },
+        { file: "chime-high", at: 1.9, gainDb: -4 },
+        { file: "boom", at: 2, gainDb: -10 },
+        { file: "thud", at: 3.2, gainDb: -4 },
+      ],
+      [
+        { file: "paper", at: 0.75, gainDb: -4 },
+        { file: "paper", at: 1.45, gainDb: -6 },
+        { file: "chime", at: 1.85, gainDb: -9 },
+        { file: "chime-high", at: 2.6, gainDb: -9 },
+        { file: "whoosh", at: 3.2, gainDb: -8 },
+        { file: "snap", at: 4, gainDb: -4 },
+      ],
+      [
+        { file: "creak", at: 0.25, gainDb: -5 },
+        { file: "rumble", at: 2, gainDb: -6 },
+        { file: "shimmer", at: 2.6, gainDb: -4 },
+        { file: "drip", at: 3.7, gainDb: -8 },
+        { file: "chime", at: 3.9, gainDb: -10 },
+      ],
+      [
+        { file: "drums", at: 0.1, gainDb: -2 },
+        { file: "creak", at: 0.9, gainDb: -3 },
+        { file: "slam", at: 1.9, gainDb: -2 },
+        { file: "thud", at: 2.5, gainDb: 0 },
+        { file: "magic", at: 2.9, gainDb: -5 },
+        { file: "shimmer", at: 3.6, gainDb: -4 },
+        { file: "boom", at: 3.6, gainDb: -8 },
+      ],
+    ],
+    ending: [
+      [
+        { file: "creak", at: 0.4, gainDb: -3 },
+        { file: "wind", at: 1, gainDb: -6 },
+        { file: "creak", at: 1.7, gainDb: -6 },
+        { file: "shimmer", at: 2.3, gainDb: -8 },
+        { file: "chime", at: 3, gainDb: -10 },
+      ],
+      [
+        { file: "coin", at: 0.75, gainDb: -3 },
+        { file: "paper", at: 0.95, gainDb: -4 },
+        { file: "paper", at: 1.65, gainDb: -5 },
+        { file: "paper", at: 2.1, gainDb: -6 },
+        { file: "magic", at: 2.8, gainDb: -9 },
+        { file: "thud", at: 3.7, gainDb: -2 },
+        { file: "boom", at: 3.7, gainDb: -10 },
+      ],
+      [
+        { file: "lid", at: 0.35, gainDb: -3 },
+        { file: "shimmer", at: 0.7, gainDb: -5 },
+        { file: "whoosh", at: 1.6, gainDb: -10 },
+        { file: "boom", at: 3.2, gainDb: -12 },
+        { file: "chime", at: 3.3, gainDb: -12 },
+      ],
+      [
+        { file: "wind", at: 0, gainDb: -4 },
+        { file: "shimmer", at: 1, gainDb: -5 },
+        { file: "chime-high", at: 2, gainDb: -9 },
+        { file: "chime", at: 3, gainDb: -10 },
+        { file: "magic", at: 3.1, gainDb: -6 },
+      ],
+      [
+        { file: "whoosh", at: 0.6, gainDb: -6 },
+        { file: "wind", at: 0.8, gainDb: -4 },
+        { file: "shimmer", at: 2, gainDb: -4 },
+        { file: "boom", at: 3.4, gainDb: -12 },
+      ],
+    ],
+  },
+};
+
 /** The Regions with produced Story Scenes, by Region number. */
 const STORY_REGIONS = new Map([
   [1, HEARTHVALE],
   [2, RED_MESAS],
+  [3, GLOWCAP_HOLLOWS],
 ]);
 
 /** The Story Scenes of a Region; a Region without them falls back to Hearthvale. */
