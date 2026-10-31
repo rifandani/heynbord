@@ -12,7 +12,7 @@ const evidence = path.resolve("art/heroes/raw/evidence");
 // Route the published GLB fixtures through Playwright after the profile reload.
 test.use({ serviceWorkers: "block" });
 
-test("the first four appearances load in the shared Bazaar preview", async ({
+test("the first four appearances load in the Gear looks preview", async ({
   page,
 }) => {
   test.setTimeout(90_000);
@@ -62,7 +62,9 @@ test("the first four appearances load in the shared Bazaar preview", async ({
   await page.reload();
   await expect(page.getByTestId("town")).toBeVisible({ timeout: 30_000 });
   await page.getByTestId("town-shortcut-bazaar").click();
-  const preview = page.getByTestId("hero-model-preview");
+  const preview = page
+    .locator('[data-testid="bazaar-shelf-preview"][data-family="gearLook"]')
+    .getByTestId("hero-model-preview");
   mkdirSync(evidence, { recursive: true });
   const capture = async (name: string) => {
     await expect(preview).toHaveAttribute(

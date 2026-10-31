@@ -147,6 +147,13 @@ test.describe("Hero Models", () => {
     await page.goto("/play");
     await expect(page.getByTestId("town")).toBeVisible({ timeout: 30_000 });
     await page.getByTestId("town-shortcut-bazaar").click();
+    await expect(page.getByTestId("bazaar-shelf-preview")).toHaveCount(2);
+    const portraitPreview = page.locator(
+      '[data-testid="bazaar-shelf-preview"][data-family="heroPortrait"]'
+    );
+    const gearPreview = page.locator(
+      '[data-testid="bazaar-shelf-preview"][data-family="gearLook"]'
+    );
     const portrait = page.locator(
       '[data-cosmetic-id="heroPortrait.tentRings"]'
     );
@@ -154,11 +161,18 @@ test.describe("Hero Models", () => {
     await expect
       .poll(() => requested)
       .toContain("/models/heroes/tent-rings-standard.glb");
+    await expect(
+      portraitPreview.getByTestId("hero-model-preview")
+    ).toHaveAttribute("data-model", "/models/heroes/tent-rings-standard.glb");
     const gear = page.locator('[data-cosmetic-id="gearLook.goldInlay"]');
     await gear.getByTestId("bazaar-preview").click();
     await expect
       .poll(() => requested)
       .toContain("/models/heroes/standard-gold-inlay.glb");
+    await expect(gearPreview.getByTestId("hero-model-preview")).toHaveAttribute(
+      "data-model",
+      "/models/heroes/standard-gold-inlay.glb"
+    );
     await expect(
       page.locator(
         '[data-testid="cosmetic-standard"][data-family="heroPortrait"]'

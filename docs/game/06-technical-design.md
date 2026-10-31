@@ -94,7 +94,7 @@ It uses only information that the active side can see (`visibleTo`): the Hand of
 
 ### 4.2 Scene structure
 
-- One active `<Canvas>` on the current game screen: Battle, the Hero screen or the shared Bazaar preview. The Town is a 2D painting with no Canvas. Load these scenes as lazy chunks, so the Three.js code is not in the first bundle. The accepted [Hero Model design](./hero-models.md) extends the previous Battle-only rule; implementation is pending.
+- The current game screen has its active `<Canvas>`: Battle, the Hero screen or the Bazaar previews. The Bazaar shows the shared Hero Model preview at the right of the Hero portrait shelf and of the Gear looks shelf, each as a small canvas. The Town is a 2D painting with no Canvas. Load these scenes as lazy chunks, so the Three.js code is not in the first bundle. The accepted [Hero Model design](./hero-models.md) extends the previous Battle-only rule.
 - The ground is a Battle Painting behind the transparent canvas (web ADR-0006). An optional Board skin draws Lane runners.
 - Every Unit is a rigged 3D Unit Model ([Art Direction 2.2](./05-art-direction.md#22-rigged-unit-models)). Each Creature Card and each Token has one. There is no Cut-out Figure and no per-Battle model-type limit. Each model must stay in the model budget (section 6).
 - The Battle loads every Unit Model that can appear before the Board shows: both Decks, the start Units, possible Tokens and Boss Rule summons. A failed load blocks the Battle and offers a retry.

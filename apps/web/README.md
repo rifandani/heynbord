@@ -7,6 +7,30 @@
 - refactor whole codebase to follow best practices for react and composition patterns from /vercel-composition-patterns and /vercel-react-best-practices
 - remove oxlint-disable, fallow-disable across codebase and actually fix it
 
+## Debugging
+
+`http://localhost:4100/play?qa&seed=4` in a production build, dev builds hooks always on
+
+```js
+// Current 1-second FPS, and the frame distribution since reset.
+__THREE_GAME_DIAGNOSTICS__.frames;
+
+// Draw calls of the last frame, and the maximum since reset.
+__THREE_GAME_DIAGNOSTICS__.drawCalls;
+
+// Everything as one JSON object.
+__THREE_GAME_DIAGNOSTICS__.snapshot();
+
+// Start a new measurement after the Battle is warm.
+__THREE_GAME_DIAGNOSTICS__.reset();
+
+// 60 16 57
+setInterval(() => {
+  const d = __THREE_GAME_DIAGNOSTICS__;
+  console.log(d.frames.fps, d.frames.frameMs, d.drawCalls.current);
+}, 1000);
+```
+
 ## Todo
 
 v1:
@@ -112,6 +136,7 @@ New features:
 1. /grill-with-docs work on new feature called "XXX" (recommend me better name, similar to what we already have). Split it into 3 Stage pattern: shape, engine, then UI. Orchestrate it with gh issues relationships, decide the sequence order and which can be done in parallel.
 2. cleanup all redundant game docs, etc
 3. check if we already finish all "v1" related features from docs, check whats not done in game design and PRD, check all still (draft) things, check roadmap
+4. theres no difference between fernwing courier and canopy skirmisher units
 
 - search across codebase where the design and the code differ
 - search across codebase in a feature where we can add a "measurement" script or CI gate for something

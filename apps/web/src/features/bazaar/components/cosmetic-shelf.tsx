@@ -1,4 +1,5 @@
 import type { ClassId, CosmeticId } from "@workspace/rules";
+import type { ReactNode } from "react";
 
 import { CardBack } from "@/features/battle/components/card-back";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
@@ -53,6 +54,7 @@ export const CosmeticShelf = ({
   name,
   status,
   inUse,
+  trailing,
 }: {
   readonly family: LookFamily;
   readonly look: CosmeticId | null;
@@ -60,12 +62,13 @@ export const CosmeticShelf = ({
   readonly name: string;
   readonly status: string;
   readonly inUse: boolean;
+  readonly trailing?: ReactNode;
 }) => {
   const { tr } = useGameText();
   return (
     <section
       aria-label={tr(`bazaar.shelf.${family}`)}
-      className="border-gold-trim/50 bg-night-plate/85 text-cream flex items-center gap-4 rounded-xl border-2 px-3.5 py-2.5"
+      className="border-gold-trim/50 bg-night-plate/85 text-cream flex flex-wrap items-center gap-4 rounded-xl border-2 px-3.5 py-2.5"
       style={{
         boxShadow: BAZAAR_CSS.plate3,
         ...cssVars({ "--bazaar-dim": BAZAAR_COLORS.dim }),
@@ -102,6 +105,9 @@ export const CosmeticShelf = ({
           {status}
         </p>
       </div>
+      {trailing === undefined ? null : (
+        <div className="mx-auto shrink-0">{trailing}</div>
+      )}
     </section>
   );
 };

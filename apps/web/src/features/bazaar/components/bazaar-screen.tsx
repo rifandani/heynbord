@@ -23,12 +23,13 @@ import { CardBack } from "@/features/battle/components/card-back";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import type { Glyph } from "@/features/battle/glyphs";
 import { useGameText } from "@/features/battle/use-game-text";
-import type { LookFamily } from "@/features/bazaar/bazaar";
+import type { LookFamily, ShelfPreview } from "@/features/bazaar/bazaar";
 import {
   bazaarGroups,
   canBuyCosmetic,
   cosmeticItemKey,
   isLookFamily,
+  shelfPreviewLook,
 } from "@/features/bazaar/bazaar";
 import { BazaarScene } from "@/features/bazaar/components/bazaar-scene";
 import { BoardSkinThumb } from "@/features/bazaar/components/board-skin-look";
@@ -301,11 +302,43 @@ const StandardPlate = ({
   );
 };
 
-/** The look on the shelf of one section. */
-interface Preview {
+/**
+ * The 3D preview at the right of a look shelf (Hero Models, decision 12): a
+ * candidate portrait wears the active Gear, and a candidate Gear goes on the
+ * active person. The painted portrait stands in while the model loads or
+ * fails, so the shelf never loses its look.
+ */
+const ShelfModelPreview = ({
+  family,
+  portrait,
+  gearLook,
+  classId,
+}: {
   readonly family: LookFamily;
-  readonly look: CosmeticId | null;
-}
+  readonly portrait: CosmeticId | null;
+  readonly gearLook: CosmeticId | null;
+  readonly classId: ClassId;
+}) => (
+  <div
+    className="h-44 w-60 [@media(max-height:500px)]:h-32 [@media(max-height:500px)]:w-48"
+    data-testid="bazaar-shelf-preview"
+    data-family={family}
+  >
+    <Suspense
+      fallback={
+        <div className="flex h-full items-center justify-center">
+          <HeroPortrait
+            id={portrait}
+            classId={classId}
+            className="h-full w-auto max-w-full"
+          />
+        </div>
+      }
+    >
+      <HeroModelPreview classId={classId} appearance={{ portrait, gearLook }} />
+    </Suspense>
+  </div>
+);
 
 /**
  * The Bazaar screen: one section for each family, in the order of the Economy
@@ -330,7 +363,7 @@ export const BazaarScreen = () => {
   const ownedSet = useMemo(() => new Set(owned), [owned]);
   const coin = useCountTo(balances.coin);
   const [said, setSaid] = useState("");
-  const [preview, setPreview] = useState<Preview | null>(null);
+  const [preview, setPreview] = useState<ShelfPreview | null>(null);
 
   const tryBuy = (item: Cosmetic) => {
     if (!buy(item.id, groups)) {
@@ -365,12 +398,6 @@ export const BazaarScreen = () => {
   const previewLook = (family: LookFamily, look: CosmeticId | null) => {
     setPreview({ family, look });
   };
-  const previewPortrait =
-    preview?.family === "heroPortrait"
-      ? preview.look
-      : activeLooks.heroPortrait;
-  const previewGearLook =
-    preview?.family === "gearLook" ? preview.look : activeLooks.gearLook;
 
   return (
     <GameScreen label={tr("bazaar.label")} data-testid="bazaar">
@@ -379,27 +406,6 @@ export const BazaarScreen = () => {
       {/* The page heading stays for screen readers only. */}
       <h1 className="sr-only">{tr("bazaar.title")}</h1>
       <div className="absolute inset-x-0 top-[calc(max(0.75rem,env(safe-area-inset-top))+5.25rem)] bottom-[var(--town-bar)] flex flex-col items-center gap-3 overflow-y-auto px-2 pb-4">
-        <Suspense
-          fallback={
-            <div className="sticky top-0 z-10 flex h-44 w-[min(100%,320px)] shrink-0 items-center justify-center [@media(max-height:500px)]:h-24">
-              <HeroPortrait
-                id={previewPortrait}
-                classId={classId}
-                className="h-full w-auto max-w-full"
-              />
-            </div>
-          }
-        >
-          <div className="sticky top-0 z-10 h-44 w-[min(100%,320px)] shrink-0 [@media(max-height:500px)]:h-24">
-            <HeroModelPreview
-              classId={classId}
-              appearance={{
-                portrait: previewPortrait,
-                gearLook: previewGearLook,
-              }}
-            />
-          </div>
-        </Suspense>
         {groups.map(({ family, items }) => {
           const lookFamily = isLookFamily(family) ? family : null;
           const activeId = lookFamily === null ? null : activeLooks[lookFamily];
@@ -425,6 +431,13 @@ export const BazaarScreen = () => {
                 : tr("bazaar.price", { amount: shownItem.price ?? 0 });
           const shownActive =
             shownItem === null ? activeId === null : shownItem.id === activeId;
+          // The 2 look families that a Hero Model shows: each shelf previews
+          // its own candidate on the active look of the other family.
+          const shelfPreview = shelfPreviewLook(
+            lookFamily,
+            preview,
+            activeLooks
+          );
           return (
             <section
               key={family}
@@ -445,6 +458,14 @@ export const BazaarScreen = () => {
                     name={shownName}
                     status={shownStatus}
                     inUse={shownActive}
+                    trailing={
+                      shelfPreview === null ? undefined : (
+                        <ShelfModelPreview
+                          {...shelfPreview}
+                          classId={classId}
+                        />
+                      )
+                    }
                   />
                 </div>
               )}

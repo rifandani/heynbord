@@ -1,4 +1,5 @@
 import { useAtomValue } from "@effect/atom-react";
+import { useMediaQuery } from "@reactuses/core";
 import type { ForgeStoneTier, GearSlot } from "@workspace/rules";
 import { gearUpgradeForgeStone, MAX_GEAR_LEVEL } from "@workspace/rules";
 import { cn } from "cn";
@@ -35,6 +36,20 @@ import { useCountTo } from "@/features/workshop/use-count-to";
 /** The HUD plate (DESIGN.md, HUD plate). */
 const PLATE =
   "flex rounded-xl border-2 border-gold-trim/70 bg-night-plate/85 text-cream shadow-[0_3px_0_rgba(0,0,0,0.45)]";
+
+/** The Gear Rack order: Trinket and Banner, then Weapon and Armor. */
+const RACK_ORDER: readonly GearSlot[] = [
+  "trinket",
+  "banner",
+  "weapon",
+  "armor",
+];
+
+/**
+ * At this height, the four full Gear plates fit beside the Hero Model. Under
+ * it, the plates use their compact form so that no row is cut off.
+ */
+const FULL_PLATE_HEIGHT = "(min-height: 880px)";
 
 const HeroModelPreview = lazy(
   () => import("@/features/hero/components/hero-model-preview")
@@ -319,7 +334,11 @@ export const HeroScreen = () => {
   const portrait = useAtomValue(activeHeroPortraitAtom);
   const gearLook = useAtomValue(activeGearLookAtom);
   const classId = useAtomValue(activeDeckClassAtom);
+  const fullPlates = useMediaQuery(FULL_PLATE_HEIGHT, false);
   const hero = useHero();
+  const rackItems = RACK_ORDER.flatMap((slot) =>
+    hero.items.filter((item) => item.slot === slot)
+  );
   const stat = useStatFormat();
   const sounds = useUpgradeSounds();
   const coin = useCountTo(hero.coin);
@@ -341,7 +360,7 @@ export const HeroScreen = () => {
       return;
     }
     pendingFocus.current = null;
-    const target = upgradeFocusAfter(hero.items, from);
+    const target = upgradeFocusAfter(rackItems, from);
     const node = rack.current;
     const button =
       target === null
@@ -352,7 +371,7 @@ export const HeroScreen = () => {
     } else if (node && !node.contains(document.activeElement)) {
       node.focus();
     }
-  }, [hero.items]);
+  }, [rackItems]);
 
   const upgrade = (slot: GearSlot) => {
     if (!hero.upgrade(slot)) {
@@ -432,16 +451,14 @@ export const HeroScreen = () => {
             ref={rack}
             tabIndex={-1}
             aria-label={tr("hero.gear")}
-            className={cn(
-              "grid min-h-0 grid-cols-2 gap-3 overflow-y-auto outline-none [@media(max-height:500px)]:gap-2"
-            )}
+            className="grid min-h-0 grid-cols-2 gap-3 overflow-y-auto outline-none [@media(max-height:500px)]:gap-2"
             data-testid="gear-rack"
           >
-            {hero.items.map((item) => (
+            {rackItems.map((item) => (
               <GearPlate
                 key={item.slot}
                 item={item}
-                compact
+                compact={!fullPlates}
                 strike={strikes[item.slot] ?? null}
                 onUpgrade={() => upgrade(item.slot)}
               />
