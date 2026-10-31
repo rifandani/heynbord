@@ -5,8 +5,10 @@ pipeline builds all 8 people in all 7 Gear looks (56 appearances). The
 published runtime assets are the compressed GLBs in
 `apps/web/public/models/heroes` (27,713,416 bytes for all 56; the largest
 appearance is 536,656 bytes, under the 10,000,000-byte ceiling). The
-3D feature is enabled in all builds. The 56-look art review and the
-reference-device performance checks remain open evidence.
+3D feature is enabled in all builds. A manual desktop spot check reports
+60 fps, 16 ms and 57 current draw calls. The full laptop NFR-01 record
+and the Android record are pending; no Android device is available. The
+56-look art review remains open evidence.
 
 Tracking issue: [#168 — Hero Models](https://github.com/rifandani/heynbord/issues/168).
 It contains all 22 decisions, acceptance criteria and the work checklist
@@ -85,9 +87,10 @@ The portrait and Gear selections remain separate.
     speed ×2 speeds it up, and Skip goes directly to the final pose.
     Reduced motion stops idle movement and keeps short action gestures.
 11. **Hero screen:** the model sits on the left, with the four Gear
-    plates in a 2 × 2 grid on the right, and HP and Forge Stones above.
-    A compact form supports landscape phones. Drag and arrow buttons
-    rotate the model; Reset View returns to its initial angle.
+    plates in a 2 × 2 grid on the right: Trinket and Banner above, Weapon
+    and Armor below. HP and Forge Stones are above. A compact form
+    supports landscape phones. Drag and arrow buttons rotate the model;
+    Reset View returns to its initial angle.
 12. **Bazaar:** one shared 3D preview shows a candidate portrait with
     active Gear, or candidate Gear with the active person. Preview and
     Buy keep the current selection. Use changes it.

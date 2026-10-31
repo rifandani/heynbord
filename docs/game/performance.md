@@ -7,6 +7,8 @@ its date, its method, and the build that it measured.
 
 **NFR-01: FAIL.** The 2022 laptop misses the frame-time budget in both Battles, and no 2022 mid-range Android phone is measured. The laptop runs are also host-limited: the load average was 3.8 to 5.1 and other applications were open, so the protocol condition "no other heavy application" did not hold. The numbers are the observed result, not proof of the device limit. Follow-up: [#140](https://github.com/rifandani/heynbord/issues/140).
 
+A manual desktop spot check on 2026-10-31 with Hero Models enabled reported 60 fps, 16 ms frame time and 57 current draw calls. It is not a protocol run and does not change this result.
+
 ### 2026-10-26 — MacBook Pro 13-inch (M2, 2022)
 
 - Device: Apple MacBook Pro 13-inch, 2022 (`Mac14,7`). Apple M2, 8-core CPU, 10-core integrated GPU, 16 GB.
@@ -44,7 +46,19 @@ adb forward tcp:9222 localabstract:chrome_devtools_remote
 bun web measure:frame-rate --url=http://<host>:<port> --device=<phone> --cdp=http://127.0.0.1:9222
 ```
 
-The phone must be in landscape, with a normal brightness and no charger. The budget is 30 fps mean and p95 33 ms. NFR-01 cannot pass until this record exists.
+The phone must be in landscape, with a normal brightness and no charger. The budget is 30 fps mean and p95 33 ms. NFR-01 cannot pass until this record exists. The Android measurement remains pending because no device is available.
+
+### 2026-10-31 — Hero Models manual desktop spot check
+
+This is a manual observation, not the NFR-01 protocol.
+
+- Build: commit `2f164f615b`. The check did not save a raw file.
+- Method: manual Battle in the browser with `__THREE_GAME_DIAGNOSTICS__`.
+- Observed: 60 fps, 16 ms frame time, 57 draw calls in the current frame.
+- Missing for NFR-01: mean fps and p95 over a full Battle, p99, DPR, host record, exact Stage/seed, Hero appearance and raw JSON. The current draw-call count also does not prove that the per-frame maximum is under 150.
+- Laptop NFR-01 with Hero Models: pending.
+- Android NFR-01 with Hero Models: pending; no device is available.
+- The full run should use the largest Hero appearance (Dawn Gaze + Iron Vine).
 
 ## Bundle — 2026-10-26 — First Load JavaScript for `/play`
 

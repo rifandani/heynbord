@@ -36,8 +36,10 @@ Status: implementation complete and enabled in all builds. Two human gates remai
 ## Human gates
 
 - AC-02 and AC-04: the 56-look art review and the first-reference approval are not recorded. The draft files above support that review.
-- AC-24: the reference laptop and Android frame-rate records are not measured with Hero Models enabled. The existing NFR-01 record already fails and does not cover this feature.
-- Draw calls with Hero Models: not measured on the reference devices. The strict scene record without the Hero is 97 draw calls against the 150 limit. The Hero model adds one skinned mesh, so a measured check is still needed.
+- AC-24: a manual desktop spot check on 2026-10-31 reported 60 fps, 16 ms and 57 current draw calls. This is not the NFR-01 protocol: it has no mean fps, p95, p99, DPR, host record or raw file.
+- Laptop NFR-01 with Hero Models: pending. Use `bun web measure:frame-rate` with the largest appearance (Dawn Gaze + Iron Vine).
+- Android NFR-01 with Hero Models: pending. No device is available.
+- Draw calls with Hero Models: the manual current count is 57. The per-frame maximum is not measured; the limit is below 150.
 
 ## Release state
 
