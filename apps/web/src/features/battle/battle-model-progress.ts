@@ -1,5 +1,5 @@
 /** The Unit Model files of the Battle that the loading screen waits for. */
-export interface ModelProgress {
+interface ModelProgress {
   readonly done: number;
   readonly total: number;
 }
