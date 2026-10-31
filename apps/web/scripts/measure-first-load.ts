@@ -21,6 +21,15 @@ const recordPath = path.join(repoRoot, "docs/game/22-performance.md");
 const section = "## First load (NFR-02)";
 const budget = 500_000;
 const timeout = 120_000;
+
+/** The measured phone: a 412×915 Android held sideways (ADR-0014). */
+const device = {
+  cpuSlowdown: 4,
+  dpr: 2,
+  height: 412,
+  orientation: "landscape",
+  width: 915,
+} as const;
 interface Tap {
   at: number;
   dialogMs: number | null;
@@ -261,13 +270,12 @@ const throttledOrigin = async (port: number, upstreamPort: number) => {
 };
 
 const coldRun = async (browser: Browser, url: string, warm: boolean) => {
-  // The Town shows a "turn to landscape" guard to a coarse pointer in
-  // portrait, so a portrait tap can never reach Settings. Measure the phone
-  // held sideways, which is the only orientation the game accepts (ADR-0014).
+  // The Portrait Guard covers the Town for a coarse pointer in portrait, so a
+  // portrait tap cannot reach Settings. Measure the phone held sideways.
   const context = await browser.newContext({
-    viewport: { width: 915, height: 412 },
-    screen: { width: 915, height: 412 },
-    deviceScaleFactor: 2,
+    viewport: { width: device.width, height: device.height },
+    screen: { width: device.width, height: device.height },
+    deviceScaleFactor: device.dpr,
     isMobile: true,
     hasTouch: true,
     locale: "en-US",
@@ -279,7 +287,9 @@ const coldRun = async (browser: Browser, url: string, warm: boolean) => {
     const page = await context.newPage();
     const cdp = await context.newCDPSession(page);
     await cdp.send("Network.clearBrowserCache");
-    await cdp.send("Emulation.setCPUThrottlingRate", { rate: 4 });
+    await cdp.send("Emulation.setCPUThrottlingRate", {
+      rate: device.cpuSlowdown,
+    });
     const coldTap = await measureTap(page, url);
     const cold: Run = { ...coldTap, worker: await workerRecord(page) };
     let warmRun: Run | null = null;
@@ -300,6 +310,10 @@ const qualifies = (run: Run) =>
 const row = (label: string, run: Run) =>
   `| ${label} | ${ms(run.tap.at)} | ${run.tap.dialogMs === null ? "Did not open within 1000 ms" : ms(run.tap.dialogMs)} | ${qualifies(run) ? "PASS" : "FAIL"} | ${run.scripts.reduce((sum, script) => sum + script.encodedBytes, 0)} | ${run.worker.bytes} | ${run.worker.readyAt === null ? `Not ready by ${ms(run.worker.observedAt)} (${run.worker.state})` : ms(run.worker.readyAt)} |`;
 
+/**
+ * Inserts a new record after the existing ones under the First load section.
+ * A rerun must not delete the record of an earlier build.
+ */
 const writeRecord = async (record: string) => {
   let current =
     "# Game performance\n\n## Frame rate (NFR-01)\n\nNo record yet.\n";
@@ -385,7 +399,7 @@ const renderRecord = ({
 - Command (repository root): \`bun web measure:first-load\`. This removes the previous production output, builds the app, starts a compressed Nitro production origin, runs Chromium, writes this section, and stops both processes. Install the existing browser first with \`bun web test:install\` if needed.
 - Commit: \`${commit}\`. ${dirty ? "The build includes uncommitted changes (listed below); this is a working tree measurement." : "Clean working tree."}
 - Browser: Chromium ${browserVersion}, headless; host: ${platform()} ${release()}.
-- Device: emulated mid-range Android (Pixel 6a user agent), 915×412 CSS pixels in landscape, DPR 2, mobile touch, 4× CPU slowdown. The game shows a landscape guard to a coarse pointer in portrait, so the measured phone is held sideways.
+- Device: emulated mid-range Android (Pixel 6a user agent), ${device.width}×${device.height} CSS pixels in ${device.orientation}, DPR ${device.dpr}, mobile touch, ${device.cpuSlowdown}× CPU slowdown. The Portrait Guard covers the Town for a coarse pointer in portrait, so the measured phone is held sideways.
 - Network: Slow 4G, 1.6 Mbps down, 750 kbps up, 150 ms RTT, a local HTTP proxy adds 150 ms before response headers and limits response bodies to a shared 200,000 B/s download queue and request bodies to a shared 93,750 B/s upload queue. Both page and Service Worker traffic cross this origin. Headers and loopback overhead are extra; this is an emulated link.
 - Origin: ${origin}; entry: ${url} (direct navigation).
 - Cache: a new browser context and cleared HTTP cache for each cold run, with no prior storage or active Service Worker. New workers can install during the visit. Warm Load reuses the third context with its HTTP cache, storage and current Service Worker state. The worker status is recorded; an incomplete precache is not treated as ready.
@@ -400,9 +414,10 @@ ${row("Warm (context only)", warmRun)}
 - Median qualified First Load: **${valid ? ms(tapMedian) : "not reached — the Settings interaction gate failed"}**. A tap time alone is not time to interactive.
 - NFR-02 (less than 3000 ms and a Settings response of at most 50 ms): **${pass ? "PASS" : "FAIL"}**.${valid ? ` Measured First Load: ${ms(tapMedian)}.` : ` Observed tap targets: ${runs.map((run) => JSON.stringify(run.tap.target)).join(", ")}.`}
 - First JavaScript: ${total.raw} bytes uncompressed; **${total.gzip} bytes gzip**; ${total.br} bytes brotli. Budget: less than 500,000 bytes gzip (500 KB, decimal): **${total.gzip < budget ? "PASS" : "FAIL"}**. This sums distinct page JavaScript resources completed by the tap, including module preloads; it excludes worker precache traffic. The bundle table lists their URLs.
+- The set differs from the #139 bundle record above: that record counts the files that the \`/play\` HTML preloads; this runner counts the page JavaScript that completed before the tap, so a chunk that the HTML does not name can be included. The totals are not directly comparable.
 - Compression check: \`${playUrl}\` returns \`content-encoding: gzip\` with \`Accept-Encoding: gzip\`. Page encoded body bytes use the encoding Chromium negotiated; gzip (level 9) and brotli sizes above are computed from the same built files.
 - Service Worker precache: ${runs.map((run) => run.worker.entries).join(" / ")} entries in the cold runs. Bytes are decoded response bodies stored in Workbox precaches, not wire bytes. If activation does not finish within 15 seconds after the tap result, the runner records the observation time and partial cache. Time is navigation to \`navigator.serviceWorker.ready\`, including registration and installation. It is separate from the tap gate.
-- Follow-up for failures: [#139](https://github.com/rifandani/heynbord/issues/139). Bundle reduction is outside this measurement.
+- Follow-up: the NFR-02 time and interaction failure is recorded here. Bundle reduction is outside this measurement.
 
 <details>
 <summary>Measured JavaScript files</summary>

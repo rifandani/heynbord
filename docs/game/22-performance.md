@@ -228,7 +228,7 @@ M .github/workflows/ci.yml
 - Command (repository root): `bun web measure:first-load`. This removes the previous production output, builds the app, starts a compressed Nitro production origin, runs Chromium, writes this section, and stops both processes. Install the existing browser first with `bun web test:install` if needed.
 - Commit: `b096b093a0b63506a3b91e0b419f5f85406359ce`. Clean working tree.
 - Browser: Chromium 153.0.8010.12, headless; host: darwin 25.5.0.
-- Device: emulated mid-range Android (Pixel 6a user agent), 915×412 CSS pixels in landscape, DPR 2, mobile touch, 4× CPU slowdown. The game shows a landscape guard to a coarse pointer in portrait, so the measured phone is held sideways.
+- Device: emulated mid-range Android (Pixel 6a user agent), 915×412 CSS pixels in landscape, DPR 2, mobile touch, 4× CPU slowdown. The Portrait Guard covers the Town for a coarse pointer in portrait, so the measured phone is held sideways.
 - Network: Slow 4G, 1.6 Mbps down, 750 kbps up, 150 ms RTT, a local HTTP proxy adds 150 ms before response headers and limits response bodies to a shared 200,000 B/s download queue and request bodies to a shared 93,750 B/s upload queue. Both page and Service Worker traffic cross this origin. Headers and loopback overhead are extra; this is an emulated link.
 - Origin: http://127.0.0.1:52583; entry: http://127.0.0.1:52583/play (direct navigation).
 - Cache: a new browser context and cleared HTTP cache for each cold run, with no prior storage or active Service Worker. New workers can install during the visit. Warm Load reuses the third context with its HTTP cache, storage and current Service Worker state. The worker status is recorded; an incomplete precache is not treated as ready.
@@ -245,9 +245,10 @@ M .github/workflows/ci.yml
 - Median qualified First Load: **not reached — the Settings interaction gate failed**. A tap time alone is not time to interactive.
 - NFR-02 (less than 3000 ms and a Settings response of at most 50 ms): **FAIL**. Observed tap targets: "town-settings", "town-settings", "town-settings".
 - First JavaScript: 1538880 bytes uncompressed; **496548 bytes gzip**; 426710 bytes brotli. Budget: less than 500,000 bytes gzip (500 KB, decimal): **PASS**. This sums distinct page JavaScript resources completed by the tap, including module preloads; it excludes worker precache traffic. The bundle table lists their URLs.
+- The set differs from the #139 bundle record above: that record counts the files that the `/play` HTML preloads; this runner counts the page JavaScript that completed before the tap, so a chunk that the HTML does not name can be included. The totals are not directly comparable.
 - Compression check: `/assets/play-BJKqbX13.js` returns `content-encoding: gzip` with `Accept-Encoding: gzip`. Page encoded body bytes use the encoding Chromium negotiated; gzip (level 9) and brotli sizes above are computed from the same built files.
 - Service Worker precache: 34 / 34 / 34 entries in the cold runs. Bytes are decoded response bodies stored in Workbox precaches, not wire bytes. If activation does not finish within 15 seconds after the tap result, the runner records the observation time and partial cache. Time is navigation to `navigator.serviceWorker.ready`, including registration and installation. It is separate from the tap gate.
-- Follow-up for failures: [#139](https://github.com/rifandani/heynbord/issues/139). Bundle reduction is outside this measurement.
+- Follow-up: the NFR-02 time and interaction failure is recorded here. Bundle reduction is outside this measurement.
 
 <details>
 <summary>Measured JavaScript files</summary>

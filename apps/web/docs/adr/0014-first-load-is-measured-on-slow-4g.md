@@ -8,7 +8,7 @@ The same problem applies to the word "interactive". A painted Town is not a usab
 
 - **Entry:** a direct First Load of `/play`. The landing page at `/` is not part of the game.
 - **Network:** Slow 4G: 1.6 Mbps down, 750 kbps up, 150 ms RTT. This is the profile that web.dev and Lighthouse call "4G".
-- **Device:** an emulated mid-range Android at 915×412 in landscape (a 412×915 phone held sideways), DPR 2, with a 4× CPU slowdown. NFR-01 already names a 2022 mid-range Android phone, so both records use the same device class. The game shows a "turn to landscape" guard to a coarse pointer in portrait, so a landscape viewport is the only one where a Player can reach a control.
+- **Device:** an emulated mid-range Android at 412×915, DPR 2, with a 4× CPU slowdown. NFR-01 already names a 2022 mid-range Android phone, so both records use the same device class.
 - **Cache:** a new browser context with an empty cache and no active Service Worker.
 - **Interactive:** the first tap on the Town Settings control opens the Settings dialog in 50 ms or less. The recorded value is the time from navigation start to that tap.
 - **Runs:** 3 First Loads. The record uses the median.
@@ -26,3 +26,7 @@ The same problem applies to the word "interactive". A painted Town is not a usab
 - The gate runs in Chromium, the engine that most Players use. It does not prove Safari.
 - A record needs the commit SHA, the browser version and the profile. Without them, the next record cannot compare with it.
 - The bundle budget of Technical Design section 6 (less than 500 KB gzip) is the leading measure. A First Load can pass the time gate with a bundle above the budget on a faster link, so both values go in the record.
+
+## Amendments
+
+**2026-10-31 — the phone is held in landscape.** The Portrait Guard covers the Town for a coarse pointer in portrait, so the original 412×915 portrait profile could never reach the Settings control. The measured device is the same 412×915 mid-range Android, held sideways: the viewport is 915×412. A fine pointer in a portrait window still reaches Settings; the guard applies only to a coarse pointer. The rest of the decision is unchanged.
