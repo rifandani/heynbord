@@ -12,10 +12,10 @@ The command builds once and checks three explicit configuration files:
 - `apps/web/scripts/battle-budget/stage-5-10.json`: Stage 5-10, level 30, the 14-card Vanguard Archetype plus one Epic Iron Bulwark, Gold Crest portrait, Royal Plate Gear look, Hollow Moon Board skin and Gold Fleur Card Back. This is a declared valid 15-card late-game Deck. It is a budget fixture, not a win-rate claim.
 - `apps/web/scripts/battle-budget/stage-5-10-hero.json`: the same Battle with the Hero Model feature on and the Dawn Gaze person in the Iron Vine look. This is the largest published appearance (536,656 bytes), so it is the highest asset-cost Hero check.
 
-The first two fixtures disable the Hero Model feature. The third measures the
-whole-Battle budget and the separate 10,000,000-byte Hero appearance ceiling
-with the feature ready for release. A release build turns the feature on only
-with `VITE_HERO_MODELS=1`; without it the Hero chunk is absent.
+Hero Models are always enabled. The third fixture measures the whole-Battle
+budget and the separate 10,000,000-byte Hero appearance ceiling with the
+largest published Hero appearance. The first two fixtures use their
+selected portraits but no Hero Model cost beyond the normal Battle set.
 
 For a different configuration, supply a complete JSON file. Each file must state the Stage, level, Player Deck and Class, portrait, Gear look, Board skin, Card Back and enabled features. Use `null` for Standard. The command rejects an incomplete configuration or an invalid Player Deck.
 
@@ -26,9 +26,6 @@ bun web measure:battle-budget \
   --config apps/web/scripts/battle-budget/stage-5-10-hero.json \
   --report artifacts/battle-budget.json
 ```
-
-Set `VITE_HERO_MODELS=1` for that build. The command fails when a Hero
-fixture is requested but the build has no Hero chunk.
 
 Paths are relative to the repository root. The command writes the time, commit, dirty status, build versions and public feature flags, complete configuration, graph digest, included file URLs, per-file byte counts and SHA-256 values to the JSON record. A missing required asset or a failed budget exits unsuccessfully. CI runs the command on pushes to main and pull requests.
 

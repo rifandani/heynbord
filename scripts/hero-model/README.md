@@ -50,10 +50,10 @@ The packer applies Meshopt compression at the medium level. It checks the raw mo
 
 Hero Models use vertex colors and no images. A model with images must convert them to KTX2 before packing.
 
-For local browser checks, build the references first, then run from `apps/web/`:
+For browser checks, publish the models first, then run from `apps/web/`:
 
 ```sh
 bun test:hero
 ```
 
-The offline check fetches a temporary model through the Service Worker after a page reload. It does not check a full offline app restart. The development switch is off in production. The 56-look art review and the laptop and Android measurements are required before release.
+The offline check fetches a temporary model through the Service Worker after a page reload. It does not check a full offline app restart. The 56-look art review and the laptop and Android measurements remain release evidence.

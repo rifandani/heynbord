@@ -44,8 +44,9 @@ character and Tent Rings, each in Standard kit and Gold
 Inlay, are the first quality references. Their faces, clothing, Gear fit
 and animations must be reviewed before production of the other models.
 
-3D Heroes will be enabled when all eight models pass the art, fit,
-animation, loading, input, Replay and reference-device performance checks.
+3D Heroes are enabled in the game. The art, fit, animation, loading,
+input, Replay and reference-device performance checks remain required
+release evidence.
 
 The full design and current status are in
 [Hero Models](../../../../docs/game/hero-models.md).

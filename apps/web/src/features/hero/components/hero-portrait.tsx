@@ -6,7 +6,6 @@ import { SIDE_COLORS } from "@/core/components/game/tokens";
 import { BRONZE } from "@/features/battle/components/card-frame";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { classGlyph } from "@/features/battle/glyphs";
-import { HERO_MODELS_ENABLED } from "@/features/hero/hero-model-feature";
 import {
   heroPortraitArt,
   STANDARD_HERO_PORTRAIT,
@@ -37,12 +36,7 @@ export const HeroPortrait = ({
 }) => {
   const active = useAtomValue(activeHeroPortraitAtom);
   const shown = id === undefined ? active : id;
-  const art =
-    shown === null
-      ? HERO_MODELS_ENABLED
-        ? STANDARD_HERO_PORTRAIT
-        : null
-      : heroPortraitArt(shown);
+  const art = shown === null ? STANDARD_HERO_PORTRAIT : heroPortraitArt(shown);
   return (
     <span
       className={cn(

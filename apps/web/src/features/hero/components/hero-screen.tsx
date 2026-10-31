@@ -22,7 +22,6 @@ import { HeroScene } from "@/features/hero/components/hero-scene";
 import type { ForgeStoneCount, HeroHpParts } from "@/features/hero/hero";
 import { upgradeFocusAfter } from "@/features/hero/hero";
 import { GEAR_GLYPH } from "@/features/hero/hero-art";
-import { HERO_MODELS_ENABLED } from "@/features/hero/hero-model-feature";
 import { HERO_GROOVE, HERO_GROOVE_PAINT } from "@/features/hero/tokens";
 import { useHero } from "@/features/hero/use-hero";
 import { useStatFormat } from "@/features/hero/use-stat-format";
@@ -408,45 +407,33 @@ export const HeroScreen = () => {
         className={cn(
           "absolute top-[calc(max(0.5rem,env(safe-area-inset-top))+3.5rem)] left-1/2 flex w-[min(calc(100vw-1.5rem),1080px)] -translate-x-1/2 flex-col justify-center gap-3",
           "[@media(max-height:500px)]:top-[calc(max(0.5rem,env(safe-area-inset-top))+2.75rem)] [@media(max-height:500px)]:w-[calc(100vw-max(0.5rem,env(safe-area-inset-left))-max(0.5rem,env(safe-area-inset-right)))] [@media(max-height:500px)]:gap-2",
-          HERO_MODELS_ENABLED
-            ? "bottom-[calc(var(--town-bar)+38px)] [@media(max-height:500px)]:bottom-[calc(var(--town-bar)+36px)]"
-            : "bottom-[calc(var(--town-bar)+12px)] [@media(max-height:500px)]:bottom-[calc(var(--town-bar)+6px)]"
+          "bottom-[calc(var(--town-bar)+38px)] [@media(max-height:500px)]:bottom-[calc(var(--town-bar)+36px)]"
         )}
       >
         <StatusBar hp={hero.hp} counts={hero.forgeStones} spent={spent} />
-        <div
-          className={cn(
-            "min-h-0",
-            HERO_MODELS_ENABLED &&
-              "grid flex-1 grid-cols-[minmax(0,1fr)_minmax(0,2fr)] grid-rows-[minmax(0,1fr)] gap-3 overflow-hidden"
-          )}
-        >
-          {HERO_MODELS_ENABLED ? (
-            <Suspense
-              fallback={
-                <div className="flex min-h-0 items-center justify-center">
-                  <HeroPortrait
-                    id={portrait}
-                    classId={classId}
-                    className="h-full w-auto max-w-full"
-                  />
-                </div>
-              }
-            >
-              <HeroModelPreview
-                appearance={{ portrait, gearLook }}
-                classId={classId}
-              />
-            </Suspense>
-          ) : null}
+        <div className="grid min-h-0 flex-1 grid-cols-[minmax(0,1fr)_minmax(0,2fr)] grid-rows-[minmax(0,1fr)] gap-3 overflow-hidden">
+          <Suspense
+            fallback={
+              <div className="flex min-h-0 items-center justify-center">
+                <HeroPortrait
+                  id={portrait}
+                  classId={classId}
+                  className="h-full w-auto max-w-full"
+                />
+              </div>
+            }
+          >
+            <HeroModelPreview
+              appearance={{ portrait, gearLook }}
+              classId={classId}
+            />
+          </Suspense>
           <ul
             ref={rack}
             tabIndex={-1}
             aria-label={tr("hero.gear")}
             className={cn(
-              "grid min-h-0 gap-3 outline-none [@media(max-height:500px)]:gap-2",
-              HERO_MODELS_ENABLED && "overflow-y-auto",
-              HERO_MODELS_ENABLED ? "grid-cols-2" : "grid-cols-4"
+              "grid min-h-0 grid-cols-2 gap-3 overflow-y-auto outline-none [@media(max-height:500px)]:gap-2"
             )}
             data-testid="gear-rack"
           >
@@ -454,7 +441,7 @@ export const HeroScreen = () => {
               <GearPlate
                 key={item.slot}
                 item={item}
-                compact={HERO_MODELS_ENABLED}
+                compact
                 strike={strikes[item.slot] ?? null}
                 onUpgrade={() => upgrade(item.slot)}
               />

@@ -1,10 +1,4 @@
-import {
-  constants,
-  copyFileSync,
-  existsSync,
-  mkdirSync,
-  unlinkSync,
-} from "node:fs";
+import { constants, copyFileSync, mkdirSync, unlinkSync } from "node:fs";
 import path from "node:path";
 
 import { expect, test } from "./_base";
@@ -17,7 +11,6 @@ const fixtureUrl = "/models/heroes/offline-check.glb";
 test("the service worker keeps a visited Hero model across reloads", async ({
   page,
 }) => {
-  test.skip(!existsSync(reference), "Publish the Hero Models first.");
   test.setTimeout(90_000);
   mkdirSync(publicFolder, { recursive: true });
   // Never overwrite a file in the public model directory.

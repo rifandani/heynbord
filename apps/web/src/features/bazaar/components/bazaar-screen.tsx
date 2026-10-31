@@ -42,7 +42,6 @@ import {
 } from "@/features/bazaar/tokens";
 import { useBazaar } from "@/features/bazaar/use-bazaar";
 import { HeroPortrait } from "@/features/hero/components/hero-portrait";
-import { HERO_MODELS_ENABLED } from "@/features/hero/hero-model-feature";
 import { BalancePlate } from "@/features/town/components/balance-plate";
 import { useCountTo } from "@/features/workshop/use-count-to";
 
@@ -380,29 +379,27 @@ export const BazaarScreen = () => {
       {/* The page heading stays for screen readers only. */}
       <h1 className="sr-only">{tr("bazaar.title")}</h1>
       <div className="absolute inset-x-0 top-[calc(max(0.75rem,env(safe-area-inset-top))+5.25rem)] bottom-[var(--town-bar)] flex flex-col items-center gap-3 overflow-y-auto px-2 pb-4">
-        {HERO_MODELS_ENABLED ? (
-          <Suspense
-            fallback={
-              <div className="sticky top-0 z-10 flex h-44 w-[min(100%,320px)] shrink-0 items-center justify-center [@media(max-height:500px)]:h-24">
-                <HeroPortrait
-                  id={previewPortrait}
-                  classId={classId}
-                  className="h-full w-auto max-w-full"
-                />
-              </div>
-            }
-          >
-            <div className="sticky top-0 z-10 h-44 w-[min(100%,320px)] shrink-0 [@media(max-height:500px)]:h-24">
-              <HeroModelPreview
+        <Suspense
+          fallback={
+            <div className="sticky top-0 z-10 flex h-44 w-[min(100%,320px)] shrink-0 items-center justify-center [@media(max-height:500px)]:h-24">
+              <HeroPortrait
+                id={previewPortrait}
                 classId={classId}
-                appearance={{
-                  portrait: previewPortrait,
-                  gearLook: previewGearLook,
-                }}
+                className="h-full w-auto max-w-full"
               />
             </div>
-          </Suspense>
-        ) : null}
+          }
+        >
+          <div className="sticky top-0 z-10 h-44 w-[min(100%,320px)] shrink-0 [@media(max-height:500px)]:h-24">
+            <HeroModelPreview
+              classId={classId}
+              appearance={{
+                portrait: previewPortrait,
+                gearLook: previewGearLook,
+              }}
+            />
+          </div>
+        </Suspense>
         {groups.map(({ family, items }) => {
           const lookFamily = isLookFamily(family) ? family : null;
           const activeId = lookFamily === null ? null : activeLooks[lookFamily];

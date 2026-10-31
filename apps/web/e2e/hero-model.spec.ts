@@ -1,4 +1,4 @@
-import { existsSync, mkdirSync } from "node:fs";
+import { mkdirSync } from "node:fs";
 import path from "node:path";
 
 import { expect, test } from "./_base";
@@ -6,12 +6,7 @@ import { expect, test } from "./_base";
 const reference = path.resolve("public/models/heroes/standard-standard.glb");
 const evidence = path.resolve("art/heroes/raw/evidence");
 
-test.describe("Hero Model draft", () => {
-  test.skip(
-    process.env.VITE_HERO_MODEL_PREVIEW !== "1" || !existsSync(reference),
-    "Publish the Hero Models and enable the local draft to run this check."
-  );
-
+test.describe("Hero Models", () => {
   for (const viewport of [
     { width: 1366, height: 768 },
     { width: 844, height: 390 },

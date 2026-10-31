@@ -6,8 +6,6 @@ export const battleBuildGraph = (): Plugin => {
     mode: "",
     base: "",
     e2e: "",
-    heroModels: "",
-    heroModelPreview: "",
   };
   return {
     name: "battle-budget-graph",
@@ -17,8 +15,6 @@ export const battleBuildGraph = (): Plugin => {
         mode: config.mode,
         base: config.base,
         e2e: String(config.env.VITE_E2E ?? ""),
-        heroModels: String(config.env.VITE_HERO_MODELS ?? ""),
-        heroModelPreview: String(config.env.VITE_HERO_MODEL_PREVIEW ?? ""),
       };
     },
     generateBundle(_options, bundle) {

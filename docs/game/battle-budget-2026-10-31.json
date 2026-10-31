@@ -1,298 +1,55 @@
 {
-  "measuredAt": "2026-10-31T07:31:22.928Z",
-  "commit": "810b384b767f1bc7aefc1a5e7c6f28bd0e04aefe",
+  "measuredAt": "2026-10-31T07:44:01.610Z",
+  "commit": "8ec537edf383691fbfd7c96b9923ec605127e098",
   "dirty": true,
   "workingTree": [
-    "M .fallowrc.json",
-    " M .github/workflows/ci.yml",
-    " M .github/workflows/e2e.yml",
-    " M DESIGN.md",
+    "M .github/workflows/e2e.yml",
     " M apps/web/.env.example",
-    " M apps/web/GLOSSARY.md",
-    " M apps/web/README.md",
-    " M apps/web/artifacts/bot-playtest.json",
-    " M apps/web/docs/adr/0013-a-gear-look-is-a-set-of-4-gear-icons.md",
-    " M apps/web/docs/rendering.md",
-    " M apps/web/e2e/story-scenes.spec.ts",
+    " M apps/web/docs/adr/0016-a-hero-portrait-defines-a-person-and-the-gear-look-dresses-it.md",
+    " M apps/web/e2e/hero-model-offline.spec.ts",
+    " M apps/web/e2e/hero-model-references.spec.ts",
+    " M apps/web/e2e/hero-model.spec.ts",
     " M apps/web/package.json",
-    " M apps/web/public/models/units/acorn-tender.glb",
-    " M apps/web/public/models/units/amberwing-dart.glb",
-    " M apps/web/public/models/units/ankle-snatcher.glb",
-    " M apps/web/public/models/units/ashcaller-grosh.glb",
-    " M apps/web/public/models/units/ashspit-hunter.glb",
-    " M apps/web/public/models/units/avalanche-yeti.glb",
-    " M apps/web/public/models/units/backwatch-bailiff.glb",
-    " M apps/web/public/models/units/badland-runt.glb",
-    " M apps/web/public/models/units/banner-chaplain.glb",
-    " M apps/web/public/models/units/bomb-lobber.glb",
-    " M apps/web/public/models/units/bone-rampart.glb",
-    " M apps/web/public/models/units/bonestake-palisade.glb",
-    " M apps/web/public/models/units/boss-snikkit.glb",
-    " M apps/web/public/models/units/boulder-tortoise.glb",
-    " M apps/web/public/models/units/bramble-duelist.glb",
-    " M apps/web/public/models/units/bramble-nest.glb",
-    " M apps/web/public/models/units/bridge-pikeman.glb",
-    " M apps/web/public/models/units/bristleback-boar.glb",
-    " M apps/web/public/models/units/canopy-skirmisher.glb",
-    " M apps/web/public/models/units/canopy-vinewarden.glb",
-    " M apps/web/public/models/units/cave-bear.glb",
-    " M apps/web/public/models/units/cave-troll.glb",
-    " M apps/web/public/models/units/chattering-cohort.glb",
-    " M apps/web/public/models/units/cinderhorn-breaker.glb",
-    " M apps/web/public/models/units/coffin-lancer.glb",
-    " M apps/web/public/models/units/coffin-lid-skater.glb",
-    " M apps/web/public/models/units/crag-lizard.glb",
-    " M apps/web/public/models/units/crag-rhino.glb",
-    " M apps/web/public/models/units/crossbow-guard.glb",
-    " M apps/web/public/models/units/dawn-cleric.glb",
-    " M apps/web/public/models/units/dawn-reliquary.glb",
-    " M apps/web/public/models/units/dewkeeper.glb",
-    " M apps/web/public/models/units/elderreed-dartmaster.glb",
-    " M apps/web/public/models/units/ember-shaman.glb",
-    " M apps/web/public/models/units/fernwing-courier.glb",
-    " M apps/web/public/models/units/frost-elk-matriarch.glb",
-    " M apps/web/public/models/units/frostfang-lynx.glb",
-    " M apps/web/public/models/units/fuse-runner.glb",
-    " M apps/web/public/models/units/gate-warden.glb",
-    " M apps/web/public/models/units/glade-turnblade.glb",
-    " M apps/web/public/models/units/gorehorn-red-maw.glb",
-    " M apps/web/public/models/units/grand-gearjammer.glb",
-    " M apps/web/public/models/units/grave-bell-tender.glb",
-    " M apps/web/public/models/units/graveyard-drudge.glb",
-    " M apps/web/public/models/units/grease-trapper.glb",
-    " M apps/web/public/models/units/grix-ratwhistle.glb",
-    " M apps/web/public/models/units/halberdier.glb",
-    " M apps/web/public/models/units/howling-charger.glb",
-    " M apps/web/public/models/units/hushbow.glb",
-    " M apps/web/public/models/units/iron-bulwark.glb",
-    " M apps/web/public/models/units/junk-barricade.glb",
-    " M apps/web/public/models/units/junk-slinger.glb",
-    " M apps/web/public/models/units/junk-walker.glb",
-    " M apps/web/public/models/units/kings-courier.glb",
-    " M apps/web/public/models/units/lantern-widow.glb",
-    " M apps/web/public/models/units/lethiel-first-gardener.glb",
-    " M apps/web/public/models/units/marshal-elian-voss.glb",
-    " M apps/web/public/models/units/mesa-pit-fighter.glb",
-    " M apps/web/public/models/units/militia-recruit.glb",
-    " M apps/web/public/models/units/mine-sapper.glb",
-    " M apps/web/public/models/units/mosspitcher-lookout.glb",
-    " M apps/web/public/models/units/mountain-colossus.glb",
-    " M apps/web/public/models/units/old-frostmaw.glb",
-    " M apps/web/public/models/units/ossuary-piper.glb",
-    " M apps/web/public/models/units/pack-stalker.glb",
-    " M apps/web/public/models/units/pale-cantor-ysolde.glb",
-    " M apps/web/public/models/units/pale-galloper.glb",
-    " M apps/web/public/models/units/pavise-arbalist.glb",
-    " M apps/web/public/models/units/pyreaxe-ravager.glb",
-    " M apps/web/public/models/units/rattleknife.glb",
-    " M apps/web/public/models/units/rime-eye-reaper.glb",
-    " M apps/web/public/models/units/rimebreath-drake.glb",
-    " M apps/web/public/models/units/river-knight.glb",
-    " M apps/web/public/models/units/rocket-barrel-rider.glb",
-    " M apps/web/public/models/units/rootbound-guard.glb",
-    " M apps/web/public/models/units/scrap-plate-guard.glb",
-    " M apps/web/public/models/units/scrap-raider.glb",
-    " M apps/web/public/models/units/seedwind-shepherd.glb",
-    " M apps/web/public/models/units/ser-aldric-stonewall.glb",
-    " M apps/web/public/models/units/shieldbearer.glb",
-    " M apps/web/public/models/units/sidestep-shiv.glb",
-    " M apps/web/public/models/units/sir-odo-last-taxman.glb",
-    " M apps/web/public/models/units/skyreaver.glb",
-    " M apps/web/public/models/units/spyglass-sniper.glb",
-    " M apps/web/public/models/units/tailsweep-basilisk.glb",
-    " M apps/web/public/models/units/thornline-archer.glb",
-    " M apps/web/public/models/units/town-barricade.glb",
-    " M apps/web/public/models/units/tunnel-saboteur.glb",
-    " M apps/web/public/models/units/tusk-brute.glb",
-    " M apps/web/public/models/units/warband-standard-bearer.glb",
-    " M apps/web/public/models/units/warchief-grukka.glb",
-    " M apps/web/public/models/units/warden-saelith.glb",
-    " M apps/web/public/models/units/warhowler-drummer.glb",
-    " M apps/web/public/models/units/web-spitter.glb",
-    " M apps/web/public/models/units/winter-maw.glb",
-    " M apps/web/public/models/units/woolly-mammoth.glb",
-    " M apps/web/public/music/boss.ogg",
-    " M apps/web/public/music/dungeons.ogg",
-    " M apps/web/public/music/heynspire.ogg",
-    " M apps/web/public/music/region-1.ogg",
-    " M apps/web/public/music/region-2.ogg",
-    " M apps/web/public/music/region-3.ogg",
-    " M apps/web/public/music/region-4.mp3",
-    " M apps/web/public/music/region-5.mp3",
-    " M apps/web/src/core/libs/i18n/locales/en-US.ts",
-    " M apps/web/src/core/libs/i18n/locales/id-ID.ts",
-    " M apps/web/src/features/battle/battle-session.ts",
-    " M apps/web/src/features/battle/battle.atoms.ts",
-    " M apps/web/src/features/battle/card-art.ts",
-    " M apps/web/src/features/battle/card-art.unit.test.ts",
-    " M apps/web/src/features/battle/components/battle-keys.ts",
-    " M apps/web/src/features/battle/components/battle-keys.unit.test.ts",
-    " M apps/web/src/features/battle/components/battle-stage.tsx",
-    " M apps/web/src/features/battle/components/hero-panel.tsx",
-    " M apps/web/src/features/battle/components/leave-battle.tsx",
-    " M apps/web/src/features/battle/components/play-screen.tsx",
+    " M apps/web/scripts/battle-build-graph.ts",
+    " M apps/web/scripts/measure-battle-budget.ts",
     " M apps/web/src/features/battle/components/top-bar.tsx",
-    " M apps/web/src/features/battle/glyphs.ts",
-    " M apps/web/src/features/battle/scene/fx-atlas.ts",
-    " M apps/web/src/features/battle/scene/hero-pose.ts",
-    " M apps/web/src/features/battle/scene/hero-pose.unit.test.ts",
     " M apps/web/src/features/battle/scene/heroes.tsx",
-    " M apps/web/src/features/battle/scene/markers.ts",
-    " M apps/web/src/features/battle/scene/markers.unit.test.ts",
-    " M apps/web/src/features/battle/scene/target-markers.tsx",
-    " M apps/web/src/features/battle/scene/textures.ts",
-    " M apps/web/src/features/battle/scene/unit-models.ts",
-    " M apps/web/src/features/battle/scene/unit-models.unit.test.ts",
-    " M apps/web/src/features/battle/scene/unit-rig.ts",
-    " M apps/web/src/features/battle/scene/unit-rig.unit.test.ts",
-    " M apps/web/src/features/battle/scene/units.tsx",
-    " M apps/web/src/features/battle/use-battle.ts",
     " M apps/web/src/features/bazaar/components/bazaar-screen.tsx",
-    " M apps/web/src/features/campaign/components/campaign-hud.tsx",
-    " M apps/web/src/features/campaign/components/campaign-screen.tsx",
-    " M apps/web/src/features/campaign/components/region-story.tsx",
-    " M apps/web/src/features/campaign/components/stage-panel.tsx",
-    " M apps/web/src/features/campaign/story-scenes.ts",
-    " M apps/web/src/features/campaign/story-scenes.unit.test.ts",
-    " M apps/web/src/features/hero/components/gear-item.tsx",
     " M apps/web/src/features/hero/components/hero-portrait.tsx",
     " M apps/web/src/features/hero/components/hero-screen.tsx",
-    " M apps/web/src/features/hero/hero-portrait-art.ts",
-    " M apps/web/src/features/hero/hero-portrait-art.unit.test.ts",
-    " M apps/web/src/features/replay/replay-link.ts",
-    " M apps/web/src/features/replay/replay-link.unit.test.ts",
-    " M apps/web/src/features/replay/replay.ts",
-    " M apps/web/src/features/replay/replay.unit.test.ts",
-    " M apps/web/src/master-design/showcases/unit-model-stage.tsx",
-    " M apps/web/src/master-design/showcases/unit-model.tsx",
-    " M apps/web/src/sw.ts",
+    " D apps/web/src/features/hero/hero-model-feature.ts",
+    " D apps/web/src/features/hero/hero-model-feature.unit.test.ts",
     " M apps/web/src/vite-env.d.ts",
-    " M apps/web/vite.config.ts",
-    " M bun.lock",
-    " M docs/accessibility/wcag-contrast-audit-2026-10-25.md",
-    " M docs/adr/0052-a-player-uses-one-cosmetic-for-each-family.md",
-    " M docs/game/03-game-design.md",
-    " M docs/game/04-prd.md",
-    " M docs/game/05-art-direction.md",
-    " M docs/game/06-technical-design.md",
-    " M docs/game/10-card-concepts.md",
-    " M docs/game/17-hero-portrait-concepts.md",
-    " M docs/game/19-gear-look-concepts.md",
-    " M docs/game/README.md",
+    " M artifacts/hero-model-evidence.md",
+    " M docs/game/battle-budgets.md",
+    " M docs/game/hero-models.md",
     " M docs/game/performance.md",
-    " M docs/game/region-story-scenes.md",
-    " M oxfmt.config.ts",
-    " M oxlint.config.ts",
+    " M docs/game/release-checklist.md",
     " M package.json",
-    " M packages/rules/src/index.ts",
-    " M scripts/pack-unit-model.ts",
-    " M scripts/unit-model/__pycache__/unit_model_kit.cpython-313.pyc",
-    "?? apps/web/art/heroes/",
-    "?? apps/web/docs/adr/0016-a-hero-portrait-defines-a-person-and-the-gear-look-dresses-it.md",
-    "?? apps/web/docs/adr/0017-a-replay-keeps-the-original-hero-appearance.md",
-    "?? apps/web/docs/adr/0018-battle-budgets-allow-larger-unit-models.md",
-    "?? apps/web/docs/adr/0019-published-3d-models-are-compressed-artifacts.md",
-    "?? apps/web/e2e/battle-assets.spec.ts",
-    "?? apps/web/e2e/hero-model-offline.spec.ts",
-    "?? apps/web/e2e/hero-model-references.spec.ts",
-    "?? apps/web/e2e/hero-model.spec.ts",
-    "?? apps/web/public/decoders/",
-    "?? apps/web/public/hero-portraits/standard.webp",
-    "?? apps/web/public/models/heroes/",
-    "?? apps/web/public/models/units/restless-wisp.glb",
-    "?? apps/web/public/models/units/skeleton.glb",
-    "?? apps/web/public/story/hollow-marches/",
-    "?? apps/web/public/story/thornwood/",
-    "?? apps/web/scripts/battle-budget-assets.ts",
-    "?? apps/web/scripts/battle-budget-config.ts",
-    "?? apps/web/scripts/battle-budget-files.ts",
-    "?? apps/web/scripts/battle-budget-graph.ts",
-    "?? apps/web/scripts/battle-budget/",
-    "?? apps/web/scripts/battle-build-graph.ts",
-    "?? apps/web/scripts/measure-battle-budget.ts",
-    "?? apps/web/scripts/model-contract.ts",
-    "?? apps/web/scripts/unit-model-contract.ts",
-    "?? apps/web/src/features/battle/battle-budget.unit.test.ts",
-    "?? apps/web/src/features/battle/battle-model-progress.ts",
-    "?? apps/web/src/features/battle/battle-preload.ts",
-    "?? apps/web/src/features/battle/battle-preload.unit.test.ts",
-    "?? apps/web/src/features/battle/health.ts",
-    "?? apps/web/src/features/battle/health.unit.test.ts",
-    "?? apps/web/src/features/battle/scene/gltf-loader.ts",
-    "?? apps/web/src/features/battle/scene/gltf-loader.unit.test.ts",
-    "?? apps/web/src/features/battle/scene/hero-animation.ts",
-    "?? apps/web/src/features/battle/scene/hero-animation.unit.test.ts",
-    "?? apps/web/src/features/battle/scene/hero-clips.ts",
-    "?? apps/web/src/features/battle/scene/hero-model-body.tsx",
-    "?? apps/web/src/features/battle/scene/hero-rig.ts",
-    "?? apps/web/src/features/battle/scene/hero-rig.unit.test.ts",
-    "?? apps/web/src/features/battle/scene/published-models.unit.test.ts",
-    "?? apps/web/src/features/battle/scene/unit-model-pack.unit.test.ts",
-    "?? apps/web/src/features/battle/scene/use-unit-model.ts",
-    "?? apps/web/src/features/battle/use-battle-models.ts",
-    "?? apps/web/src/features/hero/components/hero-model-canvas.tsx",
-    "?? apps/web/src/features/hero/components/hero-model-preview.tsx",
-    "?? apps/web/src/features/hero/components/model-error-boundary.tsx",
-    "?? apps/web/src/features/hero/hero-model-assets.ts",
-    "?? apps/web/src/features/hero/hero-model-assets.unit.test.ts",
-    "?? apps/web/src/features/hero/hero-model-budget.unit.test.ts",
-    "?? apps/web/src/features/hero/hero-model-feature.ts",
-    "?? apps/web/src/features/hero/hero-model-feature.unit.test.ts",
-    "?? apps/web/src/features/hero/hero-model-loader.ts",
-    "?? apps/web/src/features/hero/hero-model-loader.unit.test.ts",
-    "?? apps/web/src/features/hero/hero-model-pack.unit.test.ts",
-    "?? apps/web/src/features/hero/hero-model.atoms.ts",
-    "?? artifacts/battle-assets-e2e.log",
-    "?? artifacts/battle-atlas-phone.png",
-    "?? artifacts/battle-budget-build.log",
-    "?? artifacts/battle-budget.json",
-    "?? artifacts/battle-model-fallback.png",
-    "?? artifacts/battle-models-phone.png",
-    "?? artifacts/battle-pwa-check.log",
-    "?? artifacts/final-evidence.md",
-    "?? artifacts/game-progress.md",
-    "?? artifacts/hero-model-evidence.md",
-    "?? docs/game/battle-budget-2026-10-31.json",
-    "?? docs/game/battle-budgets.md",
-    "?? docs/game/battle-music-optimization.md",
-    "?? docs/game/hero-model-sizes-2026-10-31.json",
-    "?? docs/game/hero-models.md",
-    "?? docs/game/hollow-marches-storyboard.md",
-    "?? docs/game/release-checklist.md",
-    "?? docs/game/thornwood-storyboard.md",
-    "?? scripts/campaign-story/hollow-marches/",
-    "?? scripts/campaign-story/thornwood/",
-    "?? scripts/hero-model/",
-    "?? scripts/model-gltf.ts",
-    "?? scripts/music/",
-    "?? scripts/pack-hero-model.ts",
-    "?? scripts/unit-model/README.md",
-    "?? scripts/unit-model/model-check.test.ts",
-    "?? scripts/unit-model/model-check.ts",
-    "?? scripts/unit-model/record-contracts.ts",
-    "?? scripts/unit-model/restless-wisp.py",
-    "?? scripts/unit-model/skeleton.py",
-    "?? scripts/unit-model/source-contracts.json"
+    " M scripts/hero-model/README.md",
+    "?? apps/web/art/heroes/source/hero-models-v4.blend",
+    "?? apps/web/art/heroes/source/hero-reference-review.blend",
+    "?? apps/web/art/heroes/source/hero-reference-v2.blend",
+    "?? apps/web/art/heroes/source/hero-reference-v3.blend",
+    "?? apps/web/src/features/hero/hero-model.atoms.unit.test.ts"
   ],
   "build": "bun web build (Vite production / Nitro node-server)",
   "buildConfiguration": {
     "mode": "production",
     "base": "/",
-    "e2e": "",
-    "heroModels": "1",
-    "heroModelPreview": ""
+    "e2e": ""
   },
   "node": "v26.3.0",
   "bun": "1.4.2",
-  "buildGraphSha256": "3c7b3f33e771e0c8eb7058fada27503732fded1bdf6022d25f0cd3f989617d16",
-  "playHtmlSha256": "5c36222b2ef627dd608876bc7238d24a5ad98d28eef2b355ecf181f1f6c08da8",
+  "buildGraphSha256": "803d411a398b0606908ee3b56fdf06bc6f4c841290b6abbb3a9841733fd45347",
+  "playHtmlSha256": "563fb0d4b78468c64bf111a0e0d61dea0d3419d3986dd2572fc13b107145ac3b",
   "rules": [
     "Decimal bytes. Assets < 50,000,000 published bytes before HTTP compression; warm cache gives no credit.",
     "Both Decks, each start Unit, possible Tokens and Boss Rule summons, selected appearance/cosmetics, original card art, every Unit Model, painting, FX and music; shared URLs count once.",
     "Read both result stings and count only the larger one. Missing required assets fail.",
     "JavaScript < 5,000,000 bytes, gzip level 9, once per distinct emitted chunk. Exclude the initial /play static graph from this same build; stop at loaded chunks before following Battle lazy edges.",
     "Meshopt decoder JavaScript is embedded in the loader chunks. Current vertex-colored Unit GLBs need no external texture decoder assets. External model images/buffers count when present.",
-    "Hero models are controlled by the explicit feature input; the separate appearance ceiling is at most 10,000,000 bytes. Production activation uses VITE_HERO_MODELS=1; the preview flag is for local review."
+    "Hero Models are always enabled. The separate appearance ceiling is at most 10,000,000 bytes."
   ],
   "results": [
     {
@@ -505,10 +262,10 @@
             "sha256": "b3f9946f6bb79fffc2a4f9a6f2bf71fbb6e5453dbb9596f42ff385741a9843bc"
           },
           {
-            "url": "/assets/battle-canvas-BSwtvaw8.js",
-            "bytes": 130055,
-            "gzip": 49941,
-            "sha256": "41fc42be380ab89ff6278d0bffca6dbf4af8e718368bae1ddd07cae8dd41069d"
+            "url": "/assets/battle-canvas-DlLJ1_b-.js",
+            "bytes": 129986,
+            "gzip": 49916,
+            "sha256": "f66e779bc39d3e3204b1aca62f7464647a63300ed4663d95efd28f4822b10271"
           },
           {
             "url": "/assets/battle-painting-D9nCdkE0.js",
@@ -517,16 +274,16 @@
             "sha256": "f561eb33a68a26f3412e4bd07bc11f88a02feeb95f537c3b4579b007dc642c21"
           },
           {
-            "url": "/assets/battle-preload-EzpE0Bpw.js",
+            "url": "/assets/battle-preload-aSdtuMxU.js",
             "bytes": 492,
-            "gzip": 319,
-            "sha256": "f63e7866ccee1bbc82871c513b48ddd78c2b211fc10e3bcea86a3e18cf27668f"
+            "gzip": 317,
+            "sha256": "28f2be873d12005823d4236ccbad424cb50279281d063d2ecdc76f6bd99bdb78"
           },
           {
-            "url": "/assets/battle-stage-CKQiFzlR.js",
-            "bytes": 121449,
-            "gzip": 38578,
-            "sha256": "7a298285702ed9fa28eae427b08dc59b54c2f834a13b34cf38f60f54011d1d99"
+            "url": "/assets/battle-stage-Dz1U7kEV.js",
+            "bytes": 121399,
+            "gzip": 38552,
+            "sha256": "1b956177aed33fa5da614981a3719c291a37586686460320e7a97a9620b8ad5a"
           },
           {
             "url": "/assets/board-skin-art-Bpl72NkI.js",
@@ -541,28 +298,28 @@
             "sha256": "95b2a2b6cdc9c322e2e289beda6e18460140f3c3948f279132ce09754bedb13a"
           },
           {
-            "url": "/assets/card-back-BtprqABX.js",
+            "url": "/assets/card-back-BKW24Y3L.js",
             "bytes": 2594,
-            "gzip": 1183,
-            "sha256": "0d51495efacb20c5d061da7a51650429f717acc7ce38bdbfebcb65ade8da2e5e"
+            "gzip": 1184,
+            "sha256": "9c22f6b32fddbecbf0856884cc350489efe34188a3f252db138cd752688a6d5c"
           },
           {
-            "url": "/assets/card-frame-TdVTl45l.js",
+            "url": "/assets/card-frame-CFEc1TUA.js",
             "bytes": 31291,
             "gzip": 10634,
-            "sha256": "5103eb4751f718455a21eada367ae9af75eda0e9553dc03008169bad8834a090"
+            "sha256": "344eb4da7dc1aef68d17f4927af0e395d86712eddee04558c9df1c3baa813bda"
           },
           {
-            "url": "/assets/forge-stone-icon-B0jdd6IN.js",
+            "url": "/assets/forge-stone-icon-CQqnrIgD.js",
             "bytes": 2239,
-            "gzip": 1103,
-            "sha256": "fe7bfb0667d5115bf27609b97e78807bab4b310342c44774146d6c9fbd8b4944"
+            "gzip": 1104,
+            "sha256": "7c2c21641af0b7a3ceee22adefcdaa7b89e049996c959fd7b31725d423b8fbb9"
           },
           {
-            "url": "/assets/game-dialog-CKHgK-LC.js",
+            "url": "/assets/game-dialog-B8hfjJC-.js",
             "bytes": 5585,
-            "gzip": 1806,
-            "sha256": "1fb07bee65a4dcfca508c6d4498a3f9867bee322703f8507e6dec9f840e5c52f"
+            "gzip": 1805,
+            "sha256": "451b4799064b090a3a27e15605efbc649253235957ca39ffdafcc91f11ba46ac"
           },
           {
             "url": "/assets/gltf-loader-Bj5S_nGh.js",
@@ -583,22 +340,22 @@
             "sha256": "d8b60581e0b72be7b9aa56b19f0c08615debe069742dce83c9402e6140722151"
           },
           {
-            "url": "/assets/hero-model-body-BgjzSLLx.js",
+            "url": "/assets/hero-model-body-C0YtptkH.js",
             "bytes": 3516,
-            "gzip": 1793,
-            "sha256": "ef4cf679f1fd2f2a891e70ec4c6f4b2786940f1ec8c248ab163f11e8dfaf6341"
+            "gzip": 1797,
+            "sha256": "f2c68b143fd3cbec5a6e2ecb8f3218837409a0c79c729e176ac756e1e6797e2b"
           },
           {
-            "url": "/assets/hero-model-loader-DifMeeLR.js",
+            "url": "/assets/hero-model-loader-D_N1lOzc.js",
             "bytes": 983,
-            "gzip": 573,
-            "sha256": "a68c43e0a6d433bd691ede53ac01bf563e7595d3de84536a3f7ea6aa5ade531b"
+            "gzip": 572,
+            "sha256": "622f8aa290de537e0c092135dee24e0ed99becfb23a3591bb717aadedb6ffd3d"
           },
           {
-            "url": "/assets/hero-portrait-CX2zFS71.js",
-            "bytes": 1972,
-            "gzip": 1067,
-            "sha256": "eb5662bf9ee5c3ceb97d6776ce87549359b56b64608a4d93b7db971c0567e568"
+            "url": "/assets/hero-portrait-CknwtTlL.js",
+            "bytes": 1866,
+            "gzip": 1005,
+            "sha256": "71e8be3d15a743958f445e5032d3a374bc46b3568da7375b2b7780f9e9e0b8c9"
           },
           {
             "url": "/assets/hero-portrait-art-C5maVh9d.js",
@@ -607,10 +364,10 @@
             "sha256": "5cc4e205b8e5055d2113d55ab209bc8be78f5a53a7091c70f8bf48ab51db91aa"
           },
           {
-            "url": "/assets/heynspire.atoms-BjBAuRzf.js",
+            "url": "/assets/heynspire.atoms-ByrELkoc.js",
             "bytes": 110,
             "gzip": 105,
-            "sha256": "8a95a49e3f1a3638a6ef351d927d490e856d161ace624d1858d1dbfdc2549572"
+            "sha256": "4cf3620e9d98e1729a10b9e2acb9a8dd229b3a10d6b838f61471b1ec7b718ad6"
           },
           {
             "url": "/assets/model-error-boundary-2xUi5_y7.js",
@@ -619,16 +376,16 @@
             "sha256": "c5dcb8b8d9dc7024e3ffc115e7e3381cd783a80ea32e2c428bb2ca03f83a405e"
           },
           {
-            "url": "/assets/react-three-fiber.esm-5ipT5uLq.js",
+            "url": "/assets/react-three-fiber.esm-D25HElLj.js",
             "bytes": 540819,
             "gzip": 142874,
-            "sha256": "17adfd1dd5a04740ea0f085b7e623a59e1ebf39321c0debe9c8e7bd8ff05e000"
+            "sha256": "9b0e172016e1c13f0d873240e33cf3815365d92b6eb4c518278950fa4d48192c"
           },
           {
-            "url": "/assets/result-rewards-BwtBK0k4.js",
+            "url": "/assets/result-rewards-BNaCYt3K.js",
             "bytes": 14533,
             "gzip": 5248,
-            "sha256": "af78cc6c956fae836dc31f8dec987fda6131c54a90afe9ae4cb70c13cec6f364"
+            "sha256": "d91b994c2f6309b94f31b99716491a9f8ef66d1fc4d9b12b182cf1df8587d436"
           },
           {
             "url": "/assets/status-visuals-RcqeGPSm.js",
@@ -655,16 +412,16 @@
             "sha256": "6d6db7060fefdadece4375756561205ed0e9d1404a64af1faa05fe588b6e9308"
           },
           {
-            "url": "/assets/unit-rig-C4pRYFSh.js",
+            "url": "/assets/unit-rig-DwDF19NV.js",
             "bytes": 19954,
-            "gzip": 7892,
-            "sha256": "0474f383c376e0adb7e9a5e200693d6adffd6dbad4e543dce6cac17ebf7eaf1c"
+            "gzip": 7890,
+            "sha256": "f02b59104f6c3ac9fa0c85588885f1a6b64b0aa09a9fc8b326339bf03787582e"
           },
           {
-            "url": "/assets/use-card-peek-B_IbknYo.js",
+            "url": "/assets/use-card-peek-Czfzbr_b.js",
             "bytes": 34341,
             "gzip": 12232,
-            "sha256": "13080ff5095b86f180f21f73b3101e77b2c55077752de30caf87fe7b4ef77ab9"
+            "sha256": "263f9b98063070443519afb996492000275a6582cb0db136cbce3b0a695d735d"
           },
           {
             "url": "/assets/useMediaQuery-BRutXKoe.js",
@@ -673,7 +430,7 @@
             "sha256": "a3008f1348b7a579021004da28c405b4de0f077eeb88a4da9088e144db08dce2"
           }
         ],
-        "gzip": 402102
+        "gzip": 401989
       },
       "pass": true
     },
@@ -1207,10 +964,10 @@
             "sha256": "b3f9946f6bb79fffc2a4f9a6f2bf71fbb6e5453dbb9596f42ff385741a9843bc"
           },
           {
-            "url": "/assets/battle-canvas-BSwtvaw8.js",
-            "bytes": 130055,
-            "gzip": 49941,
-            "sha256": "41fc42be380ab89ff6278d0bffca6dbf4af8e718368bae1ddd07cae8dd41069d"
+            "url": "/assets/battle-canvas-DlLJ1_b-.js",
+            "bytes": 129986,
+            "gzip": 49916,
+            "sha256": "f66e779bc39d3e3204b1aca62f7464647a63300ed4663d95efd28f4822b10271"
           },
           {
             "url": "/assets/battle-painting-D9nCdkE0.js",
@@ -1219,16 +976,16 @@
             "sha256": "f561eb33a68a26f3412e4bd07bc11f88a02feeb95f537c3b4579b007dc642c21"
           },
           {
-            "url": "/assets/battle-preload-EzpE0Bpw.js",
+            "url": "/assets/battle-preload-aSdtuMxU.js",
             "bytes": 492,
-            "gzip": 319,
-            "sha256": "f63e7866ccee1bbc82871c513b48ddd78c2b211fc10e3bcea86a3e18cf27668f"
+            "gzip": 317,
+            "sha256": "28f2be873d12005823d4236ccbad424cb50279281d063d2ecdc76f6bd99bdb78"
           },
           {
-            "url": "/assets/battle-stage-CKQiFzlR.js",
-            "bytes": 121449,
-            "gzip": 38578,
-            "sha256": "7a298285702ed9fa28eae427b08dc59b54c2f834a13b34cf38f60f54011d1d99"
+            "url": "/assets/battle-stage-Dz1U7kEV.js",
+            "bytes": 121399,
+            "gzip": 38552,
+            "sha256": "1b956177aed33fa5da614981a3719c291a37586686460320e7a97a9620b8ad5a"
           },
           {
             "url": "/assets/board-skin-art-Bpl72NkI.js",
@@ -1243,28 +1000,28 @@
             "sha256": "95b2a2b6cdc9c322e2e289beda6e18460140f3c3948f279132ce09754bedb13a"
           },
           {
-            "url": "/assets/card-back-BtprqABX.js",
+            "url": "/assets/card-back-BKW24Y3L.js",
             "bytes": 2594,
-            "gzip": 1183,
-            "sha256": "0d51495efacb20c5d061da7a51650429f717acc7ce38bdbfebcb65ade8da2e5e"
+            "gzip": 1184,
+            "sha256": "9c22f6b32fddbecbf0856884cc350489efe34188a3f252db138cd752688a6d5c"
           },
           {
-            "url": "/assets/card-frame-TdVTl45l.js",
+            "url": "/assets/card-frame-CFEc1TUA.js",
             "bytes": 31291,
             "gzip": 10634,
-            "sha256": "5103eb4751f718455a21eada367ae9af75eda0e9553dc03008169bad8834a090"
+            "sha256": "344eb4da7dc1aef68d17f4927af0e395d86712eddee04558c9df1c3baa813bda"
           },
           {
-            "url": "/assets/forge-stone-icon-B0jdd6IN.js",
+            "url": "/assets/forge-stone-icon-CQqnrIgD.js",
             "bytes": 2239,
-            "gzip": 1103,
-            "sha256": "fe7bfb0667d5115bf27609b97e78807bab4b310342c44774146d6c9fbd8b4944"
+            "gzip": 1104,
+            "sha256": "7c2c21641af0b7a3ceee22adefcdaa7b89e049996c959fd7b31725d423b8fbb9"
           },
           {
-            "url": "/assets/game-dialog-CKHgK-LC.js",
+            "url": "/assets/game-dialog-B8hfjJC-.js",
             "bytes": 5585,
-            "gzip": 1806,
-            "sha256": "1fb07bee65a4dcfca508c6d4498a3f9867bee322703f8507e6dec9f840e5c52f"
+            "gzip": 1805,
+            "sha256": "451b4799064b090a3a27e15605efbc649253235957ca39ffdafcc91f11ba46ac"
           },
           {
             "url": "/assets/gltf-loader-Bj5S_nGh.js",
@@ -1285,22 +1042,22 @@
             "sha256": "d8b60581e0b72be7b9aa56b19f0c08615debe069742dce83c9402e6140722151"
           },
           {
-            "url": "/assets/hero-model-body-BgjzSLLx.js",
+            "url": "/assets/hero-model-body-C0YtptkH.js",
             "bytes": 3516,
-            "gzip": 1793,
-            "sha256": "ef4cf679f1fd2f2a891e70ec4c6f4b2786940f1ec8c248ab163f11e8dfaf6341"
+            "gzip": 1797,
+            "sha256": "f2c68b143fd3cbec5a6e2ecb8f3218837409a0c79c729e176ac756e1e6797e2b"
           },
           {
-            "url": "/assets/hero-model-loader-DifMeeLR.js",
+            "url": "/assets/hero-model-loader-D_N1lOzc.js",
             "bytes": 983,
-            "gzip": 573,
-            "sha256": "a68c43e0a6d433bd691ede53ac01bf563e7595d3de84536a3f7ea6aa5ade531b"
+            "gzip": 572,
+            "sha256": "622f8aa290de537e0c092135dee24e0ed99becfb23a3591bb717aadedb6ffd3d"
           },
           {
-            "url": "/assets/hero-portrait-CX2zFS71.js",
-            "bytes": 1972,
-            "gzip": 1067,
-            "sha256": "eb5662bf9ee5c3ceb97d6776ce87549359b56b64608a4d93b7db971c0567e568"
+            "url": "/assets/hero-portrait-CknwtTlL.js",
+            "bytes": 1866,
+            "gzip": 1005,
+            "sha256": "71e8be3d15a743958f445e5032d3a374bc46b3568da7375b2b7780f9e9e0b8c9"
           },
           {
             "url": "/assets/hero-portrait-art-C5maVh9d.js",
@@ -1309,10 +1066,10 @@
             "sha256": "5cc4e205b8e5055d2113d55ab209bc8be78f5a53a7091c70f8bf48ab51db91aa"
           },
           {
-            "url": "/assets/heynspire.atoms-BjBAuRzf.js",
+            "url": "/assets/heynspire.atoms-ByrELkoc.js",
             "bytes": 110,
             "gzip": 105,
-            "sha256": "8a95a49e3f1a3638a6ef351d927d490e856d161ace624d1858d1dbfdc2549572"
+            "sha256": "4cf3620e9d98e1729a10b9e2acb9a8dd229b3a10d6b838f61471b1ec7b718ad6"
           },
           {
             "url": "/assets/model-error-boundary-2xUi5_y7.js",
@@ -1321,16 +1078,16 @@
             "sha256": "c5dcb8b8d9dc7024e3ffc115e7e3381cd783a80ea32e2c428bb2ca03f83a405e"
           },
           {
-            "url": "/assets/react-three-fiber.esm-5ipT5uLq.js",
+            "url": "/assets/react-three-fiber.esm-D25HElLj.js",
             "bytes": 540819,
             "gzip": 142874,
-            "sha256": "17adfd1dd5a04740ea0f085b7e623a59e1ebf39321c0debe9c8e7bd8ff05e000"
+            "sha256": "9b0e172016e1c13f0d873240e33cf3815365d92b6eb4c518278950fa4d48192c"
           },
           {
-            "url": "/assets/result-rewards-BwtBK0k4.js",
+            "url": "/assets/result-rewards-BNaCYt3K.js",
             "bytes": 14533,
             "gzip": 5248,
-            "sha256": "af78cc6c956fae836dc31f8dec987fda6131c54a90afe9ae4cb70c13cec6f364"
+            "sha256": "d91b994c2f6309b94f31b99716491a9f8ef66d1fc4d9b12b182cf1df8587d436"
           },
           {
             "url": "/assets/status-visuals-RcqeGPSm.js",
@@ -1357,16 +1114,16 @@
             "sha256": "6d6db7060fefdadece4375756561205ed0e9d1404a64af1faa05fe588b6e9308"
           },
           {
-            "url": "/assets/unit-rig-C4pRYFSh.js",
+            "url": "/assets/unit-rig-DwDF19NV.js",
             "bytes": 19954,
-            "gzip": 7892,
-            "sha256": "0474f383c376e0adb7e9a5e200693d6adffd6dbad4e543dce6cac17ebf7eaf1c"
+            "gzip": 7890,
+            "sha256": "f02b59104f6c3ac9fa0c85588885f1a6b64b0aa09a9fc8b326339bf03787582e"
           },
           {
-            "url": "/assets/use-card-peek-B_IbknYo.js",
+            "url": "/assets/use-card-peek-Czfzbr_b.js",
             "bytes": 34341,
             "gzip": 12232,
-            "sha256": "13080ff5095b86f180f21f73b3101e77b2c55077752de30caf87fe7b4ef77ab9"
+            "sha256": "263f9b98063070443519afb996492000275a6582cb0db136cbce3b0a695d735d"
           },
           {
             "url": "/assets/useMediaQuery-BRutXKoe.js",
@@ -1375,7 +1132,7 @@
             "sha256": "a3008f1348b7a579021004da28c405b4de0f077eeb88a4da9088e144db08dce2"
           }
         ],
-        "gzip": 402102
+        "gzip": 401989
       },
       "pass": true
     },
@@ -1915,10 +1672,10 @@
             "sha256": "b3f9946f6bb79fffc2a4f9a6f2bf71fbb6e5453dbb9596f42ff385741a9843bc"
           },
           {
-            "url": "/assets/battle-canvas-BSwtvaw8.js",
-            "bytes": 130055,
-            "gzip": 49941,
-            "sha256": "41fc42be380ab89ff6278d0bffca6dbf4af8e718368bae1ddd07cae8dd41069d"
+            "url": "/assets/battle-canvas-DlLJ1_b-.js",
+            "bytes": 129986,
+            "gzip": 49916,
+            "sha256": "f66e779bc39d3e3204b1aca62f7464647a63300ed4663d95efd28f4822b10271"
           },
           {
             "url": "/assets/battle-painting-D9nCdkE0.js",
@@ -1927,16 +1684,16 @@
             "sha256": "f561eb33a68a26f3412e4bd07bc11f88a02feeb95f537c3b4579b007dc642c21"
           },
           {
-            "url": "/assets/battle-preload-EzpE0Bpw.js",
+            "url": "/assets/battle-preload-aSdtuMxU.js",
             "bytes": 492,
-            "gzip": 319,
-            "sha256": "f63e7866ccee1bbc82871c513b48ddd78c2b211fc10e3bcea86a3e18cf27668f"
+            "gzip": 317,
+            "sha256": "28f2be873d12005823d4236ccbad424cb50279281d063d2ecdc76f6bd99bdb78"
           },
           {
-            "url": "/assets/battle-stage-CKQiFzlR.js",
-            "bytes": 121449,
-            "gzip": 38578,
-            "sha256": "7a298285702ed9fa28eae427b08dc59b54c2f834a13b34cf38f60f54011d1d99"
+            "url": "/assets/battle-stage-Dz1U7kEV.js",
+            "bytes": 121399,
+            "gzip": 38552,
+            "sha256": "1b956177aed33fa5da614981a3719c291a37586686460320e7a97a9620b8ad5a"
           },
           {
             "url": "/assets/board-skin-art-Bpl72NkI.js",
@@ -1951,28 +1708,28 @@
             "sha256": "95b2a2b6cdc9c322e2e289beda6e18460140f3c3948f279132ce09754bedb13a"
           },
           {
-            "url": "/assets/card-back-BtprqABX.js",
+            "url": "/assets/card-back-BKW24Y3L.js",
             "bytes": 2594,
-            "gzip": 1183,
-            "sha256": "0d51495efacb20c5d061da7a51650429f717acc7ce38bdbfebcb65ade8da2e5e"
+            "gzip": 1184,
+            "sha256": "9c22f6b32fddbecbf0856884cc350489efe34188a3f252db138cd752688a6d5c"
           },
           {
-            "url": "/assets/card-frame-TdVTl45l.js",
+            "url": "/assets/card-frame-CFEc1TUA.js",
             "bytes": 31291,
             "gzip": 10634,
-            "sha256": "5103eb4751f718455a21eada367ae9af75eda0e9553dc03008169bad8834a090"
+            "sha256": "344eb4da7dc1aef68d17f4927af0e395d86712eddee04558c9df1c3baa813bda"
           },
           {
-            "url": "/assets/forge-stone-icon-B0jdd6IN.js",
+            "url": "/assets/forge-stone-icon-CQqnrIgD.js",
             "bytes": 2239,
-            "gzip": 1103,
-            "sha256": "fe7bfb0667d5115bf27609b97e78807bab4b310342c44774146d6c9fbd8b4944"
+            "gzip": 1104,
+            "sha256": "7c2c21641af0b7a3ceee22adefcdaa7b89e049996c959fd7b31725d423b8fbb9"
           },
           {
-            "url": "/assets/game-dialog-CKHgK-LC.js",
+            "url": "/assets/game-dialog-B8hfjJC-.js",
             "bytes": 5585,
-            "gzip": 1806,
-            "sha256": "1fb07bee65a4dcfca508c6d4498a3f9867bee322703f8507e6dec9f840e5c52f"
+            "gzip": 1805,
+            "sha256": "451b4799064b090a3a27e15605efbc649253235957ca39ffdafcc91f11ba46ac"
           },
           {
             "url": "/assets/gltf-loader-Bj5S_nGh.js",
@@ -1993,22 +1750,22 @@
             "sha256": "d8b60581e0b72be7b9aa56b19f0c08615debe069742dce83c9402e6140722151"
           },
           {
-            "url": "/assets/hero-model-body-BgjzSLLx.js",
+            "url": "/assets/hero-model-body-C0YtptkH.js",
             "bytes": 3516,
-            "gzip": 1793,
-            "sha256": "ef4cf679f1fd2f2a891e70ec4c6f4b2786940f1ec8c248ab163f11e8dfaf6341"
+            "gzip": 1797,
+            "sha256": "f2c68b143fd3cbec5a6e2ecb8f3218837409a0c79c729e176ac756e1e6797e2b"
           },
           {
-            "url": "/assets/hero-model-loader-DifMeeLR.js",
+            "url": "/assets/hero-model-loader-D_N1lOzc.js",
             "bytes": 983,
-            "gzip": 573,
-            "sha256": "a68c43e0a6d433bd691ede53ac01bf563e7595d3de84536a3f7ea6aa5ade531b"
+            "gzip": 572,
+            "sha256": "622f8aa290de537e0c092135dee24e0ed99becfb23a3591bb717aadedb6ffd3d"
           },
           {
-            "url": "/assets/hero-portrait-CX2zFS71.js",
-            "bytes": 1972,
-            "gzip": 1067,
-            "sha256": "eb5662bf9ee5c3ceb97d6776ce87549359b56b64608a4d93b7db971c0567e568"
+            "url": "/assets/hero-portrait-CknwtTlL.js",
+            "bytes": 1866,
+            "gzip": 1005,
+            "sha256": "71e8be3d15a743958f445e5032d3a374bc46b3568da7375b2b7780f9e9e0b8c9"
           },
           {
             "url": "/assets/hero-portrait-art-C5maVh9d.js",
@@ -2017,10 +1774,10 @@
             "sha256": "5cc4e205b8e5055d2113d55ab209bc8be78f5a53a7091c70f8bf48ab51db91aa"
           },
           {
-            "url": "/assets/heynspire.atoms-BjBAuRzf.js",
+            "url": "/assets/heynspire.atoms-ByrELkoc.js",
             "bytes": 110,
             "gzip": 105,
-            "sha256": "8a95a49e3f1a3638a6ef351d927d490e856d161ace624d1858d1dbfdc2549572"
+            "sha256": "4cf3620e9d98e1729a10b9e2acb9a8dd229b3a10d6b838f61471b1ec7b718ad6"
           },
           {
             "url": "/assets/model-error-boundary-2xUi5_y7.js",
@@ -2029,16 +1786,16 @@
             "sha256": "c5dcb8b8d9dc7024e3ffc115e7e3381cd783a80ea32e2c428bb2ca03f83a405e"
           },
           {
-            "url": "/assets/react-three-fiber.esm-5ipT5uLq.js",
+            "url": "/assets/react-three-fiber.esm-D25HElLj.js",
             "bytes": 540819,
             "gzip": 142874,
-            "sha256": "17adfd1dd5a04740ea0f085b7e623a59e1ebf39321c0debe9c8e7bd8ff05e000"
+            "sha256": "9b0e172016e1c13f0d873240e33cf3815365d92b6eb4c518278950fa4d48192c"
           },
           {
-            "url": "/assets/result-rewards-BwtBK0k4.js",
+            "url": "/assets/result-rewards-BNaCYt3K.js",
             "bytes": 14533,
             "gzip": 5248,
-            "sha256": "af78cc6c956fae836dc31f8dec987fda6131c54a90afe9ae4cb70c13cec6f364"
+            "sha256": "d91b994c2f6309b94f31b99716491a9f8ef66d1fc4d9b12b182cf1df8587d436"
           },
           {
             "url": "/assets/status-visuals-RcqeGPSm.js",
@@ -2065,16 +1822,16 @@
             "sha256": "6d6db7060fefdadece4375756561205ed0e9d1404a64af1faa05fe588b6e9308"
           },
           {
-            "url": "/assets/unit-rig-C4pRYFSh.js",
+            "url": "/assets/unit-rig-DwDF19NV.js",
             "bytes": 19954,
-            "gzip": 7892,
-            "sha256": "0474f383c376e0adb7e9a5e200693d6adffd6dbad4e543dce6cac17ebf7eaf1c"
+            "gzip": 7890,
+            "sha256": "f02b59104f6c3ac9fa0c85588885f1a6b64b0aa09a9fc8b326339bf03787582e"
           },
           {
-            "url": "/assets/use-card-peek-B_IbknYo.js",
+            "url": "/assets/use-card-peek-Czfzbr_b.js",
             "bytes": 34341,
             "gzip": 12232,
-            "sha256": "13080ff5095b86f180f21f73b3101e77b2c55077752de30caf87fe7b4ef77ab9"
+            "sha256": "263f9b98063070443519afb996492000275a6582cb0db136cbce3b0a695d735d"
           },
           {
             "url": "/assets/useMediaQuery-BRutXKoe.js",
@@ -2083,7 +1840,7 @@
             "sha256": "a3008f1348b7a579021004da28c405b4de0f077eeb88a4da9088e144db08dce2"
           }
         ],
-        "gzip": 402102
+        "gzip": 401989
       },
       "pass": true
     }

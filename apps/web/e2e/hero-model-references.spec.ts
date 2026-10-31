@@ -1,5 +1,5 @@
 /* oxlint-disable promise/avoid-new -- IndexedDB uses event callbacks. */
-import { existsSync, mkdirSync } from "node:fs";
+import { mkdirSync } from "node:fs";
 import path from "node:path";
 
 import { newProfile } from "@workspace/rules";
@@ -8,24 +8,13 @@ import { expect, test } from "./_base";
 
 const raw = path.resolve("public/models/heroes");
 const evidence = path.resolve("art/heroes/raw/evidence");
-const names = [
-  "standard-standard",
-  "standard-gold-inlay",
-  "tent-rings-standard",
-  "tent-rings-gold-inlay",
-];
 
-// Route the local GLB fixtures through Playwright after the profile reload.
+// Route the published GLB fixtures through Playwright after the profile reload.
 test.use({ serviceWorkers: "block" });
 
 test("the first four appearances load in the shared Bazaar preview", async ({
   page,
 }) => {
-  test.skip(
-    process.env.VITE_HERO_MODEL_PREVIEW !== "1" ||
-      names.some((name) => !existsSync(path.join(raw, `${name}.glb`))),
-    "Publish the Hero Models and enable the local draft."
-  );
   test.setTimeout(90_000);
   await page.setViewportSize({ width: 1366, height: 768 });
   await page.route("**/models/heroes/*.glb", async (route) => {

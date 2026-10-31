@@ -5,9 +5,8 @@ pipeline builds all 8 people in all 7 Gear looks (56 appearances). The
 published runtime assets are the compressed GLBs in
 `apps/web/public/models/heroes` (27,713,416 bytes for all 56; the largest
 appearance is 536,656 bytes, under the 10,000,000-byte ceiling). The
-56-look art review and the reference-device performance checks are not
-complete. The 3D feature is off by default and turns on only with
-`VITE_HERO_MODELS=1` or the local preview flag.
+3D feature is enabled in all builds. The 56-look art review and the
+reference-device performance checks remain open evidence.
 
 Tracking issue: [#168 — Hero Models](https://github.com/rifandani/heynbord/issues/168).
 It contains all 22 decisions, acceptance criteria and the work checklist
@@ -145,6 +144,9 @@ The portrait and Gear selections remain separate.
     Review the first model references before producing the other models.
     Enable 3D Heroes when all eight models are ready.
 
+    The owner enabled 3D Heroes in all builds on 2026-10-31. The listed
+    checks remain required release evidence.
+
 ## Decision record and language
 
 [Web ADR-0016](../../apps/web/docs/adr/0016-a-hero-portrait-defines-a-person-and-the-gear-look-dresses-it.md)
@@ -192,7 +194,7 @@ The Hero Model art review is local evidence, not committed art approval:
 idle matrix. These paths are under the ignored raw-art folder. The same
 folder holds the Blender source files and the 56 raw exports.
 
-The browser checks use the local draft flag and a raw fixture:
+The browser checks use the published models:
 
 ```sh
 cd apps/web
@@ -228,11 +230,11 @@ Android frame-rate records.
 6. Check the action clips, pause, speed ×2, Skip, reduced motion, result
    poses, keyboard rotation, Reset View, compact landscape layout,
    preview/Buy/Use separation, loading errors, Retry and Replay fallback.
-   Enable 3D Heroes after all eight models pass their checks.
+   3D Heroes are enabled; complete the remaining checks.
 
-These checks are required before release. The local draft and its build
-instructions are in [scripts/hero-model](../../scripts/hero-model/README.md).
-The draft checks do not establish art approval or device performance.
+These checks are required release evidence. The build instructions are in
+[scripts/hero-model](../../scripts/hero-model/README.md). The checks do not
+establish art approval or device performance.
 
 ## Pre-implementation findings — round 2
 

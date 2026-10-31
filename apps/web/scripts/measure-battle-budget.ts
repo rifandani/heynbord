@@ -282,7 +282,7 @@ const main = async () => {
     "Read both result stings and count only the larger one. Missing required assets fail.",
     "JavaScript < 5,000,000 bytes, gzip level 9, once per distinct emitted chunk. Exclude the initial /play static graph from this same build; stop at loaded chunks before following Battle lazy edges.",
     "Meshopt decoder JavaScript is embedded in the loader chunks. Current vertex-colored Unit GLBs need no external texture decoder assets. External model images/buffers count when present.",
-    "Hero models are controlled by the explicit feature input; the separate appearance ceiling is at most 10,000,000 bytes. Production activation uses VITE_HERO_MODELS=1; the preview flag is for local review.",
+    "Hero Models are always enabled. The separate appearance ceiling is at most 10,000,000 bytes.",
   ];
   const record = {
     measuredAt: new Date().toISOString(),
@@ -296,8 +296,6 @@ const main = async () => {
           mode: Schema.String,
           base: Schema.String,
           e2e: Schema.String,
-          heroModels: Schema.String,
-          heroModelPreview: Schema.String,
         })
       )
     )(configurationBytes),

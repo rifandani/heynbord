@@ -208,19 +208,19 @@ The 5-type Unit Model selection and the Unit atlas pages in this record were
 removed on 2026-10-31. Its byte totals include assets that the current Battle
 no longer loads.
 
-- Measurement time: `2026-10-31T07:31:22.928Z` (UTC); 2026-10-31 in Asia/Jakarta.
+- Measurement time: `2026-10-31T07:44:01.610Z` (UTC); 2026-10-31 in Asia/Jakarta.
 - Build: commit `810b384b767f1bc7aefc1a5e7c6f28bd0e04aefe`, dirty working tree. The record includes the existing Story changes, the Hero Models and this implementation. It does not describe the unmodified commit.
-- Command: `bun check:battle-budget`. Run from the repository root. The command builds with `VITE_HERO_MODELS=1`, so the Hero chunk and the Hero-enabled fixture are measured. The flag is off in a normal build.
-- One production build serves all three fixtures: Vite production mode, Nitro node-server, base `/`, Node `v26.3.0`, Bun `1.4.2`. Public E2E and Hero preview flags are empty; `VITE_HERO_MODELS=1`.
+- Command: `bun check:battle-budget`. Run from the repository root. The command builds the production app with Hero Models enabled.
+- One production build serves all three fixtures: Vite production mode, Nitro node-server, base `/`, Node `v26.3.0`, Bun `1.4.2`. Public E2E flags are empty.
 - Stage 1-1: level 1, the valid 10-card Vanguard Starter Deck, Standard appearance, Board and Card Back. The measured set contains 19 distinct files.
 - Stage 5-10: level 30, the valid 15-card Vanguard Archetype plus one Epic Iron Bulwark, Gold Crest portrait, Royal Plate Gear look, Hollow Moon Board skin and Gold Fleur Card Back. The measured set contains 66 distinct files.
 - Stage 5-10 Hero: the same Battle with the Hero Model feature on, Dawn Gaze portrait and Iron Vine Gear look. This is the largest published appearance at 536,656 bytes. The measured set contains 67 distinct files.
 
 | Stage | Configuration | Asset bytes | Additional JavaScript, gzip level 9 | Result |
 | --- | --- | ---: | ---: | --- |
-| 1-1 | `stage-1-1-starter` | 3,507,253 | 402,102 | PASS |
-| 5-10 | `stage-5-10-late` | 11,693,533 | 402,102 | PASS |
-| 5-10 | `stage-5-10-hero` | 12,230,067 | 402,102 | PASS |
+| 1-1 | `stage-1-1-starter` | 3,507,253 | 401,989 | PASS |
+| 5-10 | `stage-5-10-late` | 11,693,533 | 401,989 | PASS |
+| 5-10 | `stage-5-10-hero` | 12,230,067 | 401,989 | PASS |
 
 Count decimal published bytes before HTTP compression. Assets must total less
 than 50,000,000 bytes, and additional JavaScript must total less than 5,000,000
@@ -238,8 +238,8 @@ ceiling is 10,000,000 bytes; the largest appearance is 536,656 bytes.
 Read the production `/play` HTML and the emitted graph from this same build.
 Exclude the initial page graph, follow Battle lazy dependencies, and stop at
 already loaded chunks before following unrelated screen imports. Count mixed
-chunks conservatively, including retained optional Hero code. This is a
-reachable-graph total, not a measured browser transfer.
+chunks conservatively, including the Hero code that every Battle build now
+retains. This is a reachable-graph total, not a measured browser transfer.
 
 The [complete machine record](./battle-budget-2026-10-31.json) contains the
 configuration, selected model IDs, complete file lists, exact bytes, gzip

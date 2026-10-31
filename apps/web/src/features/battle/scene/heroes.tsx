@@ -28,7 +28,6 @@ import {
   loadedHeroPortrait,
 } from "@/features/battle/scene/textures";
 import { HIT_TINT, SCENE_WHITE } from "@/features/battle/tokens";
-import { HERO_MODELS_ENABLED } from "@/features/hero/hero-model-feature";
 
 const HeroModelBody = lazy(
   () => import("@/features/battle/scene/hero-model-body")
@@ -100,10 +99,9 @@ const HeroFigure = ({ side, hero }: HeroRef) => {
   const session = useAtomValue(shownSessionAtom);
   const classId = session?.view.sides[side].heroes[hero]?.classId ?? "warrior";
   const portrait = session?.options.appearance?.portrait ?? null;
-  // Only the Player Hero shows the Player's portrait; the enemy keeps its Class glyph.
+  // Only the Player Hero shows the Player's model and portrait; the enemy keeps its Class glyph.
   const shownPortrait = side === "player" ? portrait : null;
-  const showPortrait =
-    side === "player" && (shownPortrait !== null || HERO_MODELS_ENABLED);
+  const showPortrait = side === "player";
   const standee = useMemo(
     () => heroFigureTexture(side, classId),
     [side, classId]
@@ -213,7 +211,7 @@ const HeroFigure = ({ side, hero }: HeroRef) => {
         />
       </mesh>
       <group ref={pivot}>
-        {HERO_MODELS_ENABLED && side === "player" ? (
+        {side === "player" ? (
           <Suspense fallback={fallback}>
             <HeroModelBody
               appearance={

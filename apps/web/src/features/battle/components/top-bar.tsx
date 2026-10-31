@@ -23,7 +23,6 @@ import type { useBattle } from "@/features/battle/use-battle";
 import { useGameText } from "@/features/battle/use-game-text";
 import { useHandbook } from "@/features/handbook/use-handbook";
 import { heroModelUrl } from "@/features/hero/hero-model-assets";
-import { HERO_MODELS_ENABLED } from "@/features/hero/hero-model-feature";
 import {
   heroModelFailureAtom,
   heroModelRetryAtom,
@@ -224,11 +223,10 @@ export const TopBar = ({ battle }: { readonly battle: Battle }) => {
           active={yourTurn}
           portrait={session.options.appearance?.portrait ?? null}
         />
-        {HERO_MODELS_ENABLED &&
-        failed ===
-          heroModelUrl(
-            session.options.appearance ?? { portrait: null, gearLook: null }
-          ) ? (
+        {failed ===
+        heroModelUrl(
+          session.options.appearance ?? { portrait: null, gearLook: null }
+        ) ? (
           <GameButton
             intent="ghost"
             size="sm"

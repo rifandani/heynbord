@@ -1,6 +1,6 @@
 # Issue 168 evidence — Hero Models
 
-Status: implementation complete. Release activation and two human gates remain.
+Status: implementation complete and enabled in all builds. Two human gates remain.
 
 ## Assets
 
@@ -20,7 +20,7 @@ Status: implementation complete. Release activation and two human gates remain.
 - `bun typecheck`: web and rules pass.
 - `bun lint`: pass.
 - `bun test:hero` (Chromium, published fixtures): 6 tests pass. Covers 1366 × 768 and 844 × 390 layouts, focus and rotation, failed load and Retry, a playable Battle after model failure, four Bazaar appearances, and Service Worker reuse.
-- `bun check:battle-budget`: all 3 fixtures pass. Stage 1-1: 3,507,253 asset bytes. Stage 5-10: 11,693,533. Stage 5-10 with the largest Hero appearance: 12,230,067. Additional Battle JavaScript: 402,102 bytes gzip 9. Hero appearance: 536,656 bytes.
+- `bun check:battle-budget`: all 3 fixtures pass. Stage 1-1: 3,507,253 asset bytes. Stage 5-10: 11,693,533. Stage 5-10 with the largest Hero appearance: 12,230,067. Additional Battle JavaScript: 401,989 bytes gzip 9. Hero appearance: 536,656 bytes.
 - Record: [battle-budget-2026-10-31.json](../docs/game/battle-budget-2026-10-31.json).
 
 ## Screenshots
@@ -41,6 +41,6 @@ Status: implementation complete. Release activation and two human gates remain.
 
 ## Release state
 
-`HERO_MODELS_ENABLED` is off by default. A local development build uses `VITE_HERO_MODEL_PREVIEW=1`. A release build uses `VITE_HERO_MODELS=1` after the art and device gates pass.
+Hero Models are on in all builds. The remaining art review and reference-device checks are release evidence, not feature switches.
 
 The original 8,000,000-byte and six-rigged-model-type limits in the issue text were superseded by ADR-0018 and the accepted #169 decision. The 10,000,000-byte Hero ceiling and the 150-draw-call limit remain.
