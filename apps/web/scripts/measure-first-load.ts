@@ -261,9 +261,12 @@ const throttledOrigin = async (port: number, upstreamPort: number) => {
 };
 
 const coldRun = async (browser: Browser, url: string, warm: boolean) => {
+  // The Town shows a "turn to landscape" guard to a coarse pointer in
+  // portrait, so a portrait tap can never reach Settings. Measure the phone
+  // held sideways, which is the only orientation the game accepts (ADR-0014).
   const context = await browser.newContext({
-    viewport: { width: 412, height: 915 },
-    screen: { width: 412, height: 915 },
+    viewport: { width: 915, height: 412 },
+    screen: { width: 915, height: 412 },
     deviceScaleFactor: 2,
     isMobile: true,
     hasTouch: true,
@@ -382,7 +385,7 @@ const renderRecord = ({
 - Command (repository root): \`bun web measure:first-load\`. This removes the previous production output, builds the app, starts a compressed Nitro production origin, runs Chromium, writes this section, and stops both processes. Install the existing browser first with \`bun web test:install\` if needed.
 - Commit: \`${commit}\`. ${dirty ? "The build includes uncommitted changes (listed below); this is a working tree measurement." : "Clean working tree."}
 - Browser: Chromium ${browserVersion}, headless; host: ${platform()} ${release()}.
-- Device: emulated mid-range Android (Pixel 6a user agent), 412×915 CSS pixels, DPR 2, mobile touch, 4× CPU slowdown. The viewport stays in portrait.
+- Device: emulated mid-range Android (Pixel 6a user agent), 915×412 CSS pixels in landscape, DPR 2, mobile touch, 4× CPU slowdown. The game shows a landscape guard to a coarse pointer in portrait, so the measured phone is held sideways.
 - Network: Slow 4G, 1.6 Mbps down, 750 kbps up, 150 ms RTT, a local HTTP proxy adds 150 ms before response headers and limits response bodies to a shared 200,000 B/s download queue and request bodies to a shared 93,750 B/s upload queue. Both page and Service Worker traffic cross this origin. Headers and loopback overhead are extra; this is an emulated link.
 - Origin: ${origin}; entry: ${url} (direct navigation).
 - Cache: a new browser context and cleared HTTP cache for each cold run, with no prior storage or active Service Worker. New workers can install during the visit. Warm Load reuses the third context with its HTTP cache, storage and current Service Worker state. The worker status is recorded; an incomplete precache is not treated as ready.

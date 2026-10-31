@@ -8,7 +8,7 @@ The same problem applies to the word "interactive". A painted Town is not a usab
 
 - **Entry:** a direct First Load of `/play`. The landing page at `/` is not part of the game.
 - **Network:** Slow 4G: 1.6 Mbps down, 750 kbps up, 150 ms RTT. This is the profile that web.dev and Lighthouse call "4G".
-- **Device:** an emulated mid-range Android at 412×915, DPR 2, with a 4× CPU slowdown. NFR-01 already names a 2022 mid-range Android phone, so both records use the same device class.
+- **Device:** an emulated mid-range Android at 915×412 in landscape (a 412×915 phone held sideways), DPR 2, with a 4× CPU slowdown. NFR-01 already names a 2022 mid-range Android phone, so both records use the same device class. The game shows a "turn to landscape" guard to a coarse pointer in portrait, so a landscape viewport is the only one where a Player can reach a control.
 - **Cache:** a new browser context with an empty cache and no active Service Worker.
 - **Interactive:** the first tap on the Town Settings control opens the Settings dialog in 50 ms or less. The recorded value is the time from navigation start to that tap.
 - **Runs:** 3 First Loads. The record uses the median.
