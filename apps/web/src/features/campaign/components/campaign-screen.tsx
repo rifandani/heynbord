@@ -24,6 +24,7 @@ import {
 import {
   RegionStory,
   useBossStory,
+  useRegionStory,
 } from "@/features/campaign/components/region-story";
 import { StageMarker } from "@/features/campaign/components/stage-marker";
 import { StagePanel } from "@/features/campaign/components/stage-panel";
@@ -310,6 +311,7 @@ export const CampaignScreen = ({
   const ready = useAtomValue(profileReadyAtom);
   const results = useAtomValue(stageResultsAtom);
   const boss = useBossStory(region, onStart);
+  const story = useRegionStory(region, ready);
   const trail = useMemo(
     () => trailStages(STAGES, region, results),
     [region, results]
@@ -348,6 +350,11 @@ export const CampaignScreen = ({
       />
       <RegionBanner
         region={region}
+        story={
+          story.available.length > 0
+            ? { setTrigger: story.setTrigger, open: story.open }
+            : undefined
+        }
         onRegion={(next) => {
           setSelected(null);
           onRegion(next);
@@ -358,7 +365,7 @@ export const CampaignScreen = ({
         count={stars}
         total={regionStarTotal(trail)}
       />
-      {ready ? <RegionStory key={`story-${region}`} region={region} /> : null}
+      {ready ? <RegionStory region={region} story={story} /> : null}
       <StagePanel
         stop={panelStop}
         from={marker}

@@ -41,9 +41,13 @@
     {
       "file": "apps/web/src/features/town/town.ts",
       "exports": ["*"]
+    },
+    {
+      "file": "apps/web/src/features/hero/components/hero-model-preview.tsx",
+      "exports": ["HeroModelPreview"]
     }
   ],
-  "ignorePatterns": ["repos/**"],
+  "ignorePatterns": ["repos/**", "apps/web/public/**"],
   "overrides": [
     {
       "files": ["apps/web/**/components/ui/**"],
@@ -61,6 +65,7 @@
         "oxlint.config.ts",
         "stryker.config.mjs",
         "scripts/security/**",
+        "scripts/unit-model/**",
         "apps/web/scripts/**",
         "vitest.msw-setup.ts"
       ],
@@ -91,6 +96,7 @@
       "**/e2e/**",
       "apps/web/src/**/components/**",
       "apps/web/src/features/battle/scene/**",
+      "apps/web/public/**",
       "scripts/**",
       "apps/web/scripts/**",
       "packages/*/scripts/**",

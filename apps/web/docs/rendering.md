@@ -22,6 +22,6 @@
 
 Pages are network-first. The service worker keeps each page that the user opens. Offline, a page that the user did not open shows `public/offline.html`. A route that calls a server function in its `loader` does not work offline.
 
-The precache keeps only the app shell: the files in `assets/`, `offline.html` and the favicons. Do not add the game art to the precache. The service worker keeps each image from `public/creature/`, `public/skills/`, `public/town/`, `public/battle/` and `public/glb/` when a screen shows it, and gets the new file in the background. Keep a file in `public/` only if it must have a fixed URL. See `injectManifest` in `vite.config.ts` and `src/sw.ts`.
+The precache keeps only the app shell: the files in `assets/`, `offline.html` and the favicons. Do not add the game art to the precache. The service worker keeps each file from `public/creature/`, `public/models/units/`, `public/models/heroes/`, `public/hero-portraits/`, `public/gear-looks/`, `public/skills/`, `public/town/` and `public/battle/` when a screen shows it, and gets the new file in the background. Keep a file in `public/` only if it must have a fixed URL. See `injectManifest` in `vite.config.ts` and `src/sw.ts`.
 
 Run `bun web build && bun check:pwa` to audit the manifest, viewport, iOS startup images, and service worker with [pwa-check](https://github.com/pwa-today/pwa-check). The check fails on warnings, and CI runs it on every pull request.

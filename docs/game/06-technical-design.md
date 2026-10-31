@@ -94,10 +94,11 @@ It uses only information that the active side can see (`visibleTo`): the Hand of
 
 ### 4.2 Scene structure
 
-- One `<Canvas>` only, on the Battle screen. The Town is a 2D painting with no Canvas. Load the Battle scene as a lazy chunk, so the Three.js code is not in the first bundle.
-- The Board is one glTF model for each Region skin.
-- By default, a Unit is a plane with an alpha texture (the cut-out). Use one shared geometry and one material for each texture atlas.
-- A card can also have a rigged 3D model ([Art Direction 2.2](./05-art-direction.md#22-rigged-unit-models)). The model is an option for each card, not a rule for all cards. A skinned model cannot use the shared plane, so each model must stay in the model budget (section 6).
+- One active `<Canvas>` on the current game screen: Battle, the Hero screen or the shared Bazaar preview. The Town is a 2D painting with no Canvas. Load these scenes as lazy chunks, so the Three.js code is not in the first bundle. The accepted [Hero Model design](./hero-models.md) extends the previous Battle-only rule; implementation is pending.
+- The ground is a Battle Painting behind the transparent canvas (web ADR-0006). An optional Board skin draws Lane runners.
+- Every Unit is a rigged 3D Unit Model ([Art Direction 2.2](./05-art-direction.md#22-rigged-unit-models)). Each Creature Card and each Token has one. There is no Cut-out Figure and no per-Battle model-type limit. Each model must stay in the model budget (section 6).
+- The Battle loads every Unit Model that can appear before the Board shows: both Decks, the start Units, possible Tokens and Boss Rule summons. A failed load blocks the Battle and offers a retry.
+- The Player's Hero has a full-body Hero Model that wears the selected Gear look, with a complete 2D portrait fallback while required model parts load or fail. A new Replay captures portrait and Gear look IDs at Battle start; existing Replay links stay readable ([web ADR-0017](../../apps/web/docs/adr/0017-a-replay-keeps-the-original-hero-appearance.md)). These IDs change presentation only.
 - Damage numbers and Unit stats use drei `Text` or HTML overlays. Select the option with better performance during Milestone 1.
 
 ### 4.3 Event player
@@ -131,17 +132,20 @@ It uses only information that the active side can see (`visibleTo`): the Hand of
 | Item | Budget |
 | --- | --- |
 | First JavaScript bundle (Town screen) | Less than 500 KB gzip |
-| Battle chunk (Three.js and scene code) | Less than 400 KB gzip |
-| Assets for one Battle | Less than 8 MB |
+| Additional Battle JavaScript (UI, scene and enabled features) | Less than 5,000,000 bytes, gzip level 9. Exclude the initial `/play` graph from the same build. |
+| Assets for one Battle | Less than 50,000,000 published bytes before HTTP compression. Count both Decks, start Units, possible Tokens, appearance, cosmetics, original card art, every Unit Model, decoder assets, painting, FX, music and the larger result sting. Shared URLs count once; a warm cache gives no credit. |
+| Selected Hero appearance | At most 10,000,000 published bytes before HTTP compression for body, textures, animations and selected Gear, including shared files. The whole-Battle asset budget still applies; this ceiling is not an extra allowance. |
 | Draw calls in a Battle | Less than 150 |
-| Texture size | Unit cut-outs 512 px tall. Card art 600 × 800 WebP at quality 80 (larger than the largest view of a card at device pixel ratio 2). For other textures, use KTX2 (Basis) or WebP. |
+| Texture size | Card art 600 × 800 WebP at quality 80 (larger than the largest view of a card at device pixel ratio 2). For other textures, use KTX2 (Basis) or WebP. |
 | Frame time | 16.7 ms on desktop. 33 ms on a mid-range phone. |
 | Device pixel ratio | Maximum 2. Lower it when the frame rate drops. |
-| Rigged Unit model | 10,000 triangles or fewer. 1.5 MB or less for each GLB (Draco or Meshopt, KTX2 textures). 1 material. Start values: tune them with the first pilot model on a mid-range phone. |
-| Rigged models in one Battle | Not more than 6 different models. A card with no place in this budget shows its cut-out. |
+| Rigged Unit model | 8,000 triangles or fewer, at most 30 bones, 1 material and 1,572,864 bytes (1.5 MiB) for each published GLB. Require Draco or Meshopt compression. Model textures use KTX2, at most one image of 1024 × 1024; vertex-colored models need no image. |
+| Rigged models in one Battle | Every Unit on the Board has a Unit Model. There is no limit on the number of model types. |
 
-- Use texture atlases for Units of the same Region.
-- Preload the assets of the next Stage when the player opens the Stage screen.
+- Every Unit Model is texture-free and vertex-colored. A future model that needs a texture uses one KTX2 image of at most 1024 × 1024.
+- Opening a Stage Panel preloads its Battle Painting and FX atlas. Fight reuses the same asset URLs and image cache.
+- Load all Unit Models that can appear in the Battle before the Board shows. Count each model once, including both Decks, the start Units, possible Tokens and Boss Rule summons. A failed model load does not use a Cut-out Figure. If the Android target fails, lower the DPR, shadows and effects first; use a lower-detail model only after a measurement.
+- Run `bun check:battle-budget` for the two explicit Stage/Deck fixtures. See [Battle budget measurement](./battle-budgets.md) and the dated records in [performance](./performance.md). Exact byte thresholds fail.
 - Measure with the browser profiler and `r3f-perf` in each Milestone.
 
 ## 7. Languages
@@ -164,7 +168,7 @@ It uses only information that the active side can see (`visibleTo`): the Hand of
 ## 9. Deployment
 
 - v1 deploys as a static SPA with the existing build and CI.
-- The PWA service worker caches the app and the assets for offline play.
+- Battles target online play. Keep normal PWA caching for faster loads. There is no offline Battle availability guarantee or preparation process. Add server availability checks with the future database integration; do not add a separate pre-Battle connection gate.
 - v1 has no backend.
 
 ## 10. Plan for v2 (online)

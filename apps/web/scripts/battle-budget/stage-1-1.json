@@ -1,0 +1,62 @@
+{
+  "appearance": {
+    "portrait": null,
+    "gearLook": null
+  },
+  "cosmetics": {
+    "boardSkin": null,
+    "cardBack": null
+  },
+  "features": {
+    "heroModel": false
+  },
+  "id": "stage-1-1-starter",
+  "stageId": "1-1",
+  "level": 1,
+  "deck": {
+    "id": "vanguard",
+    "classId": "warrior",
+    "deck": [
+      {
+        "cardId": "human.militiaRecruit",
+        "rank": "common"
+      },
+      {
+        "cardId": "human.militiaRecruit",
+        "rank": "common"
+      },
+      {
+        "cardId": "human.crossbowGuard",
+        "rank": "common"
+      },
+      {
+        "cardId": "human.crossbowGuard",
+        "rank": "common"
+      },
+      {
+        "cardId": "human.crossbowGuard",
+        "rank": "common"
+      },
+      {
+        "cardId": "human.halberdier",
+        "rank": "common"
+      },
+      {
+        "cardId": "human.halberdier",
+        "rank": "common"
+      },
+      {
+        "cardId": "human.riverKnight",
+        "rank": "uncommon"
+      },
+      {
+        "cardId": "human.riverKnight",
+        "rank": "uncommon"
+      },
+      {
+        "cardId": "warrior.spearThrow",
+        "rank": "common"
+      }
+    ]
+  }
+}

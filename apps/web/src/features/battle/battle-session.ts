@@ -3,6 +3,7 @@ import type {
   BattleSetup,
   BattleState,
   ClassId,
+  CosmeticId,
   DeckEntry,
   DungeonDefinition,
   FloorDefinition,
@@ -61,7 +62,14 @@ export interface BattleOptions {
   readonly deck: BattleDeck;
   /** The Player level and the Gear, from the Profile. */
   readonly player: BattlePlayer;
+  /** The selected presentation at Battle start. Null means Standard. */
+  readonly appearance?: HeroAppearance;
   readonly seed: number;
+}
+
+export interface HeroAppearance {
+  readonly portrait: CosmeticId | null;
+  readonly gearLook: CosmeticId | null;
 }
 
 export interface PlayingEvent {

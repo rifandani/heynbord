@@ -348,7 +348,6 @@ export const FX_FLAME_END = "rgba(255, 70, 20, 0)";
 
 /** The ink outline of a painted texture. */
 export const TEXTURE_INK = "rgba(20, 14, 10, 0.85)";
-export const TEXTURE_INK_SOFT = "rgba(20, 14, 10, 0.8)";
 export const TEXTURE_INK_LIGHT = "rgba(20, 14, 10, 0.7)";
 export const TEXTURE_INK_DEEP = "rgba(15, 10, 8, 0.92)";
 export const TEXTURE_INK_DEEPER = "rgba(15, 10, 8, 0.9)";
@@ -362,10 +361,6 @@ export const TEXTURE_CREAM_DIM = "rgba(255, 246, 223, 0.35)";
 
 /** The gold rule of a standee. */
 export const TEXTURE_RIM = "#e9c46a";
-
-/** The pale light on a standee, and its fade. */
-export const TEXTURE_LIGHT = "rgba(255, 250, 230, 0.45)";
-export const TEXTURE_LIGHT_END = "rgba(255, 250, 230, 0)";
 
 /** The drop shadow under a standee: its alpha, and the fade to nothing. */
 export const TEXTURE_DROP = "rgba(0, 0, 0, 0.55)";

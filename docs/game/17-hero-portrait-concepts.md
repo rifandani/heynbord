@@ -1,10 +1,18 @@
 # Hero Portrait Concepts
 
+The accepted [Hero Model design](./hero-models.md) extends each portrait
+below with a matching full-body figure and adds one Human Standard
+character. These painting briefs remain the reference for each person's
+face, palette and key features. The model design and animation requirements
+are accepted; see [web ADR-0016](../../apps/web/docs/adr/0016-a-hero-portrait-defines-a-person-and-the-gear-look-dresses-it.md).
+Painted faces remain in the Top Bar and small catalog thumbnails. The
+Standard character needs a matching face painting.
+
 This document gives the art brief of the **Hero portrait** family: the 7 faces that the Bazaar sells for Heynstones ([Economy 3.5](./07-economy.md#35-bazaar), [GDD 10](./03-game-design.md#10-achievements-cosmetics-and-the-bazaar)). A Hero portrait changes how the Player's Hero looks and never changes gameplay.
 
 The brief of the Card Back family is [Cosmetic Concepts](./16-cosmetic-concepts.md).
 
-The game keeps the bronze frame, the gold line and the plate in code. A painting is the **face** of the portrait, inside that frame. The face of the Standard portrait is in code: the gold plate of the Player side with the Class glyph.
+The game keeps the bronze frame, the gold line and the plate in code. A painting is the **face** of the portrait, inside that frame. The accepted design adds a matching painted face for the new Human Standard character. The portrait plate and Board-banner crop dimensions below apply to the 2D presentation and fallback; the Hero Model uses the separate 3D brief.
 
 ## 1. The 7 Hero portraits
 

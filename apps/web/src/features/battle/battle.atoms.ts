@@ -40,6 +40,13 @@ export const controlsGuideAtom = Atom.make<{
   readonly line: ControlsGuideLine | null;
 } | null>(null);
 
+/**
+ * The open Leave confirm (GDD 11.4). Esc opens it when there is nothing else to
+ * cancel, so the key and the Leave button share one place for it. It goes away
+ * with the Battle, because no Battle is on the screen then.
+ */
+export const leaveConfirmAtom = Atom.make(false);
+
 /** The connected Battle pad; the guide must not name buttons after it goes. */
 export const padIdAtom = Atom.make<string | null>(null).pipe(Atom.keepAlive);
 

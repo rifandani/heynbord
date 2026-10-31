@@ -7,6 +7,8 @@ export default defineConfig({
     ...(ultracite.ignorePatterns ?? []),
     "**/apps/web/src/routeTree.gen.ts",
     "**/apps/*/src/core/components/ui/**",
+    // Vendored decoder binaries (Basis universal/KTX2) ship byte for byte.
+    "**/apps/web/public/decoders/**",
     "**/.agents",
     "**/.claude",
     "**/.cursor",

@@ -1,44 +1,32 @@
 import { useAtomValue } from "@effect/atom-react";
-import { useGLTF } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
-import type { ReactNode, Ref } from "react";
+import type { Ref } from "react";
 import {
   Suspense,
   useEffect,
   useImperativeHandle,
   useMemo,
   useRef,
-  useState,
   useSyncExternalStore,
 } from "react";
-import type {
-  CanvasTexture,
-  Group,
-  Mesh,
-  MeshBasicMaterial,
-  Sprite,
-} from "three";
+import type { CanvasTexture, Group, Mesh, Sprite } from "three";
 import {
   BoxGeometry,
   CircleGeometry,
-  Color,
   PlaneGeometry,
   RingGeometry,
 } from "three";
 
 import { SIDE_COLORS } from "@/core/components/game/tokens";
 import type { FallenUnit } from "@/features/battle/battle-log";
-import type {
-  BattleSession,
-  PlayingEvent,
-} from "@/features/battle/battle-session";
+import type { PlayingEvent } from "@/features/battle/battle-session";
 import type { UnitView } from "@/features/battle/battle-view";
 import {
   battleLogAtom,
   shownSessionAtom,
   detailsUnitAtom,
 } from "@/features/battle/battle.atoms";
-import { battleUnitSources, sourceId } from "@/features/battle/card-art";
+import { sourceId } from "@/features/battle/card-art";
 import { fxList } from "@/features/battle/scene/fx";
 import {
   fxAtlas,
@@ -54,10 +42,7 @@ import {
 } from "@/features/battle/scene/status-visuals";
 import {
   blobShadowTexture,
-  loadedUnitArt,
   statusBadgeTexture,
-  unitArtTexture,
-  unitFigureTexture,
   unitStatTexture,
 } from "@/features/battle/scene/textures";
 import { unitAnchors } from "@/features/battle/scene/unit-anchors";
@@ -65,8 +50,8 @@ import type { UnitModelSpec } from "@/features/battle/scene/unit-models";
 import {
   badgeHeight,
   castPhase,
+  requireUnitModel,
   unitClipFor,
-  unitModelOf,
 } from "@/features/battle/scene/unit-models";
 import { unitPicker } from "@/features/battle/scene/unit-picker";
 import type { Pose } from "@/features/battle/scene/unit-pose";
@@ -79,16 +64,15 @@ import {
 } from "@/features/battle/scene/unit-pose";
 import { buildRig } from "@/features/battle/scene/unit-rig";
 import { shownAttack, summonAttack } from "@/features/battle/scene/unit-stats";
+import { useUnitModel } from "@/features/battle/scene/use-unit-model";
 import {
   FALLEN_RING as FALLEN_RING_COLOR,
   FOCUS_RING as FOCUS_RING_COLOR,
   LOG_RING as LOG_RING_COLOR,
-  SCENE_WHITE,
 } from "@/features/battle/tokens";
+import { ModelErrorBoundary } from "@/features/hero/components/model-error-boundary";
 
 // Shared geometry for all Units: fewer GPU uploads.
-const FIGURE = new PlaneGeometry(0.82, 1.03);
-FIGURE.translate(0, 0.515, 0);
 const SHADOW = new CircleGeometry(0.5, 20);
 // The hidden hit box for hover and long press: the figure and the stat line.
 const HIT = new BoxGeometry(0.8, 1.75, 0.8);
@@ -101,34 +85,6 @@ const FOCUS_RING_HALO = new RingGeometry(0.56, 0.61, 40);
 // parchment band with an ink edge, so that it stays clear on the grey Board.
 const LOG_RING = new RingGeometry(0.54, 0.66, 48);
 const LOG_RING_EDGE = new RingGeometry(0.66, 0.71, 48);
-
-const WHITE = new Color(SCENE_WHITE);
-
-/** Billboard on the vertical axis (art direction 2), then lean and fall. */
-const placeFigure = (
-  figure: Mesh | null,
-  pose: Pose,
-  facing: number,
-  turn: number
-) => {
-  if (!figure) {
-    return;
-  }
-  figure.position.y = pose.y + 0.06;
-  figure.rotation.set(pose.tilt, turn, pose.lean);
-  figure.scale.set(facing * pose.scale, pose.scale, pose.scale);
-};
-
-const tintFigure = (material: MeshBasicMaterial | null, pose: Pose) => {
-  if (!material) {
-    return;
-  }
-  material.opacity = pose.opacity;
-  material.color.copy(WHITE);
-  if (pose.tint) {
-    material.color.lerp(pose.tint, pose.tintAmount);
-  }
-};
 
 /** The line sits below the lower edge of the figure, not on the art. */
 const STAT_Y = -0.08;
@@ -210,61 +166,6 @@ interface BodyProps {
   readonly ref: Ref<BodyHandle>;
 }
 
-/**
- * The card art on a plane (art direction 2). The painted standee shows until
- * the art loads, or if it does not load.
- */
-const CutOutBody = ({ unit, facing, ref }: BodyProps) => {
-  const figure = useRef<Mesh>(null);
-  const figureMaterial = useRef<MeshBasicMaterial>(null);
-  const { source } = unit;
-  const id = sourceId(source);
-  const [art, setArt] = useState(() => loadedUnitArt(source));
-  const standee = useMemo(
-    () => unitFigureTexture(source, unit.rank),
-    // oxlint-disable-next-line react-hooks/exhaustive-deps -- the ID names the source
-    [id, unit.rank]
-  );
-  useEffect(() => {
-    if (art) {
-      return;
-    }
-    let mounted = true;
-    const load = async () => {
-      const texture = await unitArtTexture(source);
-      if (mounted && texture) {
-        setArt(texture);
-      }
-    };
-    void load();
-    return () => {
-      mounted = false;
-    };
-    // oxlint-disable-next-line react-hooks/exhaustive-deps -- the ID names the source
-  }, [art, id]);
-  useImperativeHandle(
-    ref,
-    () => ({
-      update: (pose, turn) => {
-        placeFigure(figure.current, pose, facing, turn);
-        tintFigure(figureMaterial.current, pose);
-      },
-    }),
-    [facing]
-  );
-  return (
-    <mesh ref={figure} geometry={FIGURE}>
-      <meshBasicMaterial
-        ref={figureMaterial}
-        map={art ?? standee}
-        transparent
-        alphaTest={0.05}
-        toneMapped={false}
-      />
-    </mesh>
-  );
-};
-
 /** A Unit Model: a rigged 3D model that plays a clip for each event. */
 const ModelBody = ({
   unit,
@@ -276,7 +177,7 @@ const ModelBody = ({
   readonly spec: UnitModelSpec;
   readonly reducedMotion: boolean;
 }) => {
-  const { scene, animations } = useGLTF(spec.url);
+  const { scene, animations } = useUnitModel(spec.url);
   const rig = useMemo(
     () => buildRig(scene, animations, spec.height, facing),
     [scene, animations, spec.height, facing]
@@ -389,23 +290,25 @@ const registerHitArea = (unitId: number) => (mesh: Mesh | null) => {
 const facingOf = (owner: UnitView["owner"]): 1 | -1 =>
   owner === "enemy" ? -1 : 1;
 
+/** A failed model load keeps the screen usable; the Battle preload blocks first. */
+// oxlint-disable-next-line eslint/no-empty-function -- the preload already blocked a failed model; this handler only marks a later renderer failure
+const ignoreModelFailure = () => {};
+
 const FigureBody = ({
   model,
   unit,
   facing,
   body,
-  cutOut,
   reducedMotion,
 }: {
-  readonly model: UnitModelSpec | undefined;
+  readonly model: UnitModelSpec;
   readonly unit: UnitView;
   readonly facing: 1 | -1;
   readonly body: Ref<BodyHandle>;
-  readonly cutOut: ReactNode;
   readonly reducedMotion: boolean;
-}) =>
-  model ? (
-    <Suspense fallback={cutOut}>
+}) => (
+  <ModelErrorBoundary fallback={null} onError={ignoreModelFailure}>
+    <Suspense fallback={null}>
       <ModelBody
         unit={unit}
         facing={facing}
@@ -414,9 +317,8 @@ const FigureBody = ({
         reducedMotion={reducedMotion}
       />
     </Suspense>
-  ) : (
-    cutOut
-  );
+  </ModelErrorBoundary>
+);
 
 const UnitFigure = ({
   unit,
@@ -453,7 +355,8 @@ const UnitFigure = ({
   );
   const shadow = useMemo(() => blobShadowTexture(), []);
   const z = laneZ(unit.lane, lanes);
-  const model = unitModelOf(sourceId(unit.source));
+  const id = sourceId(unit.source);
+  const model = requireUnitModel(id);
   const badgeY = badgeHeight(unit.source);
 
   // The enemy faces left: its figure is mirrored.
@@ -495,7 +398,6 @@ const UnitFigure = ({
       return anchor?.(node);
     };
   }, [dying, unit.id]);
-  const cutOut = <CutOutBody unit={unit} facing={facing} ref={body} />;
   return (
     <group ref={groupRef} name={`unit-${unit.id}`}>
       <mesh
@@ -521,7 +423,6 @@ const UnitFigure = ({
         unit={unit}
         facing={facing}
         body={body}
-        cutOut={cutOut}
         reducedMotion={reducedMotion}
       />
       <sprite ref={stat} scale={[1.05, 0.33, 1]} renderOrder={5}>
@@ -625,26 +526,13 @@ const dyingFrom = (current: PlayingEvent | null): UnitView | undefined => {
 const withDying = (units: readonly UnitView[], dying: UnitView | undefined) =>
   dying ? [...units, dying] : units;
 
-const battleOptions = (session: BattleSession | null) => session?.options;
-
 /** All Units on the Board, and a Unit that is dying in the current event. */
 export const Units = () => {
   const session = useAtomValue(shownSessionAtom);
   const detailsId = inspectedUnitId(useAtomValue(detailsUnitAtom));
   const log = useAtomValue(battleLogAtom);
   const changed = new Set(log?.book.entries[log.selected]?.changed ?? NO_UNITS);
-  const options = battleOptions(session);
   const reducedMotion = useReducedMotion();
-  // Load the card art of both Sides at the Battle start, before the first summon.
-  useEffect(() => {
-    if (!session) {
-      return;
-    }
-    for (const source of battleUnitSources(session.rules)) {
-      void unitArtTexture(source);
-    }
-    // oxlint-disable-next-line react-hooks/exhaustive-deps -- once for each Battle, not for each event
-  }, [options]);
   if (!session) {
     return null;
   }

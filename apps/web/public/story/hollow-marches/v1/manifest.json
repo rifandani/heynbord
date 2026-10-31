@@ -1,0 +1,1030 @@
+{
+  "region": "hollow-marches",
+  "version": 1,
+  "width": 1280,
+  "height": 720,
+  "fps": 30,
+  "frameCount": 4050,
+  "locales": ["en-us", "id-id"],
+  "playback": {
+    "autoAdvance": false,
+    "continueBeforeEnd": true,
+    "readingHold": "loop-from-loopStartSeconds-until-player-action",
+    "loopStartSeconds": 5.0,
+    "back": "restart-moment",
+    "reducedMotion": "poster",
+    "videoFailure": "poster",
+    "audioFailure": "silent",
+    "textAndControls": "external",
+    "stopEffectsOnLeave": true,
+    "profileMutations": false
+  },
+  "listeningReview": "pending",
+  "moments": [
+    {
+      "id": "OpeningFrost",
+      "text": {
+        "en-us": "The coins of bone lead you and the Mountain Colossus into the Hollow Marches. Frost covers the reeds, but this marsh never freezes.",
+        "id-id": "Koin-koin tulang menuntunmu dan Mountain Colossus masuk ke Hollow Marches. Embun beku menutupi alang-alang, padahal rawa ini tidak pernah membeku."
+      },
+      "startFrame": 0,
+      "endFrame": 270,
+      "sceneKind": "opening",
+      "momentOrder": 1,
+      "clip": "opening-01.mp4",
+      "poster": "opening-01.webp",
+      "frameCount": 270,
+      "durationSeconds": 9.0,
+      "loopStartSeconds": 5.0,
+      "posterFrame": 269,
+      "clipBytes": 763135,
+      "posterBytes": 66618,
+      "clipSha256": "f129df4ea3da3dd2244c58fd89bacf46185fd1b92a5b9c69d2844703beb6d667",
+      "posterRgbRmse": 6.518,
+      "effectCues": [
+        {
+          "file": "audio/wind.mp3",
+          "atSeconds": 0.3,
+          "gainDb": -6.0
+        },
+        {
+          "file": "audio/gust.mp3",
+          "atSeconds": 1.0,
+          "gainDb": -6.0
+        },
+        {
+          "file": "audio/frost.mp3",
+          "atSeconds": 1.6,
+          "gainDb": -8.0
+        },
+        {
+          "file": "audio/chime.mp3",
+          "atSeconds": 2.8,
+          "gainDb": -9.0
+        }
+      ]
+    },
+    {
+      "id": "OpeningBeasts",
+      "text": {
+        "en-us": "When the Old Bramble woke, the noise woke the frost beasts in the ice caves. They came down into the marsh on their own, and the dead of the marsh fled.",
+        "id-id": "Saat Old Bramble terbangun, suaranya membangunkan binatang-binatang es di gua-gua es. Mereka turun ke rawa atas kemauan sendiri, dan para mayat hidup penghuni rawa melarikan diri."
+      },
+      "startFrame": 270,
+      "endFrame": 540,
+      "sceneKind": "opening",
+      "momentOrder": 2,
+      "clip": "opening-02.mp4",
+      "poster": "opening-02.webp",
+      "frameCount": 270,
+      "durationSeconds": 9.0,
+      "loopStartSeconds": 5.0,
+      "posterFrame": 269,
+      "clipBytes": 777658,
+      "posterBytes": 54182,
+      "clipSha256": "6f4987a897b896a0b2ae14063547de1845e17d515aed252b8654cc156db9ee9f",
+      "posterRgbRmse": 5.199,
+      "effectCues": [
+        {
+          "file": "audio/ice.mp3",
+          "atSeconds": 1.5,
+          "gainDb": -4.0
+        },
+        {
+          "file": "audio/ice.mp3",
+          "atSeconds": 2.35,
+          "gainDb": -2.0
+        },
+        {
+          "file": "audio/growl.mp3",
+          "atSeconds": 3.0,
+          "gainDb": -6.0
+        },
+        {
+          "file": "audio/quake.mp3",
+          "atSeconds": 3.85,
+          "gainDb": -4.0
+        },
+        {
+          "file": "audio/boom.mp3",
+          "atSeconds": 3.85,
+          "gainDb": -8.0
+        }
+      ]
+    },
+    {
+      "id": "OpeningGiant",
+      "text": {
+        "en-us": "Then you walk in right behind them with a stone giant. The court of Queen Marrow sees the Colossus, and a wisp flies to Marrow Castle with the alarm.",
+        "id-id": "Lalu kamu datang tepat di belakang mereka bersama sebuah raksasa batu. Para punggawa Queen Marrow melihat Colossus itu, dan sebuah wisp terbang ke Marrow Castle membawa tanda bahaya."
+      },
+      "startFrame": 540,
+      "endFrame": 810,
+      "sceneKind": "opening",
+      "momentOrder": 3,
+      "clip": "opening-03.mp4",
+      "poster": "opening-03.webp",
+      "frameCount": 270,
+      "durationSeconds": 9.0,
+      "loopStartSeconds": 5.0,
+      "posterFrame": 269,
+      "clipBytes": 757519,
+      "posterBytes": 60894,
+      "clipSha256": "2c8be7524e5524165141c98f81d50d9c4cf96e9a351d690d1074e15eefe2bf7a",
+      "posterRgbRmse": 5.531,
+      "effectCues": [
+        {
+          "file": "audio/thud.mp3",
+          "atSeconds": 0.9,
+          "gainDb": -2.0
+        },
+        {
+          "file": "audio/splash.mp3",
+          "atSeconds": 0.95,
+          "gainDb": -6.0
+        },
+        {
+          "file": "audio/whoosh.mp3",
+          "atSeconds": 1.7,
+          "gainDb": -5.0
+        },
+        {
+          "file": "audio/thud.mp3",
+          "atSeconds": 2.5,
+          "gainDb": -3.0
+        },
+        {
+          "file": "audio/bell.mp3",
+          "atSeconds": 3.7,
+          "gainDb": -6.0
+        }
+      ]
+    },
+    {
+      "id": "OpeningCrossings",
+      "text": {
+        "en-us": "The court decides that you sent the beasts and came to take the castle. The Bone Ferry turns you away, and chains close the Witchfire Bridge.",
+        "id-id": "Para punggawa memutuskan bahwa kamulah yang mengirim binatang-binatang itu dan datang untuk merebut kastel. Bone Ferry menolakmu, dan rantai-rantai menutup Witchfire Bridge."
+      },
+      "startFrame": 810,
+      "endFrame": 1080,
+      "sceneKind": "opening",
+      "momentOrder": 4,
+      "clip": "opening-04.mp4",
+      "poster": "opening-04.webp",
+      "frameCount": 270,
+      "durationSeconds": 9.0,
+      "loopStartSeconds": 5.0,
+      "posterFrame": 269,
+      "clipBytes": 468592,
+      "posterBytes": 41388,
+      "clipSha256": "b7f98c4db848dfb302c4a39e06fc2d3fa3859a4479d981ec98866f3f66cde462",
+      "posterRgbRmse": 4.035,
+      "effectCues": [
+        {
+          "file": "audio/splash.mp3",
+          "atSeconds": 1.4,
+          "gainDb": -6.0
+        },
+        {
+          "file": "audio/flare.mp3",
+          "atSeconds": 2.5,
+          "gainDb": -6.0
+        },
+        {
+          "file": "audio/flare.mp3",
+          "atSeconds": 2.75,
+          "gainDb": -7.0
+        },
+        {
+          "file": "audio/links.mp3",
+          "atSeconds": 3.05,
+          "gainDb": -3.0
+        },
+        {
+          "file": "audio/clank.mp3",
+          "atSeconds": 3.4,
+          "gainDb": -4.0
+        }
+      ]
+    },
+    {
+      "id": "OpeningRoad",
+      "text": {
+        "en-us": "Fight your way to Marrow Castle. Only Queen Marrow pays in coins of bone, so the answer is behind her gate.",
+        "id-id": "Bertarunglah sampai ke Marrow Castle. Hanya Queen Marrow yang membayar dengan koin tulang, jadi jawabannya ada di balik gerbangnya."
+      },
+      "startFrame": 1080,
+      "endFrame": 1350,
+      "sceneKind": "opening",
+      "momentOrder": 5,
+      "clip": "opening-05.mp4",
+      "poster": "opening-05.webp",
+      "frameCount": 270,
+      "durationSeconds": 9.0,
+      "loopStartSeconds": 5.0,
+      "posterFrame": 269,
+      "clipBytes": 692088,
+      "posterBytes": 45882,
+      "clipSha256": "db77e152c7de1222603883d07e01507bfd447550682f5ceeaf219c5a99092bb9",
+      "posterRgbRmse": 4.742,
+      "effectCues": [
+        {
+          "file": "audio/flare.mp3",
+          "atSeconds": 0.4,
+          "gainDb": -8.0
+        },
+        {
+          "file": "audio/magic.mp3",
+          "atSeconds": 1.6,
+          "gainDb": -10.0
+        },
+        {
+          "file": "audio/flare.mp3",
+          "atSeconds": 2.6,
+          "gainDb": -9.0
+        },
+        {
+          "file": "audio/gate.mp3",
+          "atSeconds": 4.0,
+          "gainDb": -4.0
+        },
+        {
+          "file": "audio/toll.mp3",
+          "atSeconds": 4.3,
+          "gainDb": -8.0
+        }
+      ]
+    },
+    {
+      "id": "BossHall",
+      "text": {
+        "en-us": "Queen Marrow has ruled the Hollow Marches for 300 quiet years. She does not stand up for guests. / Queen Marrow: Do come in. Your giant can wait outside; it is dripping on my moat.",
+        "id-id": "Queen Marrow sudah memerintah Hollow Marches selama 300 tahun yang tenang. Ia tidak pernah berdiri untuk menyambut tamu. / Queen Marrow: Silakan masuk. Raksasamu tunggu di luar saja; ia meneteskan air ke paritku."
+      },
+      "startFrame": 1350,
+      "endFrame": 1620,
+      "sceneKind": "boss",
+      "momentOrder": 1,
+      "clip": "boss-01.mp4",
+      "poster": "boss-01.webp",
+      "frameCount": 270,
+      "durationSeconds": 9.0,
+      "loopStartSeconds": 5.0,
+      "posterFrame": 269,
+      "clipBytes": 693299,
+      "posterBytes": 23416,
+      "clipSha256": "6d9262ad340e6e1b00a8af3254e304f17e5008695b4454d71e097c0a7ce4f1f2",
+      "posterRgbRmse": 3.684,
+      "effectCues": [
+        {
+          "file": "audio/gust.mp3",
+          "atSeconds": 0.3,
+          "gainDb": -8.0
+        },
+        {
+          "file": "audio/toll.mp3",
+          "atSeconds": 1.4,
+          "gainDb": -8.0
+        },
+        {
+          "file": "audio/rattle.mp3",
+          "atSeconds": 2.6,
+          "gainDb": -10.0
+        },
+        {
+          "file": "audio/boom.mp3",
+          "atSeconds": 3.4,
+          "gainDb": -10.0
+        },
+        {
+          "file": "audio/chime.mp3",
+          "atSeconds": 3.45,
+          "gainDb": -10.0
+        }
+      ]
+    },
+    {
+      "id": "BossAccusation",
+      "text": {
+        "en-us": "Queen Marrow: My dead are fleeing. My marsh is frozen. / Queen Marrow: And then you arrive, with a stone giant. / You: I did not send the beasts. I followed a trail here.",
+        "id-id": "Queen Marrow: Rakyat matiku melarikan diri. Rawaku membeku. / Queen Marrow: Lalu kamu datang, bersama raksasa batu. / You: Bukan aku yang mengirim binatang-binatang itu. Aku datang ke sini mengikuti jejak."
+      },
+      "startFrame": 1620,
+      "endFrame": 1890,
+      "sceneKind": "boss",
+      "momentOrder": 2,
+      "clip": "boss-02.mp4",
+      "poster": "boss-02.webp",
+      "frameCount": 270,
+      "durationSeconds": 9.0,
+      "loopStartSeconds": 5.0,
+      "posterFrame": 269,
+      "clipBytes": 585185,
+      "posterBytes": 21996,
+      "clipSha256": "ca0dc7d0b14a2d45ca197716748e754c7c81ef14f5fc1ddbd87dadd1be2425af",
+      "posterRgbRmse": 3.38,
+      "effectCues": [
+        {
+          "file": "audio/gust.mp3",
+          "atSeconds": 0.4,
+          "gainDb": -10.0
+        },
+        {
+          "file": "audio/cloth.mp3",
+          "atSeconds": 0.7,
+          "gainDb": -6.0
+        },
+        {
+          "file": "audio/magic.mp3",
+          "atSeconds": 1.5,
+          "gainDb": -6.0
+        },
+        {
+          "file": "audio/rattle.mp3",
+          "atSeconds": 2.2,
+          "gainDb": -12.0
+        }
+      ]
+    },
+    {
+      "id": "BossProof",
+      "text": {
+        "en-us": "You: The trail is this purse, full of your coins of bone. / Queen Marrow: Oh, that is good. You carry my dead's wages. / Queen Marrow: Thieves are usually shyer.",
+        "id-id": "You: Jejaknya adalah kantong ini, penuh koin tulangmu. / Queen Marrow: Oh, bagus sekali. Kamu membawa upah rakyat matiku. / Queen Marrow: Biasanya pencuri lebih pemalu."
+      },
+      "startFrame": 1890,
+      "endFrame": 2160,
+      "sceneKind": "boss",
+      "momentOrder": 3,
+      "clip": "boss-03.mp4",
+      "poster": "boss-03.webp",
+      "frameCount": 270,
+      "durationSeconds": 9.0,
+      "loopStartSeconds": 5.0,
+      "posterFrame": 269,
+      "clipBytes": 975027,
+      "posterBytes": 38874,
+      "clipSha256": "f72c2efb463183591b6076625beac4acf836159535f56b0160413abdd29a67b5",
+      "posterRgbRmse": 4.662,
+      "effectCues": [
+        {
+          "file": "audio/coins.mp3",
+          "atSeconds": 0.85,
+          "gainDb": -3.0
+        },
+        {
+          "file": "audio/coin.mp3",
+          "atSeconds": 1.0,
+          "gainDb": -8.0
+        },
+        {
+          "file": "audio/rattle.mp3",
+          "atSeconds": 1.5,
+          "gainDb": -8.0
+        },
+        {
+          "file": "audio/gust.mp3",
+          "atSeconds": 1.55,
+          "gainDb": -12.0
+        }
+      ]
+    },
+    {
+      "id": "BossReversal",
+      "text": {
+        "en-us": "You: These coins paid the cutters who woke the Old Bramble in the Thornwood. / Queen Marrow: Then someone spent my coin without my leave. / Queen Marrow: In 300 years, nobody has been so rude to me. How delightful.",
+        "id-id": "You: Koin-koin ini membayar para penyayat yang membangunkan Old Bramble di Thornwood. / Queen Marrow: Kalau begitu, seseorang membelanjakan koinku tanpa izinku. / Queen Marrow: Dalam 300 tahun, belum pernah ada yang sekurang ajar ini padaku. Menyenangkan sekali."
+      },
+      "startFrame": 2160,
+      "endFrame": 2430,
+      "sceneKind": "boss",
+      "momentOrder": 4,
+      "clip": "boss-04.mp4",
+      "poster": "boss-04.webp",
+      "frameCount": 270,
+      "durationSeconds": 9.0,
+      "loopStartSeconds": 5.0,
+      "posterFrame": 269,
+      "clipBytes": 252552,
+      "posterBytes": 16998,
+      "clipSha256": "ff37768cc6dee2ef1b16128f7746b1b04db89f2e6b72626ebd3e2c60b8bcb610",
+      "posterRgbRmse": 3.256,
+      "effectCues": [
+        {
+          "file": "audio/glass.mp3",
+          "atSeconds": 0.3,
+          "gainDb": -8.0
+        },
+        {
+          "file": "audio/frost.mp3",
+          "atSeconds": 1.65,
+          "gainDb": -10.0
+        },
+        {
+          "file": "audio/shimmer.mp3",
+          "atSeconds": 3.0,
+          "gainDb": -7.0
+        }
+      ]
+    },
+    {
+      "id": "BossChallenge",
+      "text": {
+        "en-us": "Queen Marrow: Find my thief later. First, you will entertain me. / Queen Marrow: Rampart, hold the middle lane. And now, a little snow. / You: Then we fight, Your Majesty. After that, we find your thief.",
+        "id-id": "Queen Marrow: Cari pencuriku nanti. Sekarang, hiburlah aku. / Queen Marrow: Rampart, jaga jalur tengah. Dan sekarang, sedikit salju. / You: Kalau begitu kita bertarung, Yang Mulia. Setelah itu, kita cari pencurimu."
+      },
+      "startFrame": 2430,
+      "endFrame": 2700,
+      "sceneKind": "boss",
+      "momentOrder": 5,
+      "clip": "boss-05.mp4",
+      "poster": "boss-05.webp",
+      "frameCount": 270,
+      "durationSeconds": 9.0,
+      "loopStartSeconds": 5.0,
+      "posterFrame": 269,
+      "clipBytes": 1226188,
+      "posterBytes": 38618,
+      "clipSha256": "3c1a6311144b6ce0ba2e1f035b2383963367c9f21be32fa9c4158b6f5ce714b6",
+      "posterRgbRmse": 4.607,
+      "effectCues": [
+        {
+          "file": "audio/drums.mp3",
+          "atSeconds": 0.1,
+          "gainDb": -2.0
+        },
+        {
+          "file": "audio/rattle.mp3",
+          "atSeconds": 1.4,
+          "gainDb": -3.0
+        },
+        {
+          "file": "audio/boom.mp3",
+          "atSeconds": 1.4,
+          "gainDb": -8.0
+        },
+        {
+          "file": "audio/slam.mp3",
+          "atSeconds": 2.1,
+          "gainDb": -3.0
+        },
+        {
+          "file": "audio/gust.mp3",
+          "atSeconds": 3.3,
+          "gainDb": -3.0
+        }
+      ]
+    },
+    {
+      "id": "EndingThaw",
+      "text": {
+        "en-us": "The hall goes quiet. The Old Bramble sleeps again, so the frost beasts climb back to their ice caves, and the marsh thaws.",
+        "id-id": "Aula menjadi sunyi. Old Bramble sudah tidur lagi, jadi binatang-binatang es kembali mendaki ke gua-gua es mereka, dan rawa mencair."
+      },
+      "startFrame": 2700,
+      "endFrame": 2970,
+      "sceneKind": "ending",
+      "momentOrder": 1,
+      "clip": "ending-01.mp4",
+      "poster": "ending-01.webp",
+      "frameCount": 270,
+      "durationSeconds": 9.0,
+      "loopStartSeconds": 5.0,
+      "posterFrame": 269,
+      "clipBytes": 1045459,
+      "posterBytes": 53356,
+      "clipSha256": "721c143ad499db80e55a8a234485656608dccadd41725af9bb524d2d286559ae",
+      "posterRgbRmse": 4.774,
+      "effectCues": [
+        {
+          "file": "audio/melt.mp3",
+          "atSeconds": 0.9,
+          "gainDb": -6.0
+        },
+        {
+          "file": "audio/melt.mp3",
+          "atSeconds": 1.6,
+          "gainDb": -8.0
+        },
+        {
+          "file": "audio/glass.mp3",
+          "atSeconds": 2.4,
+          "gainDb": -8.0
+        },
+        {
+          "file": "audio/gust.mp3",
+          "atSeconds": 2.8,
+          "gainDb": -10.0
+        },
+        {
+          "file": "audio/thud.mp3",
+          "atSeconds": 3.6,
+          "gainDb": -12.0
+        }
+      ]
+    },
+    {
+      "id": "EndingLoud",
+      "text": {
+        "en-us": "The court lowers its weapons. You did not send the beasts, and now they know it. / Queen Marrow: You are loud. I like loud.",
+        "id-id": "Para punggawa menurunkan senjata mereka. Bukan kamu yang mengirim binatang-binatang itu, dan sekarang mereka tahu. / Queen Marrow: Kamu berisik. Aku suka yang berisik."
+      },
+      "startFrame": 2970,
+      "endFrame": 3240,
+      "sceneKind": "ending",
+      "momentOrder": 2,
+      "clip": "ending-02.mp4",
+      "poster": "ending-02.webp",
+      "frameCount": 270,
+      "durationSeconds": 9.0,
+      "loopStartSeconds": 5.0,
+      "posterFrame": 269,
+      "clipBytes": 791985,
+      "posterBytes": 44256,
+      "clipSha256": "3e8767707a91d77de53923ab92cf7287f5bc78c2746309f873064de15ef6e16d",
+      "posterRgbRmse": 4.921,
+      "effectCues": [
+        {
+          "file": "audio/blade.mp3",
+          "atSeconds": 0.7,
+          "gainDb": -8.0
+        },
+        {
+          "file": "audio/blade.mp3",
+          "atSeconds": 1.2,
+          "gainDb": -9.0
+        },
+        {
+          "file": "audio/rattle.mp3",
+          "atSeconds": 2.0,
+          "gainDb": -12.0
+        },
+        {
+          "file": "audio/chime.mp3",
+          "atSeconds": 3.4,
+          "gainDb": -10.0
+        }
+      ]
+    },
+    {
+      "id": "EndingStone",
+      "text": {
+        "en-us": "The Queen empties the cutters' purse. One coin is not bone: it is pale stone, with a small tower cut into it. / Queen Marrow: Tower stone. Heynspire. / Queen Marrow: Nobody should be able to take stone from that tower.",
+        "id-id": "Sang Ratu menuang isi kantong para penyayat. Satu koin bukan dari tulang: koin itu dari batu pucat, dengan ukiran menara kecil. / Queen Marrow: Batu menara. Heynspire. / Queen Marrow: Seharusnya tidak ada yang bisa mengambil batu dari menara itu."
+      },
+      "startFrame": 3240,
+      "endFrame": 3510,
+      "sceneKind": "ending",
+      "momentOrder": 3,
+      "clip": "ending-03.mp4",
+      "poster": "ending-03.webp",
+      "frameCount": 270,
+      "durationSeconds": 9.0,
+      "loopStartSeconds": 5.0,
+      "posterFrame": 269,
+      "clipBytes": 319983,
+      "posterBytes": 13498,
+      "clipSha256": "bac434b8c331f478b8ee404bf19c76c461378a23dc01c61af4f3203ad0c8caf7",
+      "posterRgbRmse": 2.772,
+      "effectCues": [
+        {
+          "file": "audio/pouch.mp3",
+          "atSeconds": 0.35,
+          "gainDb": -4.0
+        },
+        {
+          "file": "audio/coins.mp3",
+          "atSeconds": 0.45,
+          "gainDb": -4.0
+        },
+        {
+          "file": "audio/clink.mp3",
+          "atSeconds": 1.65,
+          "gainDb": -6.0
+        },
+        {
+          "file": "audio/boom.mp3",
+          "atSeconds": 1.8,
+          "gainDb": -12.0
+        },
+        {
+          "file": "audio/magic.mp3",
+          "atSeconds": 2.2,
+          "gainDb": -10.0
+        }
+      ]
+    },
+    {
+      "id": "EndingRampart",
+      "text": {
+        "en-us": "Queen Marrow gives you a Bone Rampart from her own castle wall, and the Mountain Colossus kneels to her. / Queen Marrow: Take a piece of my wall. I have plenty, and you will need it.",
+        "id-id": "Queen Marrow memberimu sebuah Bone Rampart dari dinding kastelnya sendiri, dan Mountain Colossus berlutut kepadanya. / Queen Marrow: Ambillah sepotong dindingku. Aku punya banyak, dan kamu akan membutuhkannya."
+      },
+      "startFrame": 3510,
+      "endFrame": 3780,
+      "sceneKind": "ending",
+      "momentOrder": 4,
+      "clip": "ending-04.mp4",
+      "poster": "ending-04.webp",
+      "frameCount": 270,
+      "durationSeconds": 9.0,
+      "loopStartSeconds": 5.0,
+      "posterFrame": 269,
+      "clipBytes": 513384,
+      "posterBytes": 33536,
+      "clipSha256": "081459a9b10cf63d98676ae4df1c8881a843c079545445b0d147469e5196c6be",
+      "posterRgbRmse": 5.094,
+      "effectCues": [
+        {
+          "file": "audio/creak.mp3",
+          "atSeconds": 0.6,
+          "gainDb": -6.0
+        },
+        {
+          "file": "audio/creak.mp3",
+          "atSeconds": 1.4,
+          "gainDb": -8.0
+        },
+        {
+          "file": "audio/thud.mp3",
+          "atSeconds": 3.25,
+          "gainDb": -3.0
+        },
+        {
+          "file": "audio/shimmer.mp3",
+          "atSeconds": 3.45,
+          "gainDb": -5.0
+        }
+      ]
+    },
+    {
+      "id": "EndingHeynspire",
+      "text": {
+        "en-us": "Queen Marrow points to the white tower on the far hill: Heynspire, above your own Town. The trail leads home.",
+        "id-id": "Queen Marrow menunjuk menara putih di bukit jauh: Heynspire, di atas Kotamu sendiri. Jejaknya mengarah pulang."
+      },
+      "startFrame": 3780,
+      "endFrame": 4050,
+      "sceneKind": "ending",
+      "momentOrder": 5,
+      "clip": "ending-05.mp4",
+      "poster": "ending-05.webp",
+      "frameCount": 270,
+      "durationSeconds": 9.0,
+      "loopStartSeconds": 5.0,
+      "posterFrame": 269,
+      "clipBytes": 658872,
+      "posterBytes": 49072,
+      "clipSha256": "b426f506da856472a1b61437a85c9f9ae7343861e42df03dc91dc6e54bd19e70",
+      "posterRgbRmse": 5.718,
+      "effectCues": [
+        {
+          "file": "audio/gust.mp3",
+          "atSeconds": 0.4,
+          "gainDb": -6.0
+        },
+        {
+          "file": "audio/whoosh.mp3",
+          "atSeconds": 1.6,
+          "gainDb": -6.0
+        },
+        {
+          "file": "audio/toll.mp3",
+          "atSeconds": 2.6,
+          "gainDb": -8.0
+        },
+        {
+          "file": "audio/shimmer.mp3",
+          "atSeconds": 3.5,
+          "gainDb": -8.0
+        }
+      ]
+    }
+  ],
+  "audio": [
+    {
+      "path": "audio/bell.mp3",
+      "bytes": 28464,
+      "scenes": ["opening"],
+      "sha256": "bd52a2b7c90010df8a695727c4cef0930049563a28d3c64cc356aa0259b9b51a",
+      "settingsBus": "effects",
+      "durationSeconds": 3.5,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/blade.mp3",
+      "bytes": 4431,
+      "scenes": ["ending"],
+      "sha256": "c87ff40f6b273496f180d2045353d02cd80012421c944fed9ad40f949a5058b4",
+      "settingsBus": "effects",
+      "durationSeconds": 0.47127,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/boom.mp3",
+      "bytes": 28515,
+      "scenes": ["boss", "ending", "opening"],
+      "sha256": "cad553fcb8824e4b6bd463e9b917591a270615d791cc5d8d93ef94b4f80ce65c",
+      "settingsBus": "effects",
+      "durationSeconds": 3.5,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/boss-music.mp3",
+      "bytes": 504546,
+      "scenes": ["boss"],
+      "sha256": "dfd48ce912701240661ab9d87ed71dfef1bcac3f627deff688f746041c8ebf00",
+      "settingsBus": "music",
+      "durationSeconds": 72.0,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/chime.mp3",
+      "bytes": 11551,
+      "scenes": ["boss", "ending", "opening"],
+      "sha256": "9d0e5eeebaba288d1eb5290dbc7d62b2355c70e536c4c134a1ccc8bd15f0a2b4",
+      "settingsBus": "effects",
+      "durationSeconds": 1.363379,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/clank.mp3",
+      "bytes": 5267,
+      "scenes": ["opening"],
+      "sha256": "65b8887e0e3cea08a883acc909b975144499454719a6ace9f5cda0d9ccae4fd4",
+      "settingsBus": "effects",
+      "durationSeconds": 0.6,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/clink.mp3",
+      "bytes": 2968,
+      "scenes": ["ending"],
+      "sha256": "d70dab7d3c3da811edfa75b9cf5f22d4a9c165a865ac67fe50ed2537d7d4c2da",
+      "settingsBus": "effects",
+      "durationSeconds": 0.294444,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/cloth.mp3",
+      "bytes": 3642,
+      "scenes": ["boss"],
+      "sha256": "cf180b288d56e9ae8bc68e7544e005eae2bfa69e058aa8ddedd16582c3216871",
+      "settingsBus": "effects",
+      "durationSeconds": 0.383968,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/coin.mp3",
+      "bytes": 11745,
+      "scenes": ["boss"],
+      "sha256": "61ef27d8fc698db5fa9476a1d253b81fb1fdb9c23cc59ae81af008759fe78eef",
+      "settingsBus": "effects",
+      "durationSeconds": 1.404694,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/coins.mp3",
+      "bytes": 7984,
+      "scenes": ["boss", "ending"],
+      "sha256": "bba41f76bbc006553a9308581e60188032c8f15aace9d02325ce17fe207ff85a",
+      "settingsBus": "effects",
+      "durationSeconds": 0.936349,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/creak.mp3",
+      "bytes": 10700,
+      "scenes": ["ending"],
+      "sha256": "91fcf8ebe247daf1354484c7c821e24621d3b304f22d9fc31aad353c12a82ddc",
+      "settingsBus": "effects",
+      "durationSeconds": 1.255692,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/drums.mp3",
+      "bytes": 19687,
+      "scenes": ["boss"],
+      "sha256": "4f3f7a68fa0ceb2bddec235c5be78a5b7ca04d9fdc172fa5a5c98c1f71f0a88d",
+      "settingsBus": "effects",
+      "durationSeconds": 2.4,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/ending-music.mp3",
+      "bytes": 525574,
+      "scenes": ["ending"],
+      "sha256": "22b9412542504f73ca12be6f573973613468f75f3ff5b69b5551f996246576ec",
+      "settingsBus": "music",
+      "durationSeconds": 75.0,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/flare.mp3",
+      "bytes": 13506,
+      "scenes": ["opening"],
+      "sha256": "2511a771389aa774e54479c09d7925e8146ef07394b05402d80dc63a59234c6b",
+      "settingsBus": "effects",
+      "durationSeconds": 1.6,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/frost.mp3",
+      "bytes": 7775,
+      "scenes": ["boss", "opening"],
+      "sha256": "29535f29c14e6347a3278c681bb52ddfa819e9befa68287389f8aec8507620e9",
+      "settingsBus": "effects",
+      "durationSeconds": 0.9,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/gate.mp3",
+      "bytes": 7566,
+      "scenes": ["opening"],
+      "sha256": "6edb415449a1f4360a2938631ed73c958a1716bab16b79ce74d14c7127c8904f",
+      "settingsBus": "effects",
+      "durationSeconds": 0.872426,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/glass.mp3",
+      "bytes": 5685,
+      "scenes": ["boss", "ending"],
+      "sha256": "71501425738f6c629cbd22fc6a169089e481b07edb30cf1a773000d9aeff3108",
+      "settingsBus": "effects",
+      "durationSeconds": 0.640952,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/growl.mp3",
+      "bytes": 9069,
+      "scenes": ["opening"],
+      "sha256": "7f74c6829895349f15b7c368baaf5d42a5e0db3883974d20b8cdf408071293fd",
+      "settingsBus": "effects",
+      "durationSeconds": 1.07,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/gust.mp3",
+      "bytes": 26165,
+      "scenes": ["boss", "ending", "opening"],
+      "sha256": "5d045d98a2c3ba27b3dbd5be94ee0fefa550f56c6bc906fd8afaae661c6b865b",
+      "settingsBus": "effects",
+      "durationSeconds": 3.2,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/ice.mp3",
+      "bytes": 12581,
+      "scenes": ["opening"],
+      "sha256": "58aef84a28e39745ecdb760cfd5332e672dd1696a42b9470f2df9b0b35f3b29f",
+      "settingsBus": "effects",
+      "durationSeconds": 1.5,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/links.mp3",
+      "bytes": 12372,
+      "scenes": ["opening"],
+      "sha256": "1295ddcd1464a2d9246f2e99820223449bdf72acb0335f37fa4ecdd9d0a4aa8a",
+      "settingsBus": "effects",
+      "durationSeconds": 1.48,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/magic.mp3",
+      "bytes": 13208,
+      "scenes": ["boss", "ending", "opening"],
+      "sha256": "63a8ec991603966ce1101c350bec20150cafa20d9cd7ff8283a06b0112520464",
+      "settingsBus": "effects",
+      "durationSeconds": 1.577664,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/melt.mp3",
+      "bytes": 3386,
+      "scenes": ["ending"],
+      "sha256": "33f978f391a686eaee812eb4fac3f162c0753cbec4c245b355ed27515c2abcef",
+      "settingsBus": "effects",
+      "durationSeconds": 0.358345,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/opening-music.mp3",
+      "bytes": 490748,
+      "scenes": ["opening"],
+      "sha256": "917c70bd76008d5ac9cb5183dd5a1afa1f05c6cfba24f581d8d32e90ee47028b",
+      "settingsBus": "music",
+      "durationSeconds": 70.0,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/pouch.mp3",
+      "bytes": 4013,
+      "scenes": ["ending"],
+      "sha256": "876aa013d1d81b6e158345c28777bf5d074c32ae3c4063146a789ea22c196777",
+      "settingsBus": "effects",
+      "durationSeconds": 0.442222,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/quake.mp3",
+      "bytes": 32643,
+      "scenes": ["opening"],
+      "sha256": "50a3fbfe1a9b56dd66a230eb1d4309f91dd444cdd70612b654103d0f31035188",
+      "settingsBus": "effects",
+      "durationSeconds": 4.0,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/rattle.mp3",
+      "bytes": 13470,
+      "scenes": ["boss", "ending"],
+      "sha256": "59b3e183c958daf7e123587379c348bfff5e682e77435f10648ee41439198159",
+      "settingsBus": "effects",
+      "durationSeconds": 1.6,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/shimmer.mp3",
+      "bytes": 24521,
+      "scenes": ["boss", "ending"],
+      "sha256": "51f130ced054bedf9c543bcf4acd634c1826f4d0d52ad407e48fca677dc8d4d1",
+      "settingsBus": "effects",
+      "durationSeconds": 3.0,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/slam.mp3",
+      "bytes": 4013,
+      "scenes": ["boss"],
+      "sha256": "ec85d9d8e1bf013751b864f0045cc6af045a013f5c68759a00da7c20c291449b",
+      "settingsBus": "effects",
+      "durationSeconds": 0.430136,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/splash.mp3",
+      "bytes": 6521,
+      "scenes": ["opening"],
+      "sha256": "98ebeccd07af9f3e54577c3f1b30be0d96d011513399a268f14fb5f4c2658f10",
+      "settingsBus": "effects",
+      "durationSeconds": 0.737891,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/thud.mp3",
+      "bytes": 4640,
+      "scenes": ["ending", "opening"],
+      "sha256": "e4ef84edd2d049ff18753629bfda6720c2ebf26fcbfad84c9d011114a5a038c0",
+      "settingsBus": "effects",
+      "durationSeconds": 0.507098,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/toll.mp3",
+      "bytes": 21358,
+      "scenes": ["boss", "ending", "opening"],
+      "sha256": "34e110279b3bd5889d4f3e0485a9e352cc46adcfd586f65b7fe66b3de92c4b05",
+      "settingsBus": "effects",
+      "durationSeconds": 2.6,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/whoosh.mp3",
+      "bytes": 3386,
+      "scenes": ["ending", "opening"],
+      "sha256": "df02280b53dd2147d22fe5e1c9c3c8a06b04e65ececb1274d24d6163ca0e67bd",
+      "settingsBus": "effects",
+      "durationSeconds": 0.365374,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/wind.mp3",
+      "bytes": 33688,
+      "scenes": ["opening"],
+      "sha256": "f3eb224822bc81d6230ee53fc39251bd66cd8786b0ca67a53600c57f31664d85",
+      "settingsBus": "effects",
+      "durationSeconds": 4.14034,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    }
+  ],
+  "budgets": {
+    "opening": {
+      "videoBytes": 3458992,
+      "posterBytes": 268964,
+      "audioBytes": 769023
+    },
+    "boss": {
+      "videoBytes": 3732251,
+      "posterBytes": 139902,
+      "audioBytes": 703865
+    },
+    "ending": {
+      "videoBytes": 3329683,
+      "posterBytes": 193718,
+      "audioBytes": 711555
+    }
+  }
+}

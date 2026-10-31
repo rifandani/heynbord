@@ -447,6 +447,264 @@ for (const locale of ["en-us", "id-id"] as const) {
   });
 }
 
+for (const locale of ["en-us", "id-id"] as const) {
+  test(`Thornwood Boss conversation fits a landscape phone: ${locale}`, async ({
+    page,
+    context,
+  }, testInfo) => {
+    test.setTimeout(60_000);
+    await context.addCookies([
+      {
+        name: "app-locale",
+        value: locale,
+        url: testInfo.project.use.baseURL ?? "http://localhost:4000",
+      },
+    ]);
+    await page.setViewportSize({ width: 667, height: 375 });
+    await seedProfile(page, {
+      ...newProfile(42),
+      stageResults: { "1-10": 1, "2-10": 1, "3-10": 1, "4-9": 2 },
+      seenStoryScenes: [
+        ...[1, 2, 3].flatMap((region) =>
+          ["opening", "boss", "ending"].map(
+            (kind) => `region-${region}-${kind}`
+          )
+        ),
+        "region-4-opening",
+      ],
+    });
+    await page.getByTestId("building-townGate").click();
+    await expect(page.getByTestId("region-banner")).toHaveAttribute(
+      "data-region",
+      "4"
+    );
+    await expect(page.getByTestId("story-player")).toHaveCount(0);
+    await page.getByTestId("region-story").click();
+    await page
+      .getByRole("button", {
+        name: locale === "en-us" ? "Boss" : "Bos",
+        exact: true,
+      })
+      .click();
+    const text = page.getByTestId("story-text");
+    await expect(text).toContainText(
+      locale === "en-us" ? "The noise of your battles" : "Suara pertempuranmu"
+    );
+    // 11 lines over 5 moments; the third moment has three lines.
+    for (let line = 0; line < 11; line += 1) {
+      const box = await text.boundingBox();
+      expect(box && box.y >= 0 && box.y + box.height <= 375).toBe(true);
+      if (line === 1) {
+        await expect(page.getByTestId("story-speaker")).toHaveText(
+          locale === "en-us" ? "The Old Bramble" : "Old Bramble"
+        );
+      }
+      if (line === 4) {
+        await page.screenshot({
+          path: testInfo.outputPath(`${locale}-thornwood-boss-phone.png`),
+        });
+      }
+      await page.getByTestId("story-continue").click();
+    }
+    await expect(page.getByTestId("story-player")).toBeHidden();
+  });
+}
+
+/** Every Story Scene of the Regions before `region`, already seen. */
+const seenBefore = (region: number) =>
+  Array.from({ length: region - 1 }, (_, index) => index + 1).flatMap(
+    (before) =>
+      ["opening", "boss", "ending"].map((kind) => `region-${before}-${kind}`)
+  );
+const thornwoodWon = { "1-10": 1, "2-10": 1, "3-10": 1, "4-10": 1 };
+
+for (const locale of ["en-us", "id-id"] as const) {
+  test(`Hollow Marches opening: reduced motion, phone and Skip: ${locale}`, async ({
+    page,
+    context,
+  }, testInfo) => {
+    test.setTimeout(60_000);
+    await context.addCookies([
+      {
+        name: "app-locale",
+        value: locale,
+        url: testInfo.project.use.baseURL ?? "http://localhost:4000",
+      },
+    ]);
+    await page.setViewportSize({ width: 667, height: 375 });
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await seedProfile(page, {
+      ...newProfile(42),
+      stageResults: thornwoodWon,
+      seenStoryScenes: seenBefore(5),
+    });
+    // The Town requests no Story media.
+    expect(
+      await page.evaluate(() =>
+        performance
+          .getEntriesByType("resource")
+          .filter((entry) => entry.name.includes("/story/"))
+      )
+    ).toEqual([]);
+    await page.getByTestId("building-townGate").click();
+    await expect(page.getByTestId("region-banner")).toHaveAttribute(
+      "data-region",
+      "5"
+    );
+    const player = page.getByTestId("story-player");
+    await expect(player).toBeVisible();
+    await expect(page.locator("video")).toHaveCount(0);
+    const text = page.getByTestId("story-text");
+    await expect(text).toContainText(
+      locale === "en-us"
+        ? "The coins of bone lead you"
+        : "Koin-koin tulang menuntunmu"
+    );
+    // Reduced motion shows the poster of the moment, loaded, and no clip.
+    const poster = player.locator(
+      'img[src="/story/hollow-marches/v1/opening-01.webp"]'
+    );
+    await expect(poster).toHaveCount(1);
+    await expect
+      .poll(() =>
+        poster.evaluate((image: HTMLImageElement) => image.naturalWidth)
+      )
+      .toBe(1280);
+    for (let moment = 0; moment < 3; moment += 1) {
+      for (const target of [
+        text,
+        page.getByTestId("story-skip"),
+        page.getByTestId("story-continue"),
+      ]) {
+        const box = await target.boundingBox();
+        expect(box && box.y >= 0 && box.y + box.height <= 375).toBe(true);
+      }
+      if (moment === 1) {
+        await page.screenshot({
+          path: testInfo.outputPath(`${locale}-hollow-marches-opening.png`),
+        });
+      }
+      await page.getByTestId("story-continue").click();
+    }
+    await page.getByTestId("story-skip").click();
+    await expect(player).toBeHidden();
+    const saved = await savedProfile(page);
+    expect(saved.seenStoryScenes).toContain("region-5-opening");
+  });
+
+  test(`Hollow Marches Boss conversation fits a landscape phone: ${locale}`, async ({
+    page,
+    context,
+  }, testInfo) => {
+    test.setTimeout(60_000);
+    await context.addCookies([
+      {
+        name: "app-locale",
+        value: locale,
+        url: testInfo.project.use.baseURL ?? "http://localhost:4000",
+      },
+    ]);
+    await page.setViewportSize({ width: 667, height: 375 });
+    await seedProfile(page, {
+      ...newProfile(42),
+      stageResults: { ...thornwoodWon, "5-9": 2 },
+      seenStoryScenes: [...seenBefore(5), "region-5-opening"],
+    });
+    await page.getByTestId("building-townGate").click();
+    await expect(page.getByTestId("story-player")).toHaveCount(0);
+    await page.getByTestId("region-story").click();
+    await page
+      .getByRole("button", {
+        name: locale === "en-us" ? "Boss" : "Bos",
+        exact: true,
+      })
+      .click();
+    const text = page.getByTestId("story-text");
+    await expect(text).toContainText(
+      locale === "en-us" ? "300 quiet years" : "300 tahun yang tenang"
+    );
+    // 14 lines over 5 moments; the Queen speaks nine of them.
+    for (let line = 0; line < 14; line += 1) {
+      const box = await text.boundingBox();
+      expect(box && box.y >= 0 && box.y + box.height <= 375).toBe(true);
+      if (line === 1) {
+        await expect(page.getByTestId("story-speaker")).toHaveText(
+          "Queen Marrow"
+        );
+      }
+      if (line === 4) {
+        await expect(text).toHaveAttribute("data-speaker", "hero");
+      }
+      if (line === 10) {
+        await page.screenshot({
+          path: testInfo.outputPath(`${locale}-hollow-marches-boss-phone.png`),
+        });
+      }
+      await page.getByTestId("story-continue").click();
+    }
+    await expect(page.getByTestId("story-player")).toBeHidden();
+  });
+}
+
+test("the first Fight on Stage 5-10 plays the Queen's conversation, then the Battle", async ({
+  page,
+}) => {
+  test.setTimeout(60_000);
+  await seedProfile(page, {
+    ...newProfile(42),
+    stageResults: { ...thornwoodWon, "5-9": 2 },
+    seenStoryScenes: [...seenBefore(5), "region-5-opening"],
+  });
+  await page.getByTestId("building-townGate").click();
+  await page.getByTestId("stage-5-10").click();
+  await page.getByTestId("start-battle").click();
+  await expect(page.getByTestId("story-text")).toContainText("300 quiet years");
+  await page.getByTestId("story-continue").click();
+  await expect(page.getByTestId("story-speaker")).toHaveText("Queen Marrow");
+  await page.getByTestId("story-skip").click();
+  await expect(page.locator("[data-battle-canvas] canvas")).toBeVisible({
+    timeout: 30_000,
+  });
+  const saved = await savedProfile(page);
+  expect(saved.seenStoryScenes).toContain("region-5-boss");
+  expect(saved.seenStoryScenes).not.toContain("region-5-ending");
+});
+
+test("the Stage 5-10 win plays the Hollow Marches ending on the next visit", async ({
+  page,
+}) => {
+  test.setTimeout(60_000);
+  await seedProfile(page, {
+    ...newProfile(42),
+    stageResults: { ...thornwoodWon, "5-9": 2, "5-10": 1 },
+    seenStoryScenes: [...seenBefore(5), "region-5-opening", "region-5-boss"],
+  });
+  await page.getByTestId("building-townGate").click();
+  const text = page.getByTestId("story-text");
+  await expect(text).toContainText("The hall goes quiet");
+  // 9 lines over 5 moments.
+  for (let line = 1; line < 9; line += 1) {
+    await page.getByTestId("story-continue").click();
+    if (line === 2) {
+      await expect(text).toContainText("You are loud. I like loud.");
+      await expect(page.getByTestId("story-speaker")).toHaveText(
+        "Queen Marrow"
+      );
+    }
+    if (line === 4) {
+      await expect(text).toContainText("Tower stone. Heynspire.");
+    }
+  }
+  await expect(text).toContainText("The trail leads home.");
+  await expect(page.getByTestId("story-continue")).toHaveText(
+    "Return to Region"
+  );
+  await page.getByTestId("story-continue").click();
+  await expect(page.getByTestId("story-player")).toBeHidden();
+  const saved = await savedProfile(page);
+  expect(saved.seenStoryScenes).toContain("region-5-ending");
+});
+
 test("old saves get replay access without automatic scenes", async ({
   page,
 }) => {

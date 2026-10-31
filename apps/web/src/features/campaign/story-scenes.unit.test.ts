@@ -7,6 +7,7 @@ import {
   finishStory,
   pendingBossStory,
   pendingStory,
+  seenStory,
   STORY_MOMENTS,
   storyCues,
   storyLineKey,
@@ -39,13 +40,15 @@ describe("Region Story Scenes", () => {
     expect(availableStories(profile, 2)).toEqual(["opening"]);
     expect(pendingStory(profile, 2)).toBe("opening");
     expect(pendingStory(finishStory(profile, 2, "opening"), 2)).toBeNull();
-    // Regions without produced Story Scenes have none.
-    expect(
-      availableStories(
-        { ...profile, stageResults: { "1-10": 1, "2-10": 1, "3-10": 1 } },
-        4
-      )
-    ).toEqual([]);
+    // The Hollow Marches opening needs the Thornwood Boss win; a Region with
+    // no produced Story Scenes has none.
+    const allWon = {
+      ...profile,
+      stageResults: { "1-10": 1, "2-10": 1, "3-10": 1, "4-10": 1 },
+    };
+    expect(availableStories(profile, 5)).toEqual([]);
+    expect(availableStories(allWon, 5)).toEqual(["opening"]);
+    expect(availableStories(allWon, 6)).toEqual([]);
   });
 
   it("the Red Mesas Boss scene plays from its own Boss Stage, and its win makes the ending pending", () => {
@@ -85,6 +88,9 @@ describe("Region Story Scenes", () => {
     expect(pendingStory(profile, 1)).toBeNull();
     expect(availableStories(profile, 1)).toEqual(["opening"]);
     expect(finishStory(profile, 1, "opening")).toEqual(profile);
+    expect(seenStory(profile, 1, "opening")).toBe(true);
+    expect(seenStory(profile, 1, "ending")).toBe(false);
+    expect(seenStory(profile, 2, "opening")).toBe(false);
   });
 
   it("a one-Star Boss win makes the ending pending, with priority over the opening", () => {
@@ -150,11 +156,70 @@ describe("Region Story Scenes", () => {
     expect(storyLines(2, "boss", 4)[1]).toBe("grukka");
     expect(storyLineKey(2, "ending", 2, 1)).toBe("story.redMesas.ending.3b");
     expect(storyLineKey(2, "ending", 3, 0)).toBe("story.redMesas.ending.4");
+    expect(lines(4, "boss")).toHaveLength(11);
+    expect(lines(4, "ending")).toHaveLength(7);
+    expect(storyLines(4, "boss", 2)).toEqual(["bramble", "bramble", "hero"]);
+    expect(storyLineKey(4, "ending", 1, 1)).toBe("story.thornwood.ending.2b");
+    expect(storyLines(4, "ending", 1)[1]).toBe("lethiel");
+    expect(lines(5, "boss")).toHaveLength(14);
+    expect(lines(5, "ending")).toHaveLength(9);
+    expect(storyLines(5, "boss", 1)).toEqual(["marrow", "marrow", "hero"]);
+    expect(storyLineKey(5, "boss", 0, 1)).toBe("story.hollowMarches.boss.1b");
+    expect(storyLineKey(5, "ending", 2, 2)).toBe(
+      "story.hollowMarches.ending.3c"
+    );
+    expect(storyLineKey(5, "ending", 4, 0)).toBe(
+      "story.hollowMarches.ending.5"
+    );
+  });
+
+  it("the Hollow Marches scenes follow the Thornwood Boss win", () => {
+    const profile = {
+      ...newProfile(3),
+      stageResults: { "1-10": 1, "2-10": 1, "3-10": 1, "4-10": 1, "5-9": 1 },
+    };
+    expect(availableStories(profile, 5)).toEqual(["opening", "boss"]);
+    expect(pendingStory(profile, 5)).toBe("opening");
+    expect(pendingBossStory(profile, "5-10")).toBe(true);
+    expect(pendingBossStory(finishStory(profile, 5, "boss"), "5-10")).toBe(
+      false
+    );
+    const won = {
+      ...profile,
+      stageResults: { ...profile.stageResults, "5-10": 1 },
+    };
+    expect(pendingStory(won, 5)).toBe("ending");
+    expect(pendingStory(finishStory(won, 5, "ending"), 5)).toBeNull();
+  });
+
+  it("the Thornwood scenes follow the Glowcap Hollows Boss win", () => {
+    const profile = {
+      ...newProfile(3),
+      stageResults: { "1-10": 1, "2-10": 1, "3-10": 1, "4-9": 1 },
+    };
+    expect(availableStories(profile, 4)).toEqual(["opening", "boss"]);
+    expect(pendingStory(profile, 4)).toBe("opening");
+    expect(pendingBossStory(profile, "4-10")).toBe(true);
+    const won = {
+      ...profile,
+      stageResults: { ...profile.stageResults, "4-10": 1 },
+    };
+    expect(pendingStory(won, 4)).toBe("ending");
   });
 
   it("each Region requests its own versioned media", () => {
     expect(storyMedia(1, "boss", 0)).toBe("/story/hearthvale/v2/boss-01");
     expect(storyMedia(2, "ending", 4)).toBe("/story/red-mesas/v1/ending-05");
+    expect(storyMedia(4, "boss", 1)).toBe("/story/thornwood/v1/boss-02");
+    expect(storyMedia(5, "ending", 4)).toBe(
+      "/story/hollow-marches/v1/ending-05"
+    );
+    expect(storyCues(5, "boss", 4)).toHaveLength(5);
+    expect(storyCues(5, "boss", 4)[0]).toEqual({
+      file: "drums",
+      at: 0.1,
+      gainDb: -2,
+    });
     expect(storyCues(2, "opening", 1).at(-1)).toEqual({
       file: "explosion",
       at: 3.3,

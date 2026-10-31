@@ -1,6 +1,7 @@
 import type { Texture } from "three";
 import { CanvasTexture, SRGBColorSpace } from "three";
 
+import { loadBattleImage } from "@/features/battle/battle-preload";
 import {
   FX_ATLAS_SIZE,
   FX_ATLAS_URL,
@@ -88,11 +89,9 @@ const withPlaceholders = (
 };
 
 const loadPainted = async (placeholders: HTMLCanvasElement) => {
-  const painted = new Image();
-  painted.decoding = "async";
-  painted.src = FX_ATLAS_URL;
+  let painted: HTMLImageElement;
   try {
-    await painted.decode();
+    painted = await loadBattleImage(FX_ATLAS_URL);
   } catch {
     // The effects keep the placeholders.
     return;

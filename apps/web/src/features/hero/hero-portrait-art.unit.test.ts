@@ -9,6 +9,7 @@ import { describe, expect, it } from "vitest";
 import {
   hasHeroPortraitArt,
   heroPortraitArt,
+  STANDARD_HERO_PORTRAIT,
   UNPAINTED_HERO_PORTRAIT_ART,
 } from "./hero-portrait-art";
 
@@ -66,9 +67,20 @@ describe("Hero portrait art (Hero Portrait Concepts 2)", () => {
         .filter((art): art is string => art !== null)
         .map((art) => art.replace("/hero-portraits/", ""))
     );
+    used.add(STANDARD_HERO_PORTRAIT.replace("/hero-portraits/", ""));
     expect(readdirSync(PORTRAITS).filter((file) => !used.has(file))).toEqual(
       []
     );
+  });
+
+  it("has a 600 × 800 WebP face for the Standard person", async () => {
+    const file = fileURLToPath(new URL("standard.webp", PORTRAITS));
+    const { format, width, height } = await sharp(file).metadata();
+    expect({ format, width, height }).toEqual({
+      format: "webp",
+      width: 600,
+      height: 800,
+    });
   });
 
   it("shows the Standard portrait for a portrait that is marked unpainted", () => {

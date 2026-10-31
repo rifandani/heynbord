@@ -12,6 +12,7 @@ import type { Plugin, PluginOption } from "vite";
 import { defineConfig } from "vite";
 import { VitePWA } from "vite-plugin-pwa";
 
+import { battleBuildGraph } from "./scripts/battle-build-graph";
 import { rulesHash } from "./scripts/rules-hash";
 
 /**
@@ -53,6 +54,9 @@ const collectShellChunks = (): Plugin => ({
       for (const css of chunk.viteMetadata?.importedCss ?? []) {
         shellFiles.add(css);
       }
+      for (const asset of chunk.viteMetadata?.importedAssets ?? []) {
+        shellFiles.add(asset);
+      }
       for (const imported of chunk.imports) {
         add(imported);
       }
@@ -78,13 +82,13 @@ const collectShellChunks = (): Plugin => ({
 });
 
 /**
- * Drops every lazy JavaScript chunk from the precache. The hashed CSS, fonts
+ * Drops lazy JavaScript and WASM from the precache. The hashed CSS, fonts
  * and images under `assets/`, `offline.html` and the icons stay: they are the
  * app shell. Art and music are never matched by `globPatterns`.
  */
 const shellOnly = <T extends { readonly url: string }>(entries: T[]) => ({
   manifest: entries.filter(
-    (entry) => !entry.url.endsWith(".js") || shellFiles.has(entry.url)
+    (entry) => !/\.(?:js|wasm)$/u.test(entry.url) || shellFiles.has(entry.url)
   ),
   warnings: [],
 });
@@ -151,6 +155,7 @@ export default defineConfig({
       filename: "html/visualizer-stats.html",
     }) satisfies PluginOption,
     collectShellChunks(),
+    battleBuildGraph(),
     serveDevServiceWorker(),
     VitePWA({
       strategies: "injectManifest",
@@ -324,6 +329,8 @@ export default defineConfig({
     // Reached only via virtual modules (PWA register, dev service worker), so
     // the dep scanner misses them and Vite reloads the page on first visit.
     include: [
+      "three/addons/libs/meshopt_decoder.module.js",
+      "three/addons/loaders/KTX2Loader.js",
       "workbox-window",
       "workbox-expiration",
       "workbox-precaching",

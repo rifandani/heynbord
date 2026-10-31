@@ -1,0 +1,348 @@
+{
+  "measuredAt": "2026-10-31",
+  "source": "apps/web/public/models/heroes",
+  "counting": "Published bytes before HTTP compression. Each appearance is one self-contained GLB; shared files count once in each appearance that needs them.",
+  "ceilingBytes": 10000000,
+  "appearances": 56,
+  "totalBytes": 27713416,
+  "minBytes": 458020,
+  "maxBytes": 536656,
+  "rows": [
+    {
+      "person": "standard",
+      "gearLook": "standard",
+      "file": "standard-standard.glb",
+      "bytes": 458020
+    },
+    {
+      "person": "standard",
+      "gearLook": "copper-rim",
+      "file": "standard-copper-rim.glb",
+      "bytes": 463500
+    },
+    {
+      "person": "standard",
+      "gearLook": "iron-vine",
+      "file": "standard-iron-vine.glb",
+      "bytes": 474356
+    },
+    {
+      "person": "standard",
+      "gearLook": "stag-leather",
+      "file": "standard-stag-leather.glb",
+      "bytes": 471180
+    },
+    {
+      "person": "standard",
+      "gearLook": "gold-inlay",
+      "file": "standard-gold-inlay.glb",
+      "bytes": 465816
+    },
+    {
+      "person": "standard",
+      "gearLook": "moonstone",
+      "file": "standard-moonstone.glb",
+      "bytes": 468568
+    },
+    {
+      "person": "standard",
+      "gearLook": "royal-plate",
+      "file": "standard-royal-plate.glb",
+      "bytes": 473864
+    },
+    {
+      "person": "dawn-gaze",
+      "gearLook": "standard",
+      "file": "dawn-gaze-standard.glb",
+      "bytes": 513412
+    },
+    {
+      "person": "dawn-gaze",
+      "gearLook": "copper-rim",
+      "file": "dawn-gaze-copper-rim.glb",
+      "bytes": 517964
+    },
+    {
+      "person": "dawn-gaze",
+      "gearLook": "iron-vine",
+      "file": "dawn-gaze-iron-vine.glb",
+      "bytes": 536656
+    },
+    {
+      "person": "dawn-gaze",
+      "gearLook": "stag-leather",
+      "file": "dawn-gaze-stag-leather.glb",
+      "bytes": 526760
+    },
+    {
+      "person": "dawn-gaze",
+      "gearLook": "gold-inlay",
+      "file": "dawn-gaze-gold-inlay.glb",
+      "bytes": 520808
+    },
+    {
+      "person": "dawn-gaze",
+      "gearLook": "moonstone",
+      "file": "dawn-gaze-moonstone.glb",
+      "bytes": 524604
+    },
+    {
+      "person": "dawn-gaze",
+      "gearLook": "royal-plate",
+      "file": "dawn-gaze-royal-plate.glb",
+      "bytes": 528108
+    },
+    {
+      "person": "verdant-crest",
+      "gearLook": "standard",
+      "file": "verdant-crest-standard.glb",
+      "bytes": 469396
+    },
+    {
+      "person": "verdant-crest",
+      "gearLook": "copper-rim",
+      "file": "verdant-crest-copper-rim.glb",
+      "bytes": 475680
+    },
+    {
+      "person": "verdant-crest",
+      "gearLook": "iron-vine",
+      "file": "verdant-crest-iron-vine.glb",
+      "bytes": 487596
+    },
+    {
+      "person": "verdant-crest",
+      "gearLook": "stag-leather",
+      "file": "verdant-crest-stag-leather.glb",
+      "bytes": 482740
+    },
+    {
+      "person": "verdant-crest",
+      "gearLook": "gold-inlay",
+      "file": "verdant-crest-gold-inlay.glb",
+      "bytes": 476716
+    },
+    {
+      "person": "verdant-crest",
+      "gearLook": "moonstone",
+      "file": "verdant-crest-moonstone.glb",
+      "bytes": 480068
+    },
+    {
+      "person": "verdant-crest",
+      "gearLook": "royal-plate",
+      "file": "verdant-crest-royal-plate.glb",
+      "bytes": 485284
+    },
+    {
+      "person": "mesa-shade",
+      "gearLook": "standard",
+      "file": "mesa-shade-standard.glb",
+      "bytes": 474348
+    },
+    {
+      "person": "mesa-shade",
+      "gearLook": "copper-rim",
+      "file": "mesa-shade-copper-rim.glb",
+      "bytes": 478888
+    },
+    {
+      "person": "mesa-shade",
+      "gearLook": "iron-vine",
+      "file": "mesa-shade-iron-vine.glb",
+      "bytes": 491532
+    },
+    {
+      "person": "mesa-shade",
+      "gearLook": "stag-leather",
+      "file": "mesa-shade-stag-leather.glb",
+      "bytes": 487128
+    },
+    {
+      "person": "mesa-shade",
+      "gearLook": "gold-inlay",
+      "file": "mesa-shade-gold-inlay.glb",
+      "bytes": 482544
+    },
+    {
+      "person": "mesa-shade",
+      "gearLook": "moonstone",
+      "file": "mesa-shade-moonstone.glb",
+      "bytes": 484468
+    },
+    {
+      "person": "mesa-shade",
+      "gearLook": "royal-plate",
+      "file": "mesa-shade-royal-plate.glb",
+      "bytes": 489308
+    },
+    {
+      "person": "salt-wind",
+      "gearLook": "standard",
+      "file": "salt-wind-standard.glb",
+      "bytes": 498268
+    },
+    {
+      "person": "salt-wind",
+      "gearLook": "copper-rim",
+      "file": "salt-wind-copper-rim.glb",
+      "bytes": 503488
+    },
+    {
+      "person": "salt-wind",
+      "gearLook": "iron-vine",
+      "file": "salt-wind-iron-vine.glb",
+      "bytes": 513660
+    },
+    {
+      "person": "salt-wind",
+      "gearLook": "stag-leather",
+      "file": "salt-wind-stag-leather.glb",
+      "bytes": 509224
+    },
+    {
+      "person": "salt-wind",
+      "gearLook": "gold-inlay",
+      "file": "salt-wind-gold-inlay.glb",
+      "bytes": 502820
+    },
+    {
+      "person": "salt-wind",
+      "gearLook": "moonstone",
+      "file": "salt-wind-moonstone.glb",
+      "bytes": 506512
+    },
+    {
+      "person": "salt-wind",
+      "gearLook": "royal-plate",
+      "file": "salt-wind-royal-plate.glb",
+      "bytes": 513196
+    },
+    {
+      "person": "lantern-keeper",
+      "gearLook": "standard",
+      "file": "lantern-keeper-standard.glb",
+      "bytes": 498228
+    },
+    {
+      "person": "lantern-keeper",
+      "gearLook": "copper-rim",
+      "file": "lantern-keeper-copper-rim.glb",
+      "bytes": 505028
+    },
+    {
+      "person": "lantern-keeper",
+      "gearLook": "iron-vine",
+      "file": "lantern-keeper-iron-vine.glb",
+      "bytes": 516120
+    },
+    {
+      "person": "lantern-keeper",
+      "gearLook": "stag-leather",
+      "file": "lantern-keeper-stag-leather.glb",
+      "bytes": 510176
+    },
+    {
+      "person": "lantern-keeper",
+      "gearLook": "gold-inlay",
+      "file": "lantern-keeper-gold-inlay.glb",
+      "bytes": 507548
+    },
+    {
+      "person": "lantern-keeper",
+      "gearLook": "moonstone",
+      "file": "lantern-keeper-moonstone.glb",
+      "bytes": 510020
+    },
+    {
+      "person": "lantern-keeper",
+      "gearLook": "royal-plate",
+      "file": "lantern-keeper-royal-plate.glb",
+      "bytes": 513524
+    },
+    {
+      "person": "tent-rings",
+      "gearLook": "standard",
+      "file": "tent-rings-standard.glb",
+      "bytes": 485780
+    },
+    {
+      "person": "tent-rings",
+      "gearLook": "copper-rim",
+      "file": "tent-rings-copper-rim.glb",
+      "bytes": 490888
+    },
+    {
+      "person": "tent-rings",
+      "gearLook": "iron-vine",
+      "file": "tent-rings-iron-vine.glb",
+      "bytes": 504060
+    },
+    {
+      "person": "tent-rings",
+      "gearLook": "stag-leather",
+      "file": "tent-rings-stag-leather.glb",
+      "bytes": 501100
+    },
+    {
+      "person": "tent-rings",
+      "gearLook": "gold-inlay",
+      "file": "tent-rings-gold-inlay.glb",
+      "bytes": 489688
+    },
+    {
+      "person": "tent-rings",
+      "gearLook": "moonstone",
+      "file": "tent-rings-moonstone.glb",
+      "bytes": 491008
+    },
+    {
+      "person": "tent-rings",
+      "gearLook": "royal-plate",
+      "file": "tent-rings-royal-plate.glb",
+      "bytes": 502588
+    },
+    {
+      "person": "gold-crest",
+      "gearLook": "standard",
+      "file": "gold-crest-standard.glb",
+      "bytes": 484384
+    },
+    {
+      "person": "gold-crest",
+      "gearLook": "copper-rim",
+      "file": "gold-crest-copper-rim.glb",
+      "bytes": 488860
+    },
+    {
+      "person": "gold-crest",
+      "gearLook": "iron-vine",
+      "file": "gold-crest-iron-vine.glb",
+      "bytes": 500176
+    },
+    {
+      "person": "gold-crest",
+      "gearLook": "stag-leather",
+      "file": "gold-crest-stag-leather.glb",
+      "bytes": 495780
+    },
+    {
+      "person": "gold-crest",
+      "gearLook": "gold-inlay",
+      "file": "gold-crest-gold-inlay.glb",
+      "bytes": 491320
+    },
+    {
+      "person": "gold-crest",
+      "gearLook": "moonstone",
+      "file": "gold-crest-moonstone.glb",
+      "bytes": 491768
+    },
+    {
+      "person": "gold-crest",
+      "gearLook": "royal-plate",
+      "file": "gold-crest-royal-plate.glb",
+      "bytes": 498892
+    }
+  ]
+}

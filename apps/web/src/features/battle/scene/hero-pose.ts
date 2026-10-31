@@ -142,7 +142,8 @@ export const heroPose = (
     event?._tag === "DamageDealt" &&
     event.target._tag === "Hero" &&
     event.target.side === side &&
-    event.target.hero === ref.hero;
+    event.target.hero === ref.hero &&
+    event.hp < (current?.before.sides[side].heroes[ref.hero]?.hp ?? 0);
   const color = glowColor(ref, event);
   // Up while the spell gathers, down when the bolt leaves.
   const swell = color ? Math.sin(Math.min(1, progress / 0.6) * Math.PI) : 0;
@@ -158,7 +159,7 @@ export const heroPose = (
       lift * 0.12 * toBoard,
     y:
       HERO_FIGURE_Y +
-      Math.sin(time * 1.4 + beat) * 0.03 +
+      (reducedMotion ? 0 : Math.sin(time * 1.4 + beat) * 0.03) +
       lift * 0.3 -
       down.sink,
     z: standZ(ref, current, view, progress, reducedMotion),

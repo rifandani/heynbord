@@ -1,7 +1,7 @@
 import { useAtomValue } from "@effect/atom-react";
 import { useFrame } from "@react-three/fiber";
 import type { CosmeticId, HeroRef, Side } from "@workspace/rules";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
 import type { CanvasTexture, Group, Mesh, MeshBasicMaterial } from "three";
 import { Color, ShaderMaterial } from "three";
 
@@ -28,7 +28,11 @@ import {
   loadedHeroPortrait,
 } from "@/features/battle/scene/textures";
 import { HIT_TINT, SCENE_WHITE } from "@/features/battle/tokens";
-import { activeHeroPortraitAtom } from "@/features/profile/profile.atoms";
+import { HERO_MODELS_ENABLED } from "@/features/hero/hero-model-feature";
+
+const HeroModelBody = lazy(
+  () => import("@/features/battle/scene/hero-model-body")
+);
 
 const WHITE = new Color(SCENE_WHITE);
 const HIT = new Color(HIT_TINT);
@@ -95,28 +99,27 @@ const tintHero = (parts: FigureParts, pose: HeroPose) => {
 const HeroFigure = ({ side, hero }: HeroRef) => {
   const session = useAtomValue(shownSessionAtom);
   const classId = session?.view.sides[side].heroes[hero]?.classId ?? "warrior";
-  const portrait = useAtomValue(activeHeroPortraitAtom);
+  const portrait = session?.options.appearance?.portrait ?? null;
   // Only the Player Hero shows the Player's portrait; the enemy keeps its Class glyph.
   const shownPortrait = side === "player" ? portrait : null;
+  const showPortrait =
+    side === "player" && (shownPortrait !== null || HERO_MODELS_ENABLED);
   const standee = useMemo(
     () => heroFigureTexture(side, classId),
     [side, classId]
   );
   const [art, setArt] = useState<{
-    readonly id: CosmeticId;
+    readonly id: CosmeticId | null;
     readonly texture: CanvasTexture;
   } | null>(() => {
-    const loaded =
-      shownPortrait === null
-        ? undefined
-        : loadedHeroPortrait(side, shownPortrait);
-    return shownPortrait === null || !loaded
-      ? null
-      : { id: shownPortrait, texture: loaded };
+    const loaded = showPortrait
+      ? loadedHeroPortrait(side, shownPortrait)
+      : undefined;
+    return loaded ? { id: shownPortrait, texture: loaded } : null;
   });
   useEffect(() => {
     const id = shownPortrait;
-    if (id === null || art?.id === id) {
+    if (!showPortrait || art?.id === id) {
       return;
     }
     let mounted = true;
@@ -130,9 +133,11 @@ const HeroFigure = ({ side, hero }: HeroRef) => {
     return () => {
       mounted = false;
     };
-  }, [side, shownPortrait, art]);
+  }, [side, shownPortrait, showPortrait, art]);
   const texture =
-    art === null || art.id !== shownPortrait ? undefined : art.texture;
+    !showPortrait || art === null || art.id !== shownPortrait
+      ? undefined
+      : art.texture;
   const shadowTexture = useMemo(() => blobShadowTexture(), []);
   const stand = useRef<Group>(null);
   const pivot = useRef<Group>(null);
@@ -141,6 +146,18 @@ const HeroFigure = ({ side, hero }: HeroRef) => {
   const shadow = useRef<MeshBasicMaterial>(null);
   const reducedMotion = useReducedMotion();
   const x = heroX(side);
+  const fallback = (
+    <mesh position={[0, HERO_FIGURE_Y, 0]}>
+      <planeGeometry args={[1.45, 2.03]} />
+      <meshBasicMaterial
+        ref={figure}
+        map={texture ?? standee}
+        transparent
+        alphaTest={0.05}
+        toneMapped={false}
+      />
+    </mesh>
+  );
 
   useFrame(({ camera }) => {
     const shown = playback.session ?? session;
@@ -196,16 +213,21 @@ const HeroFigure = ({ side, hero }: HeroRef) => {
         />
       </mesh>
       <group ref={pivot}>
-        <mesh position={[0, HERO_FIGURE_Y, 0]}>
-          <planeGeometry args={[1.45, 2.03]} />
-          <meshBasicMaterial
-            ref={figure}
-            map={texture ?? standee}
-            transparent
-            alphaTest={0.05}
-            toneMapped={false}
-          />
-        </mesh>
+        {HERO_MODELS_ENABLED && side === "player" ? (
+          <Suspense fallback={fallback}>
+            <HeroModelBody
+              appearance={
+                session?.options.appearance ?? {
+                  portrait: null,
+                  gearLook: null,
+                }
+              }
+              fallback={fallback}
+            />
+          </Suspense>
+        ) : (
+          fallback
+        )}
       </group>
     </group>
   );

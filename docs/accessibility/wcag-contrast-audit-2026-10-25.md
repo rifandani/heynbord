@@ -136,7 +136,7 @@ Standard ground; the color bounds cover the other ground variants.
 | Card Countdown and HP | SVG text has an explicit light or dark stroke. The Countdown ink/light edge pair is 13.98:1; cream against the HP text's dark stroke is 15.89:1. Card previews keep these parts at full opacity. |
 | Rank Gems | Pip count supplies the Rank cue. The lowest colored fill/opaque dark edge pair, Rare blue, is 4.31:1. |
 | Status and Damage Type glyphs | Icons have dark plates or outlines as well as their shapes. The Bleed anchor against Night Plate is 3.98:1. Status counts use the separate outlined text above. |
-| Legal targets | The target has an opaque Night Plate backing and edge. The pulse ranges from 45% to 85% gold; its conservative sRGB minimum against the edge is 3.50:1. Focus uses 95%. A Unit focus ring replaces the hidden target when appropriate. |
+| Legal targets | The mark is a gold rim (0.05 units) with a Night Plate hairline 0.02 units on each side, over a 22% gold fill. The rim and its hairline are the adjacent pair at 12.66:1, so the rim stays clear while the Board skin shows through. Focus uses a full-strength `focus-cream` rim. A Unit focus ring replaces the hidden target when appropriate. |
 | Unit focus | A light halo and opaque dark edge surround the Side-colored ring. The light/dark pair is 16.02:1. |
 | Battle Log and fallen marks | Parchment or cream marks have opaque ink edges. The fallen ring and cross keep both colors, including on dark skins. |
 | Painted controls and resource icons | Review checks their shape, dark rim and adjacent label or value. Lock seals, counts and selected markers remain independent of the decorative painting. |

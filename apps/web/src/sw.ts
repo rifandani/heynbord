@@ -15,7 +15,16 @@ const PAGES_CACHE = "web-pages-v1";
 /** Game art (in `public/`) the user has seen, for offline revisits. */
 const ART_CACHE = "web-art-v1";
 /** Folders in `public/` with game art. The precache leaves them out (see `vite.config.ts`). */
-const ART_FOLDERS = ["/creature/", "/skills/", "/town/", "/battle/", "/glb/"];
+const ART_FOLDERS = [
+  "/creature/",
+  "/models/units/",
+  "/skills/",
+  "/town/",
+  "/battle/",
+  "/models/heroes/",
+  "/hero-portraits/",
+  "/gear-looks/",
+];
 /** Static page (in `public/`) for an offline visit to an uncached page. */
 const OFFLINE_FALLBACK = "/offline.html";
 

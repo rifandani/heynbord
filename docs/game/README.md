@@ -33,7 +33,8 @@ One person (the solo developer) has all the roles. The roles show which point of
 
 ## Related files
 
-- [Region Story Scenes](./region-story-scenes.md): the agreed MOD-07 trial, its [Hearthvale](./hearthvale-storyboard.md), [Red Mesas](./red-mesas-storyboard.md) and [Glowcap Hollows](./glowcap-hollows-storyboard.md) storyboards and its fframes production prompt.
+- [Hero Models](./hero-models.md): the 22 accepted decisions for eight 3D Hero appearances, visible Gear, animations, previews, Replay appearance and release checks.
+- [Region Story Scenes](./region-story-scenes.md): the agreed MOD-07 trial, its [Hearthvale](./hearthvale-storyboard.md), [Red Mesas](./red-mesas-storyboard.md), [Glowcap Hollows](./glowcap-hollows-storyboard.md), [Thornwood](./thornwood-storyboard.md) and [Hollow Marches](./hollow-marches-storyboard.md) storyboards and its fframes production prompt.
 - [`packages/rules/GLOSSARY.md`](../../packages/rules/GLOSSARY.md): the game glossary. All documents use its terms.
 - [Performance records](./performance.md): the dated First Load and bundle measurements.
 - [ADR-0006](../adr/0006-game-rules-are-a-deterministic-package.md): why the game rules are a separate deterministic package.
@@ -67,3 +68,6 @@ These decisions come from a design review on 2026-10-03:
 | v1 card set | 4 Classes, 6 Races, 5 Ranks, 96 Creature Cards and 40 Skill Cards. |
 | Progression | Combine (no failure), Extract, Craft and hero gear. No Energy and no VIP. |
 | Languages | `en-us` and `id-id` from v1. |
+
+- [Battle budgets](./battle-budgets.md) — counting rules, explicit fixtures and CI command.
+- [Release checklist](./release-checklist.md) — required game release checks.

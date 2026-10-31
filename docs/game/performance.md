@@ -197,3 +197,71 @@ fixes the Slow 4G profile. Run `bun web measure:first-load` to add a dated
 record under First load (NFR-02) with the median of 3 runs and the pass or fail
 result for NFR-02. Keep the bundle record above: a First Load can pass the time
 gate with a bundle above the budget on a faster link.
+
+## Battle budgets — 2026-10-31
+
+**Battle byte budgets: PASS for all three declared configurations.** This record
+uses the approved limits in issue [#169](https://github.com/rifandani/heynbord/issues/169)
+and the Hero Model checks in issue [#168](https://github.com/rifandani/heynbord/issues/168).
+It measures byte totals. The existing NFR-01 and NFR-02 results above remain separate.
+The 5-type Unit Model selection and the Unit atlas pages in this record were
+removed on 2026-10-31. Its byte totals include assets that the current Battle
+no longer loads.
+
+- Measurement time: `2026-10-31T07:31:22.928Z` (UTC); 2026-10-31 in Asia/Jakarta.
+- Build: commit `810b384b767f1bc7aefc1a5e7c6f28bd0e04aefe`, dirty working tree. The record includes the existing Story changes, the Hero Models and this implementation. It does not describe the unmodified commit.
+- Command: `bun check:battle-budget`. Run from the repository root. The command builds with `VITE_HERO_MODELS=1`, so the Hero chunk and the Hero-enabled fixture are measured. The flag is off in a normal build.
+- One production build serves all three fixtures: Vite production mode, Nitro node-server, base `/`, Node `v26.3.0`, Bun `1.4.2`. Public E2E and Hero preview flags are empty; `VITE_HERO_MODELS=1`.
+- Stage 1-1: level 1, the valid 10-card Vanguard Starter Deck, Standard appearance, Board and Card Back. The measured set contains 19 distinct files.
+- Stage 5-10: level 30, the valid 15-card Vanguard Archetype plus one Epic Iron Bulwark, Gold Crest portrait, Royal Plate Gear look, Hollow Moon Board skin and Gold Fleur Card Back. The measured set contains 66 distinct files.
+- Stage 5-10 Hero: the same Battle with the Hero Model feature on, Dawn Gaze portrait and Iron Vine Gear look. This is the largest published appearance at 536,656 bytes. The measured set contains 67 distinct files.
+
+| Stage | Configuration | Asset bytes | Additional JavaScript, gzip level 9 | Result |
+| --- | --- | ---: | ---: | --- |
+| 1-1 | `stage-1-1-starter` | 3,507,253 | 402,102 | PASS |
+| 5-10 | `stage-5-10-late` | 11,693,533 | 402,102 | PASS |
+| 5-10 | `stage-5-10-hero` | 12,230,067 | 402,102 | PASS |
+
+Count decimal published bytes before HTTP compression. Assets must total less
+than 50,000,000 bytes, and additional JavaScript must total less than 5,000,000
+bytes at gzip level 9. Exact thresholds fail. A warm cache gives no credit.
+Count shared URLs once across both Decks, start Units, possible Tokens and
+Boss Rule summons. Include original card art, full Race atlas pages, selected
+models, selected appearance and cosmetics, painting, FX and music. Count
+`defeat.ogg` (135,232 bytes), the larger result sting; `victory.ogg` is 122,945
+bytes and is not also added. Current selected Unit Models are texture-free.
+Their Meshopt decoder is inside the counted JavaScript. Future KTX2 models
+also count the required local transcoder JavaScript and WASM. The Hero
+appearance adds its one GLB and the selected 2D portrait fallback. Its separate
+ceiling is 10,000,000 bytes; the largest appearance is 536,656 bytes.
+
+Read the production `/play` HTML and the emitted graph from this same build.
+Exclude the initial page graph, follow Battle lazy dependencies, and stop at
+already loaded chunks before following unrelated screen imports. Count mixed
+chunks conservatively, including retained optional Hero code. This is a
+reachable-graph total, not a measured browser transfer.
+
+The [complete machine record](./battle-budget-2026-10-31.json) contains the
+configuration, selected model IDs, complete file lists, exact bytes, gzip
+bytes, SHA-256 hashes, build configuration and dirty file list. The
+[measurement guide](./battle-budgets.md) defines the command and counting
+rules. CI runs all three fixtures on main pushes and pull requests.
+
+Hero Model checks: `check_references.py --all` passes the 56 published
+appearances (10 clips, a skeleton and embedded resources). The published
+bytes total 27,713,416; the largest appearance is 536,656. The full
+[56-appearance size report](./hero-model-sizes-2026-10-31.json) records each
+file. The 560 pose images and the 8 × 7 idle matrix are under the ignored
+`art/heroes/raw/` review folder. These are structural and draft visual
+checks, not art approval.
+
+Asset checks: all 96 compressed Unit Models load, retain their source bounds,
+skinning and animation contracts, and pass the individual limits. All 98
+transparent Unit/Token frames pass alpha, 512 px height and Race ownership
+checks; their 12 pages total 4,709,900 bytes and stay within 2048 px. The
+[battle music record](./battle-music-optimization.md) lists reductions and
+objective quality checks for all eight tracks. Chromium checks pass for
+Stage preload reuse, failed-model fallback with continued play, stereo
+audio decoding/playback, and the 844 × 390 landscape phone viewport. This is
+viewport emulation, not a physical-phone frame-rate measurement. Human
+listening was not performed.

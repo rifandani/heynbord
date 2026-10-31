@@ -86,6 +86,9 @@ jobs:
       - name: Run playwright tests
         run: bun web test:ci
 
+      - name: Run Hero Model browser checks
+        run: bun web test:hero
+
       - name: Save playwright report as artifact
         uses: actions/upload-artifact@v7
         if: always()

@@ -14,6 +14,7 @@ import { describe, expect, it } from "vitest";
 
 import { startSession } from "@/features/battle/battle-session";
 import {
+  battleModelCopies,
   battleUnitSources,
   cardIllustration,
   sourceId,
@@ -273,5 +274,45 @@ describe("sourceId", () => {
     expect(sourceId({ _tag: "Token", tokenId: "token.skeleton" })).toBe(
       "token.skeleton"
     );
+  });
+});
+
+describe("Battle model copy counts", () => {
+  it("counts every Deck entry and every start Unit once", () => {
+    const deck = getStarterDeck("vanguard");
+    const session = startSession({
+      stageId: "1-10",
+      deck,
+      player: NEW_PLAYER,
+      seed: 7,
+    });
+    const cards = battleModelCopies(session.rules);
+    const allCards = Object.values(session.rules.sides).flatMap((side) =>
+      side.heroes.flatMap((hero) => [
+        ...hero.hand,
+        ...hero.deck,
+        ...hero.graveyard,
+      ])
+    );
+    const startUnits = session.rules.units.filter(
+      (unit) => unit.source._tag === "Card"
+    );
+    expect(cards.length).toBe(allCards.length + startUnits.length);
+    expect(startUnits.length).toBeGreaterThan(0);
+    for (const unit of startUnits) {
+      if (unit.source._tag === "Card") {
+        const id = unit.source.card.cardId;
+        expect(cards.filter((cardId) => cardId === id)).toHaveLength(
+          allCards.filter((card) => card.cardId === id).length +
+            startUnits.filter(
+              (start) =>
+                start.source._tag === "Card" && start.source.card.cardId === id
+            ).length
+        );
+      }
+    }
+    expect(
+      cards.filter((id) => id === "human.crossbowGuard").length
+    ).toBeGreaterThanOrEqual(3);
   });
 });

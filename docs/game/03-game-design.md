@@ -762,7 +762,7 @@ A **Dungeon** is a named place outside the Campaign. In a Dungeon, the player fi
 
 ```text
 ┌──────────────────────────────────────────────────────────────┐
-│ [Turn 7]                                 [×1/×2] [Skip] [⚙]  │
+│ [Turn 7]                         [Leave] [×1/×2] [Skip] [⚙]  │
 │                                                              │
 │ [Player Hero]   ======== Lanes on a 3D Board ========  [Enemy │
 │  HP 34/40       ===================================     Hero] │
@@ -779,6 +779,7 @@ A **Dungeon** is a named place outside the Campaign. In a Dungeon, the player fi
 - The Board shows Unit Attack and HP above each Unit at all times.
 - The enemy Hand shows the number of cards and the Countdown of each card, but not the card faces.
 - The Top Bar has a Handbook button next to the Controls Guide button, and the H key does the same. In the Battle, the Handbook is one page at one side of the Board, so that most of the Board stays in view. The Battle does not pause. The Controls Guide lists H.
+- **Leave** is the first Battle control, at the left of the Speed toggle and apart from it by one gap: a small ghost button with a door and an exit arrow. Before a result, it opens the Abandon confirm (11.4). After a result, it leaves at once. Esc does the same, and the Controls Guide lists Esc.
 - A Settings button is at the left of End Turn, above the Hand. It opens the same Settings dialog as the Town Bar (11.4), with the same options, but with no progress export and import. The Battle does not pause. The Top Bar has no separate sound button.
 - In the keyboard Inspect mode (the I key), Tab goes into the Card Details of the Unit. There, the names of the Keywords, Statuses and Damage Types are links to their Handbook Entries. Card Details that show only on hover or long press have no links.
 - When the enemy Side has more than one Hero, each enemy Hero shows at the end of its Front, with its own HP and Hand. A Defeated Hero shows as Defeated, and the Board shows its Front go to the next Hero.
@@ -843,7 +844,7 @@ The Campaign screen shows one **Region Map** at a time: a flat 2D painting of on
 - **Stage Panel.** A modal dialog in the center of the screen. The map is dim behind it. It shows the Stage ID, the enemy Hero, the first-win reward or the repeat-win reward, the best Stars, the 3 Star conditions with the Star Turn of the Stage (see 4.11), the Deck and a **Fight** button. The Deck is a choice of the Deck slots that have cards, with the active Deck selected: the last Deck that the Player used. "Edit Decks" opens the Deck builder. A Deck that is not valid cannot start a Battle, and the panel shows the first reason. Fight takes the focus when the panel opens. Esc, a close button and a click outside close the panel.
 - **Keyboard.** Focus moves through the Stage Markers in the order of the Trail. Esc closes the Stage Panel. When no panel is open, Esc goes back to the Town (see 11.4).
 - **Motion.** The Stage Markers rise onto their clearings in Trail order, and the solid part of the progress line draws in from the Trail entry. The Open Stage Marker pulses. After a win opens a Stage, its marker wakes up once. With reduced motion, all of this stops.
-- Story Scenes (MOD-07) are a v2 feature. A [trial is designed](./region-story-scenes.md) for Hearthvale, the Red Mesas and the Glowcap Hollows, with fframes motion clips and Player-controlled text. Stage names are not part of this screen now.
+- Story Scenes (MOD-07) are a v2 feature. A [trial is designed](./region-story-scenes.md) for Hearthvale, the Red Mesas, the Glowcap Hollows and the Thornwood, with fframes motion clips and Player-controlled text. Stage names are not part of this screen now.
 
 ## 12. Content for v1
 

@@ -68,11 +68,17 @@ React app on TanStack Start. The server renders and streams each page.
 
 **Status Badge**: The row of Status icons above a Unit on the Board, each with its count when the Status has one. It shows at most 3 Statuses, then "+N". The Details Panel shows the full list and the rules text. _Avoid_: debuff bar, buff icons, status bar, status icons
 
-**Cut-out Figure**: The flat figure of a Unit on the Board: the card painting, cut out, on a plane that turns to the camera. Until a card has its cut-out, the plane shows the card painting with its background in an arched shape. _Avoid_: standee, billboard, sprite, card on the board
+**Unit Model**: The animated 3D figure of a Unit on the Board. Every Creature Card and every Token has one. It is the only figure that the game shows for a Unit. _Avoid_: 3D unit, rig, mesh, avatar, living card, Cut-out Figure
 
-**Unit Model**: The animated 3D figure of a Unit on the Board. A card with a Unit Model shows it in place of its Cut-out Figure. _Avoid_: 3D unit, rig, mesh, avatar, living card
+**Hero Model**: The animated full-body figure of the Player's Hero on the Board, on the Hero screen and in the Bazaar preview. Its person matches the Hero portrait, and its four Gear items match the selected Gear look or the Standard kit. _Avoid_: Hero Unit, avatar, paper doll, character skin
 
-**Low HP**: The state of a Unit with HP at 1/3 of its Max HP or less. Its Unit Model shows a tired pose at rest. It is presentation only and does not change the Battle. _Avoid_: wounded (that word is avoided for Bleeding), badly damaged, critical, dying
+**Raw Export**: The 3D file that Blender writes for a Unit Model or a Hero Model. It is working material for the artists and not a game asset. _Avoid_: source model, master file, original
+
+**Published Model**: The 3D file that the game downloads for a Unit Model or a Hero Model. It keeps the rig, the animation and the appearance of its Raw Export, and it is smaller. _Avoid_: final model, optimized model, build model
+
+**Source Contract**: The committed record of the bounds, the skeleton and the animation of a Raw Export. A Published Model must match its Source Contract. _Avoid_: manifest, checksum, metadata file
+
+**Low HP**: The state of a Unit or Hero with HP at 1/3 of its Max HP or less. Its Unit Model or Hero Model shows a tired pose at rest; it is presentation only and does not change the Battle. _Avoid_: wounded (that word is avoided for Bleeding), badly damaged, critical, dying
 
 **Keyword Plate**: The small Night Plate with a Keyword name and its value that shows over a Unit in Live when that Keyword occurs, for example "Swarm 2". It shows each time a Keyword changes the Battle, for all Keywords that can occur. _Avoid_: keyword flash, keyword popup, keyword toast, activation
 
@@ -98,9 +104,9 @@ React app on TanStack Start. The server renders and streams each page.
 
 ### Cosmetics
 
-**Hero portrait**: A painting of the face of the Player's Hero, and a Cosmetic of the `heroPortrait` family. It does not change with the Class of the Active Deck: the Player's Hero keeps one face for all Classes, and the Class stays on its own name and glyph. It shows in the player panel of the Top Bar and on the banner of the Player's Hero on the Board. The enemy Side never shows it. _Avoid_: avatar, hero skin, portrait card, face
+**Hero portrait**: A Cosmetic of the `heroPortrait` family that defines the person shown by the Player's Hero: its face painting and matching Hero Model. The person stays the same for all Classes, and the Gear look sets the appearance of its Gear. _Avoid_: avatar, hero skin, portrait card, face
 
-**Standard portrait**: The free look of the Hero portrait family, which every Player has: the Hero banner in code, in the color of its Side, with the Class glyph. _Avoid_: default portrait, base portrait
+**Standard portrait**: The free look of the Hero portrait family, which every Player has: one Human person shared by all four Classes. _Avoid_: default portrait, base portrait
 
 **Board skin**: A Cosmetic of the `boardSkin` family that puts a Lane runner under each Lane of the Board. The Battle Painting stays around the Board. The whole Board shows the Player's Board skin, also the half of the enemy Side. _Avoid_: battlefield skin, arena skin, Battle Painting, board theme
 
@@ -108,9 +114,9 @@ React app on TanStack Start. The server renders and streams each page.
 
 **Standard ground**: The free look of the Board skin family, which every Player has: the bare Battle Painting with no Lane runner and no drawn Square. _Avoid_: default board, empty skin, no skin
 
-**Gear look**: A Cosmetic of the `gearLook` family: one painted icon for each of the 4 Gear items, all in one material. It shows on the Gear plates of the Hero screen. It changes no Gear level and no stat. _Avoid_: Gear skin, armor skin, equipment look, outfit
+**Gear look**: A Cosmetic of the `gearLook` family that sets one material and style for all four Gear items on the Hero Model and their painted icons. It changes no Gear level and no stat. _Avoid_: Gear skin, armor skin, equipment look, outfit
 
-**Standard kit**: The free look of the Gear look family, which every Player has: the 4 Gear icons in royal blue, gold and steel. _Avoid_: default Gear, standard Gear, base Gear look
+**Standard kit**: The free look of the Gear look family, which every Player has: the four Gear items and their icons in royal blue, gold and steel. _Avoid_: default Gear, standard Gear, base Gear look
 
 ### Town
 

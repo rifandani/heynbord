@@ -137,8 +137,19 @@ describe("heroPose", () => {
       ).cast
     ).toBeNull();
     const still = heroPose(ENEMY, fireball, STAGE, 0.3, 0, true);
-    expect(still.y).toBe(HERO_FIGURE_Y + Math.sin(2) * 0.03);
+    expect(still.y).toBe(HERO_FIGURE_Y);
     expect(still.cast?.amount).toBeGreaterThan(0);
+  });
+
+  it("does not react without HP loss or bob with reduced motion", () => {
+    const blocked = {
+      ...damage({ _tag: "Hero", side: "player", hero: 0 }),
+      hp: 20,
+    };
+    expect(
+      heroPose(PLAYER, playing(blocked, STAGE), STAGE, 0.5, 1).hitTint
+    ).toBeNull();
+    expect(heroPose(PLAYER, null, STAGE, 0.5, 1, true).y).toBe(HERO_FIGURE_Y);
   });
 
   it("casts only from the Boss that plays the card", () => {

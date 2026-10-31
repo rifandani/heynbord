@@ -120,6 +120,24 @@ export type LogKeyAction =
   /** All Live input is off: no card play, no End Turn and no Skip. */
   | { readonly _tag: "off" };
 
+/** What Esc or East does in Live (GDD 11.4). */
+export type CancelAction = "select" | "leave" | "none";
+
+/**
+ * Esc in Live cancels the selected card first. With nothing to cancel, the
+ * keyboard opens the Leave confirm. East on a pad only cancels: a pad cannot
+ * close the confirm, so it never opens it.
+ */
+export const cancelAction = (
+  hasSelection: boolean,
+  source: BattleCommandSource
+): CancelAction => {
+  if (hasSelection) {
+    return "select";
+  }
+  return source === "keyboard" ? "leave" : "none";
+};
+
 /**
  * The action of a key in the open Battle Log (GDD 11.2): ←/→ one Log Entry,
  * Shift+←/→ one Turn, L and Esc Back to Live. On a pad, L1 and R1 go one Turn

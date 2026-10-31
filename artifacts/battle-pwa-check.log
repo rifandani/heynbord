@@ -1,0 +1,7 @@
+$ bun scripts/check-pwa.ts
+
+PWA Check
+Checking http://127.0.0.1:4179
+
+
+Summary: 65 pass, 0 warn, 0 fail

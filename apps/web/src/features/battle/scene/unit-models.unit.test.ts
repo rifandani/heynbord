@@ -1,5 +1,5 @@
 import type { UnitSnapshot } from "@workspace/rules";
-import { BattleEvent, getStarterDeck } from "@workspace/rules";
+import { BattleEvent, CARDS, getStarterDeck, TOKENS } from "@workspace/rules";
 import { describe, expect, it } from "vitest";
 
 import { startSession } from "@/features/battle/battle-session";
@@ -12,6 +12,7 @@ import {
   castPhase,
   fallbackClip,
   isLowHp,
+  requireUnitModel,
   unitClipFor,
   unitModelOf,
 } from "@/features/battle/scene/unit-models";
@@ -230,14 +231,27 @@ const MODEL_URLS: readonly (readonly [string, string])[] = [
   ["undead.coffinLidSkater", "/models/units/coffin-lid-skater.glb"],
   ["undead.hushbow", "/models/units/hushbow.glb"],
   ["undead.graveBellTender", "/models/units/grave-bell-tender.glb"],
+  ["token.skeleton", "/models/units/skeleton.glb"],
+  ["token.restlessWisp", "/models/units/restless-wisp.glb"],
 ];
 
 describe("unitModelOf", () => {
-  it("gives each card with a Unit Model its model, and other cards none", () => {
+  it("gives each card and Token with a Unit Model its model, and other cards none", () => {
     for (const [card, url] of MODEL_URLS) {
       expect(unitModelOf(card)?.url).toBe(url);
     }
     expect(unitModelOf("mage.fireball")).toBeUndefined();
+  });
+
+  it("has a Unit Model for every Creature Card and every Token", () => {
+    for (const card of CARDS) {
+      if (card.kind === "creature") {
+        expect(requireUnitModel(card.id).url).toMatch(/^\/models\/units\//u);
+      }
+    }
+    for (const tokenId of Object.keys(TOKENS)) {
+      expect(requireUnitModel(tokenId).url).toMatch(/^\/models\/units\//u);
+    }
   });
 });
 
@@ -401,7 +415,7 @@ describe("fallbackClip", () => {
     expect(fallbackClip({ name: "lowHp", phase: 0.4 }, all)).toEqual({
       name: "lowHp",
       phase: 0.4,
-      cutOutPose: false,
+      tiltPose: false,
     });
   });
 
@@ -409,13 +423,13 @@ describe("fallbackClip", () => {
     expect(fallbackClip({ name: "lowHp", phase: 0.4 }, base)).toEqual({
       name: "idle",
       phase: 0.4,
-      cutOutPose: false,
+      tiltPose: false,
     });
     for (const name of ["cast", "summon"] as const) {
       expect(fallbackClip({ name, phase: 0.4 }, base)).toEqual({
         name: "idle",
         phase: 0,
-        cutOutPose: false,
+        tiltPose: false,
       });
     }
   });
@@ -424,7 +438,7 @@ describe("fallbackClip", () => {
     expect(fallbackClip({ name: "rebirth", phase: 0.25 }, base)).toEqual({
       name: "death",
       phase: 0.5,
-      cutOutPose: false,
+      tiltPose: false,
     });
     expect(fallbackClip({ name: "rebirth", phase: 0.75 }, base).phase).toBe(
       0.5
@@ -435,7 +449,7 @@ describe("fallbackClip", () => {
     expect(fallbackClip({ name: "death", phase: 0.5 }, () => false)).toEqual({
       name: "idle",
       phase: 0,
-      cutOutPose: true,
+      tiltPose: true,
     });
   });
 });

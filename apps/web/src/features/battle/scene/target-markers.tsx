@@ -3,7 +3,14 @@ import { useFrame, useThree } from "@react-three/fiber";
 import type { Target } from "@workspace/rules";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { Camera, Group, Object3D } from "three";
-import { Mesh, MeshBasicMaterial, Raycaster, Vector2, Vector3 } from "three";
+import {
+  DoubleSide,
+  Mesh,
+  MeshBasicMaterial,
+  Raycaster,
+  Vector2,
+  Vector3,
+} from "three";
 
 import type { BattleSession } from "@/features/battle/battle-session";
 import { heroOf } from "@/features/battle/battle-view";
@@ -16,14 +23,23 @@ import {
 } from "@/features/battle/battle.atoms";
 import { targetPreview } from "@/features/battle/cast";
 import { laneZ, squareX } from "@/features/battle/scene/layout";
+import type { MarkerPaint } from "@/features/battle/scene/markers";
 import {
-  markerOpacity,
+  markerPaint,
+  markerRing,
   markerSpot,
   targetAt,
   toDevice,
   toScreen,
+  TARGET_EDGE,
+  TARGET_EDGE_WIDTH,
+  TARGET_FILL,
+  TARGET_FILL_FOCUSED,
+  TARGET_RIM_STILL,
+  TARGET_RIM_WIDTH,
 } from "@/features/battle/scene/markers";
 import { playback } from "@/features/battle/scene/playback";
+import { useReducedMotion } from "@/features/battle/scene/reduced-motion";
 import { scenePicker } from "@/features/battle/scene/scene-picker";
 import { unitUnder } from "@/features/battle/scene/unit-inspector";
 import { FOCUS_RING, TARGET_MARKER } from "@/features/battle/tokens";
@@ -69,13 +85,22 @@ const markerPoints = (node: Group | null, camera: Camera) => {
   );
 };
 
-const setOpacity = (marker: Object3D, opacity: number) => {
-  if (marker instanceof Mesh && marker.material instanceof MeshBasicMaterial) {
-    marker.material.opacity = opacity;
-    const edge = marker.getObjectByName("target-contrast-edge");
-    if (edge) {
-      edge.visible = opacity > 0;
-    }
+/** Paints a marker: the gold inside, the rim, and the Night Plate hairline. */
+const paintMarker = (marker: Object3D, paint: MarkerPaint) => {
+  if (
+    !(marker instanceof Mesh) ||
+    !(marker.material instanceof MeshBasicMaterial)
+  ) {
+    return;
+  }
+  marker.material.opacity = paint.fill;
+  const rim = marker.getObjectByName("target-rim");
+  if (rim instanceof Mesh && rim.material instanceof MeshBasicMaterial) {
+    rim.material.opacity = paint.rim;
+  }
+  const edge = marker.getObjectByName("target-contrast-edge");
+  if (edge) {
+    edge.visible = paint.rim > 0;
   }
 };
 
@@ -136,9 +161,27 @@ export const TargetMarkers = ({
   }, [onPick]);
   const view = session?.view;
   const lanes = view?.lanes ?? 1;
+  const reducedMotion = useReducedMotion();
   const spots = useMemo(
     () => (view ? targets.map((target) => markerSpot(target, view)) : []),
     [targets, view]
+  );
+  // The rim and its hairline are rings: the middle of the Square stays clear.
+  const rings = useMemo(
+    () =>
+      spots.map((spot) =>
+        spot
+          ? {
+              rim: markerRing(spot.width, spot.depth, TARGET_RIM_WIDTH),
+              edge: markerRing(
+                spot.width + TARGET_EDGE_WIDTH * 2,
+                spot.depth + TARGET_EDGE_WIDTH * 2,
+                TARGET_RIM_WIDTH + TARGET_EDGE_WIDTH * 2
+              ),
+            }
+          : null
+      ),
+    [spots]
   );
 
   useEffect(() => {
@@ -217,22 +260,26 @@ export const TargetMarkers = ({
     }
     const children = group.current?.children ?? [];
     for (const [index, child] of children.entries()) {
-      setOpacity(child, markerOpacity(index, focused, playback.time, ringed));
+      paintMarker(
+        child,
+        markerPaint(index, focused, playback.time, { ringed, reducedMotion })
+      );
     }
   });
 
   return (
     <>
       <group ref={group} name="target-markers">
-        {spots.map((spot, index) =>
-          spot ? (
+        {spots.map((spot, index) => {
+          const ring = rings[index];
+          return spot && ring ? (
             <mesh
               // oxlint-disable-next-line react/no-array-index-key react-doctor/no-array-index-as-key -- targets have no ID; the list is rebuilt on each change, and the index is the `targetIndex` that picking reads.
               key={index}
-              position={[spot.x, 0.11, spot.z]}
+              position={[spot.x, 0.105, spot.z]}
               rotation-x={-Math.PI / 2}
               userData={{ targetIndex: index }}
-              renderOrder={6}
+              renderOrder={5}
               onClick={(event) => {
                 event.stopPropagation();
                 const target = targets[index];
@@ -249,31 +296,47 @@ export const TargetMarkers = ({
                 setHovered((current) => (current === index ? null : current));
               }}
             >
-              {/* The opaque edge keeps the pulsing target distinct on every
-                  painting and Board skin. It is outside the picking mesh. */}
-              <mesh
-                name="target-contrast-edge"
-                position-z={-0.002}
-                renderOrder={5}
-              >
-                <planeGeometry args={[spot.width + 0.14, spot.depth + 0.14]} />
-                <meshBasicMaterial
-                  color={FOCUS_RING.edge}
-                  transparent
-                  depthWrite={false}
-                  toneMapped={false}
-                />
-              </mesh>
+              {/* The gold inside is also the picking plane: the rim is a ring,
+                  and a ray must still hit the middle of the Square. */}
               <planeGeometry args={[spot.width, spot.depth]} />
               <meshBasicMaterial
-                color={index === focused ? FOCUS_RING.halo : TARGET_MARKER}
+                color={TARGET_MARKER}
                 transparent
+                opacity={index === focused ? TARGET_FILL_FOCUSED : TARGET_FILL}
                 depthWrite={false}
                 toneMapped={false}
               />
+              {/* The Night Plate hairline keeps the rim clear on every painting
+                  and Board skin. It shows 0.02 on each side of the gold. */}
+              <mesh
+                name="target-contrast-edge"
+                position-z={0.001}
+                renderOrder={6}
+              >
+                <primitive attach="geometry" object={ring.edge} />
+                <meshBasicMaterial
+                  color={FOCUS_RING.edge}
+                  transparent
+                  opacity={TARGET_EDGE}
+                  depthWrite={false}
+                  side={DoubleSide}
+                  toneMapped={false}
+                />
+              </mesh>
+              <mesh name="target-rim" position-z={0.002} renderOrder={7}>
+                <primitive attach="geometry" object={ring.rim} />
+                <meshBasicMaterial
+                  color={index === focused ? FOCUS_RING.halo : TARGET_MARKER}
+                  transparent
+                  opacity={index === focused ? 1 : TARGET_RIM_STILL}
+                  depthWrite={false}
+                  side={DoubleSide}
+                  toneMapped={false}
+                />
+              </mesh>
             </mesh>
-          ) : null
-        )}
+          ) : null;
+        })}
       </group>
       {/* Outside the marker group: picking and the QA points read only the markers. */}
       <group name="area-preview">

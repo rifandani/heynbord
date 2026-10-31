@@ -62,6 +62,10 @@ import type { Tutorial } from "@/features/battle/tutorial";
 import { closeText, selectCard, skipText } from "@/features/battle/tutorial";
 import type { InspectDirection } from "@/features/battle/unit-inspect";
 import { nextInspectedUnit } from "@/features/battle/unit-inspect";
+import {
+  activeGearLookAtom,
+  activeHeroPortraitAtom,
+} from "@/features/profile/profile.atoms";
 import type { ReplayRun } from "@/features/replay/replay";
 import { watchingSession } from "@/features/replay/replay";
 import { gameScreenAtom } from "@/features/town/town.atoms";
@@ -379,7 +383,19 @@ export const useBattle = () => {
         options.stageId,
         registry.get(tutorialStageWonAtom)
       );
-      commit(startSession(options, speed, tutorial));
+      commit(
+        startSession(
+          {
+            ...options,
+            appearance: {
+              portrait: registry.get(activeHeroPortraitAtom),
+              gearLook: registry.get(activeGearLookAtom),
+            },
+          },
+          speed,
+          tutorial
+        )
+      );
     },
     /**
      * Back to the screen that started the Battle: the Campaign or the

@@ -13,6 +13,7 @@ import { Data, Result, Schema, Struct } from "effect";
 import type {
   BattleOptions,
   BattleSession,
+  HeroAppearance,
 } from "@/features/battle/battle-session";
 import { isIdle, startSession } from "@/features/battle/battle-session";
 import type { BattleView } from "@/features/battle/battle-view";
@@ -40,6 +41,7 @@ export interface Replay {
   readonly seed: number;
   readonly place: ReplayPlace;
   readonly player: PlayerSetup;
+  readonly appearance?: HeroAppearance;
   readonly commands: readonly Command[];
 }
 
@@ -207,7 +209,7 @@ export const replayOf = (
     return null;
   }
   const { options } = session;
-  return {
+  const replay: Replay = {
     rules: RULES_HASH,
     seed: options.seed,
     place,
@@ -219,6 +221,9 @@ export const replayOf = (
     },
     commands: session.commands,
   };
+  return options.appearance
+    ? { ...replay, appearance: options.appearance }
+    : replay;
 };
 
 /** The options of the Battle of a Replay, or `null` when its Stage, Dungeon or Floor is not in the content. */
@@ -228,14 +233,18 @@ const optionsOf = (
 ): BattleOptions | null => {
   const { place, player, seed } = replay;
   const placeOptions = placeOptionsOf(place, content);
-  return placeOptions === null
-    ? null
-    : {
-        deck: { classId: player.classId, deck: player.deck },
-        player: { level: player.level, gear: player.gear },
-        seed,
-        ...placeOptions,
-      };
+  if (placeOptions === null) {
+    return null;
+  }
+  const options: BattleOptions = {
+    deck: { classId: player.classId, deck: player.deck },
+    player: { level: player.level, gear: player.gear },
+    seed,
+    ...placeOptions,
+  };
+  return replay.appearance
+    ? { ...options, appearance: replay.appearance }
+    : options;
 };
 
 /** A Replay that the rules ran again: the view at the start and each Battle Event. */

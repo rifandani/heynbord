@@ -1,0 +1,3194 @@
+{
+  "standard-standard.glb": {
+    "min": [-0.2081388768547009, 0.0013450179373230722, -0.10314926416776563],
+    "max": [0.2361267479098449, 1.1290000677108765, 0.18870367483310208],
+    "bones": [21],
+    "clips": [
+      {
+        "name": "idle",
+        "duration": 2,
+        "keyframes": "73df189c270d9ae61b2296ce0398ccf7d489b4ce54e4d3a8865e9cc3e593ded6"
+      },
+      {
+        "name": "lowHp",
+        "duration": 2,
+        "keyframes": "af47db157377434b8a7aea9773bd4c301f120ebf95cf9548db5caebde4abd939"
+      },
+      {
+        "name": "summon",
+        "duration": 1,
+        "keyframes": "f53f22f20f009d0095e6f1825f794e99962800ff35e0220be4482d267ea2e9bb"
+      },
+      {
+        "name": "castWarrior",
+        "duration": 1,
+        "keyframes": "d850d3e0ecfe9a554834ba19c7ef630ed49b524f4ef562fcf9f71f3ea3a3f0a0"
+      },
+      {
+        "name": "castRanger",
+        "duration": 1,
+        "keyframes": "c5241ebd214cef691d3b094b6e53432682348d0506853e48114feb22e188c529"
+      },
+      {
+        "name": "castMage",
+        "duration": 1,
+        "keyframes": "a6acde476f1f3b61ab966d44753ca41d30c96522584bbda90548b00c2d47f9b7"
+      },
+      {
+        "name": "castPriest",
+        "duration": 1,
+        "keyframes": "abf36215afb905a202d20da32bfc7929d4184db48c9a79dd9887cb95cb0811a2"
+      },
+      {
+        "name": "hurt",
+        "duration": 0.75,
+        "keyframes": "8b74e1e9655fd53c7e9b1f2f6bbc82ff5700a411e37b859ca4998126c3d54d69"
+      },
+      {
+        "name": "victory",
+        "duration": 1.5,
+        "keyframes": "39f94961681b6f186e41211b81ac8983f7cd240da41b50d587c668c7d8148931"
+      },
+      {
+        "name": "defeat",
+        "duration": 1.5,
+        "keyframes": "ac1c3c85393dab92154545578561cd69ba8ea15881faab752d83f37df1c5198f"
+      }
+    ]
+  },
+  "dawn-gaze-copper-rim.glb": {
+    "min": [-0.20013888950505232, 0.0013448881472319116, -0.11342068761587143],
+    "max": [0.2361267479098449, 1.0933001041412354, 0.1887036032018991],
+    "bones": [21],
+    "clips": [
+      {
+        "name": "idle",
+        "duration": 2,
+        "keyframes": "eed0cd3ed033c4e323403a2785b5c565f9c0b80f8cac5a766c399a14c08ea351"
+      },
+      {
+        "name": "lowHp",
+        "duration": 2,
+        "keyframes": "301483d923b21d5fc894ecf3e1bc00c845362e594fb22c81beec5fbd542ca5e4"
+      },
+      {
+        "name": "summon",
+        "duration": 1,
+        "keyframes": "0874dde9dea4dae2028a1e5503682249e9dbdf30b2becb1c4851d59b02f8050c"
+      },
+      {
+        "name": "castWarrior",
+        "duration": 1,
+        "keyframes": "1b11a164f412c22251a8d0788448eb3a0cc090ad1182c1149dacf0390e172c45"
+      },
+      {
+        "name": "castRanger",
+        "duration": 1,
+        "keyframes": "7a38ad9b8b7111061dc456d2cb9d08f8d0ebec1084deb84661504be744e0e9bf"
+      },
+      {
+        "name": "castMage",
+        "duration": 1,
+        "keyframes": "d40088dd32b44adf20fc75a2826e174c35d82c6d3cd3bebecee47c9f207877b6"
+      },
+      {
+        "name": "castPriest",
+        "duration": 1,
+        "keyframes": "102d72170dde5b2cc175d122f56ae4453e94af6da8d82d6b33d7e2127177bf7c"
+      },
+      {
+        "name": "hurt",
+        "duration": 0.75,
+        "keyframes": "ffca4649a5495cece2fe1f7c6ea00a8d79aeee80231a5e1d21fd5862300eb5ae"
+      },
+      {
+        "name": "victory",
+        "duration": 1.5,
+        "keyframes": "38469609e9e82fbbf64def876c5a576c3818e3897fff6c6935745c2a6d732a8a"
+      },
+      {
+        "name": "defeat",
+        "duration": 1.5,
+        "keyframes": "f29d388e975d521c24553e3c2f92ec403c79c9112be7713268f3e93044997baa"
+      }
+    ]
+  },
+  "dawn-gaze-gold-inlay.glb": {
+    "min": [-0.20013888878860744, 0.0013448881472319116, -0.11342068761587143],
+    "max": [0.2361267479098449, 1.0933001041412354, 0.1887036032018991],
+    "bones": [21],
+    "clips": [
+      {
+        "name": "idle",
+        "duration": 2,
+        "keyframes": "eed0cd3ed033c4e323403a2785b5c565f9c0b80f8cac5a766c399a14c08ea351"
+      },
+      {
+        "name": "lowHp",
+        "duration": 2,
+        "keyframes": "301483d923b21d5fc894ecf3e1bc00c845362e594fb22c81beec5fbd542ca5e4"
+      },
+      {
+        "name": "summon",
+        "duration": 1,
+        "keyframes": "0874dde9dea4dae2028a1e5503682249e9dbdf30b2becb1c4851d59b02f8050c"
+      },
+      {
+        "name": "castWarrior",
+        "duration": 1,
+        "keyframes": "1b11a164f412c22251a8d0788448eb3a0cc090ad1182c1149dacf0390e172c45"
+      },
+      {
+        "name": "castRanger",
+        "duration": 1,
+        "keyframes": "7a38ad9b8b7111061dc456d2cb9d08f8d0ebec1084deb84661504be744e0e9bf"
+      },
+      {
+        "name": "castMage",
+        "duration": 1,
+        "keyframes": "d40088dd32b44adf20fc75a2826e174c35d82c6d3cd3bebecee47c9f207877b6"
+      },
+      {
+        "name": "castPriest",
+        "duration": 1,
+        "keyframes": "102d72170dde5b2cc175d122f56ae4453e94af6da8d82d6b33d7e2127177bf7c"
+      },
+      {
+        "name": "hurt",
+        "duration": 0.75,
+        "keyframes": "ffca4649a5495cece2fe1f7c6ea00a8d79aeee80231a5e1d21fd5862300eb5ae"
+      },
+      {
+        "name": "victory",
+        "duration": 1.5,
+        "keyframes": "38469609e9e82fbbf64def876c5a576c3818e3897fff6c6935745c2a6d732a8a"
+      },
+      {
+        "name": "defeat",
+        "duration": 1.5,
+        "keyframes": "f29d388e975d521c24553e3c2f92ec403c79c9112be7713268f3e93044997baa"
+      }
+    ]
+  },
+  "dawn-gaze-iron-vine.glb": {
+    "min": [-0.21071665610690898, 0.0013448881472319116, -0.11342068761587143],
+    "max": [0.2361267479098449, 1.0993000268936157, 0.1887036032018991],
+    "bones": [21],
+    "clips": [
+      {
+        "name": "idle",
+        "duration": 2,
+        "keyframes": "eed0cd3ed033c4e323403a2785b5c565f9c0b80f8cac5a766c399a14c08ea351"
+      },
+      {
+        "name": "lowHp",
+        "duration": 2,
+        "keyframes": "301483d923b21d5fc894ecf3e1bc00c845362e594fb22c81beec5fbd542ca5e4"
+      },
+      {
+        "name": "summon",
+        "duration": 1,
+        "keyframes": "0874dde9dea4dae2028a1e5503682249e9dbdf30b2becb1c4851d59b02f8050c"
+      },
+      {
+        "name": "castWarrior",
+        "duration": 1,
+        "keyframes": "1b11a164f412c22251a8d0788448eb3a0cc090ad1182c1149dacf0390e172c45"
+      },
+      {
+        "name": "castRanger",
+        "duration": 1,
+        "keyframes": "7a38ad9b8b7111061dc456d2cb9d08f8d0ebec1084deb84661504be744e0e9bf"
+      },
+      {
+        "name": "castMage",
+        "duration": 1,
+        "keyframes": "d40088dd32b44adf20fc75a2826e174c35d82c6d3cd3bebecee47c9f207877b6"
+      },
+      {
+        "name": "castPriest",
+        "duration": 1,
+        "keyframes": "102d72170dde5b2cc175d122f56ae4453e94af6da8d82d6b33d7e2127177bf7c"
+      },
+      {
+        "name": "hurt",
+        "duration": 0.75,
+        "keyframes": "ffca4649a5495cece2fe1f7c6ea00a8d79aeee80231a5e1d21fd5862300eb5ae"
+      },
+      {
+        "name": "victory",
+        "duration": 1.5,
+        "keyframes": "38469609e9e82fbbf64def876c5a576c3818e3897fff6c6935745c2a6d732a8a"
+      },
+      {
+        "name": "defeat",
+        "duration": 1.5,
+        "keyframes": "f29d388e975d521c24553e3c2f92ec403c79c9112be7713268f3e93044997baa"
+      }
+    ]
+  },
+  "dawn-gaze-moonstone.glb": {
+    "min": [-0.20013888950505232, 0.0013448881472319116, -0.11342068761587143],
+    "max": [0.2361267479098449, 1.0933001041412354, 0.1887036032018991],
+    "bones": [21],
+    "clips": [
+      {
+        "name": "idle",
+        "duration": 2,
+        "keyframes": "eed0cd3ed033c4e323403a2785b5c565f9c0b80f8cac5a766c399a14c08ea351"
+      },
+      {
+        "name": "lowHp",
+        "duration": 2,
+        "keyframes": "301483d923b21d5fc894ecf3e1bc00c845362e594fb22c81beec5fbd542ca5e4"
+      },
+      {
+        "name": "summon",
+        "duration": 1,
+        "keyframes": "0874dde9dea4dae2028a1e5503682249e9dbdf30b2becb1c4851d59b02f8050c"
+      },
+      {
+        "name": "castWarrior",
+        "duration": 1,
+        "keyframes": "1b11a164f412c22251a8d0788448eb3a0cc090ad1182c1149dacf0390e172c45"
+      },
+      {
+        "name": "castRanger",
+        "duration": 1,
+        "keyframes": "7a38ad9b8b7111061dc456d2cb9d08f8d0ebec1084deb84661504be744e0e9bf"
+      },
+      {
+        "name": "castMage",
+        "duration": 1,
+        "keyframes": "d40088dd32b44adf20fc75a2826e174c35d82c6d3cd3bebecee47c9f207877b6"
+      },
+      {
+        "name": "castPriest",
+        "duration": 1,
+        "keyframes": "102d72170dde5b2cc175d122f56ae4453e94af6da8d82d6b33d7e2127177bf7c"
+      },
+      {
+        "name": "hurt",
+        "duration": 0.75,
+        "keyframes": "ffca4649a5495cece2fe1f7c6ea00a8d79aeee80231a5e1d21fd5862300eb5ae"
+      },
+      {
+        "name": "victory",
+        "duration": 1.5,
+        "keyframes": "38469609e9e82fbbf64def876c5a576c3818e3897fff6c6935745c2a6d732a8a"
+      },
+      {
+        "name": "defeat",
+        "duration": 1.5,
+        "keyframes": "f29d388e975d521c24553e3c2f92ec403c79c9112be7713268f3e93044997baa"
+      }
+    ]
+  },
+  "dawn-gaze-royal-plate.glb": {
+    "min": [-0.20013888932593446, 0.0013448881472319116, -0.11342068761587143],
+    "max": [0.2361267479098449, 1.0933001041412354, 0.1887036032018991],
+    "bones": [21],
+    "clips": [
+      {
+        "name": "idle",
+        "duration": 2,
+        "keyframes": "eed0cd3ed033c4e323403a2785b5c565f9c0b80f8cac5a766c399a14c08ea351"
+      },
+      {
+        "name": "lowHp",
+        "duration": 2,
+        "keyframes": "301483d923b21d5fc894ecf3e1bc00c845362e594fb22c81beec5fbd542ca5e4"
+      },
+      {
+        "name": "summon",
+        "duration": 1,
+        "keyframes": "0874dde9dea4dae2028a1e5503682249e9dbdf30b2becb1c4851d59b02f8050c"
+      },
+      {
+        "name": "castWarrior",
+        "duration": 1,
+        "keyframes": "1b11a164f412c22251a8d0788448eb3a0cc090ad1182c1149dacf0390e172c45"
+      },
+      {
+        "name": "castRanger",
+        "duration": 1,
+        "keyframes": "7a38ad9b8b7111061dc456d2cb9d08f8d0ebec1084deb84661504be744e0e9bf"
+      },
+      {
+        "name": "castMage",
+        "duration": 1,
+        "keyframes": "d40088dd32b44adf20fc75a2826e174c35d82c6d3cd3bebecee47c9f207877b6"
+      },
+      {
+        "name": "castPriest",
+        "duration": 1,
+        "keyframes": "102d72170dde5b2cc175d122f56ae4453e94af6da8d82d6b33d7e2127177bf7c"
+      },
+      {
+        "name": "hurt",
+        "duration": 0.75,
+        "keyframes": "ffca4649a5495cece2fe1f7c6ea00a8d79aeee80231a5e1d21fd5862300eb5ae"
+      },
+      {
+        "name": "victory",
+        "duration": 1.5,
+        "keyframes": "38469609e9e82fbbf64def876c5a576c3818e3897fff6c6935745c2a6d732a8a"
+      },
+      {
+        "name": "defeat",
+        "duration": 1.5,
+        "keyframes": "f29d388e975d521c24553e3c2f92ec403c79c9112be7713268f3e93044997baa"
+      }
+    ]
+  },
+  "dawn-gaze-stag-leather.glb": {
+    "min": [-0.20013888950505232, 0.0013448881472319116, -0.11342068761587143],
+    "max": [0.2361267479098449, 1.0958657264709473, 0.1887036032018991],
+    "bones": [21],
+    "clips": [
+      {
+        "name": "idle",
+        "duration": 2,
+        "keyframes": "eed0cd3ed033c4e323403a2785b5c565f9c0b80f8cac5a766c399a14c08ea351"
+      },
+      {
+        "name": "lowHp",
+        "duration": 2,
+        "keyframes": "301483d923b21d5fc894ecf3e1bc00c845362e594fb22c81beec5fbd542ca5e4"
+      },
+      {
+        "name": "summon",
+        "duration": 1,
+        "keyframes": "0874dde9dea4dae2028a1e5503682249e9dbdf30b2becb1c4851d59b02f8050c"
+      },
+      {
+        "name": "castWarrior",
+        "duration": 1,
+        "keyframes": "1b11a164f412c22251a8d0788448eb3a0cc090ad1182c1149dacf0390e172c45"
+      },
+      {
+        "name": "castRanger",
+        "duration": 1,
+        "keyframes": "7a38ad9b8b7111061dc456d2cb9d08f8d0ebec1084deb84661504be744e0e9bf"
+      },
+      {
+        "name": "castMage",
+        "duration": 1,
+        "keyframes": "d40088dd32b44adf20fc75a2826e174c35d82c6d3cd3bebecee47c9f207877b6"
+      },
+      {
+        "name": "castPriest",
+        "duration": 1,
+        "keyframes": "102d72170dde5b2cc175d122f56ae4453e94af6da8d82d6b33d7e2127177bf7c"
+      },
+      {
+        "name": "hurt",
+        "duration": 0.75,
+        "keyframes": "ffca4649a5495cece2fe1f7c6ea00a8d79aeee80231a5e1d21fd5862300eb5ae"
+      },
+      {
+        "name": "victory",
+        "duration": 1.5,
+        "keyframes": "38469609e9e82fbbf64def876c5a576c3818e3897fff6c6935745c2a6d732a8a"
+      },
+      {
+        "name": "defeat",
+        "duration": 1.5,
+        "keyframes": "f29d388e975d521c24553e3c2f92ec403c79c9112be7713268f3e93044997baa"
+      }
+    ]
+  },
+  "dawn-gaze-standard.glb": {
+    "min": [-0.20013888950505232, 0.0013448881472319116, -0.11342068761587143],
+    "max": [0.2361267479098449, 1.0933001041412354, 0.1887036032018991],
+    "bones": [21],
+    "clips": [
+      {
+        "name": "idle",
+        "duration": 2,
+        "keyframes": "eed0cd3ed033c4e323403a2785b5c565f9c0b80f8cac5a766c399a14c08ea351"
+      },
+      {
+        "name": "lowHp",
+        "duration": 2,
+        "keyframes": "301483d923b21d5fc894ecf3e1bc00c845362e594fb22c81beec5fbd542ca5e4"
+      },
+      {
+        "name": "summon",
+        "duration": 1,
+        "keyframes": "0874dde9dea4dae2028a1e5503682249e9dbdf30b2becb1c4851d59b02f8050c"
+      },
+      {
+        "name": "castWarrior",
+        "duration": 1,
+        "keyframes": "1b11a164f412c22251a8d0788448eb3a0cc090ad1182c1149dacf0390e172c45"
+      },
+      {
+        "name": "castRanger",
+        "duration": 1,
+        "keyframes": "7a38ad9b8b7111061dc456d2cb9d08f8d0ebec1084deb84661504be744e0e9bf"
+      },
+      {
+        "name": "castMage",
+        "duration": 1,
+        "keyframes": "d40088dd32b44adf20fc75a2826e174c35d82c6d3cd3bebecee47c9f207877b6"
+      },
+      {
+        "name": "castPriest",
+        "duration": 1,
+        "keyframes": "102d72170dde5b2cc175d122f56ae4453e94af6da8d82d6b33d7e2127177bf7c"
+      },
+      {
+        "name": "hurt",
+        "duration": 0.75,
+        "keyframes": "ffca4649a5495cece2fe1f7c6ea00a8d79aeee80231a5e1d21fd5862300eb5ae"
+      },
+      {
+        "name": "victory",
+        "duration": 1.5,
+        "keyframes": "38469609e9e82fbbf64def876c5a576c3818e3897fff6c6935745c2a6d732a8a"
+      },
+      {
+        "name": "defeat",
+        "duration": 1.5,
+        "keyframes": "f29d388e975d521c24553e3c2f92ec403c79c9112be7713268f3e93044997baa"
+      }
+    ]
+  },
+  "gold-crest-copper-rim.glb": {
+    "min": [-0.21713880123481127, 0.0013449546816674046, -0.12897004187107178],
+    "max": [0.2361267479098449, 1.1800000667572021, 0.18870361823938692],
+    "bones": [21],
+    "clips": [
+      {
+        "name": "idle",
+        "duration": 2,
+        "keyframes": "5ca78e54e631e25a5bedcb19c30ea60fb88c1eeea2c3b5ffa79b5a01c69bec88"
+      },
+      {
+        "name": "lowHp",
+        "duration": 2,
+        "keyframes": "40fb706503e3395ee3587866590834720ee4bb479c651dba8f121ec9fb2ca3e4"
+      },
+      {
+        "name": "summon",
+        "duration": 1,
+        "keyframes": "847eebece76e34676abfff1f327c74c476604b9fa3e2066124b0150775ddd079"
+      },
+      {
+        "name": "castWarrior",
+        "duration": 1,
+        "keyframes": "94088b3f50c4bc4186ac130e3b55c412faafb2775709e6817f9eaf481dc8628c"
+      },
+      {
+        "name": "castRanger",
+        "duration": 1,
+        "keyframes": "c6d28d1923beb258b2ba801dd72103c46a28b71b503085e27100f5cbf15a740b"
+      },
+      {
+        "name": "castMage",
+        "duration": 1,
+        "keyframes": "6b1877a8b3b71fb30ba55b0be247129e763dd32d3e2953ce5c24890420879f4a"
+      },
+      {
+        "name": "castPriest",
+        "duration": 1,
+        "keyframes": "5654e7b7c671fc0160a6271681ba1e236fe2115f2760d97e07fb929f65711331"
+      },
+      {
+        "name": "hurt",
+        "duration": 0.75,
+        "keyframes": "497b32d04bc2ad42bf90efb0b8a32475cee4cea4958f75c4f16dcafbb666079e"
+      },
+      {
+        "name": "victory",
+        "duration": 1.5,
+        "keyframes": "30c1d7d59bab48abf24d6798eff45f453b0827de2e4daccc512cabd67db556ee"
+      },
+      {
+        "name": "defeat",
+        "duration": 1.5,
+        "keyframes": "6956a4d594ea74fcfba8b1fcc6820fe0c36e206ccac439a6e08d83a0028c472c"
+      }
+    ]
+  },
+  "gold-crest-gold-inlay.glb": {
+    "min": [-0.21713879972019545, 0.0013449546816674046, -0.12897004187107178],
+    "max": [0.2361267479098449, 1.1800000667572021, 0.18870361823938692],
+    "bones": [21],
+    "clips": [
+      {
+        "name": "idle",
+        "duration": 2,
+        "keyframes": "5ca78e54e631e25a5bedcb19c30ea60fb88c1eeea2c3b5ffa79b5a01c69bec88"
+      },
+      {
+        "name": "lowHp",
+        "duration": 2,
+        "keyframes": "40fb706503e3395ee3587866590834720ee4bb479c651dba8f121ec9fb2ca3e4"
+      },
+      {
+        "name": "summon",
+        "duration": 1,
+        "keyframes": "847eebece76e34676abfff1f327c74c476604b9fa3e2066124b0150775ddd079"
+      },
+      {
+        "name": "castWarrior",
+        "duration": 1,
+        "keyframes": "94088b3f50c4bc4186ac130e3b55c412faafb2775709e6817f9eaf481dc8628c"
+      },
+      {
+        "name": "castRanger",
+        "duration": 1,
+        "keyframes": "c6d28d1923beb258b2ba801dd72103c46a28b71b503085e27100f5cbf15a740b"
+      },
+      {
+        "name": "castMage",
+        "duration": 1,
+        "keyframes": "6b1877a8b3b71fb30ba55b0be247129e763dd32d3e2953ce5c24890420879f4a"
+      },
+      {
+        "name": "castPriest",
+        "duration": 1,
+        "keyframes": "5654e7b7c671fc0160a6271681ba1e236fe2115f2760d97e07fb929f65711331"
+      },
+      {
+        "name": "hurt",
+        "duration": 0.75,
+        "keyframes": "497b32d04bc2ad42bf90efb0b8a32475cee4cea4958f75c4f16dcafbb666079e"
+      },
+      {
+        "name": "victory",
+        "duration": 1.5,
+        "keyframes": "30c1d7d59bab48abf24d6798eff45f453b0827de2e4daccc512cabd67db556ee"
+      },
+      {
+        "name": "defeat",
+        "duration": 1.5,
+        "keyframes": "6956a4d594ea74fcfba8b1fcc6820fe0c36e206ccac439a6e08d83a0028c472c"
+      }
+    ]
+  },
+  "gold-crest-iron-vine.glb": {
+    "min": [-0.2277166082845655, 0.0013449546816674046, -0.12897004187107178],
+    "max": [0.2361267479098449, 1.1859999895095825, 0.18870361823938692],
+    "bones": [21],
+    "clips": [
+      {
+        "name": "idle",
+        "duration": 2,
+        "keyframes": "5ca78e54e631e25a5bedcb19c30ea60fb88c1eeea2c3b5ffa79b5a01c69bec88"
+      },
+      {
+        "name": "lowHp",
+        "duration": 2,
+        "keyframes": "40fb706503e3395ee3587866590834720ee4bb479c651dba8f121ec9fb2ca3e4"
+      },
+      {
+        "name": "summon",
+        "duration": 1,
+        "keyframes": "847eebece76e34676abfff1f327c74c476604b9fa3e2066124b0150775ddd079"
+      },
+      {
+        "name": "castWarrior",
+        "duration": 1,
+        "keyframes": "94088b3f50c4bc4186ac130e3b55c412faafb2775709e6817f9eaf481dc8628c"
+      },
+      {
+        "name": "castRanger",
+        "duration": 1,
+        "keyframes": "c6d28d1923beb258b2ba801dd72103c46a28b71b503085e27100f5cbf15a740b"
+      },
+      {
+        "name": "castMage",
+        "duration": 1,
+        "keyframes": "6b1877a8b3b71fb30ba55b0be247129e763dd32d3e2953ce5c24890420879f4a"
+      },
+      {
+        "name": "castPriest",
+        "duration": 1,
+        "keyframes": "5654e7b7c671fc0160a6271681ba1e236fe2115f2760d97e07fb929f65711331"
+      },
+      {
+        "name": "hurt",
+        "duration": 0.75,
+        "keyframes": "497b32d04bc2ad42bf90efb0b8a32475cee4cea4958f75c4f16dcafbb666079e"
+      },
+      {
+        "name": "victory",
+        "duration": 1.5,
+        "keyframes": "30c1d7d59bab48abf24d6798eff45f453b0827de2e4daccc512cabd67db556ee"
+      },
+      {
+        "name": "defeat",
+        "duration": 1.5,
+        "keyframes": "6956a4d594ea74fcfba8b1fcc6820fe0c36e206ccac439a6e08d83a0028c472c"
+      }
+    ]
+  },
+  "gold-crest-moonstone.glb": {
+    "min": [-0.21713880123481127, 0.0013449546816674046, -0.12897004187107178],
+    "max": [0.2361267479098449, 1.1800000667572021, 0.18870361823938692],
+    "bones": [21],
+    "clips": [
+      {
+        "name": "idle",
+        "duration": 2,
+        "keyframes": "5ca78e54e631e25a5bedcb19c30ea60fb88c1eeea2c3b5ffa79b5a01c69bec88"
+      },
+      {
+        "name": "lowHp",
+        "duration": 2,
+        "keyframes": "40fb706503e3395ee3587866590834720ee4bb479c651dba8f121ec9fb2ca3e4"
+      },
+      {
+        "name": "summon",
+        "duration": 1,
+        "keyframes": "847eebece76e34676abfff1f327c74c476604b9fa3e2066124b0150775ddd079"
+      },
+      {
+        "name": "castWarrior",
+        "duration": 1,
+        "keyframes": "94088b3f50c4bc4186ac130e3b55c412faafb2775709e6817f9eaf481dc8628c"
+      },
+      {
+        "name": "castRanger",
+        "duration": 1,
+        "keyframes": "c6d28d1923beb258b2ba801dd72103c46a28b71b503085e27100f5cbf15a740b"
+      },
+      {
+        "name": "castMage",
+        "duration": 1,
+        "keyframes": "6b1877a8b3b71fb30ba55b0be247129e763dd32d3e2953ce5c24890420879f4a"
+      },
+      {
+        "name": "castPriest",
+        "duration": 1,
+        "keyframes": "5654e7b7c671fc0160a6271681ba1e236fe2115f2760d97e07fb929f65711331"
+      },
+      {
+        "name": "hurt",
+        "duration": 0.75,
+        "keyframes": "497b32d04bc2ad42bf90efb0b8a32475cee4cea4958f75c4f16dcafbb666079e"
+      },
+      {
+        "name": "victory",
+        "duration": 1.5,
+        "keyframes": "30c1d7d59bab48abf24d6798eff45f453b0827de2e4daccc512cabd67db556ee"
+      },
+      {
+        "name": "defeat",
+        "duration": 1.5,
+        "keyframes": "6956a4d594ea74fcfba8b1fcc6820fe0c36e206ccac439a6e08d83a0028c472c"
+      }
+    ]
+  },
+  "gold-crest-royal-plate.glb": {
+    "min": [-0.2171388008561468, 0.0013449546816674046, -0.12897004187107178],
+    "max": [0.2361267479098449, 1.1800000667572021, 0.18870361823938692],
+    "bones": [21],
+    "clips": [
+      {
+        "name": "idle",
+        "duration": 2,
+        "keyframes": "5ca78e54e631e25a5bedcb19c30ea60fb88c1eeea2c3b5ffa79b5a01c69bec88"
+      },
+      {
+        "name": "lowHp",
+        "duration": 2,
+        "keyframes": "40fb706503e3395ee3587866590834720ee4bb479c651dba8f121ec9fb2ca3e4"
+      },
+      {
+        "name": "summon",
+        "duration": 1,
+        "keyframes": "847eebece76e34676abfff1f327c74c476604b9fa3e2066124b0150775ddd079"
+      },
+      {
+        "name": "castWarrior",
+        "duration": 1,
+        "keyframes": "94088b3f50c4bc4186ac130e3b55c412faafb2775709e6817f9eaf481dc8628c"
+      },
+      {
+        "name": "castRanger",
+        "duration": 1,
+        "keyframes": "c6d28d1923beb258b2ba801dd72103c46a28b71b503085e27100f5cbf15a740b"
+      },
+      {
+        "name": "castMage",
+        "duration": 1,
+        "keyframes": "6b1877a8b3b71fb30ba55b0be247129e763dd32d3e2953ce5c24890420879f4a"
+      },
+      {
+        "name": "castPriest",
+        "duration": 1,
+        "keyframes": "5654e7b7c671fc0160a6271681ba1e236fe2115f2760d97e07fb929f65711331"
+      },
+      {
+        "name": "hurt",
+        "duration": 0.75,
+        "keyframes": "497b32d04bc2ad42bf90efb0b8a32475cee4cea4958f75c4f16dcafbb666079e"
+      },
+      {
+        "name": "victory",
+        "duration": 1.5,
+        "keyframes": "30c1d7d59bab48abf24d6798eff45f453b0827de2e4daccc512cabd67db556ee"
+      },
+      {
+        "name": "defeat",
+        "duration": 1.5,
+        "keyframes": "6956a4d594ea74fcfba8b1fcc6820fe0c36e206ccac439a6e08d83a0028c472c"
+      }
+    ]
+  },
+  "gold-crest-stag-leather.glb": {
+    "min": [-0.21713880123481127, 0.0013449546816674046, -0.12897004187107178],
+    "max": [0.2361267479098449, 1.182565689086914, 0.18870361823938692],
+    "bones": [21],
+    "clips": [
+      {
+        "name": "idle",
+        "duration": 2,
+        "keyframes": "5ca78e54e631e25a5bedcb19c30ea60fb88c1eeea2c3b5ffa79b5a01c69bec88"
+      },
+      {
+        "name": "lowHp",
+        "duration": 2,
+        "keyframes": "40fb706503e3395ee3587866590834720ee4bb479c651dba8f121ec9fb2ca3e4"
+      },
+      {
+        "name": "summon",
+        "duration": 1,
+        "keyframes": "847eebece76e34676abfff1f327c74c476604b9fa3e2066124b0150775ddd079"
+      },
+      {
+        "name": "castWarrior",
+        "duration": 1,
+        "keyframes": "94088b3f50c4bc4186ac130e3b55c412faafb2775709e6817f9eaf481dc8628c"
+      },
+      {
+        "name": "castRanger",
+        "duration": 1,
+        "keyframes": "c6d28d1923beb258b2ba801dd72103c46a28b71b503085e27100f5cbf15a740b"
+      },
+      {
+        "name": "castMage",
+        "duration": 1,
+        "keyframes": "6b1877a8b3b71fb30ba55b0be247129e763dd32d3e2953ce5c24890420879f4a"
+      },
+      {
+        "name": "castPriest",
+        "duration": 1,
+        "keyframes": "5654e7b7c671fc0160a6271681ba1e236fe2115f2760d97e07fb929f65711331"
+      },
+      {
+        "name": "hurt",
+        "duration": 0.75,
+        "keyframes": "497b32d04bc2ad42bf90efb0b8a32475cee4cea4958f75c4f16dcafbb666079e"
+      },
+      {
+        "name": "victory",
+        "duration": 1.5,
+        "keyframes": "30c1d7d59bab48abf24d6798eff45f453b0827de2e4daccc512cabd67db556ee"
+      },
+      {
+        "name": "defeat",
+        "duration": 1.5,
+        "keyframes": "6956a4d594ea74fcfba8b1fcc6820fe0c36e206ccac439a6e08d83a0028c472c"
+      }
+    ]
+  },
+  "gold-crest-standard.glb": {
+    "min": [-0.21713880123481127, 0.0013449546816674046, -0.12897004187107178],
+    "max": [0.2361267479098449, 1.1800000667572021, 0.18870361823938692],
+    "bones": [21],
+    "clips": [
+      {
+        "name": "idle",
+        "duration": 2,
+        "keyframes": "5ca78e54e631e25a5bedcb19c30ea60fb88c1eeea2c3b5ffa79b5a01c69bec88"
+      },
+      {
+        "name": "lowHp",
+        "duration": 2,
+        "keyframes": "40fb706503e3395ee3587866590834720ee4bb479c651dba8f121ec9fb2ca3e4"
+      },
+      {
+        "name": "summon",
+        "duration": 1,
+        "keyframes": "847eebece76e34676abfff1f327c74c476604b9fa3e2066124b0150775ddd079"
+      },
+      {
+        "name": "castWarrior",
+        "duration": 1,
+        "keyframes": "94088b3f50c4bc4186ac130e3b55c412faafb2775709e6817f9eaf481dc8628c"
+      },
+      {
+        "name": "castRanger",
+        "duration": 1,
+        "keyframes": "c6d28d1923beb258b2ba801dd72103c46a28b71b503085e27100f5cbf15a740b"
+      },
+      {
+        "name": "castMage",
+        "duration": 1,
+        "keyframes": "6b1877a8b3b71fb30ba55b0be247129e763dd32d3e2953ce5c24890420879f4a"
+      },
+      {
+        "name": "castPriest",
+        "duration": 1,
+        "keyframes": "5654e7b7c671fc0160a6271681ba1e236fe2115f2760d97e07fb929f65711331"
+      },
+      {
+        "name": "hurt",
+        "duration": 0.75,
+        "keyframes": "497b32d04bc2ad42bf90efb0b8a32475cee4cea4958f75c4f16dcafbb666079e"
+      },
+      {
+        "name": "victory",
+        "duration": 1.5,
+        "keyframes": "30c1d7d59bab48abf24d6798eff45f453b0827de2e4daccc512cabd67db556ee"
+      },
+      {
+        "name": "defeat",
+        "duration": 1.5,
+        "keyframes": "6956a4d594ea74fcfba8b1fcc6820fe0c36e206ccac439a6e08d83a0028c472c"
+      }
+    ]
+  },
+  "lantern-keeper-copper-rim.glb": {
+    "min": [-0.2021389829580489, 0.001345028396011214, -0.1128690242767334],
+    "max": [0.2361267479098449, 1.0729000568389893, 0.18870363731187142],
+    "bones": [21],
+    "clips": [
+      {
+        "name": "idle",
+        "duration": 2,
+        "keyframes": "05a31201d205105817ebad7078840b4222988b5e96832878662ca56650d6c225"
+      },
+      {
+        "name": "lowHp",
+        "duration": 2,
+        "keyframes": "052afb8940cda346f584025d74046008273797331c5a49520c9021fa7afaf40d"
+      },
+      {
+        "name": "summon",
+        "duration": 1,
+        "keyframes": "64ca63e0c54115780cf4d8a6b99b2e8a0d6675c256406b19268757d5410194a2"
+      },
+      {
+        "name": "castWarrior",
+        "duration": 1,
+        "keyframes": "e4e0825e74e864a77f08764105d854c6f92cf66163ad4bf4f953293489454bf6"
+      },
+      {
+        "name": "castRanger",
+        "duration": 1,
+        "keyframes": "0af9a38ff57f5ad891c6fcc7282acdec359a4116b2e5cc87800c9ef8b4f11140"
+      },
+      {
+        "name": "castMage",
+        "duration": 1,
+        "keyframes": "1ad2e6cb8e7d8d50fa20fd3345ddd9338a759e0b2312a937bce681a3043812df"
+      },
+      {
+        "name": "castPriest",
+        "duration": 1,
+        "keyframes": "d65e22b10fc7165440c6b3e2968bd0438011ded000841503b2cb19e3ad9b2235"
+      },
+      {
+        "name": "hurt",
+        "duration": 0.75,
+        "keyframes": "c7293dc603000fb912d0072daaea0000005370ff1084333e265cf2384b9a21d8"
+      },
+      {
+        "name": "victory",
+        "duration": 1.5,
+        "keyframes": "65c6f8416090b9a5a9f5ce24cc85295b657aa48102852f728f6c943858f25088"
+      },
+      {
+        "name": "defeat",
+        "duration": 1.5,
+        "keyframes": "68b36bd36de7d85579365df53dc687a82a5d14b4c73a04c610c61d573f25267b"
+      }
+    ]
+  },
+  "lantern-keeper-gold-inlay.glb": {
+    "min": [-0.2021389837887292, 0.001345028396011214, -0.1128690242767334],
+    "max": [0.2361267479098449, 1.0729000568389893, 0.18870363731187142],
+    "bones": [21],
+    "clips": [
+      {
+        "name": "idle",
+        "duration": 2,
+        "keyframes": "05a31201d205105817ebad7078840b4222988b5e96832878662ca56650d6c225"
+      },
+      {
+        "name": "lowHp",
+        "duration": 2,
+        "keyframes": "052afb8940cda346f584025d74046008273797331c5a49520c9021fa7afaf40d"
+      },
+      {
+        "name": "summon",
+        "duration": 1,
+        "keyframes": "64ca63e0c54115780cf4d8a6b99b2e8a0d6675c256406b19268757d5410194a2"
+      },
+      {
+        "name": "castWarrior",
+        "duration": 1,
+        "keyframes": "e4e0825e74e864a77f08764105d854c6f92cf66163ad4bf4f953293489454bf6"
+      },
+      {
+        "name": "castRanger",
+        "duration": 1,
+        "keyframes": "0af9a38ff57f5ad891c6fcc7282acdec359a4116b2e5cc87800c9ef8b4f11140"
+      },
+      {
+        "name": "castMage",
+        "duration": 1,
+        "keyframes": "1ad2e6cb8e7d8d50fa20fd3345ddd9338a759e0b2312a937bce681a3043812df"
+      },
+      {
+        "name": "castPriest",
+        "duration": 1,
+        "keyframes": "d65e22b10fc7165440c6b3e2968bd0438011ded000841503b2cb19e3ad9b2235"
+      },
+      {
+        "name": "hurt",
+        "duration": 0.75,
+        "keyframes": "c7293dc603000fb912d0072daaea0000005370ff1084333e265cf2384b9a21d8"
+      },
+      {
+        "name": "victory",
+        "duration": 1.5,
+        "keyframes": "65c6f8416090b9a5a9f5ce24cc85295b657aa48102852f728f6c943858f25088"
+      },
+      {
+        "name": "defeat",
+        "duration": 1.5,
+        "keyframes": "68b36bd36de7d85579365df53dc687a82a5d14b4c73a04c610c61d573f25267b"
+      }
+    ]
+  },
+  "lantern-keeper-iron-vine.glb": {
+    "min": [-0.2127167682381088, 0.001345028396011214, -0.1128690242767334],
+    "max": [0.2361267479098449, 1.0788999795913696, 0.18870363731187142],
+    "bones": [21],
+    "clips": [
+      {
+        "name": "idle",
+        "duration": 2,
+        "keyframes": "05a31201d205105817ebad7078840b4222988b5e96832878662ca56650d6c225"
+      },
+      {
+        "name": "lowHp",
+        "duration": 2,
+        "keyframes": "052afb8940cda346f584025d74046008273797331c5a49520c9021fa7afaf40d"
+      },
+      {
+        "name": "summon",
+        "duration": 1,
+        "keyframes": "64ca63e0c54115780cf4d8a6b99b2e8a0d6675c256406b19268757d5410194a2"
+      },
+      {
+        "name": "castWarrior",
+        "duration": 1,
+        "keyframes": "e4e0825e74e864a77f08764105d854c6f92cf66163ad4bf4f953293489454bf6"
+      },
+      {
+        "name": "castRanger",
+        "duration": 1,
+        "keyframes": "0af9a38ff57f5ad891c6fcc7282acdec359a4116b2e5cc87800c9ef8b4f11140"
+      },
+      {
+        "name": "castMage",
+        "duration": 1,
+        "keyframes": "1ad2e6cb8e7d8d50fa20fd3345ddd9338a759e0b2312a937bce681a3043812df"
+      },
+      {
+        "name": "castPriest",
+        "duration": 1,
+        "keyframes": "d65e22b10fc7165440c6b3e2968bd0438011ded000841503b2cb19e3ad9b2235"
+      },
+      {
+        "name": "hurt",
+        "duration": 0.75,
+        "keyframes": "c7293dc603000fb912d0072daaea0000005370ff1084333e265cf2384b9a21d8"
+      },
+      {
+        "name": "victory",
+        "duration": 1.5,
+        "keyframes": "65c6f8416090b9a5a9f5ce24cc85295b657aa48102852f728f6c943858f25088"
+      },
+      {
+        "name": "defeat",
+        "duration": 1.5,
+        "keyframes": "68b36bd36de7d85579365df53dc687a82a5d14b4c73a04c610c61d573f25267b"
+      }
+    ]
+  },
+  "lantern-keeper-moonstone.glb": {
+    "min": [-0.2021389829580489, 0.001345028396011214, -0.1128690242767334],
+    "max": [0.2361267479098449, 1.0729000568389893, 0.18870363731187142],
+    "bones": [21],
+    "clips": [
+      {
+        "name": "idle",
+        "duration": 2,
+        "keyframes": "05a31201d205105817ebad7078840b4222988b5e96832878662ca56650d6c225"
+      },
+      {
+        "name": "lowHp",
+        "duration": 2,
+        "keyframes": "052afb8940cda346f584025d74046008273797331c5a49520c9021fa7afaf40d"
+      },
+      {
+        "name": "summon",
+        "duration": 1,
+        "keyframes": "64ca63e0c54115780cf4d8a6b99b2e8a0d6675c256406b19268757d5410194a2"
+      },
+      {
+        "name": "castWarrior",
+        "duration": 1,
+        "keyframes": "e4e0825e74e864a77f08764105d854c6f92cf66163ad4bf4f953293489454bf6"
+      },
+      {
+        "name": "castRanger",
+        "duration": 1,
+        "keyframes": "0af9a38ff57f5ad891c6fcc7282acdec359a4116b2e5cc87800c9ef8b4f11140"
+      },
+      {
+        "name": "castMage",
+        "duration": 1,
+        "keyframes": "1ad2e6cb8e7d8d50fa20fd3345ddd9338a759e0b2312a937bce681a3043812df"
+      },
+      {
+        "name": "castPriest",
+        "duration": 1,
+        "keyframes": "d65e22b10fc7165440c6b3e2968bd0438011ded000841503b2cb19e3ad9b2235"
+      },
+      {
+        "name": "hurt",
+        "duration": 0.75,
+        "keyframes": "c7293dc603000fb912d0072daaea0000005370ff1084333e265cf2384b9a21d8"
+      },
+      {
+        "name": "victory",
+        "duration": 1.5,
+        "keyframes": "65c6f8416090b9a5a9f5ce24cc85295b657aa48102852f728f6c943858f25088"
+      },
+      {
+        "name": "defeat",
+        "duration": 1.5,
+        "keyframes": "68b36bd36de7d85579365df53dc687a82a5d14b4c73a04c610c61d573f25267b"
+      }
+    ]
+  },
+  "lantern-keeper-royal-plate.glb": {
+    "min": [-0.20213898316572096, 0.001345028396011214, -0.1128690242767334],
+    "max": [0.2361267479098449, 1.0729000568389893, 0.18870363731187142],
+    "bones": [21],
+    "clips": [
+      {
+        "name": "idle",
+        "duration": 2,
+        "keyframes": "05a31201d205105817ebad7078840b4222988b5e96832878662ca56650d6c225"
+      },
+      {
+        "name": "lowHp",
+        "duration": 2,
+        "keyframes": "052afb8940cda346f584025d74046008273797331c5a49520c9021fa7afaf40d"
+      },
+      {
+        "name": "summon",
+        "duration": 1,
+        "keyframes": "64ca63e0c54115780cf4d8a6b99b2e8a0d6675c256406b19268757d5410194a2"
+      },
+      {
+        "name": "castWarrior",
+        "duration": 1,
+        "keyframes": "e4e0825e74e864a77f08764105d854c6f92cf66163ad4bf4f953293489454bf6"
+      },
+      {
+        "name": "castRanger",
+        "duration": 1,
+        "keyframes": "0af9a38ff57f5ad891c6fcc7282acdec359a4116b2e5cc87800c9ef8b4f11140"
+      },
+      {
+        "name": "castMage",
+        "duration": 1,
+        "keyframes": "1ad2e6cb8e7d8d50fa20fd3345ddd9338a759e0b2312a937bce681a3043812df"
+      },
+      {
+        "name": "castPriest",
+        "duration": 1,
+        "keyframes": "d65e22b10fc7165440c6b3e2968bd0438011ded000841503b2cb19e3ad9b2235"
+      },
+      {
+        "name": "hurt",
+        "duration": 0.75,
+        "keyframes": "c7293dc603000fb912d0072daaea0000005370ff1084333e265cf2384b9a21d8"
+      },
+      {
+        "name": "victory",
+        "duration": 1.5,
+        "keyframes": "65c6f8416090b9a5a9f5ce24cc85295b657aa48102852f728f6c943858f25088"
+      },
+      {
+        "name": "defeat",
+        "duration": 1.5,
+        "keyframes": "68b36bd36de7d85579365df53dc687a82a5d14b4c73a04c610c61d573f25267b"
+      }
+    ]
+  },
+  "lantern-keeper-stag-leather.glb": {
+    "min": [-0.2021389829580489, 0.001345028396011214, -0.1128690242767334],
+    "max": [0.2361267479098449, 1.0754656791687012, 0.18870363731187142],
+    "bones": [21],
+    "clips": [
+      {
+        "name": "idle",
+        "duration": 2,
+        "keyframes": "05a31201d205105817ebad7078840b4222988b5e96832878662ca56650d6c225"
+      },
+      {
+        "name": "lowHp",
+        "duration": 2,
+        "keyframes": "052afb8940cda346f584025d74046008273797331c5a49520c9021fa7afaf40d"
+      },
+      {
+        "name": "summon",
+        "duration": 1,
+        "keyframes": "64ca63e0c54115780cf4d8a6b99b2e8a0d6675c256406b19268757d5410194a2"
+      },
+      {
+        "name": "castWarrior",
+        "duration": 1,
+        "keyframes": "e4e0825e74e864a77f08764105d854c6f92cf66163ad4bf4f953293489454bf6"
+      },
+      {
+        "name": "castRanger",
+        "duration": 1,
+        "keyframes": "0af9a38ff57f5ad891c6fcc7282acdec359a4116b2e5cc87800c9ef8b4f11140"
+      },
+      {
+        "name": "castMage",
+        "duration": 1,
+        "keyframes": "1ad2e6cb8e7d8d50fa20fd3345ddd9338a759e0b2312a937bce681a3043812df"
+      },
+      {
+        "name": "castPriest",
+        "duration": 1,
+        "keyframes": "d65e22b10fc7165440c6b3e2968bd0438011ded000841503b2cb19e3ad9b2235"
+      },
+      {
+        "name": "hurt",
+        "duration": 0.75,
+        "keyframes": "c7293dc603000fb912d0072daaea0000005370ff1084333e265cf2384b9a21d8"
+      },
+      {
+        "name": "victory",
+        "duration": 1.5,
+        "keyframes": "65c6f8416090b9a5a9f5ce24cc85295b657aa48102852f728f6c943858f25088"
+      },
+      {
+        "name": "defeat",
+        "duration": 1.5,
+        "keyframes": "68b36bd36de7d85579365df53dc687a82a5d14b4c73a04c610c61d573f25267b"
+      }
+    ]
+  },
+  "lantern-keeper-standard.glb": {
+    "min": [-0.2021389829580489, 0.001345028396011214, -0.1128690242767334],
+    "max": [0.2361267479098449, 1.0729000568389893, 0.18870363731187142],
+    "bones": [21],
+    "clips": [
+      {
+        "name": "idle",
+        "duration": 2,
+        "keyframes": "05a31201d205105817ebad7078840b4222988b5e96832878662ca56650d6c225"
+      },
+      {
+        "name": "lowHp",
+        "duration": 2,
+        "keyframes": "052afb8940cda346f584025d74046008273797331c5a49520c9021fa7afaf40d"
+      },
+      {
+        "name": "summon",
+        "duration": 1,
+        "keyframes": "64ca63e0c54115780cf4d8a6b99b2e8a0d6675c256406b19268757d5410194a2"
+      },
+      {
+        "name": "castWarrior",
+        "duration": 1,
+        "keyframes": "e4e0825e74e864a77f08764105d854c6f92cf66163ad4bf4f953293489454bf6"
+      },
+      {
+        "name": "castRanger",
+        "duration": 1,
+        "keyframes": "0af9a38ff57f5ad891c6fcc7282acdec359a4116b2e5cc87800c9ef8b4f11140"
+      },
+      {
+        "name": "castMage",
+        "duration": 1,
+        "keyframes": "1ad2e6cb8e7d8d50fa20fd3345ddd9338a759e0b2312a937bce681a3043812df"
+      },
+      {
+        "name": "castPriest",
+        "duration": 1,
+        "keyframes": "d65e22b10fc7165440c6b3e2968bd0438011ded000841503b2cb19e3ad9b2235"
+      },
+      {
+        "name": "hurt",
+        "duration": 0.75,
+        "keyframes": "c7293dc603000fb912d0072daaea0000005370ff1084333e265cf2384b9a21d8"
+      },
+      {
+        "name": "victory",
+        "duration": 1.5,
+        "keyframes": "65c6f8416090b9a5a9f5ce24cc85295b657aa48102852f728f6c943858f25088"
+      },
+      {
+        "name": "defeat",
+        "duration": 1.5,
+        "keyframes": "68b36bd36de7d85579365df53dc687a82a5d14b4c73a04c610c61d573f25267b"
+      }
+    ]
+  },
+  "mesa-shade-copper-rim.glb": {
+    "min": [-0.2081388768547009, 0.0013450179373230722, -0.12727237858556478],
+    "max": [0.2361267479098449, 1.1290000677108765, 0.18870367483310208],
+    "bones": [21],
+    "clips": [
+      {
+        "name": "idle",
+        "duration": 2,
+        "keyframes": "73df189c270d9ae61b2296ce0398ccf7d489b4ce54e4d3a8865e9cc3e593ded6"
+      },
+      {
+        "name": "lowHp",
+        "duration": 2,
+        "keyframes": "af47db157377434b8a7aea9773bd4c301f120ebf95cf9548db5caebde4abd939"
+      },
+      {
+        "name": "summon",
+        "duration": 1,
+        "keyframes": "f53f22f20f009d0095e6f1825f794e99962800ff35e0220be4482d267ea2e9bb"
+      },
+      {
+        "name": "castWarrior",
+        "duration": 1,
+        "keyframes": "d850d3e0ecfe9a554834ba19c7ef630ed49b524f4ef562fcf9f71f3ea3a3f0a0"
+      },
+      {
+        "name": "castRanger",
+        "duration": 1,
+        "keyframes": "c5241ebd214cef691d3b094b6e53432682348d0506853e48114feb22e188c529"
+      },
+      {
+        "name": "castMage",
+        "duration": 1,
+        "keyframes": "a6acde476f1f3b61ab966d44753ca41d30c96522584bbda90548b00c2d47f9b7"
+      },
+      {
+        "name": "castPriest",
+        "duration": 1,
+        "keyframes": "abf36215afb905a202d20da32bfc7929d4184db48c9a79dd9887cb95cb0811a2"
+      },
+      {
+        "name": "hurt",
+        "duration": 0.75,
+        "keyframes": "8b74e1e9655fd53c7e9b1f2f6bbc82ff5700a411e37b859ca4998126c3d54d69"
+      },
+      {
+        "name": "victory",
+        "duration": 1.5,
+        "keyframes": "39f94961681b6f186e41211b81ac8983f7cd240da41b50d587c668c7d8148931"
+      },
+      {
+        "name": "defeat",
+        "duration": 1.5,
+        "keyframes": "ac1c3c85393dab92154545578561cd69ba8ea15881faab752d83f37df1c5198f"
+      }
+    ]
+  },
+  "mesa-shade-gold-inlay.glb": {
+    "min": [-0.2081388757471096, 0.0013450179373230722, -0.12727237858556478],
+    "max": [0.2361267479098449, 1.1290000677108765, 0.18870367483310208],
+    "bones": [21],
+    "clips": [
+      {
+        "name": "idle",
+        "duration": 2,
+        "keyframes": "73df189c270d9ae61b2296ce0398ccf7d489b4ce54e4d3a8865e9cc3e593ded6"
+      },
+      {
+        "name": "lowHp",
+        "duration": 2,
+        "keyframes": "af47db157377434b8a7aea9773bd4c301f120ebf95cf9548db5caebde4abd939"
+      },
+      {
+        "name": "summon",
+        "duration": 1,
+        "keyframes": "f53f22f20f009d0095e6f1825f794e99962800ff35e0220be4482d267ea2e9bb"
+      },
+      {
+        "name": "castWarrior",
+        "duration": 1,
+        "keyframes": "d850d3e0ecfe9a554834ba19c7ef630ed49b524f4ef562fcf9f71f3ea3a3f0a0"
+      },
+      {
+        "name": "castRanger",
+        "duration": 1,
+        "keyframes": "c5241ebd214cef691d3b094b6e53432682348d0506853e48114feb22e188c529"
+      },
+      {
+        "name": "castMage",
+        "duration": 1,
+        "keyframes": "a6acde476f1f3b61ab966d44753ca41d30c96522584bbda90548b00c2d47f9b7"
+      },
+      {
+        "name": "castPriest",
+        "duration": 1,
+        "keyframes": "abf36215afb905a202d20da32bfc7929d4184db48c9a79dd9887cb95cb0811a2"
+      },
+      {
+        "name": "hurt",
+        "duration": 0.75,
+        "keyframes": "8b74e1e9655fd53c7e9b1f2f6bbc82ff5700a411e37b859ca4998126c3d54d69"
+      },
+      {
+        "name": "victory",
+        "duration": 1.5,
+        "keyframes": "39f94961681b6f186e41211b81ac8983f7cd240da41b50d587c668c7d8148931"
+      },
+      {
+        "name": "defeat",
+        "duration": 1.5,
+        "keyframes": "ac1c3c85393dab92154545578561cd69ba8ea15881faab752d83f37df1c5198f"
+      }
+    ]
+  },
+  "mesa-shade-iron-vine.glb": {
+    "min": [-0.21871664331310087, 0.0013450179373230722, -0.12727237858556478],
+    "max": [0.2361267479098449, 1.1349999904632568, 0.18870367483310208],
+    "bones": [21],
+    "clips": [
+      {
+        "name": "idle",
+        "duration": 2,
+        "keyframes": "73df189c270d9ae61b2296ce0398ccf7d489b4ce54e4d3a8865e9cc3e593ded6"
+      },
+      {
+        "name": "lowHp",
+        "duration": 2,
+        "keyframes": "af47db157377434b8a7aea9773bd4c301f120ebf95cf9548db5caebde4abd939"
+      },
+      {
+        "name": "summon",
+        "duration": 1,
+        "keyframes": "f53f22f20f009d0095e6f1825f794e99962800ff35e0220be4482d267ea2e9bb"
+      },
+      {
+        "name": "castWarrior",
+        "duration": 1,
+        "keyframes": "d850d3e0ecfe9a554834ba19c7ef630ed49b524f4ef562fcf9f71f3ea3a3f0a0"
+      },
+      {
+        "name": "castRanger",
+        "duration": 1,
+        "keyframes": "c5241ebd214cef691d3b094b6e53432682348d0506853e48114feb22e188c529"
+      },
+      {
+        "name": "castMage",
+        "duration": 1,
+        "keyframes": "a6acde476f1f3b61ab966d44753ca41d30c96522584bbda90548b00c2d47f9b7"
+      },
+      {
+        "name": "castPriest",
+        "duration": 1,
+        "keyframes": "abf36215afb905a202d20da32bfc7929d4184db48c9a79dd9887cb95cb0811a2"
+      },
+      {
+        "name": "hurt",
+        "duration": 0.75,
+        "keyframes": "8b74e1e9655fd53c7e9b1f2f6bbc82ff5700a411e37b859ca4998126c3d54d69"
+      },
+      {
+        "name": "victory",
+        "duration": 1.5,
+        "keyframes": "39f94961681b6f186e41211b81ac8983f7cd240da41b50d587c668c7d8148931"
+      },
+      {
+        "name": "defeat",
+        "duration": 1.5,
+        "keyframes": "ac1c3c85393dab92154545578561cd69ba8ea15881faab752d83f37df1c5198f"
+      }
+    ]
+  },
+  "mesa-shade-moonstone.glb": {
+    "min": [-0.2081388768547009, 0.0013450179373230722, -0.12727237858556478],
+    "max": [0.2361267479098449, 1.1290000677108765, 0.18870367483310208],
+    "bones": [21],
+    "clips": [
+      {
+        "name": "idle",
+        "duration": 2,
+        "keyframes": "73df189c270d9ae61b2296ce0398ccf7d489b4ce54e4d3a8865e9cc3e593ded6"
+      },
+      {
+        "name": "lowHp",
+        "duration": 2,
+        "keyframes": "af47db157377434b8a7aea9773bd4c301f120ebf95cf9548db5caebde4abd939"
+      },
+      {
+        "name": "summon",
+        "duration": 1,
+        "keyframes": "f53f22f20f009d0095e6f1825f794e99962800ff35e0220be4482d267ea2e9bb"
+      },
+      {
+        "name": "castWarrior",
+        "duration": 1,
+        "keyframes": "d850d3e0ecfe9a554834ba19c7ef630ed49b524f4ef562fcf9f71f3ea3a3f0a0"
+      },
+      {
+        "name": "castRanger",
+        "duration": 1,
+        "keyframes": "c5241ebd214cef691d3b094b6e53432682348d0506853e48114feb22e188c529"
+      },
+      {
+        "name": "castMage",
+        "duration": 1,
+        "keyframes": "a6acde476f1f3b61ab966d44753ca41d30c96522584bbda90548b00c2d47f9b7"
+      },
+      {
+        "name": "castPriest",
+        "duration": 1,
+        "keyframes": "abf36215afb905a202d20da32bfc7929d4184db48c9a79dd9887cb95cb0811a2"
+      },
+      {
+        "name": "hurt",
+        "duration": 0.75,
+        "keyframes": "8b74e1e9655fd53c7e9b1f2f6bbc82ff5700a411e37b859ca4998126c3d54d69"
+      },
+      {
+        "name": "victory",
+        "duration": 1.5,
+        "keyframes": "39f94961681b6f186e41211b81ac8983f7cd240da41b50d587c668c7d8148931"
+      },
+      {
+        "name": "defeat",
+        "duration": 1.5,
+        "keyframes": "ac1c3c85393dab92154545578561cd69ba8ea15881faab752d83f37df1c5198f"
+      }
+    ]
+  },
+  "mesa-shade-royal-plate.glb": {
+    "min": [-0.208138876577793, 0.0013450179373230722, -0.12727237858556478],
+    "max": [0.2361267479098449, 1.1290000677108765, 0.18870367483310208],
+    "bones": [21],
+    "clips": [
+      {
+        "name": "idle",
+        "duration": 2,
+        "keyframes": "73df189c270d9ae61b2296ce0398ccf7d489b4ce54e4d3a8865e9cc3e593ded6"
+      },
+      {
+        "name": "lowHp",
+        "duration": 2,
+        "keyframes": "af47db157377434b8a7aea9773bd4c301f120ebf95cf9548db5caebde4abd939"
+      },
+      {
+        "name": "summon",
+        "duration": 1,
+        "keyframes": "f53f22f20f009d0095e6f1825f794e99962800ff35e0220be4482d267ea2e9bb"
+      },
+      {
+        "name": "castWarrior",
+        "duration": 1,
+        "keyframes": "d850d3e0ecfe9a554834ba19c7ef630ed49b524f4ef562fcf9f71f3ea3a3f0a0"
+      },
+      {
+        "name": "castRanger",
+        "duration": 1,
+        "keyframes": "c5241ebd214cef691d3b094b6e53432682348d0506853e48114feb22e188c529"
+      },
+      {
+        "name": "castMage",
+        "duration": 1,
+        "keyframes": "a6acde476f1f3b61ab966d44753ca41d30c96522584bbda90548b00c2d47f9b7"
+      },
+      {
+        "name": "castPriest",
+        "duration": 1,
+        "keyframes": "abf36215afb905a202d20da32bfc7929d4184db48c9a79dd9887cb95cb0811a2"
+      },
+      {
+        "name": "hurt",
+        "duration": 0.75,
+        "keyframes": "8b74e1e9655fd53c7e9b1f2f6bbc82ff5700a411e37b859ca4998126c3d54d69"
+      },
+      {
+        "name": "victory",
+        "duration": 1.5,
+        "keyframes": "39f94961681b6f186e41211b81ac8983f7cd240da41b50d587c668c7d8148931"
+      },
+      {
+        "name": "defeat",
+        "duration": 1.5,
+        "keyframes": "ac1c3c85393dab92154545578561cd69ba8ea15881faab752d83f37df1c5198f"
+      }
+    ]
+  },
+  "mesa-shade-stag-leather.glb": {
+    "min": [-0.2081388768547009, 0.0013450179373230722, -0.12727237858556478],
+    "max": [0.2361267479098449, 1.1315656900405884, 0.18870367483310208],
+    "bones": [21],
+    "clips": [
+      {
+        "name": "idle",
+        "duration": 2,
+        "keyframes": "73df189c270d9ae61b2296ce0398ccf7d489b4ce54e4d3a8865e9cc3e593ded6"
+      },
+      {
+        "name": "lowHp",
+        "duration": 2,
+        "keyframes": "af47db157377434b8a7aea9773bd4c301f120ebf95cf9548db5caebde4abd939"
+      },
+      {
+        "name": "summon",
+        "duration": 1,
+        "keyframes": "f53f22f20f009d0095e6f1825f794e99962800ff35e0220be4482d267ea2e9bb"
+      },
+      {
+        "name": "castWarrior",
+        "duration": 1,
+        "keyframes": "d850d3e0ecfe9a554834ba19c7ef630ed49b524f4ef562fcf9f71f3ea3a3f0a0"
+      },
+      {
+        "name": "castRanger",
+        "duration": 1,
+        "keyframes": "c5241ebd214cef691d3b094b6e53432682348d0506853e48114feb22e188c529"
+      },
+      {
+        "name": "castMage",
+        "duration": 1,
+        "keyframes": "a6acde476f1f3b61ab966d44753ca41d30c96522584bbda90548b00c2d47f9b7"
+      },
+      {
+        "name": "castPriest",
+        "duration": 1,
+        "keyframes": "abf36215afb905a202d20da32bfc7929d4184db48c9a79dd9887cb95cb0811a2"
+      },
+      {
+        "name": "hurt",
+        "duration": 0.75,
+        "keyframes": "8b74e1e9655fd53c7e9b1f2f6bbc82ff5700a411e37b859ca4998126c3d54d69"
+      },
+      {
+        "name": "victory",
+        "duration": 1.5,
+        "keyframes": "39f94961681b6f186e41211b81ac8983f7cd240da41b50d587c668c7d8148931"
+      },
+      {
+        "name": "defeat",
+        "duration": 1.5,
+        "keyframes": "ac1c3c85393dab92154545578561cd69ba8ea15881faab752d83f37df1c5198f"
+      }
+    ]
+  },
+  "mesa-shade-standard.glb": {
+    "min": [-0.2081388768547009, 0.0013450179373230722, -0.12727237858556478],
+    "max": [0.2361267479098449, 1.1290000677108765, 0.18870367483310208],
+    "bones": [21],
+    "clips": [
+      {
+        "name": "idle",
+        "duration": 2,
+        "keyframes": "73df189c270d9ae61b2296ce0398ccf7d489b4ce54e4d3a8865e9cc3e593ded6"
+      },
+      {
+        "name": "lowHp",
+        "duration": 2,
+        "keyframes": "af47db157377434b8a7aea9773bd4c301f120ebf95cf9548db5caebde4abd939"
+      },
+      {
+        "name": "summon",
+        "duration": 1,
+        "keyframes": "f53f22f20f009d0095e6f1825f794e99962800ff35e0220be4482d267ea2e9bb"
+      },
+      {
+        "name": "castWarrior",
+        "duration": 1,
+        "keyframes": "d850d3e0ecfe9a554834ba19c7ef630ed49b524f4ef562fcf9f71f3ea3a3f0a0"
+      },
+      {
+        "name": "castRanger",
+        "duration": 1,
+        "keyframes": "c5241ebd214cef691d3b094b6e53432682348d0506853e48114feb22e188c529"
+      },
+      {
+        "name": "castMage",
+        "duration": 1,
+        "keyframes": "a6acde476f1f3b61ab966d44753ca41d30c96522584bbda90548b00c2d47f9b7"
+      },
+      {
+        "name": "castPriest",
+        "duration": 1,
+        "keyframes": "abf36215afb905a202d20da32bfc7929d4184db48c9a79dd9887cb95cb0811a2"
+      },
+      {
+        "name": "hurt",
+        "duration": 0.75,
+        "keyframes": "8b74e1e9655fd53c7e9b1f2f6bbc82ff5700a411e37b859ca4998126c3d54d69"
+      },
+      {
+        "name": "victory",
+        "duration": 1.5,
+        "keyframes": "39f94961681b6f186e41211b81ac8983f7cd240da41b50d587c668c7d8148931"
+      },
+      {
+        "name": "defeat",
+        "duration": 1.5,
+        "keyframes": "ac1c3c85393dab92154545578561cd69ba8ea15881faab752d83f37df1c5198f"
+      }
+    ]
+  },
+  "salt-wind-copper-rim.glb": {
+    "min": [-0.21813886652689574, 0.0013448990247608465, -0.12707752178724957],
+    "max": [0.23612675269949018, 1.1035000554323162, 0.18870364645383714],
+    "bones": [21],
+    "clips": [
+      {
+        "name": "idle",
+        "duration": 2,
+        "keyframes": "70518f49cef780467bc84e82698f203da192bc075d374aea02ae7d350ec6cb0c"
+      },
+      {
+        "name": "lowHp",
+        "duration": 2,
+        "keyframes": "04a16ea76ceedae0d78552ae34953396f552046a57816ee3bf4d2e52dfc0308a"
+      },
+      {
+        "name": "summon",
+        "duration": 1,
+        "keyframes": "572cdcffc4f2346d97fd44b538629fe822090f33d99d9a8ea35e8a1923c216bb"
+      },
+      {
+        "name": "castWarrior",
+        "duration": 1,
+        "keyframes": "a6d603627e3f7ab5abd2d4a5a3b744422f7bb671a0735929e35245083492e1b9"
+      },
+      {
+        "name": "castRanger",
+        "duration": 1,
+        "keyframes": "d3b96ff32e5025d92d4b5e6f8e23c2bdfe8c29b302a63094d03f494f145f6788"
+      },
+      {
+        "name": "castMage",
+        "duration": 1,
+        "keyframes": "803d8d37057c961fdf91301649578b0b2be1ba0100c994264c5e2985c2a7b70a"
+      },
+      {
+        "name": "castPriest",
+        "duration": 1,
+        "keyframes": "cb55e2334e77e5e052a686fbec94e80a35075690f9905f1757dc237608955dd2"
+      },
+      {
+        "name": "hurt",
+        "duration": 0.75,
+        "keyframes": "a202c092911ad7179e11304e9a53d830f0c84861aca1c84f679b839156178d89"
+      },
+      {
+        "name": "victory",
+        "duration": 1.5,
+        "keyframes": "87f740cc35c601a619d43ed951025d23d815f321ddc0d23f6485bef86aa89b68"
+      },
+      {
+        "name": "defeat",
+        "duration": 1.5,
+        "keyframes": "c4b69d1151f2eb047a2a43c6965f903ea14082fce107f081b5ceba5e004739cc"
+      }
+    ]
+  },
+  "salt-wind-gold-inlay.glb": {
+    "min": [-0.21813886608197056, 0.0013448990247608465, -0.12707752178724957],
+    "max": [0.23612675269949018, 1.1035000554323162, 0.18870364645383714],
+    "bones": [21],
+    "clips": [
+      {
+        "name": "idle",
+        "duration": 2,
+        "keyframes": "70518f49cef780467bc84e82698f203da192bc075d374aea02ae7d350ec6cb0c"
+      },
+      {
+        "name": "lowHp",
+        "duration": 2,
+        "keyframes": "04a16ea76ceedae0d78552ae34953396f552046a57816ee3bf4d2e52dfc0308a"
+      },
+      {
+        "name": "summon",
+        "duration": 1,
+        "keyframes": "572cdcffc4f2346d97fd44b538629fe822090f33d99d9a8ea35e8a1923c216bb"
+      },
+      {
+        "name": "castWarrior",
+        "duration": 1,
+        "keyframes": "a6d603627e3f7ab5abd2d4a5a3b744422f7bb671a0735929e35245083492e1b9"
+      },
+      {
+        "name": "castRanger",
+        "duration": 1,
+        "keyframes": "d3b96ff32e5025d92d4b5e6f8e23c2bdfe8c29b302a63094d03f494f145f6788"
+      },
+      {
+        "name": "castMage",
+        "duration": 1,
+        "keyframes": "803d8d37057c961fdf91301649578b0b2be1ba0100c994264c5e2985c2a7b70a"
+      },
+      {
+        "name": "castPriest",
+        "duration": 1,
+        "keyframes": "cb55e2334e77e5e052a686fbec94e80a35075690f9905f1757dc237608955dd2"
+      },
+      {
+        "name": "hurt",
+        "duration": 0.75,
+        "keyframes": "a202c092911ad7179e11304e9a53d830f0c84861aca1c84f679b839156178d89"
+      },
+      {
+        "name": "victory",
+        "duration": 1.5,
+        "keyframes": "87f740cc35c601a619d43ed951025d23d815f321ddc0d23f6485bef86aa89b68"
+      },
+      {
+        "name": "defeat",
+        "duration": 1.5,
+        "keyframes": "c4b69d1151f2eb047a2a43c6965f903ea14082fce107f081b5ceba5e004739cc"
+      }
+    ]
+  },
+  "salt-wind-iron-vine.glb": {
+    "min": [-0.22871663286252827, 0.0013448990247608465, -0.12707752178724957],
+    "max": [0.23612675269949018, 1.1094999785423196, 0.18870364645383714],
+    "bones": [21],
+    "clips": [
+      {
+        "name": "idle",
+        "duration": 2,
+        "keyframes": "70518f49cef780467bc84e82698f203da192bc075d374aea02ae7d350ec6cb0c"
+      },
+      {
+        "name": "lowHp",
+        "duration": 2,
+        "keyframes": "04a16ea76ceedae0d78552ae34953396f552046a57816ee3bf4d2e52dfc0308a"
+      },
+      {
+        "name": "summon",
+        "duration": 1,
+        "keyframes": "572cdcffc4f2346d97fd44b538629fe822090f33d99d9a8ea35e8a1923c216bb"
+      },
+      {
+        "name": "castWarrior",
+        "duration": 1,
+        "keyframes": "a6d603627e3f7ab5abd2d4a5a3b744422f7bb671a0735929e35245083492e1b9"
+      },
+      {
+        "name": "castRanger",
+        "duration": 1,
+        "keyframes": "d3b96ff32e5025d92d4b5e6f8e23c2bdfe8c29b302a63094d03f494f145f6788"
+      },
+      {
+        "name": "castMage",
+        "duration": 1,
+        "keyframes": "803d8d37057c961fdf91301649578b0b2be1ba0100c994264c5e2985c2a7b70a"
+      },
+      {
+        "name": "castPriest",
+        "duration": 1,
+        "keyframes": "cb55e2334e77e5e052a686fbec94e80a35075690f9905f1757dc237608955dd2"
+      },
+      {
+        "name": "hurt",
+        "duration": 0.75,
+        "keyframes": "a202c092911ad7179e11304e9a53d830f0c84861aca1c84f679b839156178d89"
+      },
+      {
+        "name": "victory",
+        "duration": 1.5,
+        "keyframes": "87f740cc35c601a619d43ed951025d23d815f321ddc0d23f6485bef86aa89b68"
+      },
+      {
+        "name": "defeat",
+        "duration": 1.5,
+        "keyframes": "c4b69d1151f2eb047a2a43c6965f903ea14082fce107f081b5ceba5e004739cc"
+      }
+    ]
+  },
+  "salt-wind-moonstone.glb": {
+    "min": [-0.21813886652689574, 0.0013448990247608465, -0.12707752178724957],
+    "max": [0.23612675269949018, 1.1035000554323162, 0.18870364645383714],
+    "bones": [21],
+    "clips": [
+      {
+        "name": "idle",
+        "duration": 2,
+        "keyframes": "70518f49cef780467bc84e82698f203da192bc075d374aea02ae7d350ec6cb0c"
+      },
+      {
+        "name": "lowHp",
+        "duration": 2,
+        "keyframes": "04a16ea76ceedae0d78552ae34953396f552046a57816ee3bf4d2e52dfc0308a"
+      },
+      {
+        "name": "summon",
+        "duration": 1,
+        "keyframes": "572cdcffc4f2346d97fd44b538629fe822090f33d99d9a8ea35e8a1923c216bb"
+      },
+      {
+        "name": "castWarrior",
+        "duration": 1,
+        "keyframes": "a6d603627e3f7ab5abd2d4a5a3b744422f7bb671a0735929e35245083492e1b9"
+      },
+      {
+        "name": "castRanger",
+        "duration": 1,
+        "keyframes": "d3b96ff32e5025d92d4b5e6f8e23c2bdfe8c29b302a63094d03f494f145f6788"
+      },
+      {
+        "name": "castMage",
+        "duration": 1,
+        "keyframes": "803d8d37057c961fdf91301649578b0b2be1ba0100c994264c5e2985c2a7b70a"
+      },
+      {
+        "name": "castPriest",
+        "duration": 1,
+        "keyframes": "cb55e2334e77e5e052a686fbec94e80a35075690f9905f1757dc237608955dd2"
+      },
+      {
+        "name": "hurt",
+        "duration": 0.75,
+        "keyframes": "a202c092911ad7179e11304e9a53d830f0c84861aca1c84f679b839156178d89"
+      },
+      {
+        "name": "victory",
+        "duration": 1.5,
+        "keyframes": "87f740cc35c601a619d43ed951025d23d815f321ddc0d23f6485bef86aa89b68"
+      },
+      {
+        "name": "defeat",
+        "duration": 1.5,
+        "keyframes": "c4b69d1151f2eb047a2a43c6965f903ea14082fce107f081b5ceba5e004739cc"
+      }
+    ]
+  },
+  "salt-wind-royal-plate.glb": {
+    "min": [-0.2181388664156644, 0.0013448990247608465, -0.12707752178724957],
+    "max": [0.23612675269949018, 1.1035000554323162, 0.18870364645383714],
+    "bones": [21],
+    "clips": [
+      {
+        "name": "idle",
+        "duration": 2,
+        "keyframes": "70518f49cef780467bc84e82698f203da192bc075d374aea02ae7d350ec6cb0c"
+      },
+      {
+        "name": "lowHp",
+        "duration": 2,
+        "keyframes": "04a16ea76ceedae0d78552ae34953396f552046a57816ee3bf4d2e52dfc0308a"
+      },
+      {
+        "name": "summon",
+        "duration": 1,
+        "keyframes": "572cdcffc4f2346d97fd44b538629fe822090f33d99d9a8ea35e8a1923c216bb"
+      },
+      {
+        "name": "castWarrior",
+        "duration": 1,
+        "keyframes": "a6d603627e3f7ab5abd2d4a5a3b744422f7bb671a0735929e35245083492e1b9"
+      },
+      {
+        "name": "castRanger",
+        "duration": 1,
+        "keyframes": "d3b96ff32e5025d92d4b5e6f8e23c2bdfe8c29b302a63094d03f494f145f6788"
+      },
+      {
+        "name": "castMage",
+        "duration": 1,
+        "keyframes": "803d8d37057c961fdf91301649578b0b2be1ba0100c994264c5e2985c2a7b70a"
+      },
+      {
+        "name": "castPriest",
+        "duration": 1,
+        "keyframes": "cb55e2334e77e5e052a686fbec94e80a35075690f9905f1757dc237608955dd2"
+      },
+      {
+        "name": "hurt",
+        "duration": 0.75,
+        "keyframes": "a202c092911ad7179e11304e9a53d830f0c84861aca1c84f679b839156178d89"
+      },
+      {
+        "name": "victory",
+        "duration": 1.5,
+        "keyframes": "87f740cc35c601a619d43ed951025d23d815f321ddc0d23f6485bef86aa89b68"
+      },
+      {
+        "name": "defeat",
+        "duration": 1.5,
+        "keyframes": "c4b69d1151f2eb047a2a43c6965f903ea14082fce107f081b5ceba5e004739cc"
+      }
+    ]
+  },
+  "salt-wind-stag-leather.glb": {
+    "min": [-0.21813886652689574, 0.0013448990247608465, -0.12707752178724957],
+    "max": [0.23612675269949018, 1.1060656779149511, 0.18870364645383714],
+    "bones": [21],
+    "clips": [
+      {
+        "name": "idle",
+        "duration": 2,
+        "keyframes": "70518f49cef780467bc84e82698f203da192bc075d374aea02ae7d350ec6cb0c"
+      },
+      {
+        "name": "lowHp",
+        "duration": 2,
+        "keyframes": "04a16ea76ceedae0d78552ae34953396f552046a57816ee3bf4d2e52dfc0308a"
+      },
+      {
+        "name": "summon",
+        "duration": 1,
+        "keyframes": "572cdcffc4f2346d97fd44b538629fe822090f33d99d9a8ea35e8a1923c216bb"
+      },
+      {
+        "name": "castWarrior",
+        "duration": 1,
+        "keyframes": "a6d603627e3f7ab5abd2d4a5a3b744422f7bb671a0735929e35245083492e1b9"
+      },
+      {
+        "name": "castRanger",
+        "duration": 1,
+        "keyframes": "d3b96ff32e5025d92d4b5e6f8e23c2bdfe8c29b302a63094d03f494f145f6788"
+      },
+      {
+        "name": "castMage",
+        "duration": 1,
+        "keyframes": "803d8d37057c961fdf91301649578b0b2be1ba0100c994264c5e2985c2a7b70a"
+      },
+      {
+        "name": "castPriest",
+        "duration": 1,
+        "keyframes": "cb55e2334e77e5e052a686fbec94e80a35075690f9905f1757dc237608955dd2"
+      },
+      {
+        "name": "hurt",
+        "duration": 0.75,
+        "keyframes": "a202c092911ad7179e11304e9a53d830f0c84861aca1c84f679b839156178d89"
+      },
+      {
+        "name": "victory",
+        "duration": 1.5,
+        "keyframes": "87f740cc35c601a619d43ed951025d23d815f321ddc0d23f6485bef86aa89b68"
+      },
+      {
+        "name": "defeat",
+        "duration": 1.5,
+        "keyframes": "c4b69d1151f2eb047a2a43c6965f903ea14082fce107f081b5ceba5e004739cc"
+      }
+    ]
+  },
+  "salt-wind-standard.glb": {
+    "min": [-0.21813886652689574, 0.0013448990247608465, -0.12707752178724957],
+    "max": [0.23612675269949018, 1.1035000554323162, 0.18870364645383714],
+    "bones": [21],
+    "clips": [
+      {
+        "name": "idle",
+        "duration": 2,
+        "keyframes": "70518f49cef780467bc84e82698f203da192bc075d374aea02ae7d350ec6cb0c"
+      },
+      {
+        "name": "lowHp",
+        "duration": 2,
+        "keyframes": "04a16ea76ceedae0d78552ae34953396f552046a57816ee3bf4d2e52dfc0308a"
+      },
+      {
+        "name": "summon",
+        "duration": 1,
+        "keyframes": "572cdcffc4f2346d97fd44b538629fe822090f33d99d9a8ea35e8a1923c216bb"
+      },
+      {
+        "name": "castWarrior",
+        "duration": 1,
+        "keyframes": "a6d603627e3f7ab5abd2d4a5a3b744422f7bb671a0735929e35245083492e1b9"
+      },
+      {
+        "name": "castRanger",
+        "duration": 1,
+        "keyframes": "d3b96ff32e5025d92d4b5e6f8e23c2bdfe8c29b302a63094d03f494f145f6788"
+      },
+      {
+        "name": "castMage",
+        "duration": 1,
+        "keyframes": "803d8d37057c961fdf91301649578b0b2be1ba0100c994264c5e2985c2a7b70a"
+      },
+      {
+        "name": "castPriest",
+        "duration": 1,
+        "keyframes": "cb55e2334e77e5e052a686fbec94e80a35075690f9905f1757dc237608955dd2"
+      },
+      {
+        "name": "hurt",
+        "duration": 0.75,
+        "keyframes": "a202c092911ad7179e11304e9a53d830f0c84861aca1c84f679b839156178d89"
+      },
+      {
+        "name": "victory",
+        "duration": 1.5,
+        "keyframes": "87f740cc35c601a619d43ed951025d23d815f321ddc0d23f6485bef86aa89b68"
+      },
+      {
+        "name": "defeat",
+        "duration": 1.5,
+        "keyframes": "c4b69d1151f2eb047a2a43c6965f903ea14082fce107f081b5ceba5e004739cc"
+      }
+    ]
+  },
+  "standard-copper-rim.glb": {
+    "min": [-0.2081388768547009, 0.0013450179373230722, -0.10595970812084077],
+    "max": [0.2361267479098449, 1.1290000677108765, 0.18870367483310208],
+    "bones": [21],
+    "clips": [
+      {
+        "name": "idle",
+        "duration": 2,
+        "keyframes": "73df189c270d9ae61b2296ce0398ccf7d489b4ce54e4d3a8865e9cc3e593ded6"
+      },
+      {
+        "name": "lowHp",
+        "duration": 2,
+        "keyframes": "af47db157377434b8a7aea9773bd4c301f120ebf95cf9548db5caebde4abd939"
+      },
+      {
+        "name": "summon",
+        "duration": 1,
+        "keyframes": "f53f22f20f009d0095e6f1825f794e99962800ff35e0220be4482d267ea2e9bb"
+      },
+      {
+        "name": "castWarrior",
+        "duration": 1,
+        "keyframes": "d850d3e0ecfe9a554834ba19c7ef630ed49b524f4ef562fcf9f71f3ea3a3f0a0"
+      },
+      {
+        "name": "castRanger",
+        "duration": 1,
+        "keyframes": "c5241ebd214cef691d3b094b6e53432682348d0506853e48114feb22e188c529"
+      },
+      {
+        "name": "castMage",
+        "duration": 1,
+        "keyframes": "a6acde476f1f3b61ab966d44753ca41d30c96522584bbda90548b00c2d47f9b7"
+      },
+      {
+        "name": "castPriest",
+        "duration": 1,
+        "keyframes": "abf36215afb905a202d20da32bfc7929d4184db48c9a79dd9887cb95cb0811a2"
+      },
+      {
+        "name": "hurt",
+        "duration": 0.75,
+        "keyframes": "8b74e1e9655fd53c7e9b1f2f6bbc82ff5700a411e37b859ca4998126c3d54d69"
+      },
+      {
+        "name": "victory",
+        "duration": 1.5,
+        "keyframes": "39f94961681b6f186e41211b81ac8983f7cd240da41b50d587c668c7d8148931"
+      },
+      {
+        "name": "defeat",
+        "duration": 1.5,
+        "keyframes": "ac1c3c85393dab92154545578561cd69ba8ea15881faab752d83f37df1c5198f"
+      }
+    ]
+  },
+  "standard-gold-inlay.glb": {
+    "min": [-0.2081388757471096, 0.0013450179373230722, -0.10595970812084077],
+    "max": [0.2361267479098449, 1.1290000677108765, 0.18870367483310208],
+    "bones": [21],
+    "clips": [
+      {
+        "name": "idle",
+        "duration": 2,
+        "keyframes": "73df189c270d9ae61b2296ce0398ccf7d489b4ce54e4d3a8865e9cc3e593ded6"
+      },
+      {
+        "name": "lowHp",
+        "duration": 2,
+        "keyframes": "af47db157377434b8a7aea9773bd4c301f120ebf95cf9548db5caebde4abd939"
+      },
+      {
+        "name": "summon",
+        "duration": 1,
+        "keyframes": "f53f22f20f009d0095e6f1825f794e99962800ff35e0220be4482d267ea2e9bb"
+      },
+      {
+        "name": "castWarrior",
+        "duration": 1,
+        "keyframes": "d850d3e0ecfe9a554834ba19c7ef630ed49b524f4ef562fcf9f71f3ea3a3f0a0"
+      },
+      {
+        "name": "castRanger",
+        "duration": 1,
+        "keyframes": "c5241ebd214cef691d3b094b6e53432682348d0506853e48114feb22e188c529"
+      },
+      {
+        "name": "castMage",
+        "duration": 1,
+        "keyframes": "a6acde476f1f3b61ab966d44753ca41d30c96522584bbda90548b00c2d47f9b7"
+      },
+      {
+        "name": "castPriest",
+        "duration": 1,
+        "keyframes": "abf36215afb905a202d20da32bfc7929d4184db48c9a79dd9887cb95cb0811a2"
+      },
+      {
+        "name": "hurt",
+        "duration": 0.75,
+        "keyframes": "8b74e1e9655fd53c7e9b1f2f6bbc82ff5700a411e37b859ca4998126c3d54d69"
+      },
+      {
+        "name": "victory",
+        "duration": 1.5,
+        "keyframes": "39f94961681b6f186e41211b81ac8983f7cd240da41b50d587c668c7d8148931"
+      },
+      {
+        "name": "defeat",
+        "duration": 1.5,
+        "keyframes": "ac1c3c85393dab92154545578561cd69ba8ea15881faab752d83f37df1c5198f"
+      }
+    ]
+  },
+  "standard-iron-vine.glb": {
+    "min": [-0.21871664331310087, 0.0013450179373230722, -0.10314926416776563],
+    "max": [0.2361267479098449, 1.1349999904632568, 0.18870367483310208],
+    "bones": [21],
+    "clips": [
+      {
+        "name": "idle",
+        "duration": 2,
+        "keyframes": "73df189c270d9ae61b2296ce0398ccf7d489b4ce54e4d3a8865e9cc3e593ded6"
+      },
+      {
+        "name": "lowHp",
+        "duration": 2,
+        "keyframes": "af47db157377434b8a7aea9773bd4c301f120ebf95cf9548db5caebde4abd939"
+      },
+      {
+        "name": "summon",
+        "duration": 1,
+        "keyframes": "f53f22f20f009d0095e6f1825f794e99962800ff35e0220be4482d267ea2e9bb"
+      },
+      {
+        "name": "castWarrior",
+        "duration": 1,
+        "keyframes": "d850d3e0ecfe9a554834ba19c7ef630ed49b524f4ef562fcf9f71f3ea3a3f0a0"
+      },
+      {
+        "name": "castRanger",
+        "duration": 1,
+        "keyframes": "c5241ebd214cef691d3b094b6e53432682348d0506853e48114feb22e188c529"
+      },
+      {
+        "name": "castMage",
+        "duration": 1,
+        "keyframes": "a6acde476f1f3b61ab966d44753ca41d30c96522584bbda90548b00c2d47f9b7"
+      },
+      {
+        "name": "castPriest",
+        "duration": 1,
+        "keyframes": "abf36215afb905a202d20da32bfc7929d4184db48c9a79dd9887cb95cb0811a2"
+      },
+      {
+        "name": "hurt",
+        "duration": 0.75,
+        "keyframes": "8b74e1e9655fd53c7e9b1f2f6bbc82ff5700a411e37b859ca4998126c3d54d69"
+      },
+      {
+        "name": "victory",
+        "duration": 1.5,
+        "keyframes": "39f94961681b6f186e41211b81ac8983f7cd240da41b50d587c668c7d8148931"
+      },
+      {
+        "name": "defeat",
+        "duration": 1.5,
+        "keyframes": "ac1c3c85393dab92154545578561cd69ba8ea15881faab752d83f37df1c5198f"
+      }
+    ]
+  },
+  "standard-moonstone.glb": {
+    "min": [-0.2081388768547009, 0.0013450179373230722, -0.10595970812084077],
+    "max": [0.2361267479098449, 1.1290000677108765, 0.18870367483310208],
+    "bones": [21],
+    "clips": [
+      {
+        "name": "idle",
+        "duration": 2,
+        "keyframes": "73df189c270d9ae61b2296ce0398ccf7d489b4ce54e4d3a8865e9cc3e593ded6"
+      },
+      {
+        "name": "lowHp",
+        "duration": 2,
+        "keyframes": "af47db157377434b8a7aea9773bd4c301f120ebf95cf9548db5caebde4abd939"
+      },
+      {
+        "name": "summon",
+        "duration": 1,
+        "keyframes": "f53f22f20f009d0095e6f1825f794e99962800ff35e0220be4482d267ea2e9bb"
+      },
+      {
+        "name": "castWarrior",
+        "duration": 1,
+        "keyframes": "d850d3e0ecfe9a554834ba19c7ef630ed49b524f4ef562fcf9f71f3ea3a3f0a0"
+      },
+      {
+        "name": "castRanger",
+        "duration": 1,
+        "keyframes": "c5241ebd214cef691d3b094b6e53432682348d0506853e48114feb22e188c529"
+      },
+      {
+        "name": "castMage",
+        "duration": 1,
+        "keyframes": "a6acde476f1f3b61ab966d44753ca41d30c96522584bbda90548b00c2d47f9b7"
+      },
+      {
+        "name": "castPriest",
+        "duration": 1,
+        "keyframes": "abf36215afb905a202d20da32bfc7929d4184db48c9a79dd9887cb95cb0811a2"
+      },
+      {
+        "name": "hurt",
+        "duration": 0.75,
+        "keyframes": "8b74e1e9655fd53c7e9b1f2f6bbc82ff5700a411e37b859ca4998126c3d54d69"
+      },
+      {
+        "name": "victory",
+        "duration": 1.5,
+        "keyframes": "39f94961681b6f186e41211b81ac8983f7cd240da41b50d587c668c7d8148931"
+      },
+      {
+        "name": "defeat",
+        "duration": 1.5,
+        "keyframes": "ac1c3c85393dab92154545578561cd69ba8ea15881faab752d83f37df1c5198f"
+      }
+    ]
+  },
+  "standard-royal-plate.glb": {
+    "min": [-0.208138876577793, 0.0013450179373230722, -0.10595970812084077],
+    "max": [0.2361267479098449, 1.1290000677108765, 0.18870367483310208],
+    "bones": [21],
+    "clips": [
+      {
+        "name": "idle",
+        "duration": 2,
+        "keyframes": "73df189c270d9ae61b2296ce0398ccf7d489b4ce54e4d3a8865e9cc3e593ded6"
+      },
+      {
+        "name": "lowHp",
+        "duration": 2,
+        "keyframes": "af47db157377434b8a7aea9773bd4c301f120ebf95cf9548db5caebde4abd939"
+      },
+      {
+        "name": "summon",
+        "duration": 1,
+        "keyframes": "f53f22f20f009d0095e6f1825f794e99962800ff35e0220be4482d267ea2e9bb"
+      },
+      {
+        "name": "castWarrior",
+        "duration": 1,
+        "keyframes": "d850d3e0ecfe9a554834ba19c7ef630ed49b524f4ef562fcf9f71f3ea3a3f0a0"
+      },
+      {
+        "name": "castRanger",
+        "duration": 1,
+        "keyframes": "c5241ebd214cef691d3b094b6e53432682348d0506853e48114feb22e188c529"
+      },
+      {
+        "name": "castMage",
+        "duration": 1,
+        "keyframes": "a6acde476f1f3b61ab966d44753ca41d30c96522584bbda90548b00c2d47f9b7"
+      },
+      {
+        "name": "castPriest",
+        "duration": 1,
+        "keyframes": "abf36215afb905a202d20da32bfc7929d4184db48c9a79dd9887cb95cb0811a2"
+      },
+      {
+        "name": "hurt",
+        "duration": 0.75,
+        "keyframes": "8b74e1e9655fd53c7e9b1f2f6bbc82ff5700a411e37b859ca4998126c3d54d69"
+      },
+      {
+        "name": "victory",
+        "duration": 1.5,
+        "keyframes": "39f94961681b6f186e41211b81ac8983f7cd240da41b50d587c668c7d8148931"
+      },
+      {
+        "name": "defeat",
+        "duration": 1.5,
+        "keyframes": "ac1c3c85393dab92154545578561cd69ba8ea15881faab752d83f37df1c5198f"
+      }
+    ]
+  },
+  "standard-stag-leather.glb": {
+    "min": [-0.2081388768547009, 0.0013450179373230722, -0.1034696273853022],
+    "max": [0.2361267479098449, 1.1315656900405884, 0.18870367483310208],
+    "bones": [21],
+    "clips": [
+      {
+        "name": "idle",
+        "duration": 2,
+        "keyframes": "73df189c270d9ae61b2296ce0398ccf7d489b4ce54e4d3a8865e9cc3e593ded6"
+      },
+      {
+        "name": "lowHp",
+        "duration": 2,
+        "keyframes": "af47db157377434b8a7aea9773bd4c301f120ebf95cf9548db5caebde4abd939"
+      },
+      {
+        "name": "summon",
+        "duration": 1,
+        "keyframes": "f53f22f20f009d0095e6f1825f794e99962800ff35e0220be4482d267ea2e9bb"
+      },
+      {
+        "name": "castWarrior",
+        "duration": 1,
+        "keyframes": "d850d3e0ecfe9a554834ba19c7ef630ed49b524f4ef562fcf9f71f3ea3a3f0a0"
+      },
+      {
+        "name": "castRanger",
+        "duration": 1,
+        "keyframes": "c5241ebd214cef691d3b094b6e53432682348d0506853e48114feb22e188c529"
+      },
+      {
+        "name": "castMage",
+        "duration": 1,
+        "keyframes": "a6acde476f1f3b61ab966d44753ca41d30c96522584bbda90548b00c2d47f9b7"
+      },
+      {
+        "name": "castPriest",
+        "duration": 1,
+        "keyframes": "abf36215afb905a202d20da32bfc7929d4184db48c9a79dd9887cb95cb0811a2"
+      },
+      {
+        "name": "hurt",
+        "duration": 0.75,
+        "keyframes": "8b74e1e9655fd53c7e9b1f2f6bbc82ff5700a411e37b859ca4998126c3d54d69"
+      },
+      {
+        "name": "victory",
+        "duration": 1.5,
+        "keyframes": "39f94961681b6f186e41211b81ac8983f7cd240da41b50d587c668c7d8148931"
+      },
+      {
+        "name": "defeat",
+        "duration": 1.5,
+        "keyframes": "ac1c3c85393dab92154545578561cd69ba8ea15881faab752d83f37df1c5198f"
+      }
+    ]
+  },
+  "tent-rings-copper-rim.glb": {
+    "min": [-0.2141388478382221, 0.001344869973791751, -0.12266951616600867],
+    "max": [0.2361267479098449, 1.0678000450134277, 0.18870366518880163],
+    "bones": [21],
+    "clips": [
+      {
+        "name": "idle",
+        "duration": 2,
+        "keyframes": "188c76f2b0dd87bcaa4b0b3a689b52dd173bcbb7fcf5f996b2bae973d9d622c9"
+      },
+      {
+        "name": "lowHp",
+        "duration": 2,
+        "keyframes": "cbbc6073cb58be1f1f346033cf4eb8d8b4d59f18bf0b95a1348ce627947bd515"
+      },
+      {
+        "name": "summon",
+        "duration": 1,
+        "keyframes": "787dc6601ff262a55b70301949391f7efcbc306391d73cacb6589f35a9498259"
+      },
+      {
+        "name": "castWarrior",
+        "duration": 1,
+        "keyframes": "3e51083ccf65518cf53d42abd19d0447a6d6f911ee2d5de90d66ff35b6840801"
+      },
+      {
+        "name": "castRanger",
+        "duration": 1,
+        "keyframes": "09956c4c16b259a800aca21ffc95d17e3c75ebb1506f863d844631473abe0594"
+      },
+      {
+        "name": "castMage",
+        "duration": 1,
+        "keyframes": "daf42c693c3d99ae58eee549a83fc89b0498e83ecb9f78429c7d39b8f6b7e54f"
+      },
+      {
+        "name": "castPriest",
+        "duration": 1,
+        "keyframes": "fa76bf32b98342c12dd2ec85f60d3dffcc68b1723829bad46a83e11d768a01d4"
+      },
+      {
+        "name": "hurt",
+        "duration": 0.75,
+        "keyframes": "870d03ddef360a34c02b80e19dc90c0fc9744b1f050a5bfef9e0941061ee585c"
+      },
+      {
+        "name": "victory",
+        "duration": 1.5,
+        "keyframes": "76b1f42ca505c0626a3eb0f136fe1e2599049cfe3ccb0dfb96b10cb964856556"
+      },
+      {
+        "name": "defeat",
+        "duration": 1.5,
+        "keyframes": "358314e7ad5ec1f72fc50ff9b0e0d733b85ea7e5e9c990afaae537f94ae143f8"
+      }
+    ]
+  },
+  "tent-rings-gold-inlay.glb": {
+    "min": [-0.21413884650843734, 0.001344869973791751, -0.12266951616600867],
+    "max": [0.2361267479098449, 1.0678000450134277, 0.18870366518880163],
+    "bones": [21],
+    "clips": [
+      {
+        "name": "idle",
+        "duration": 2,
+        "keyframes": "188c76f2b0dd87bcaa4b0b3a689b52dd173bcbb7fcf5f996b2bae973d9d622c9"
+      },
+      {
+        "name": "lowHp",
+        "duration": 2,
+        "keyframes": "cbbc6073cb58be1f1f346033cf4eb8d8b4d59f18bf0b95a1348ce627947bd515"
+      },
+      {
+        "name": "summon",
+        "duration": 1,
+        "keyframes": "787dc6601ff262a55b70301949391f7efcbc306391d73cacb6589f35a9498259"
+      },
+      {
+        "name": "castWarrior",
+        "duration": 1,
+        "keyframes": "3e51083ccf65518cf53d42abd19d0447a6d6f911ee2d5de90d66ff35b6840801"
+      },
+      {
+        "name": "castRanger",
+        "duration": 1,
+        "keyframes": "09956c4c16b259a800aca21ffc95d17e3c75ebb1506f863d844631473abe0594"
+      },
+      {
+        "name": "castMage",
+        "duration": 1,
+        "keyframes": "daf42c693c3d99ae58eee549a83fc89b0498e83ecb9f78429c7d39b8f6b7e54f"
+      },
+      {
+        "name": "castPriest",
+        "duration": 1,
+        "keyframes": "fa76bf32b98342c12dd2ec85f60d3dffcc68b1723829bad46a83e11d768a01d4"
+      },
+      {
+        "name": "hurt",
+        "duration": 0.75,
+        "keyframes": "870d03ddef360a34c02b80e19dc90c0fc9744b1f050a5bfef9e0941061ee585c"
+      },
+      {
+        "name": "victory",
+        "duration": 1.5,
+        "keyframes": "76b1f42ca505c0626a3eb0f136fe1e2599049cfe3ccb0dfb96b10cb964856556"
+      },
+      {
+        "name": "defeat",
+        "duration": 1.5,
+        "keyframes": "358314e7ad5ec1f72fc50ff9b0e0d733b85ea7e5e9c990afaae537f94ae143f8"
+      }
+    ]
+  },
+  "tent-rings-iron-vine.glb": {
+    "min": [-0.22471665868972282, 0.001344869973791751, -0.12266951616600867],
+    "max": [0.2361267479098449, 1.073799967765808, 0.18870366518880163],
+    "bones": [21],
+    "clips": [
+      {
+        "name": "idle",
+        "duration": 2,
+        "keyframes": "188c76f2b0dd87bcaa4b0b3a689b52dd173bcbb7fcf5f996b2bae973d9d622c9"
+      },
+      {
+        "name": "lowHp",
+        "duration": 2,
+        "keyframes": "cbbc6073cb58be1f1f346033cf4eb8d8b4d59f18bf0b95a1348ce627947bd515"
+      },
+      {
+        "name": "summon",
+        "duration": 1,
+        "keyframes": "787dc6601ff262a55b70301949391f7efcbc306391d73cacb6589f35a9498259"
+      },
+      {
+        "name": "castWarrior",
+        "duration": 1,
+        "keyframes": "3e51083ccf65518cf53d42abd19d0447a6d6f911ee2d5de90d66ff35b6840801"
+      },
+      {
+        "name": "castRanger",
+        "duration": 1,
+        "keyframes": "09956c4c16b259a800aca21ffc95d17e3c75ebb1506f863d844631473abe0594"
+      },
+      {
+        "name": "castMage",
+        "duration": 1,
+        "keyframes": "daf42c693c3d99ae58eee549a83fc89b0498e83ecb9f78429c7d39b8f6b7e54f"
+      },
+      {
+        "name": "castPriest",
+        "duration": 1,
+        "keyframes": "fa76bf32b98342c12dd2ec85f60d3dffcc68b1723829bad46a83e11d768a01d4"
+      },
+      {
+        "name": "hurt",
+        "duration": 0.75,
+        "keyframes": "870d03ddef360a34c02b80e19dc90c0fc9744b1f050a5bfef9e0941061ee585c"
+      },
+      {
+        "name": "victory",
+        "duration": 1.5,
+        "keyframes": "76b1f42ca505c0626a3eb0f136fe1e2599049cfe3ccb0dfb96b10cb964856556"
+      },
+      {
+        "name": "defeat",
+        "duration": 1.5,
+        "keyframes": "358314e7ad5ec1f72fc50ff9b0e0d733b85ea7e5e9c990afaae537f94ae143f8"
+      }
+    ]
+  },
+  "tent-rings-moonstone.glb": {
+    "min": [-0.2141388478382221, 0.001344869973791751, -0.12266951616600867],
+    "max": [0.2361267479098449, 1.0678000450134277, 0.18870366518880163],
+    "bones": [21],
+    "clips": [
+      {
+        "name": "idle",
+        "duration": 2,
+        "keyframes": "188c76f2b0dd87bcaa4b0b3a689b52dd173bcbb7fcf5f996b2bae973d9d622c9"
+      },
+      {
+        "name": "lowHp",
+        "duration": 2,
+        "keyframes": "cbbc6073cb58be1f1f346033cf4eb8d8b4d59f18bf0b95a1348ce627947bd515"
+      },
+      {
+        "name": "summon",
+        "duration": 1,
+        "keyframes": "787dc6601ff262a55b70301949391f7efcbc306391d73cacb6589f35a9498259"
+      },
+      {
+        "name": "castWarrior",
+        "duration": 1,
+        "keyframes": "3e51083ccf65518cf53d42abd19d0447a6d6f911ee2d5de90d66ff35b6840801"
+      },
+      {
+        "name": "castRanger",
+        "duration": 1,
+        "keyframes": "09956c4c16b259a800aca21ffc95d17e3c75ebb1506f863d844631473abe0594"
+      },
+      {
+        "name": "castMage",
+        "duration": 1,
+        "keyframes": "daf42c693c3d99ae58eee549a83fc89b0498e83ecb9f78429c7d39b8f6b7e54f"
+      },
+      {
+        "name": "castPriest",
+        "duration": 1,
+        "keyframes": "fa76bf32b98342c12dd2ec85f60d3dffcc68b1723829bad46a83e11d768a01d4"
+      },
+      {
+        "name": "hurt",
+        "duration": 0.75,
+        "keyframes": "870d03ddef360a34c02b80e19dc90c0fc9744b1f050a5bfef9e0941061ee585c"
+      },
+      {
+        "name": "victory",
+        "duration": 1.5,
+        "keyframes": "76b1f42ca505c0626a3eb0f136fe1e2599049cfe3ccb0dfb96b10cb964856556"
+      },
+      {
+        "name": "defeat",
+        "duration": 1.5,
+        "keyframes": "358314e7ad5ec1f72fc50ff9b0e0d733b85ea7e5e9c990afaae537f94ae143f8"
+      }
+    ]
+  },
+  "tent-rings-royal-plate.glb": {
+    "min": [-0.21413884750577283, 0.001344869973791751, -0.12266951616600867],
+    "max": [0.2361267479098449, 1.0678000450134277, 0.18870366518880163],
+    "bones": [21],
+    "clips": [
+      {
+        "name": "idle",
+        "duration": 2,
+        "keyframes": "188c76f2b0dd87bcaa4b0b3a689b52dd173bcbb7fcf5f996b2bae973d9d622c9"
+      },
+      {
+        "name": "lowHp",
+        "duration": 2,
+        "keyframes": "cbbc6073cb58be1f1f346033cf4eb8d8b4d59f18bf0b95a1348ce627947bd515"
+      },
+      {
+        "name": "summon",
+        "duration": 1,
+        "keyframes": "787dc6601ff262a55b70301949391f7efcbc306391d73cacb6589f35a9498259"
+      },
+      {
+        "name": "castWarrior",
+        "duration": 1,
+        "keyframes": "3e51083ccf65518cf53d42abd19d0447a6d6f911ee2d5de90d66ff35b6840801"
+      },
+      {
+        "name": "castRanger",
+        "duration": 1,
+        "keyframes": "09956c4c16b259a800aca21ffc95d17e3c75ebb1506f863d844631473abe0594"
+      },
+      {
+        "name": "castMage",
+        "duration": 1,
+        "keyframes": "daf42c693c3d99ae58eee549a83fc89b0498e83ecb9f78429c7d39b8f6b7e54f"
+      },
+      {
+        "name": "castPriest",
+        "duration": 1,
+        "keyframes": "fa76bf32b98342c12dd2ec85f60d3dffcc68b1723829bad46a83e11d768a01d4"
+      },
+      {
+        "name": "hurt",
+        "duration": 0.75,
+        "keyframes": "870d03ddef360a34c02b80e19dc90c0fc9744b1f050a5bfef9e0941061ee585c"
+      },
+      {
+        "name": "victory",
+        "duration": 1.5,
+        "keyframes": "76b1f42ca505c0626a3eb0f136fe1e2599049cfe3ccb0dfb96b10cb964856556"
+      },
+      {
+        "name": "defeat",
+        "duration": 1.5,
+        "keyframes": "358314e7ad5ec1f72fc50ff9b0e0d733b85ea7e5e9c990afaae537f94ae143f8"
+      }
+    ]
+  },
+  "tent-rings-stag-leather.glb": {
+    "min": [-0.2141388478382221, 0.001344869973791751, -0.12266951616600867],
+    "max": [0.2361267479098449, 1.0703656673431396, 0.18870366518880163],
+    "bones": [21],
+    "clips": [
+      {
+        "name": "idle",
+        "duration": 2,
+        "keyframes": "188c76f2b0dd87bcaa4b0b3a689b52dd173bcbb7fcf5f996b2bae973d9d622c9"
+      },
+      {
+        "name": "lowHp",
+        "duration": 2,
+        "keyframes": "cbbc6073cb58be1f1f346033cf4eb8d8b4d59f18bf0b95a1348ce627947bd515"
+      },
+      {
+        "name": "summon",
+        "duration": 1,
+        "keyframes": "787dc6601ff262a55b70301949391f7efcbc306391d73cacb6589f35a9498259"
+      },
+      {
+        "name": "castWarrior",
+        "duration": 1,
+        "keyframes": "3e51083ccf65518cf53d42abd19d0447a6d6f911ee2d5de90d66ff35b6840801"
+      },
+      {
+        "name": "castRanger",
+        "duration": 1,
+        "keyframes": "09956c4c16b259a800aca21ffc95d17e3c75ebb1506f863d844631473abe0594"
+      },
+      {
+        "name": "castMage",
+        "duration": 1,
+        "keyframes": "daf42c693c3d99ae58eee549a83fc89b0498e83ecb9f78429c7d39b8f6b7e54f"
+      },
+      {
+        "name": "castPriest",
+        "duration": 1,
+        "keyframes": "fa76bf32b98342c12dd2ec85f60d3dffcc68b1723829bad46a83e11d768a01d4"
+      },
+      {
+        "name": "hurt",
+        "duration": 0.75,
+        "keyframes": "870d03ddef360a34c02b80e19dc90c0fc9744b1f050a5bfef9e0941061ee585c"
+      },
+      {
+        "name": "victory",
+        "duration": 1.5,
+        "keyframes": "76b1f42ca505c0626a3eb0f136fe1e2599049cfe3ccb0dfb96b10cb964856556"
+      },
+      {
+        "name": "defeat",
+        "duration": 1.5,
+        "keyframes": "358314e7ad5ec1f72fc50ff9b0e0d733b85ea7e5e9c990afaae537f94ae143f8"
+      }
+    ]
+  },
+  "tent-rings-standard.glb": {
+    "min": [-0.2141388478382221, 0.001344869973791751, -0.12266951616600867],
+    "max": [0.2361267479098449, 1.0678000450134277, 0.18870366518880163],
+    "bones": [21],
+    "clips": [
+      {
+        "name": "idle",
+        "duration": 2,
+        "keyframes": "188c76f2b0dd87bcaa4b0b3a689b52dd173bcbb7fcf5f996b2bae973d9d622c9"
+      },
+      {
+        "name": "lowHp",
+        "duration": 2,
+        "keyframes": "cbbc6073cb58be1f1f346033cf4eb8d8b4d59f18bf0b95a1348ce627947bd515"
+      },
+      {
+        "name": "summon",
+        "duration": 1,
+        "keyframes": "787dc6601ff262a55b70301949391f7efcbc306391d73cacb6589f35a9498259"
+      },
+      {
+        "name": "castWarrior",
+        "duration": 1,
+        "keyframes": "3e51083ccf65518cf53d42abd19d0447a6d6f911ee2d5de90d66ff35b6840801"
+      },
+      {
+        "name": "castRanger",
+        "duration": 1,
+        "keyframes": "09956c4c16b259a800aca21ffc95d17e3c75ebb1506f863d844631473abe0594"
+      },
+      {
+        "name": "castMage",
+        "duration": 1,
+        "keyframes": "daf42c693c3d99ae58eee549a83fc89b0498e83ecb9f78429c7d39b8f6b7e54f"
+      },
+      {
+        "name": "castPriest",
+        "duration": 1,
+        "keyframes": "fa76bf32b98342c12dd2ec85f60d3dffcc68b1723829bad46a83e11d768a01d4"
+      },
+      {
+        "name": "hurt",
+        "duration": 0.75,
+        "keyframes": "870d03ddef360a34c02b80e19dc90c0fc9744b1f050a5bfef9e0941061ee585c"
+      },
+      {
+        "name": "victory",
+        "duration": 1.5,
+        "keyframes": "76b1f42ca505c0626a3eb0f136fe1e2599049cfe3ccb0dfb96b10cb964856556"
+      },
+      {
+        "name": "defeat",
+        "duration": 1.5,
+        "keyframes": "358314e7ad5ec1f72fc50ff9b0e0d733b85ea7e5e9c990afaae537f94ae143f8"
+      }
+    ]
+  },
+  "verdant-crest-copper-rim.glb": {
+    "min": [-0.2121388447120216, 0.0013449633690328108, -0.12697622179985046],
+    "max": [0.2361267479098449, 1.1749000549316406, 0.18870364669434286],
+    "bones": [21],
+    "clips": [
+      {
+        "name": "idle",
+        "duration": 2,
+        "keyframes": "e3139df89493eaab098ff6c91046294c9b4cb36bbb234467b8da0a7872dde01b"
+      },
+      {
+        "name": "lowHp",
+        "duration": 2,
+        "keyframes": "2bdc319d74baf4ea6a680f462420ff766928de1de0b0922c001032af65c7c083"
+      },
+      {
+        "name": "summon",
+        "duration": 1,
+        "keyframes": "7f26593e526087748a85a84fd534d8166e116c0839438ef7adee56e4add49fbe"
+      },
+      {
+        "name": "castWarrior",
+        "duration": 1,
+        "keyframes": "ab415460a58ba61255a47687d7f77e73e8485583f4921a3ed108f032d30c7766"
+      },
+      {
+        "name": "castRanger",
+        "duration": 1,
+        "keyframes": "dddeb57f8a7d145a1081e65372c1f016973f68f773781a3a81ab945b21486119"
+      },
+      {
+        "name": "castMage",
+        "duration": 1,
+        "keyframes": "bd8493e077dc7dc1c42618e668a3704b783765ef0c33a4c410d59d2bfce9a65e"
+      },
+      {
+        "name": "castPriest",
+        "duration": 1,
+        "keyframes": "adcaa26306d8e3fb5cc3a3294cf6ce1ca0685200c85601d091d74be25d684374"
+      },
+      {
+        "name": "hurt",
+        "duration": 0.75,
+        "keyframes": "feef62b2a633fa1d4dc967053bbe040b69348134a1709bda994d5f58c8ad9c1f"
+      },
+      {
+        "name": "victory",
+        "duration": 1.5,
+        "keyframes": "96ae30c8bf786c38159a9aa91d650aa2c5b6d3c70125c4811cf2998b8a9cbcaf"
+      },
+      {
+        "name": "defeat",
+        "duration": 1.5,
+        "keyframes": "501b1fe5cba4efbd6646d6d1f3e0db93678acaac4f8057a6473644eaaf87e9d7"
+      }
+    ]
+  },
+  "verdant-crest-gold-inlay.glb": {
+    "min": [-0.21213884357147855, 0.0013449633690328108, -0.12697622179985046],
+    "max": [0.2361267479098449, 1.1749000549316406, 0.18870364669434286],
+    "bones": [21],
+    "clips": [
+      {
+        "name": "idle",
+        "duration": 2,
+        "keyframes": "e3139df89493eaab098ff6c91046294c9b4cb36bbb234467b8da0a7872dde01b"
+      },
+      {
+        "name": "lowHp",
+        "duration": 2,
+        "keyframes": "2bdc319d74baf4ea6a680f462420ff766928de1de0b0922c001032af65c7c083"
+      },
+      {
+        "name": "summon",
+        "duration": 1,
+        "keyframes": "7f26593e526087748a85a84fd534d8166e116c0839438ef7adee56e4add49fbe"
+      },
+      {
+        "name": "castWarrior",
+        "duration": 1,
+        "keyframes": "ab415460a58ba61255a47687d7f77e73e8485583f4921a3ed108f032d30c7766"
+      },
+      {
+        "name": "castRanger",
+        "duration": 1,
+        "keyframes": "dddeb57f8a7d145a1081e65372c1f016973f68f773781a3a81ab945b21486119"
+      },
+      {
+        "name": "castMage",
+        "duration": 1,
+        "keyframes": "bd8493e077dc7dc1c42618e668a3704b783765ef0c33a4c410d59d2bfce9a65e"
+      },
+      {
+        "name": "castPriest",
+        "duration": 1,
+        "keyframes": "adcaa26306d8e3fb5cc3a3294cf6ce1ca0685200c85601d091d74be25d684374"
+      },
+      {
+        "name": "hurt",
+        "duration": 0.75,
+        "keyframes": "feef62b2a633fa1d4dc967053bbe040b69348134a1709bda994d5f58c8ad9c1f"
+      },
+      {
+        "name": "victory",
+        "duration": 1.5,
+        "keyframes": "96ae30c8bf786c38159a9aa91d650aa2c5b6d3c70125c4811cf2998b8a9cbcaf"
+      },
+      {
+        "name": "defeat",
+        "duration": 1.5,
+        "keyframes": "501b1fe5cba4efbd6646d6d1f3e0db93678acaac4f8057a6473644eaaf87e9d7"
+      }
+    ]
+  },
+  "verdant-crest-iron-vine.glb": {
+    "min": [-0.22271664029832833, 0.0013449633690328108, -0.12697622179985046],
+    "max": [0.2361267479098449, 1.180899977684021, 0.18870364669434286],
+    "bones": [21],
+    "clips": [
+      {
+        "name": "idle",
+        "duration": 2,
+        "keyframes": "e3139df89493eaab098ff6c91046294c9b4cb36bbb234467b8da0a7872dde01b"
+      },
+      {
+        "name": "lowHp",
+        "duration": 2,
+        "keyframes": "2bdc319d74baf4ea6a680f462420ff766928de1de0b0922c001032af65c7c083"
+      },
+      {
+        "name": "summon",
+        "duration": 1,
+        "keyframes": "7f26593e526087748a85a84fd534d8166e116c0839438ef7adee56e4add49fbe"
+      },
+      {
+        "name": "castWarrior",
+        "duration": 1,
+        "keyframes": "ab415460a58ba61255a47687d7f77e73e8485583f4921a3ed108f032d30c7766"
+      },
+      {
+        "name": "castRanger",
+        "duration": 1,
+        "keyframes": "dddeb57f8a7d145a1081e65372c1f016973f68f773781a3a81ab945b21486119"
+      },
+      {
+        "name": "castMage",
+        "duration": 1,
+        "keyframes": "bd8493e077dc7dc1c42618e668a3704b783765ef0c33a4c410d59d2bfce9a65e"
+      },
+      {
+        "name": "castPriest",
+        "duration": 1,
+        "keyframes": "adcaa26306d8e3fb5cc3a3294cf6ce1ca0685200c85601d091d74be25d684374"
+      },
+      {
+        "name": "hurt",
+        "duration": 0.75,
+        "keyframes": "feef62b2a633fa1d4dc967053bbe040b69348134a1709bda994d5f58c8ad9c1f"
+      },
+      {
+        "name": "victory",
+        "duration": 1.5,
+        "keyframes": "96ae30c8bf786c38159a9aa91d650aa2c5b6d3c70125c4811cf2998b8a9cbcaf"
+      },
+      {
+        "name": "defeat",
+        "duration": 1.5,
+        "keyframes": "501b1fe5cba4efbd6646d6d1f3e0db93678acaac4f8057a6473644eaaf87e9d7"
+      }
+    ]
+  },
+  "verdant-crest-moonstone.glb": {
+    "min": [-0.2121388447120216, 0.0013449633690328108, -0.12697622179985046],
+    "max": [0.2361267479098449, 1.1749000549316406, 0.18870364669434286],
+    "bones": [21],
+    "clips": [
+      {
+        "name": "idle",
+        "duration": 2,
+        "keyframes": "e3139df89493eaab098ff6c91046294c9b4cb36bbb234467b8da0a7872dde01b"
+      },
+      {
+        "name": "lowHp",
+        "duration": 2,
+        "keyframes": "2bdc319d74baf4ea6a680f462420ff766928de1de0b0922c001032af65c7c083"
+      },
+      {
+        "name": "summon",
+        "duration": 1,
+        "keyframes": "7f26593e526087748a85a84fd534d8166e116c0839438ef7adee56e4add49fbe"
+      },
+      {
+        "name": "castWarrior",
+        "duration": 1,
+        "keyframes": "ab415460a58ba61255a47687d7f77e73e8485583f4921a3ed108f032d30c7766"
+      },
+      {
+        "name": "castRanger",
+        "duration": 1,
+        "keyframes": "dddeb57f8a7d145a1081e65372c1f016973f68f773781a3a81ab945b21486119"
+      },
+      {
+        "name": "castMage",
+        "duration": 1,
+        "keyframes": "bd8493e077dc7dc1c42618e668a3704b783765ef0c33a4c410d59d2bfce9a65e"
+      },
+      {
+        "name": "castPriest",
+        "duration": 1,
+        "keyframes": "adcaa26306d8e3fb5cc3a3294cf6ce1ca0685200c85601d091d74be25d684374"
+      },
+      {
+        "name": "hurt",
+        "duration": 0.75,
+        "keyframes": "feef62b2a633fa1d4dc967053bbe040b69348134a1709bda994d5f58c8ad9c1f"
+      },
+      {
+        "name": "victory",
+        "duration": 1.5,
+        "keyframes": "96ae30c8bf786c38159a9aa91d650aa2c5b6d3c70125c4811cf2998b8a9cbcaf"
+      },
+      {
+        "name": "defeat",
+        "duration": 1.5,
+        "keyframes": "501b1fe5cba4efbd6646d6d1f3e0db93678acaac4f8057a6473644eaaf87e9d7"
+      }
+    ]
+  },
+  "verdant-crest-royal-plate.glb": {
+    "min": [-0.21213884442687167, 0.0013449633690328108, -0.12697622179985046],
+    "max": [0.2361267479098449, 1.1749000549316406, 0.18870364669434286],
+    "bones": [21],
+    "clips": [
+      {
+        "name": "idle",
+        "duration": 2,
+        "keyframes": "e3139df89493eaab098ff6c91046294c9b4cb36bbb234467b8da0a7872dde01b"
+      },
+      {
+        "name": "lowHp",
+        "duration": 2,
+        "keyframes": "2bdc319d74baf4ea6a680f462420ff766928de1de0b0922c001032af65c7c083"
+      },
+      {
+        "name": "summon",
+        "duration": 1,
+        "keyframes": "7f26593e526087748a85a84fd534d8166e116c0839438ef7adee56e4add49fbe"
+      },
+      {
+        "name": "castWarrior",
+        "duration": 1,
+        "keyframes": "ab415460a58ba61255a47687d7f77e73e8485583f4921a3ed108f032d30c7766"
+      },
+      {
+        "name": "castRanger",
+        "duration": 1,
+        "keyframes": "dddeb57f8a7d145a1081e65372c1f016973f68f773781a3a81ab945b21486119"
+      },
+      {
+        "name": "castMage",
+        "duration": 1,
+        "keyframes": "bd8493e077dc7dc1c42618e668a3704b783765ef0c33a4c410d59d2bfce9a65e"
+      },
+      {
+        "name": "castPriest",
+        "duration": 1,
+        "keyframes": "adcaa26306d8e3fb5cc3a3294cf6ce1ca0685200c85601d091d74be25d684374"
+      },
+      {
+        "name": "hurt",
+        "duration": 0.75,
+        "keyframes": "feef62b2a633fa1d4dc967053bbe040b69348134a1709bda994d5f58c8ad9c1f"
+      },
+      {
+        "name": "victory",
+        "duration": 1.5,
+        "keyframes": "96ae30c8bf786c38159a9aa91d650aa2c5b6d3c70125c4811cf2998b8a9cbcaf"
+      },
+      {
+        "name": "defeat",
+        "duration": 1.5,
+        "keyframes": "501b1fe5cba4efbd6646d6d1f3e0db93678acaac4f8057a6473644eaaf87e9d7"
+      }
+    ]
+  },
+  "verdant-crest-stag-leather.glb": {
+    "min": [-0.2121388447120216, 0.0013449633690328108, -0.12697622179985046],
+    "max": [0.2361267479098449, 1.1774656772613525, 0.18870364669434286],
+    "bones": [21],
+    "clips": [
+      {
+        "name": "idle",
+        "duration": 2,
+        "keyframes": "e3139df89493eaab098ff6c91046294c9b4cb36bbb234467b8da0a7872dde01b"
+      },
+      {
+        "name": "lowHp",
+        "duration": 2,
+        "keyframes": "2bdc319d74baf4ea6a680f462420ff766928de1de0b0922c001032af65c7c083"
+      },
+      {
+        "name": "summon",
+        "duration": 1,
+        "keyframes": "7f26593e526087748a85a84fd534d8166e116c0839438ef7adee56e4add49fbe"
+      },
+      {
+        "name": "castWarrior",
+        "duration": 1,
+        "keyframes": "ab415460a58ba61255a47687d7f77e73e8485583f4921a3ed108f032d30c7766"
+      },
+      {
+        "name": "castRanger",
+        "duration": 1,
+        "keyframes": "dddeb57f8a7d145a1081e65372c1f016973f68f773781a3a81ab945b21486119"
+      },
+      {
+        "name": "castMage",
+        "duration": 1,
+        "keyframes": "bd8493e077dc7dc1c42618e668a3704b783765ef0c33a4c410d59d2bfce9a65e"
+      },
+      {
+        "name": "castPriest",
+        "duration": 1,
+        "keyframes": "adcaa26306d8e3fb5cc3a3294cf6ce1ca0685200c85601d091d74be25d684374"
+      },
+      {
+        "name": "hurt",
+        "duration": 0.75,
+        "keyframes": "feef62b2a633fa1d4dc967053bbe040b69348134a1709bda994d5f58c8ad9c1f"
+      },
+      {
+        "name": "victory",
+        "duration": 1.5,
+        "keyframes": "96ae30c8bf786c38159a9aa91d650aa2c5b6d3c70125c4811cf2998b8a9cbcaf"
+      },
+      {
+        "name": "defeat",
+        "duration": 1.5,
+        "keyframes": "501b1fe5cba4efbd6646d6d1f3e0db93678acaac4f8057a6473644eaaf87e9d7"
+      }
+    ]
+  },
+  "verdant-crest-standard.glb": {
+    "min": [-0.2121388447120216, 0.0013449633690328108, -0.12697622179985046],
+    "max": [0.2361267479098449, 1.1749000549316406, 0.18870364669434286],
+    "bones": [21],
+    "clips": [
+      {
+        "name": "idle",
+        "duration": 2,
+        "keyframes": "e3139df89493eaab098ff6c91046294c9b4cb36bbb234467b8da0a7872dde01b"
+      },
+      {
+        "name": "lowHp",
+        "duration": 2,
+        "keyframes": "2bdc319d74baf4ea6a680f462420ff766928de1de0b0922c001032af65c7c083"
+      },
+      {
+        "name": "summon",
+        "duration": 1,
+        "keyframes": "7f26593e526087748a85a84fd534d8166e116c0839438ef7adee56e4add49fbe"
+      },
+      {
+        "name": "castWarrior",
+        "duration": 1,
+        "keyframes": "ab415460a58ba61255a47687d7f77e73e8485583f4921a3ed108f032d30c7766"
+      },
+      {
+        "name": "castRanger",
+        "duration": 1,
+        "keyframes": "dddeb57f8a7d145a1081e65372c1f016973f68f773781a3a81ab945b21486119"
+      },
+      {
+        "name": "castMage",
+        "duration": 1,
+        "keyframes": "bd8493e077dc7dc1c42618e668a3704b783765ef0c33a4c410d59d2bfce9a65e"
+      },
+      {
+        "name": "castPriest",
+        "duration": 1,
+        "keyframes": "adcaa26306d8e3fb5cc3a3294cf6ce1ca0685200c85601d091d74be25d684374"
+      },
+      {
+        "name": "hurt",
+        "duration": 0.75,
+        "keyframes": "feef62b2a633fa1d4dc967053bbe040b69348134a1709bda994d5f58c8ad9c1f"
+      },
+      {
+        "name": "victory",
+        "duration": 1.5,
+        "keyframes": "96ae30c8bf786c38159a9aa91d650aa2c5b6d3c70125c4811cf2998b8a9cbcaf"
+      },
+      {
+        "name": "defeat",
+        "duration": 1.5,
+        "keyframes": "501b1fe5cba4efbd6646d6d1f3e0db93678acaac4f8057a6473644eaaf87e9d7"
+      }
+    ]
+  }
+}

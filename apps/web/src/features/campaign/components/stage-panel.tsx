@@ -2,7 +2,7 @@ import { useAtom, useAtomValue } from "@effect/atom-react";
 import { deckProblems, getCard } from "@workspace/rules";
 import { cn } from "cn";
 import type { ReactNode, RefObject } from "react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Button,
   Dialog,
@@ -18,6 +18,7 @@ import { GameButton } from "@/core/components/game/game-button";
 import { GAME_SCRIM } from "@/core/components/game/game-dialog";
 import { CloseIcon } from "@/core/components/game/icons";
 import { randomSeed } from "@/core/utils/random";
+import { preloadStageBattle } from "@/features/battle/battle-preload";
 import type { BattleOptions } from "@/features/battle/battle-session";
 import { CardFrame } from "@/features/battle/components/card-frame";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
@@ -580,6 +581,12 @@ export const StagePanel = ({
   const atCenter = useRef(false);
   const { chosen, problem } = choice;
   const isOpen = stop !== null && !editing;
+  const preloadRegion = stop?.stage.region;
+  useEffect(() => {
+    if (isOpen && preloadRegion !== undefined) {
+      preloadStageBattle(preloadRegion);
+    }
+  }, [isOpen, preloadRegion]);
   const sweep = useSweep("campaign", shown?.stage.id ?? null, stop !== null);
   const sweepable = shown !== null && isCampaignSweepable(shown.stars);
   useStagePanelHints(
