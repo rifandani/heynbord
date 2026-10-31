@@ -153,6 +153,16 @@ const unitOf = (units: readonly UnitPoint[], owner: UnitPoint["owner"]) => {
   return unit;
 };
 
+/** Other game checks dismiss the Story Scene through its own keyboard control. */
+const skipStory = async (page: Page) => {
+  await expect(page.getByTestId("campaign")).toBeVisible();
+  const skip = page.getByTestId("story-skip");
+  if (await skip.isVisible()) {
+    await skip.press("Enter");
+    await expect(skip).toBeHidden();
+  }
+};
+
 const startBattle = async (
   page: Page,
   stageId: string,
@@ -163,6 +173,7 @@ const startBattle = async (
   if (stageId === "1-1") {
     await page.goto(`/play?seed=${seed}`);
     await page.getByTestId("building-townGate").click();
+    await skipStory(page);
   } else {
     await page.goto(`/play?seed=${seed}&state=campaign-progress`);
   }
@@ -379,6 +390,7 @@ test.describe("Battle bot playtest", () => {
     await page.goto("/play?seed=5");
     await page.getByTestId("building-townGate").focus();
     await page.keyboard.press("Enter");
+    await skipStory(page);
     // The Stage Marker of Stage 1-1 opens the Stage Panel, and Fight takes the focus.
     await page.getByTestId("stage-1-1").focus();
     await page.keyboard.press("Enter");
@@ -416,6 +428,18 @@ test.describe("Battle bot playtest", () => {
     await waitForPlayer(page, "keyboard");
     expect(summoned).toBe(true);
     expect(await turnNumber(page)).toBeGreaterThanOrEqual(6);
+  });
+
+  test("the Esc key opens the Leave confirm, and Esc closes it", async ({
+    page,
+  }) => {
+    await startBattle(page, "1-2", "vanguard", 9);
+    await waitForPlayer(page);
+    await page.keyboard.press("Escape");
+    await expect(page.getByTestId("abandon-dialog")).toBeVisible();
+    await page.keyboard.press("Escape");
+    await expect(page.getByTestId("abandon-dialog")).toBeHidden();
+    await expect(page.getByTestId("battle-stage")).toBeVisible();
   });
 
   test("shows the Tutorial again after an Abandon", async ({ page }) => {
@@ -514,6 +538,7 @@ test.describe("Battle bot playtest", () => {
     await expect(page.getByTestId("settings-dialog")).toBeHidden();
     await expect(page.getByTestId("building-townGate")).toHaveText("Kampanye");
     await page.getByTestId("building-townGate").click();
+    await skipStory(page);
     await page.getByTestId("stage-1-1").click();
     await expect(page.getByTestId("start-battle")).toHaveText("Bertarung");
   });
@@ -774,6 +799,7 @@ test.describe("Town", () => {
       "page"
     );
     await page.getByTestId("building-townGate").click();
+    await skipStory(page);
     await expect(page.getByTestId("campaign")).toBeVisible();
     await expect(page.getByTestId("town")).toBeHidden();
     await expect(page.getByTestId("town-shortcut-campaign")).toHaveAttribute(
@@ -788,10 +814,12 @@ test.describe("Town", () => {
     await page.goto("/play");
     await expect(page.getByTestId("town")).toBeVisible({ timeout: 30_000 });
     await page.getByTestId("town-shortcut-campaign").click();
+    await skipStory(page);
     await expect(page.getByTestId("campaign")).toBeVisible();
     await page.keyboard.press("Escape");
     await expect(page.getByTestId("town")).toBeVisible();
     await page.getByTestId("town-shortcut-campaign").click();
+    await skipStory(page);
     await expect(page.getByTestId("campaign")).toBeVisible();
     await page.getByTestId("town-shortcut-town").click();
     await expect(page.getByTestId("town")).toBeVisible();
@@ -1019,6 +1047,7 @@ test.describe("Town", () => {
   test("a reload opens the Town", async ({ page }) => {
     await page.goto("/play");
     await page.getByTestId("building-townGate").click();
+    await skipStory(page);
     await expect(page.getByTestId("campaign")).toBeVisible();
     await page.reload();
     await expect(page.getByTestId("town")).toBeVisible();
@@ -1117,6 +1146,7 @@ test.describe("Campaign", () => {
   }) => {
     await page.goto("/play");
     await page.getByTestId("building-townGate").click();
+    await skipStory(page);
     await expect(page.getByTestId("region-banner")).toContainText("Hearthvale");
     await expect(page.getByTestId("region-stars")).toHaveAttribute(
       "data-stars",
@@ -1135,7 +1165,8 @@ test.describe("Campaign", () => {
     // A Locked Stage opens no Stage Panel. Focus shows the tooltip.
     await locked.click();
     await expect(page.getByTestId("stage-panel")).toBeHidden();
-    await locked.focus();
+    await locked.press("Tab");
+    await page.keyboard.press("Shift+Tab");
     await expect(page.getByTestId("stage-tip-1-4")).toHaveText(
       "Win Stage 1-3 first."
     );
@@ -1146,6 +1177,7 @@ test.describe("Campaign", () => {
   }) => {
     await page.goto("/play");
     await page.getByTestId("building-townGate").click();
+    await skipStory(page);
     const chests = page.locator('[data-testid^="star-chest-"]');
     await expect(chests).toHaveCount(3);
     // Hover opens a tooltip only after a first pointer press.
@@ -1247,6 +1279,7 @@ test.describe("Campaign", () => {
       "Coin: 1 Silver, 80 Copper"
     );
     await page.getByTestId("building-townGate").click();
+    await skipStory(page);
     await expect(page.getByTestId("stage-1-1")).toHaveAccessibleName(
       `Stage 1-1, done, ${stars} of 3 Stars`
     );
@@ -1355,6 +1388,7 @@ test.describe("Region 1 rewards (issue #54)", () => {
       "Coin: 1 Silver, 80 Copper"
     );
     await page.getByTestId("building-townGate").click();
+    await skipStory(page);
     await expect(page.getByTestId("stage-1-1")).toHaveAttribute(
       "data-state",
       "done"
@@ -1399,6 +1433,7 @@ test.describe("Region 1 rewards (issue #54)", () => {
 
     await reloadAfterSave(page);
     await page.getByTestId("building-townGate").click();
+    await skipStory(page);
     await expect(page.getByTestId("star-chest-10")).toHaveAttribute(
       "data-state",
       "claimed"
@@ -1446,6 +1481,7 @@ test.describe("Profile (issue #52)", () => {
   test("a new Player Battle uses level 1 and no Gear", async ({ page }) => {
     await page.goto("/play");
     await page.getByTestId("building-townGate").click();
+    await skipStory(page);
     await page.getByTestId("stage-1-1").click();
     await page.getByTestId("start-battle").click();
     await expect
@@ -1476,6 +1512,7 @@ test.describe("Profile (issue #52)", () => {
       "Coin: 0 Copper"
     );
     await page.getByTestId("building-townGate").click();
+    await skipStory(page);
     await expect(page.getByTestId("campaign")).toBeVisible();
     await openSettings(page);
     await importFile(page, {

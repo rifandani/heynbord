@@ -1,0 +1,1012 @@
+{
+  "region": "glowcap-hollows",
+  "version": 1,
+  "width": 1280,
+  "height": 720,
+  "fps": 30,
+  "frameCount": 4050,
+  "locales": ["en-us", "id-id"],
+  "playback": {
+    "autoAdvance": false,
+    "continueBeforeEnd": true,
+    "readingHold": "loop-from-loopStartSeconds-until-player-action",
+    "loopStartSeconds": 5.0,
+    "back": "restart-moment",
+    "reducedMotion": "poster",
+    "videoFailure": "poster",
+    "audioFailure": "silent",
+    "textAndControls": "external",
+    "stopEffectsOnLeave": true,
+    "profileMutations": false
+  },
+  "listeningReview": "pending",
+  "moments": [
+    {
+      "id": "OpeningExit",
+      "text": {
+        "en-us": "The deep tunnel ends in light. You step out into the Glowcap Hollows, an old Elf grove where giant mushrooms shine.",
+        "id-id": "Terowongan dalam itu berakhir dengan cahaya. Kamu melangkah keluar ke Glowcap Hollows, hutan tua para Elf tempat jamur-jamur raksasa bersinar."
+      },
+      "startFrame": 0,
+      "endFrame": 270,
+      "sceneKind": "opening",
+      "momentOrder": 1,
+      "clip": "opening-01.mp4",
+      "poster": "opening-01.webp",
+      "frameCount": 270,
+      "durationSeconds": 9.0,
+      "loopStartSeconds": 5.0,
+      "posterFrame": 269,
+      "clipBytes": 939814,
+      "posterBytes": 79028,
+      "clipSha256": "b67c4e20c8781e56d917d4aa2583a0c90b896ca8158101f0b290f1886944baaf",
+      "posterRgbRmse": 6.448,
+      "effectCues": [
+        {
+          "file": "audio/rumble.mp3",
+          "atSeconds": 0.0,
+          "gainDb": -8.0
+        },
+        {
+          "file": "audio/wind.mp3",
+          "atSeconds": 1.2,
+          "gainDb": -4.0
+        },
+        {
+          "file": "audio/whoosh.mp3",
+          "atSeconds": 1.55,
+          "gainDb": -4.0
+        },
+        {
+          "file": "audio/shimmer.mp3",
+          "atSeconds": 2.0,
+          "gainDb": -5.0
+        },
+        {
+          "file": "audio/chime.mp3",
+          "atSeconds": 2.45,
+          "gainDb": -8.0
+        },
+        {
+          "file": "audio/chime-high.mp3",
+          "atSeconds": 2.95,
+          "gainDb": -9.0
+        },
+        {
+          "file": "audio/magic.mp3",
+          "atSeconds": 3.2,
+          "gainDb": -6.0
+        },
+        {
+          "file": "audio/boom.mp3",
+          "atSeconds": 3.95,
+          "gainDb": -12.0
+        }
+      ]
+    },
+    {
+      "id": "OpeningGrove",
+      "text": {
+        "en-us": "At dusk, the glowcaps wake and the whole grove shines. The Elves keep it. Their wounds close, their arrows carry poison, and their roots hold fast.",
+        "id-id": "Saat senja, glowcap terbangun dan seluruh hutan bersinar. Para Elf menjaganya. Luka mereka menutup sendiri, panah mereka membawa racun, dan akar mereka mengikat kuat."
+      },
+      "startFrame": 270,
+      "endFrame": 540,
+      "sceneKind": "opening",
+      "momentOrder": 2,
+      "clip": "opening-02.mp4",
+      "poster": "opening-02.webp",
+      "frameCount": 270,
+      "durationSeconds": 9.0,
+      "loopStartSeconds": 5.0,
+      "posterFrame": 269,
+      "clipBytes": 633242,
+      "posterBytes": 39978,
+      "clipSha256": "b0c21216cea1577a1dc899318dc0c080c2145f6dfee2b6425f862e8fae8aeaef",
+      "posterRgbRmse": 4.261,
+      "effectCues": [
+        {
+          "file": "audio/chime.mp3",
+          "atSeconds": 0.9,
+          "gainDb": -10.0
+        },
+        {
+          "file": "audio/chime-high.mp3",
+          "atSeconds": 1.6,
+          "gainDb": -11.0
+        },
+        {
+          "file": "audio/chime.mp3",
+          "atSeconds": 2.3,
+          "gainDb": -12.0
+        },
+        {
+          "file": "audio/shimmer.mp3",
+          "atSeconds": 3.4,
+          "gainDb": -8.0
+        },
+        {
+          "file": "audio/creak.mp3",
+          "atSeconds": 3.6,
+          "gainDb": -6.0
+        },
+        {
+          "file": "audio/drip.mp3",
+          "atSeconds": 5.7,
+          "gainDb": -6.0
+        }
+      ]
+    },
+    {
+      "id": "OpeningWalls",
+      "text": {
+        "en-us": "But the grove has new walls and traps. Lady Glimmerbough, the grove warden, hired goblin diggers to build them, and she pays them in glowcaps.",
+        "id-id": "Tetapi hutan ini punya tembok dan jebakan baru. Lady Glimmerbough, penjaga hutan, menyewa para penggali goblin untuk membangunnya, dan ia membayar mereka dengan glowcap."
+      },
+      "startFrame": 540,
+      "endFrame": 810,
+      "sceneKind": "opening",
+      "momentOrder": 3,
+      "clip": "opening-03.mp4",
+      "poster": "opening-03.webp",
+      "frameCount": 270,
+      "durationSeconds": 9.0,
+      "loopStartSeconds": 5.0,
+      "posterFrame": 269,
+      "clipBytes": 710328,
+      "posterBytes": 37570,
+      "clipSha256": "7265dc060f8b2baaf65110c3dcdb0f8a186036fb6ef8e04e3dda2daf9902e056",
+      "posterRgbRmse": 4.284,
+      "effectCues": [
+        {
+          "file": "audio/shimmer.mp3",
+          "atSeconds": 1.25,
+          "gainDb": -6.0
+        },
+        {
+          "file": "audio/slam.mp3",
+          "atSeconds": 1.9,
+          "gainDb": -3.0
+        },
+        {
+          "file": "audio/thud.mp3",
+          "atSeconds": 1.9,
+          "gainDb": -6.0
+        },
+        {
+          "file": "audio/slam.mp3",
+          "atSeconds": 2.25,
+          "gainDb": -4.0
+        },
+        {
+          "file": "audio/slam.mp3",
+          "atSeconds": 2.6,
+          "gainDb": -4.0
+        },
+        {
+          "file": "audio/snap.mp3",
+          "atSeconds": 3.75,
+          "gainDb": -2.0
+        }
+      ]
+    },
+    {
+      "id": "OpeningArrow",
+      "text": {
+        "en-us": "You came out of a goblin tunnel, so the Elves think that you are one more digger. They greet you with arrows.",
+        "id-id": "Kamu keluar dari terowongan goblin, jadi para Elf mengira kamu penggali yang lain. Mereka menyambutmu dengan panah."
+      },
+      "startFrame": 810,
+      "endFrame": 1080,
+      "sceneKind": "opening",
+      "momentOrder": 4,
+      "clip": "opening-04.mp4",
+      "poster": "opening-04.webp",
+      "frameCount": 270,
+      "durationSeconds": 9.0,
+      "loopStartSeconds": 5.0,
+      "posterFrame": 269,
+      "clipBytes": 243473,
+      "posterBytes": 10678,
+      "clipSha256": "94ec2002564b6d4c994ee5280b2badddf5a0eccfa71521774841ad5529e2ef65",
+      "posterRgbRmse": 2.59,
+      "effectCues": [
+        {
+          "file": "audio/bow.mp3",
+          "atSeconds": 1.35,
+          "gainDb": -4.0
+        },
+        {
+          "file": "audio/whoosh.mp3",
+          "atSeconds": 1.95,
+          "gainDb": -2.0
+        },
+        {
+          "file": "audio/hit.mp3",
+          "atSeconds": 2.3,
+          "gainDb": 0.0
+        },
+        {
+          "file": "audio/drip.mp3",
+          "atSeconds": 5.8,
+          "gainDb": -8.0
+        }
+      ]
+    },
+    {
+      "id": "OpeningRoad",
+      "text": {
+        "en-us": "Climb to Glimmerbough's Grove Hall. The glowcaps that paid Snikkit grew in her grove, and you must learn who buys them.",
+        "id-id": "Dakilah sampai ke Grove Hall milik Glimmerbough. Glowcap yang membayar Snikkit tumbuh di hutannya, dan kamu harus mencari tahu siapa pembelinya."
+      },
+      "startFrame": 1080,
+      "endFrame": 1350,
+      "sceneKind": "opening",
+      "momentOrder": 5,
+      "clip": "opening-05.mp4",
+      "poster": "opening-05.webp",
+      "frameCount": 270,
+      "durationSeconds": 9.0,
+      "loopStartSeconds": 5.0,
+      "posterFrame": 269,
+      "clipBytes": 801445,
+      "posterBytes": 44366,
+      "clipSha256": "8ebdbb94040e674c731efc3c20e0f3bb47109c8e65be72c8670ee0be5f86c9a8",
+      "posterRgbRmse": 4.712,
+      "effectCues": [
+        {
+          "file": "audio/chime.mp3",
+          "atSeconds": 0.7,
+          "gainDb": -10.0
+        },
+        {
+          "file": "audio/chime-high.mp3",
+          "atSeconds": 1.5,
+          "gainDb": -10.0
+        },
+        {
+          "file": "audio/chime.mp3",
+          "atSeconds": 2.2,
+          "gainDb": -9.0
+        },
+        {
+          "file": "audio/chime-high.mp3",
+          "atSeconds": 2.9,
+          "gainDb": -9.0
+        },
+        {
+          "file": "audio/chime.mp3",
+          "atSeconds": 3.6,
+          "gainDb": -8.0
+        },
+        {
+          "file": "audio/shimmer.mp3",
+          "atSeconds": 4.4,
+          "gainDb": -6.0
+        }
+      ]
+    },
+    {
+      "id": "BossHall",
+      "text": {
+        "en-us": "At the top of the shelf-fungus steps stands Glimmerbough's Grove Hall. Its door of woven roots opens by itself. / Glimmerbough: Another digger from the tunnels. You are brave, or very foolish.",
+        "id-id": "Di puncak tangga jamur rak berdiri Grove Hall milik Glimmerbough. Pintunya yang dianyam dari akar terbuka dengan sendirinya. / Glimmerbough: Satu lagi penggali dari terowongan. Kamu berani, atau sangat bodoh."
+      },
+      "startFrame": 1350,
+      "endFrame": 1620,
+      "sceneKind": "boss",
+      "momentOrder": 1,
+      "clip": "boss-01.mp4",
+      "poster": "boss-01.webp",
+      "frameCount": 270,
+      "durationSeconds": 9.0,
+      "loopStartSeconds": 5.0,
+      "posterFrame": 269,
+      "clipBytes": 673037,
+      "posterBytes": 27624,
+      "clipSha256": "49322889927af86be81fef6ef067a018b647240279cccb7db8273e492d4f72f0",
+      "posterRgbRmse": 3.482,
+      "effectCues": [
+        {
+          "file": "audio/chime.mp3",
+          "atSeconds": 0.5,
+          "gainDb": -10.0
+        },
+        {
+          "file": "audio/chime-high.mp3",
+          "atSeconds": 1.3,
+          "gainDb": -10.0
+        },
+        {
+          "file": "audio/chime.mp3",
+          "atSeconds": 2.1,
+          "gainDb": -9.0
+        },
+        {
+          "file": "audio/creak.mp3",
+          "atSeconds": 2.8,
+          "gainDb": -3.0
+        },
+        {
+          "file": "audio/shimmer.mp3",
+          "atSeconds": 3.0,
+          "gainDb": -5.0
+        },
+        {
+          "file": "audio/magic.mp3",
+          "atSeconds": 4.0,
+          "gainDb": -8.0
+        }
+      ]
+    },
+    {
+      "id": "BossGlimmerbough",
+      "text": {
+        "en-us": "You: I am not a digger. I followed the glowcaps here from the Red Mesas. / Glimmerbough: Every digger says that. A friend of the grove told me that you would come.",
+        "id-id": "You: Aku bukan penggali. Aku mengikuti glowcap sampai ke sini dari Red Mesas. / Glimmerbough: Semua penggali berkata begitu. Seorang sahabat hutan sudah memberitahuku bahwa kamu akan datang."
+      },
+      "startFrame": 1620,
+      "endFrame": 1890,
+      "sceneKind": "boss",
+      "momentOrder": 2,
+      "clip": "boss-02.mp4",
+      "poster": "boss-02.webp",
+      "frameCount": 270,
+      "durationSeconds": 9.0,
+      "loopStartSeconds": 5.0,
+      "posterFrame": 269,
+      "clipBytes": 516309,
+      "posterBytes": 20112,
+      "clipSha256": "70a2454f74a096415fe7743701e8d0b61c0df22150b6fa9e1806e96f642b222f",
+      "posterRgbRmse": 3.457,
+      "effectCues": [
+        {
+          "file": "audio/magic.mp3",
+          "atSeconds": 0.2,
+          "gainDb": -5.0
+        },
+        {
+          "file": "audio/shimmer.mp3",
+          "atSeconds": 1.0,
+          "gainDb": -6.0
+        },
+        {
+          "file": "audio/chime-high.mp3",
+          "atSeconds": 1.9,
+          "gainDb": -4.0
+        },
+        {
+          "file": "audio/boom.mp3",
+          "atSeconds": 2.0,
+          "gainDb": -10.0
+        },
+        {
+          "file": "audio/thud.mp3",
+          "atSeconds": 3.2,
+          "gainDb": -4.0
+        }
+      ]
+    },
+    {
+      "id": "BossWarning",
+      "text": {
+        "en-us": "Glimmerbough: My friend wrote to me. The Accord is failing, and diggers will come out of the tunnels to take my grove. / Glimmerbough: So I hired goblins to build my walls and set my traps. Goblins dig fast, and they work for mushrooms. / You: You hired diggers to keep the diggers out?",
+        "id-id": "Glimmerbough: Sahabatku menulis surat kepadaku. Accord sedang runtuh, dan para penggali akan keluar dari terowongan untuk merebut hutanku. / Glimmerbough: Jadi aku menyewa goblin untuk membangun tembok dan memasang jebakan. Goblin menggali dengan cepat, dan mereka mau dibayar jamur. / You: Kamu menyewa penggali untuk menghalangi penggali?"
+      },
+      "startFrame": 1890,
+      "endFrame": 2160,
+      "sceneKind": "boss",
+      "momentOrder": 3,
+      "clip": "boss-03.mp4",
+      "poster": "boss-03.webp",
+      "frameCount": 270,
+      "durationSeconds": 9.0,
+      "loopStartSeconds": 5.0,
+      "posterFrame": 269,
+      "clipBytes": 370747,
+      "posterBytes": 14502,
+      "clipSha256": "11f67dc8ab4723e7dab6dd0c0b332a95d399eec936c9a81241fbb91134f09da6",
+      "posterRgbRmse": 2.865,
+      "effectCues": [
+        {
+          "file": "audio/paper.mp3",
+          "atSeconds": 0.75,
+          "gainDb": -4.0
+        },
+        {
+          "file": "audio/paper.mp3",
+          "atSeconds": 1.45,
+          "gainDb": -6.0
+        },
+        {
+          "file": "audio/chime.mp3",
+          "atSeconds": 1.85,
+          "gainDb": -9.0
+        },
+        {
+          "file": "audio/chime-high.mp3",
+          "atSeconds": 2.6,
+          "gainDb": -9.0
+        },
+        {
+          "file": "audio/whoosh.mp3",
+          "atSeconds": 3.2,
+          "gainDb": -8.0
+        },
+        {
+          "file": "audio/snap.mp3",
+          "atSeconds": 4.0,
+          "gainDb": -4.0
+        }
+      ]
+    },
+    {
+      "id": "BossTrade",
+      "text": {
+        "en-us": "You: Who buys your glowcaps? / Glimmerbough: My friend. I send glowcaps down the deep tunnel, and amber comes back up. Good amber, like drops of sunlight. / You: Your glowcaps paid for Snikkit's painted gold, and that gold paid the Baron's sellswords. Your friend is using you.",
+        "id-id": "You: Siapa yang membeli glowcap-mu? / Glimmerbough: Sahabatku. Aku mengirim glowcap ke bawah lewat terowongan dalam, lalu amber datang kembali ke atas. Amber yang bagus, seperti tetesan cahaya matahari. / You: Glowcap-mu membayar emas palsu Snikkit, dan emas itu membayar tentara bayaran sang Baron. Sahabatmu memanfaatkanmu."
+      },
+      "startFrame": 2160,
+      "endFrame": 2430,
+      "sceneKind": "boss",
+      "momentOrder": 4,
+      "clip": "boss-04.mp4",
+      "poster": "boss-04.webp",
+      "frameCount": 270,
+      "durationSeconds": 9.0,
+      "loopStartSeconds": 5.0,
+      "posterFrame": 269,
+      "clipBytes": 227602,
+      "posterBytes": 14190,
+      "clipSha256": "30ade51e6c3c34dfabf05a676491acbe43710646c563cfccc04c61a460f90401",
+      "posterRgbRmse": 2.91,
+      "effectCues": [
+        {
+          "file": "audio/creak.mp3",
+          "atSeconds": 0.25,
+          "gainDb": -5.0
+        },
+        {
+          "file": "audio/rumble.mp3",
+          "atSeconds": 2.0,
+          "gainDb": -6.0
+        },
+        {
+          "file": "audio/shimmer.mp3",
+          "atSeconds": 2.6,
+          "gainDb": -4.0
+        },
+        {
+          "file": "audio/drip.mp3",
+          "atSeconds": 3.7,
+          "gainDb": -8.0
+        },
+        {
+          "file": "audio/chime.mp3",
+          "atSeconds": 3.9,
+          "gainDb": -10.0
+        }
+      ]
+    },
+    {
+      "id": "BossChallenge",
+      "text": {
+        "en-us": "Glimmerbough: Enough lies! Roots, hold this digger. Vinewarden, guard the middle lane! / You: Then we fight. After this battle, read your friend's letters again.",
+        "id-id": "Glimmerbough: Cukup bohongnya! Akar, ikat penggali ini. Vinewarden, jaga jalur tengah! / You: Kalau begitu kita bertarung. Setelah pertempuran ini, baca lagi surat-surat sahabatmu."
+      },
+      "startFrame": 2430,
+      "endFrame": 2700,
+      "sceneKind": "boss",
+      "momentOrder": 5,
+      "clip": "boss-05.mp4",
+      "poster": "boss-05.webp",
+      "frameCount": 270,
+      "durationSeconds": 9.0,
+      "loopStartSeconds": 5.0,
+      "posterFrame": 269,
+      "clipBytes": 781510,
+      "posterBytes": 40708,
+      "clipSha256": "0b1cc377b0f7e0292aa1d85dd6904580e0f545827fe66f7c285d167096410eee",
+      "posterRgbRmse": 4.724,
+      "effectCues": [
+        {
+          "file": "audio/drums.mp3",
+          "atSeconds": 0.1,
+          "gainDb": -2.0
+        },
+        {
+          "file": "audio/creak.mp3",
+          "atSeconds": 0.9,
+          "gainDb": -3.0
+        },
+        {
+          "file": "audio/slam.mp3",
+          "atSeconds": 1.9,
+          "gainDb": -2.0
+        },
+        {
+          "file": "audio/thud.mp3",
+          "atSeconds": 2.5,
+          "gainDb": 0.0
+        },
+        {
+          "file": "audio/magic.mp3",
+          "atSeconds": 2.9,
+          "gainDb": -5.0
+        },
+        {
+          "file": "audio/shimmer.mp3",
+          "atSeconds": 3.6,
+          "gainDb": -4.0
+        },
+        {
+          "file": "audio/boom.mp3",
+          "atSeconds": 3.6,
+          "gainDb": -8.0
+        }
+      ]
+    },
+    {
+      "id": "EndingRoots",
+      "text": {
+        "en-us": "The roots let go, and the grove goes quiet. Lady Glimmerbough lowers her staff and looks at you for a long time.",
+        "id-id": "Akar-akar itu melepaskan cengkeramannya, dan hutan menjadi sunyi. Lady Glimmerbough menurunkan tongkatnya dan menatapmu lama sekali."
+      },
+      "startFrame": 2700,
+      "endFrame": 2970,
+      "sceneKind": "ending",
+      "momentOrder": 1,
+      "clip": "ending-01.mp4",
+      "poster": "ending-01.webp",
+      "frameCount": 270,
+      "durationSeconds": 9.0,
+      "loopStartSeconds": 5.0,
+      "posterFrame": 269,
+      "clipBytes": 810249,
+      "posterBytes": 99588,
+      "clipSha256": "b5d284b5c8ec47499955a94ed6b86c9ca18a17de2acfa9c2684f601cb6c32cd8",
+      "posterRgbRmse": 6.973,
+      "effectCues": [
+        {
+          "file": "audio/creak.mp3",
+          "atSeconds": 0.4,
+          "gainDb": -3.0
+        },
+        {
+          "file": "audio/wind.mp3",
+          "atSeconds": 1.0,
+          "gainDb": -6.0
+        },
+        {
+          "file": "audio/creak.mp3",
+          "atSeconds": 1.7,
+          "gainDb": -6.0
+        },
+        {
+          "file": "audio/shimmer.mp3",
+          "atSeconds": 2.3,
+          "gainDb": -8.0
+        },
+        {
+          "file": "audio/chime.mp3",
+          "atSeconds": 3.0,
+          "gainDb": -10.0
+        }
+      ]
+    },
+    {
+      "id": "EndingSeals",
+      "text": {
+        "en-us": "You show her the cracked coin and the letter from Snikkit's vault. Her friend's letters have the same seal: three lanes, cut through.",
+        "id-id": "Kamu menunjukkan koin yang retak dan surat dari ruang harta Snikkit. Surat-surat sahabatnya memiliki segel yang sama: tiga jalur yang terpotong."
+      },
+      "startFrame": 2970,
+      "endFrame": 3240,
+      "sceneKind": "ending",
+      "momentOrder": 2,
+      "clip": "ending-02.mp4",
+      "poster": "ending-02.webp",
+      "frameCount": 270,
+      "durationSeconds": 9.0,
+      "loopStartSeconds": 5.0,
+      "posterFrame": 269,
+      "clipBytes": 277966,
+      "posterBytes": 13824,
+      "clipSha256": "ba0db071188aa5f15f93e2e3e4a70b86a7a45d0456395f8497a6aa88eb01d3f2",
+      "posterRgbRmse": 2.81,
+      "effectCues": [
+        {
+          "file": "audio/coin.mp3",
+          "atSeconds": 0.75,
+          "gainDb": -3.0
+        },
+        {
+          "file": "audio/paper.mp3",
+          "atSeconds": 0.95,
+          "gainDb": -4.0
+        },
+        {
+          "file": "audio/paper.mp3",
+          "atSeconds": 1.65,
+          "gainDb": -5.0
+        },
+        {
+          "file": "audio/paper.mp3",
+          "atSeconds": 2.1,
+          "gainDb": -6.0
+        },
+        {
+          "file": "audio/magic.mp3",
+          "atSeconds": 2.8,
+          "gainDb": -9.0
+        },
+        {
+          "file": "audio/thud.mp3",
+          "atSeconds": 3.7,
+          "gainDb": -2.0
+        },
+        {
+          "file": "audio/boom.mp3",
+          "atSeconds": 3.7,
+          "gainDb": -10.0
+        }
+      ]
+    },
+    {
+      "id": "EndingAmber",
+      "text": {
+        "en-us": "She opens a box of her friend's amber. In every drop sleeps a small black thorn.",
+        "id-id": "Ia membuka sekotak amber dari sahabatnya. Di dalam setiap tetesnya tertidur sebatang duri hitam kecil."
+      },
+      "startFrame": 3240,
+      "endFrame": 3510,
+      "sceneKind": "ending",
+      "momentOrder": 3,
+      "clip": "ending-03.mp4",
+      "poster": "ending-03.webp",
+      "frameCount": 270,
+      "durationSeconds": 9.0,
+      "loopStartSeconds": 5.0,
+      "posterFrame": 269,
+      "clipBytes": 347909,
+      "posterBytes": 7472,
+      "clipSha256": "596edb38a925abba66ee4df83904e73f17cd7224fe4361237fa31a95d63f1269",
+      "posterRgbRmse": 1.895,
+      "effectCues": [
+        {
+          "file": "audio/lid.mp3",
+          "atSeconds": 0.35,
+          "gainDb": -3.0
+        },
+        {
+          "file": "audio/shimmer.mp3",
+          "atSeconds": 0.7,
+          "gainDb": -5.0
+        },
+        {
+          "file": "audio/whoosh.mp3",
+          "atSeconds": 1.6,
+          "gainDb": -10.0
+        },
+        {
+          "file": "audio/boom.mp3",
+          "atSeconds": 3.2,
+          "gainDb": -12.0
+        },
+        {
+          "file": "audio/chime.mp3",
+          "atSeconds": 3.3,
+          "gainDb": -12.0
+        }
+      ]
+    },
+    {
+      "id": "EndingLethiel",
+      "text": {
+        "en-us": "Glimmerbough ends the goblins' work and opens her walls. Then she calls her First Gardener. / Glimmerbough: Lethiel, go with this hero. Find my friend, and bring me a name. / Lethiel: I know where black thorns grow. Follow me.",
+        "id-id": "Glimmerbough menghentikan pekerjaan para goblin dan membuka temboknya. Lalu ia memanggil Tukang Kebun Pertamanya. / Glimmerbough: Lethiel, pergilah bersama pahlawan ini. Temukan sahabatku, dan bawakan aku sebuah nama. / Lethiel: Aku tahu di mana duri hitam tumbuh. Ikuti aku."
+      },
+      "startFrame": 3510,
+      "endFrame": 3780,
+      "sceneKind": "ending",
+      "momentOrder": 4,
+      "clip": "ending-04.mp4",
+      "poster": "ending-04.webp",
+      "frameCount": 270,
+      "durationSeconds": 9.0,
+      "loopStartSeconds": 5.0,
+      "posterFrame": 269,
+      "clipBytes": 716701,
+      "posterBytes": 35106,
+      "clipSha256": "40c2026750d05b2cb95eac37c1d3a68591bb8db9e3babfc3d77a0438efd63bd2",
+      "posterRgbRmse": 4.767,
+      "effectCues": [
+        {
+          "file": "audio/wind.mp3",
+          "atSeconds": 0.0,
+          "gainDb": -4.0
+        },
+        {
+          "file": "audio/shimmer.mp3",
+          "atSeconds": 1.0,
+          "gainDb": -5.0
+        },
+        {
+          "file": "audio/chime-high.mp3",
+          "atSeconds": 2.0,
+          "gainDb": -9.0
+        },
+        {
+          "file": "audio/chime.mp3",
+          "atSeconds": 3.0,
+          "gainDb": -10.0
+        },
+        {
+          "file": "audio/magic.mp3",
+          "atSeconds": 3.1,
+          "gainDb": -6.0
+        }
+      ]
+    },
+    {
+      "id": "EndingThornwood",
+      "text": {
+        "en-us": "Amber with black thorns comes from one place only: the old trees of the Thornwood. The trail goes on.",
+        "id-id": "Amber berduri hitam hanya berasal dari satu tempat: pohon-pohon tua di Thornwood. Jejaknya berlanjut."
+      },
+      "startFrame": 3780,
+      "endFrame": 4050,
+      "sceneKind": "ending",
+      "momentOrder": 5,
+      "clip": "ending-05.mp4",
+      "poster": "ending-05.webp",
+      "frameCount": 270,
+      "durationSeconds": 9.0,
+      "loopStartSeconds": 5.0,
+      "posterFrame": 269,
+      "clipBytes": 782538,
+      "posterBytes": 76768,
+      "clipSha256": "8cca882e1446d26831f473b5faaa3e1ad06d080ba28832775e4dd116e6268194",
+      "posterRgbRmse": 6.418,
+      "effectCues": [
+        {
+          "file": "audio/whoosh.mp3",
+          "atSeconds": 0.6,
+          "gainDb": -6.0
+        },
+        {
+          "file": "audio/wind.mp3",
+          "atSeconds": 0.8,
+          "gainDb": -4.0
+        },
+        {
+          "file": "audio/shimmer.mp3",
+          "atSeconds": 2.0,
+          "gainDb": -4.0
+        },
+        {
+          "file": "audio/boom.mp3",
+          "atSeconds": 3.4,
+          "gainDb": -12.0
+        }
+      ]
+    }
+  ],
+  "audio": [
+    {
+      "path": "audio/boom.mp3",
+      "bytes": 28515,
+      "scenes": ["boss", "ending", "opening"],
+      "sha256": "cad553fcb8824e4b6bd463e9b917591a270615d791cc5d8d93ef94b4f80ce65c",
+      "settingsBus": "effects",
+      "durationSeconds": 3.5,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/boss-music.mp3",
+      "bytes": 539471,
+      "scenes": ["boss"],
+      "sha256": "ce46fb8b9a253dc49de3c6440a6f4a11eb90b0e3d38635c9c9116f9ec440e26b",
+      "settingsBus": "music",
+      "durationSeconds": 77.0,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/bow.mp3",
+      "bytes": 4222,
+      "scenes": ["opening"],
+      "sha256": "ca887e00f4ede959d98ff62e12e1e989a5ad4d199c27d3812f104d9fe6262681",
+      "settingsBus": "effects",
+      "durationSeconds": 0.453288,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/chime-high.mp3",
+      "bytes": 13432,
+      "scenes": ["boss", "ending", "opening"],
+      "sha256": "d9c3b62d6044c2c2e7d4f3b77e9a8985d6ba1602342e34876eed56609b40c2bf",
+      "settingsBus": "effects",
+      "durationSeconds": 1.6,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/chime.mp3",
+      "bytes": 11551,
+      "scenes": ["boss", "ending", "opening"],
+      "sha256": "9d0e5eeebaba288d1eb5290dbc7d62b2355c70e536c4c134a1ccc8bd15f0a2b4",
+      "settingsBus": "effects",
+      "durationSeconds": 1.363379,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/coin.mp3",
+      "bytes": 8227,
+      "scenes": ["ending"],
+      "sha256": "c1a141eb3ae190068f4e34528a2f2c82268070686ec7490bd4d523bd1392441d",
+      "settingsBus": "effects",
+      "durationSeconds": 0.946032,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/creak.mp3",
+      "bytes": 19687,
+      "scenes": ["boss", "ending", "opening"],
+      "sha256": "d0d2c287a8c53bc7ce11b72b67b95e5b419d740bc90bacd51cfb6e27d77fc337",
+      "settingsBus": "effects",
+      "durationSeconds": 2.4,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/drip.mp3",
+      "bytes": 3177,
+      "scenes": ["boss", "opening"],
+      "sha256": "b48715dcda41f45e1aa3d14ca9f1700cdba9c35a4fdc9b0ecdd0900bf7ec8df5",
+      "settingsBus": "effects",
+      "durationSeconds": 0.322494,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/drums.mp3",
+      "bytes": 19687,
+      "scenes": ["boss"],
+      "sha256": "4f3f7a68fa0ceb2bddec235c5be78a5b7ca04d9fdc172fa5a5c98c1f71f0a88d",
+      "settingsBus": "effects",
+      "durationSeconds": 2.4,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/ending-music.mp3",
+      "bytes": 483517,
+      "scenes": ["ending"],
+      "sha256": "d581305aba14a96509539a02b3e1540694a6dd074c4548fc5597de579e67c71f",
+      "settingsBus": "music",
+      "durationSeconds": 69.0,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/hit.mp3",
+      "bytes": 2759,
+      "scenes": ["opening"],
+      "sha256": "7e3f9e43d7f8e71beea72e261460bc8d037561f0070329725cb3280cbd9b2a85",
+      "settingsBus": "effects",
+      "durationSeconds": 0.278685,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/lid.mp3",
+      "bytes": 3804,
+      "scenes": ["ending"],
+      "sha256": "b3aaca4ce7f55f41f7b90447e767cd861f5799bfec8ce17ab4f9888c72920236",
+      "settingsBus": "effects",
+      "durationSeconds": 0.400771,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/magic.mp3",
+      "bytes": 13208,
+      "scenes": ["boss", "ending", "opening"],
+      "sha256": "63a8ec991603966ce1101c350bec20150cafa20d9cd7ff8283a06b0112520464",
+      "settingsBus": "effects",
+      "durationSeconds": 1.577664,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/opening-music.mp3",
+      "bytes": 462488,
+      "scenes": ["opening"],
+      "sha256": "4d750535226045ba1f644e25e4c663ca7c87761a1d2ad51475cc9996fd924a8a",
+      "settingsBus": "music",
+      "durationSeconds": 66.0,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/paper.mp3",
+      "bytes": 6103,
+      "scenes": ["boss", "ending"],
+      "sha256": "9517a0b2c30c059451fc98fa566aa2d62023ad0c3bad4d288e5a5be9a64328bc",
+      "settingsBus": "effects",
+      "durationSeconds": 0.7,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/rumble.mp3",
+      "bytes": 21358,
+      "scenes": ["boss", "opening"],
+      "sha256": "3e5b3450e56e45671af804e71a860ff91c87a3664bdef762f4cf2919bd054a68",
+      "settingsBus": "effects",
+      "durationSeconds": 2.6,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/shimmer.mp3",
+      "bytes": 24521,
+      "scenes": ["boss", "ending", "opening"],
+      "sha256": "51f130ced054bedf9c543bcf4acd634c1826f4d0d52ad407e48fca677dc8d4d1",
+      "settingsBus": "effects",
+      "durationSeconds": 3.0,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/slam.mp3",
+      "bytes": 4013,
+      "scenes": ["boss", "opening"],
+      "sha256": "ec85d9d8e1bf013751b864f0045cc6af045a013f5c68759a00da7c20c291449b",
+      "settingsBus": "effects",
+      "durationSeconds": 0.430136,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/snap.mp3",
+      "bytes": 4849,
+      "scenes": ["boss", "opening"],
+      "sha256": "797d5a0751f60a1cddce9ae348ca023a54488c32c52d8ee8df72b777fb89b2c0",
+      "settingsBus": "effects",
+      "durationSeconds": 0.540136,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/thud.mp3",
+      "bytes": 4640,
+      "scenes": ["boss", "ending", "opening"],
+      "sha256": "e4ef84edd2d049ff18753629bfda6720c2ebf26fcbfad84c9d011114a5a038c0",
+      "settingsBus": "effects",
+      "durationSeconds": 0.507098,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/whoosh.mp3",
+      "bytes": 3386,
+      "scenes": ["boss", "ending", "opening"],
+      "sha256": "df02280b53dd2147d22fe5e1c9c3c8a06b04e65ececb1274d24d6163ca0e67bd",
+      "settingsBus": "effects",
+      "durationSeconds": 0.365374,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/wind.mp3",
+      "bytes": 33688,
+      "scenes": ["ending", "opening"],
+      "sha256": "f3eb224822bc81d6230ee53fc39251bd66cd8786b0ca67a53600c57f31664d85",
+      "settingsBus": "effects",
+      "durationSeconds": 4.14034,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    }
+  ],
+  "budgets": {
+    "opening": {
+      "videoBytes": 3328302,
+      "posterBytes": 211620,
+      "audioBytes": 655494
+    },
+    "boss": {
+      "videoBytes": 2569205,
+      "posterBytes": 117136,
+      "audioBytes": 717598
+    },
+    "ending": {
+      "videoBytes": 2935363,
+      "posterBytes": 232758,
+      "audioBytes": 654279
+    }
+  }
+}

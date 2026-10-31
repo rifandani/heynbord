@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { padFamily, padLabels } from "@/core/input/pad-family";
 import {
+  cancelAction,
   controlsGuideButtons,
   controlsGuidePadLabels,
   inspectDirection,
@@ -241,6 +242,18 @@ describe("logKeyAction", () => {
     for (const key of ["Enter", "e", "s", "ArrowUp", "ArrowDown"]) {
       expect(logKeyAction(logCommand(key), false)._tag).toBe("off");
     }
+  });
+});
+
+describe("cancelAction", () => {
+  it("cancels the selected card before it leaves (GDD 11.4)", () => {
+    expect(cancelAction(true, "keyboard")).toBe("select");
+    expect(cancelAction(true, "pad")).toBe("select");
+  });
+
+  it("leaves only from the keyboard, because a pad cannot close the confirm", () => {
+    expect(cancelAction(false, "keyboard")).toBe("leave");
+    expect(cancelAction(false, "pad")).toBe("none");
   });
 });
 

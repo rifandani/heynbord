@@ -1,41 +1,24 @@
-import type {
-  ClassId,
-  CosmeticId,
-  DamageType,
-  RaceId,
-  RankId,
-  Side,
-} from "@workspace/rules";
-import { getCard, getToken, LANE_LENGTH, rankPips } from "@workspace/rules";
+import type { ClassId, CosmeticId, DamageType, Side } from "@workspace/rules";
+import { LANE_LENGTH } from "@workspace/rules";
 import { CanvasTexture, SRGBColorSpace } from "three";
 
 import {
   DAMAGE_COLORS,
   FX_ANCHORS,
   HEAL_COLOR,
-  RACE_COLORS,
-  RANK_COLORS,
   SIDE_COLORS,
   STAT_DELTA,
   STAT_PIPE,
   WARD_COLOR,
 } from "@/core/components/game/tokens";
-import type { UnitSourceView } from "@/features/battle/battle-view";
 import {
   boardSkinArt,
   laneRunnerTiles,
   SQUARE_SHEET,
   sheetTile,
 } from "@/features/battle/board-skin-art";
-import { sourceId, unitIllustration } from "@/features/battle/card-art";
 import type { Glyph } from "@/features/battle/glyphs";
-import {
-  cardGlyph,
-  classGlyph,
-  FILLED_GLYPHS,
-  GLYPHS,
-  tokenGlyph,
-} from "@/features/battle/glyphs";
+import { classGlyph, FILLED_GLYPHS, GLYPHS } from "@/features/battle/glyphs";
 import type { FxCell, FxSlotName } from "@/features/battle/scene/fx-atlas";
 import type { StatusBadge } from "@/features/battle/scene/status-visuals";
 import { statTone } from "@/features/battle/scene/unit-stats";
@@ -66,9 +49,6 @@ import {
   TEXTURE_INK_LIGHT,
   TEXTURE_INK_SHADE,
   TEXTURE_INK_SHADOW,
-  TEXTURE_INK_SOFT,
-  TEXTURE_LIGHT,
-  TEXTURE_LIGHT_END,
   TEXTURE_MASK,
   TEXTURE_PALE,
   TEXTURE_PLATE,
@@ -77,11 +57,14 @@ import {
   TEXTURE_SNOW,
   textureGlow,
 } from "@/features/battle/tokens";
-import { heroPortraitArt } from "@/features/hero/hero-portrait-art";
+import {
+  heroPortraitArt,
+  STANDARD_HERO_PORTRAIT,
+} from "@/features/hero/hero-portrait-art";
 
 /**
  * Procedural art for the slice (art direction 2): each texture is drawn once
- * on a 2D canvas and cached. Only the Unit art loads image files.
+ * on a 2D canvas and cached.
  */
 const cache = new Map<string, CanvasTexture>();
 
@@ -153,149 +136,6 @@ const standeePath = (width: number, height: number, inset: number): Path2D => {
   return path;
 };
 
-const drawPips = (
-  context: CanvasRenderingContext2D,
-  rank: RankId,
-  y: number,
-  width: number
-) => {
-  const count = rankPips(rank);
-  const gap = 26;
-  const start = width / 2 - ((count - 1) * gap) / 2;
-  for (let index = 0; index < count; index += 1) {
-    const x = start + index * gap;
-    context.beginPath();
-    context.moveTo(x, y - 11);
-    context.lineTo(x + 9, y);
-    context.lineTo(x, y + 11);
-    context.lineTo(x - 9, y);
-    context.closePath();
-    context.fillStyle = RANK_COLORS[rank];
-    context.fill();
-    context.lineWidth = 3;
-    context.strokeStyle = TEXTURE_INK_SOFT;
-    context.stroke();
-  }
-};
-
-/** The Race of a Unit and the icon of its standee: the role of its card, or its Token icon. */
-interface Standee {
-  readonly race: RaceId;
-  readonly glyph: Glyph;
-}
-
-const standeeOf = (source: UnitSourceView): Standee => {
-  if (source._tag === "Token") {
-    const token = getToken(source.tokenId);
-    return { race: token.race, glyph: tokenGlyph(token) };
-  }
-  const card = getCard(source.cardId);
-  return {
-    race: card.kind === "creature" ? card.race : "human",
-    glyph: cardGlyph(card),
-  };
-};
-
-/**
- * The painted standee of a Unit: Race colors, a role icon and the Rank pips.
- * The Unit shows it until its card art or its Token art loads
- * (`unitArtTexture`).
- */
-export const unitFigureTexture = (
-  source: UnitSourceView,
-  rank: RankId
-): CanvasTexture =>
-  cached(`unit:${sourceId(source)}:${rank}`, 256, 320, (context) => {
-    const { race, glyph } = standeeOf(source);
-    const colors = RACE_COLORS[race];
-    const standee = standeePath(256, 320, 10);
-    const gradient = context.createLinearGradient(0, 0, 0, 320);
-    gradient.addColorStop(0, colors.light);
-    gradient.addColorStop(0.55, colors.main);
-    gradient.addColorStop(1, colors.dark);
-    context.fillStyle = gradient;
-    context.fill(standee);
-    // Soft light from the upper left (art direction 5.4).
-    const light = context.createRadialGradient(70, 60, 10, 70, 60, 200);
-    light.addColorStop(0, TEXTURE_LIGHT);
-    light.addColorStop(1, TEXTURE_LIGHT_END);
-    context.fillStyle = light;
-    context.fill(standee);
-    context.lineWidth = 14;
-    context.strokeStyle = colors.second;
-    context.stroke(standee);
-    context.lineWidth = 4;
-    context.strokeStyle = TEXTURE_INK_LIGHT;
-    context.stroke(standeePath(256, 320, 3));
-    context.save();
-    context.translate(128, 132);
-    context.scale(1.35, 1.35);
-    drawGlyph(context, glyph);
-    context.restore();
-    drawPips(context, rank, 270, 256);
-  });
-
-/** The size of the Unit art, with the aspect of the figure plane. */
-const ART_WIDTH = 320;
-const ART_HEIGHT = 400;
-
-const unitArtKey = (source: UnitSourceView): string =>
-  `unit-art:${sourceId(source)}`;
-
-const loadingArt = new Map<string, Promise<CanvasTexture | undefined>>();
-
-const loadUnitArt = async (
-  source: UnitSourceView
-): Promise<CanvasTexture | undefined> => {
-  const image = new Image();
-  image.decoding = "async";
-  image.src = unitIllustration(source);
-  try {
-    await image.decode();
-  } catch {
-    // A failed load can try again on the next summon.
-    loadingArt.delete(sourceId(source));
-    return undefined;
-  }
-  return cached(unitArtKey(source), ART_WIDTH, ART_HEIGHT, (context) => {
-    const scale = Math.max(
-      ART_WIDTH / image.naturalWidth,
-      ART_HEIGHT / image.naturalHeight
-    );
-    const width = image.naturalWidth * scale;
-    const height = image.naturalHeight * scale;
-    context.clip(standeePath(ART_WIDTH, ART_HEIGHT, 2));
-    context.drawImage(
-      image,
-      (ART_WIDTH - width) / 2,
-      (ART_HEIGHT - height) / 2,
-      width,
-      height
-    );
-  });
-};
-
-/**
- * The card art or the Token art of a Unit, with its background, in the
- * standee shape (art direction 2: until the card has a cut-out). The 3:4 art
- * fills the plane and the extra height is cut equally at the top and the
- * bottom. It is `undefined` if the image does not load: then the Unit keeps
- * its painted standee.
- */
-export const unitArtTexture = (
-  source: UnitSourceView
-): Promise<CanvasTexture | undefined> => {
-  const key = sourceId(source);
-  const loading = loadingArt.get(key) ?? loadUnitArt(source);
-  loadingArt.set(key, loading);
-  return loading;
-};
-
-/** The Unit art of a card or a Token if it is loaded, else `undefined`. */
-export const loadedUnitArt = (
-  source: UnitSourceView
-): CanvasTexture | undefined => cache.get(unitArtKey(source));
-
 /** The banner standee of a Hero, with the Class icon and the side color. */
 export const heroFigureTexture = (
   side: Side,
@@ -320,8 +160,8 @@ export const heroFigureTexture = (
   });
 
 /** The Hero portrait on its banner: the face, inside the gold rim of the standee. */
-const heroPortraitKey = (side: Side, id: CosmeticId): string =>
-  `hero-portrait:${side}:${id}`;
+const heroPortraitKey = (side: Side, id: CosmeticId | null): string =>
+  `hero-portrait:${side}:${id ?? "standard"}`;
 
 const loadingHeroPortrait = new Map<
   string,
@@ -330,9 +170,9 @@ const loadingHeroPortrait = new Map<
 
 const loadHeroPortrait = async (
   side: Side,
-  id: CosmeticId
+  id: CosmeticId | null
 ): Promise<CanvasTexture | undefined> => {
-  const art = heroPortraitArt(id);
+  const art = id === null ? STANDARD_HERO_PORTRAIT : heroPortraitArt(id);
   if (art === null) {
     return undefined;
   }
@@ -373,7 +213,7 @@ const loadHeroPortrait = async (
 /** The Hero portrait of a Side on its banner, if its image is loaded. */
 export const loadedHeroPortrait = (
   side: Side,
-  id: CosmeticId
+  id: CosmeticId | null
 ): CanvasTexture | undefined => cache.get(heroPortraitKey(side, id));
 
 /**
@@ -383,7 +223,7 @@ export const loadedHeroPortrait = (
  */
 export const heroPortraitTexture = (
   side: Side,
-  id: CosmeticId
+  id: CosmeticId | null
 ): Promise<CanvasTexture | undefined> => {
   const key = heroPortraitKey(side, id);
   const loading = loadingHeroPortrait.get(key) ?? loadHeroPortrait(side, id);

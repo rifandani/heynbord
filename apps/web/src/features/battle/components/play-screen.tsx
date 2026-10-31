@@ -4,13 +4,21 @@ import {
   useAtomSet,
   useAtomValue,
 } from "@effect/atom-react";
-import { lazy, Suspense, useContext, useEffect, useRef } from "react";
+import {
+  lazy,
+  Suspense,
+  useContext,
+  useEffect,
+  useRef,
+  useSyncExternalStore,
+} from "react";
 
 import { musicTrackFor } from "@/core/audio/music-catalog";
 import type { MusicFeature } from "@/core/audio/music-catalog";
 import { useEverOpened } from "@/core/hooks/use-ever-opened";
 import { useAchievementNotices } from "@/features/achievements/use-achievement-notices";
 import { battleStage } from "@/features/battle/battle-content";
+import { modelProgress } from "@/features/battle/battle-model-progress";
 import {
   dialogOpen,
   isTyping,
@@ -116,12 +124,27 @@ const ScreenLoading = () => (
   />
 );
 
-/** The backdrop while the Battle UI chunk loads. */
+/** The backdrop while the Battle UI chunk or its Unit Models load. */
 const BattleLoading = () => {
   const { tr } = useGameText();
+  const progress = useSyncExternalStore(
+    modelProgress.subscribe,
+    modelProgress.get,
+    modelProgress.get
+  );
   return (
     <div className="bg-night-plate text-cream fixed inset-0 grid place-items-center">
-      <p className="font-display text-xl">{tr("battle.loading")}</p>
+      <div className="text-center">
+        <p className="font-display text-xl">{tr("battle.loading")}</p>
+        {progress ? (
+          <p className="text-cream/80 mt-2 text-sm">
+            {tr("battle.modelProgress", {
+              done: progress.done,
+              total: progress.total,
+            })}
+          </p>
+        ) : null}
+      </div>
     </div>
   );
 };

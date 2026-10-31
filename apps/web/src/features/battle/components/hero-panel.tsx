@@ -1,14 +1,15 @@
-import type { Side } from "@workspace/rules";
+import type { CosmeticId, Side } from "@workspace/rules";
 import { cn } from "cn";
 
 import { SIDE_COLORS } from "@/core/components/game/tokens";
 import type { HeroView } from "@/features/battle/battle-view";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { classGlyph } from "@/features/battle/glyphs";
+import { isAtLowHp } from "@/features/battle/health";
 import { useGameText } from "@/features/battle/use-game-text";
 import { HeroPortrait } from "@/features/hero/components/hero-portrait";
 
-/** The HP bar turns red at 30% HP or less. */
+/** The HP bar turns red at one third HP or less. */
 const HpBar = ({
   side,
   hero,
@@ -23,7 +24,7 @@ const HpBar = ({
         <div
           className={cn(
             "h-full rounded-full transition-[width] duration-300",
-            percent <= 30 ? "bg-hp-low" : "bg-hp-full"
+            isAtLowHp(hero) ? "bg-hp-low" : "bg-hp-full"
           )}
           style={{ width: `${percent}%` }}
         />
@@ -47,11 +48,13 @@ export const HeroPanel = ({
   hero,
   name,
   active,
+  portrait = null,
 }: {
   readonly side: Side;
   readonly hero: HeroView;
   readonly name: string;
   readonly active: boolean;
+  readonly portrait?: CosmeticId | null;
 }) => {
   const { tr } = useGameText();
   return (
@@ -67,6 +70,7 @@ export const HeroPanel = ({
     >
       {side === "player" ? (
         <HeroPortrait
+          id={portrait}
           classId={hero.classId}
           className="w-10 shrink-0 [@media(max-height:500px)]:w-8"
         />

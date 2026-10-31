@@ -2,6 +2,7 @@ import type { ActivatedKeyword, BattleEvent } from "@workspace/rules";
 
 import type { UnitSourceView, UnitView } from "@/features/battle/battle-view";
 import { sourceId } from "@/features/battle/card-art";
+import { isAtLowHp } from "@/features/battle/health";
 import type { Fx } from "@/features/battle/scene/fx";
 import type { KeywordPlate } from "@/features/battle/scene/keyword-plates";
 import type { UnitClipName } from "@/features/battle/scene/unit-clips";
@@ -15,8 +16,8 @@ export interface UnitModelSpec {
 }
 
 /**
- * The cards that have a Unit Model (art direction 2.2). A card that is not
- * here shows its Cut-out Figure (art direction 2.1).
+ * The Unit Model of each Creature Card and each Token (art direction 2.2).
+ * Every Unit on the Board has one.
  */
 const UNIT_MODELS = new Map<string, UnitModelSpec>([
   [
@@ -403,14 +404,30 @@ const UNIT_MODELS = new Map<string, UnitModelSpec>([
     "undead.graveBellTender",
     { url: "/models/units/grave-bell-tender.glb", height: 1.25 },
   ],
+  // A small skeleton, lower than Rattleknife: the raised sword is above his bucket helmet, and the height includes it.
+  ["token.skeleton", { url: "/models/units/skeleton.glb", height: 1 }],
+  // A small flier: the chain holds it above its helmet, and the curl of its tail is in the height.
+  [
+    "token.restlessWisp",
+    { url: "/models/units/restless-wisp.glb", height: 0.85 },
+  ],
 ]);
 
-/** The Unit Model of a card, or `undefined` if the card has only a Cut-out Figure. */
+/** The Unit Model of a card or a Token, if the ID is a Unit. */
 export const unitModelOf = (cardId: string): UnitModelSpec | undefined =>
   UNIT_MODELS.get(cardId);
 
-/** The height of a Cut-out Figure. A Unit Model has its own height. */
-const CUT_OUT_HEIGHT = 1.03;
+/**
+ * The Unit Model of a Unit. Every Unit on the Board has one, so a missing
+ * model is a defect in the content, not a fallback case.
+ */
+export const requireUnitModel = (id: string): UnitModelSpec => {
+  const model = UNIT_MODELS.get(id);
+  if (!model) {
+    throw new Error(`Missing Unit Model: ${id}`);
+  }
+  return model;
+};
 
 /** The Status Badge sits this far above the head of the figure. */
 const BADGE_GAP = 0.3;
@@ -420,9 +437,9 @@ const BADGE_GAP = 0.3;
  * its figure. A Keyword Plate sits above it.
  */
 export const badgeHeight = (source: UnitSourceView): number =>
-  (unitModelOf(sourceId(source))?.height ?? CUT_OUT_HEIGHT) + BADGE_GAP;
+  requireUnitModel(sourceId(source)).height + BADGE_GAP;
 
-/** The cards that have a Unit Model, for the Component Catalog. */
+/** The cards and the Tokens that have a Unit Model, for the Component Catalog. */
 export const unitModelCards = (): readonly string[] => [...UNIT_MODELS.keys()];
 
 /** The clip that a Unit plays in one frame. */
@@ -434,7 +451,7 @@ export interface UnitClip {
 
 /** Low HP: HP at 1/3 of the Max HP or less (web glossary). */
 export const isLowHp = (unit: Pick<UnitView, "hp" | "maxHp">): boolean =>
-  unit.hp > 0 && unit.hp * 3 <= unit.maxHp;
+  unit.hp > 0 && isAtLowHp(unit);
 
 /**
  * The Keywords that a Unit uses by its own action, so its Unit Model plays the
@@ -585,10 +602,10 @@ export const unitClipFor = (unit: UnitView, input: ClipInput): UnitClip => {
 export interface ShownClip extends UnitClip {
   /**
    * True when the model shows its idle clip in place of an event clip that
-   * it does not have. Then the figure also takes the tilt of the Cut-out
-   * Figure (art direction 2.1), for example to fall in a death.
+   * it does not have. Then the whole figure takes the fall tilt, for example
+   * to lie down in a death.
    */
-  readonly cutOutPose: boolean;
+  readonly tiltPose: boolean;
 }
 
 /**
@@ -602,28 +619,28 @@ export const fallbackClip = (
   has: (name: UnitClipName) => boolean
 ): ShownClip => {
   if (has(clip.name)) {
-    return { ...clip, cutOutPose: false };
+    return { ...clip, tiltPose: false };
   }
   switch (clip.name) {
     case "lowHp": {
-      return { name: "idle", phase: clip.phase, cutOutPose: false };
+      return { name: "idle", phase: clip.phase, tiltPose: false };
     }
     case "cast":
     case "summon": {
-      return { name: "idle", phase: 0, cutOutPose: false };
+      return { name: "idle", phase: 0, tiltPose: false };
     }
     case "rebirth": {
       if (has("death")) {
         return {
           name: "death",
           phase: 1 - Math.abs(1 - clip.phase * 2),
-          cutOutPose: false,
+          tiltPose: false,
         };
       }
-      return { name: "idle", phase: 0, cutOutPose: true };
+      return { name: "idle", phase: 0, tiltPose: true };
     }
     default: {
-      return { name: "idle", phase: 0, cutOutPose: true };
+      return { name: "idle", phase: 0, tiltPose: true };
     }
   }
 };

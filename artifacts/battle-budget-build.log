@@ -1,0 +1,1383 @@
+$ bun test scripts/unit-model/model-check.test.ts && bun web measure:battle-budget --config apps/web/scripts/battle-budget/stage-1-1.json --config apps/web/scripts/battle-budget/stage-5-10.json --report "docs/game/battle-budget-2026-10-31.json"
+bun test v1.4.2 (744846f84)
+
+scripts/unit-model/model-check.test.ts:
+(pass) published Unit Model checks > accepts the raw rig contract but rejects publishing it uncompressed [0.66ms]
+(pass) published Unit Model checks > does not accept an extension name without compressed primitive data [0.55ms]
+(pass) published Unit Model checks > accepts the real compressed texture-free result and all required clips [1.03ms]
+(pass) published Unit Model checks > retains the individual byte, triangle, bone, image and animation limits [1.10ms]
+(pass) published Unit Model checks > checks embedded KTX2 image dimensions, including the 1024 px boundary [2.34ms]
+(pass) published Unit Model checks > rejects a truncated GLB [0.05ms]
+
+ 6 pass
+ 0 fail
+ 19 expect() calls
+Ran 6 tests across 1 file. [393.00ms]
+$ bun --elide-lines=0 --filter @workspace/web measure:battle-budget --config "apps/web/scripts/battle-budget/stage-1-1.json" --config "apps/web/scripts/battle-budget/stage-5-10.json" --report "docs/game/battle-budget-2026-10-31.json"
+@workspace/web measure:battle-budget: $ vite build
+@workspace/web measure:battle-budget: (!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+@workspace/web measure:battle-budget:   - import "./scripts/battle-build-graph" without a file extension (vite.config.ts:15:34). Add the file extension
+@workspace/web measure:battle-budget:   - import "./scripts/rules-hash" without a file extension (vite.config.ts:16:27). Add the file extension
+@workspace/web measure:battle-budget: Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+@workspace/web measure:battle-budget: vite v8.3.5 building client environment for production...
+@workspace/web measure:battle-budget: transforming...
+@workspace/web measure:battle-budget: ✓ 4805 modules transformed.
+@workspace/web measure:battle-budget: rendering chunks...
+@workspace/web measure:battle-budget: computing gzip size...
+@workspace/web measure:battle-budget: .output/public/battle-build-configuration.json                   0.08 kB │ gzip:   0.08 kB
+@workspace/web measure:battle-budget: .output/public/manifest.webmanifest                              1.49 kB
+@workspace/web measure:battle-budget: .output/public/battle-build-graph.json                          40.34 kB │ gzip:   2.99 kB
+@workspace/web measure:battle-budget: .output/public/assets/basis_transcoder-o4Hde_L7.js              57.52 kB
+@workspace/web measure:battle-budget: .output/public/assets/basis_transcoder-VXdx5NbI.wasm           527.33 kB │ gzip: 248.94 kB
+@workspace/web measure:battle-budget: .output/public/assets/index-aDCxoPjS.css                       442.33 kB │ gzip:  61.24 kB
+@workspace/web measure:battle-budget: .output/public/assets/playback-DH29zyEo.js                       0.07 kB │ gzip:   0.08 kB
+@workspace/web measure:battle-budget: .output/public/assets/hero-model-feature-BcPJKki-.js             0.08 kB │ gzip:   0.09 kB
+@workspace/web measure:battle-budget: .output/public/assets/unit-clips-LDA7XKXT.js                     0.09 kB │ gzip:   0.10 kB
+@workspace/web measure:battle-budget: .output/public/assets/heynspire.atoms-ByrELkoc.js                0.11 kB │ gzip:   0.10 kB
+@workspace/web measure:battle-budget: .output/public/assets/handbook.atoms-Dlk6Kv9m.js                 0.18 kB │ gzip:   0.15 kB
+@workspace/web measure:battle-budget: .output/public/assets/hero-art-DtGOLo9V.js                       0.33 kB │ gzip:   0.20 kB
+@workspace/web measure:battle-budget: .output/public/assets/battle-painting-D9nCdkE0.js                0.35 kB │ gzip:   0.24 kB
+@workspace/web measure:battle-budget: .output/public/assets/model-error-boundary-2xUi5_y7.js           0.36 kB │ gzip:   0.25 kB
+@workspace/web measure:battle-budget: .output/public/assets/use-guarantee-text-BlQB8ucI.js             0.40 kB │ gzip:   0.27 kB
+@workspace/web measure:battle-budget: .output/public/assets/SkeletonUtils-CHxfGqZJ.js                  0.44 kB │ gzip:   0.25 kB
+@workspace/web measure:battle-budget: .output/public/assets/use-handbook-Djcsh7is.js                   0.46 kB │ gzip:   0.32 kB
+@workspace/web measure:battle-budget: .output/public/assets/battle-preload-D2Vh1mn7.js                 0.49 kB │ gzip:   0.32 kB
+@workspace/web measure:battle-budget: .output/public/assets/gear-look-art-DqME6w53.js                  0.50 kB │ gzip:   0.30 kB
+@workspace/web measure:battle-budget: .output/public/assets/town.atoms-CLUYvI4C.js                     0.50 kB │ gzip:   0.32 kB
+@workspace/web measure:battle-budget: .output/public/assets/graveyard-icon-DdIir9Qe.js                 0.52 kB │ gzip:   0.40 kB
+@workspace/web measure:battle-budget: .output/public/assets/hero-portrait-art-C5maVh9d.js              0.54 kB │ gzip:   0.24 kB
+@workspace/web measure:battle-budget: .output/public/assets/use-timeouts-DWG6ZCXK.js                   0.56 kB │ gzip:   0.33 kB
+@workspace/web measure:battle-budget: .output/public/assets/game-screen-CuZSzSU8.js                    0.64 kB │ gzip:   0.42 kB
+@workspace/web measure:battle-budget: .output/public/assets/use-coin-format-Dofr2CTR.js                0.71 kB │ gzip:   0.47 kB
+@workspace/web measure:battle-budget: .output/public/assets/rolldown-runtime-XKyaHtl9.js               0.72 kB │ gzip:   0.42 kB
+@workspace/web measure:battle-budget: .output/public/assets/board-skin-art-Bpl72NkI.js                 0.74 kB │ gzip:   0.43 kB
+@workspace/web measure:battle-budget: .output/public/assets/panel-row-CEz1iZYf.js                      0.75 kB │ gzip:   0.47 kB
+@workspace/web measure:battle-budget: .output/public/assets/useMediaQuery-BRutXKoe.js                  0.78 kB │ gzip:   0.43 kB
+@workspace/web measure:battle-budget: .output/public/assets/hero-model-assets-DVeleGSB.js              0.82 kB │ gzip:   0.43 kB
+@workspace/web measure:battle-budget: .output/public/assets/shim-CAofzGC6.js                           0.86 kB │ gzip:   0.46 kB
+@workspace/web measure:battle-budget: .output/public/assets/Meter-AeY1PR8T.js                          0.87 kB │ gzip:   0.53 kB
+@workspace/web measure:battle-budget: .output/public/assets/use-count-to-Be8ws1lk.js                   0.89 kB │ gzip:   0.53 kB
+@workspace/web measure:battle-budget: .output/public/assets/hero-model-loader-BSPx8Thj.js              0.96 kB │ gzip:   0.56 kB
+@workspace/web measure:battle-budget: .output/public/assets/status-visuals-RcqeGPSm.js                 1.06 kB │ gzip:   0.45 kB
+@workspace/web measure:battle-budget: .output/public/assets/use-stat-format-CRl8r09t.js                1.23 kB │ gzip:   0.71 kB
+@workspace/web measure:battle-budget: .output/public/assets/reduced-motion-nUYr7p1J.js                 1.30 kB │ gzip:   0.60 kB
+@workspace/web measure:battle-budget: .output/public/assets/packs-kNvjKDOF.js                          1.30 kB │ gzip:   0.70 kB
+@workspace/web measure:battle-budget: .output/public/assets/master-design-DHS34qlM.js                  1.37 kB │ gzip:   0.73 kB
+@workspace/web measure:battle-budget: .output/public/assets/routes-BWYgPEZ9.js                         1.45 kB │ gzip:   0.79 kB
+@workspace/web measure:battle-budget: .output/public/assets/Link-D3A98xe_.js                           1.50 kB │ gzip:   0.76 kB
+@workspace/web measure:battle-budget: .output/public/assets/Hooks-wJI4gQmv.js                          1.52 kB │ gzip:   0.77 kB
+@workspace/web measure:battle-budget: .output/public/assets/replace-profile-dialog-W7g2otZV.js         1.52 kB │ gzip:   0.85 kB
+@workspace/web measure:battle-budget: .output/public/assets/achievements-screen.atoms-Ck0kmnxe.js      1.64 kB │ gzip:   0.75 kB
+@workspace/web measure:battle-budget: .output/public/assets/language-toggle-xv2yJX5y.js                1.71 kB │ gzip:   1.02 kB
+@workspace/web measure:battle-budget: .output/public/assets/hero-model-canvas-C9NMUGyC.js              1.73 kB │ gzip:   0.98 kB
+@workspace/web measure:battle-budget: .output/public/assets/hero-portrait-BZx4HrXa.js                  1.90 kB │ gzip:   1.04 kB
+@workspace/web measure:battle-budget: .output/public/assets/profile.atoms-CzLWvtMB.js                  2.02 kB │ gzip:   1.05 kB
+@workspace/web measure:battle-budget: .output/public/assets/TextField-DsUn7oQY.js                      2.20 kB │ gzip:   1.04 kB
+@workspace/web measure:battle-budget: .output/public/assets/forge-stone-icon-Bgo6QHHG.js               2.23 kB │ gzip:   1.11 kB
+@workspace/web measure:battle-budget: .output/public/assets/button-DDgDPb8E.js                         2.55 kB │ gzip:   1.09 kB
+@workspace/web measure:battle-budget: .output/public/assets/card-back-Dtr1DpeX.js                      2.59 kB │ gzip:   1.20 kB
+@workspace/web measure:battle-budget: .output/public/assets/useTextField-paRDy4wE.js                   2.70 kB │ gzip:   1.20 kB
+@workspace/web measure:battle-budget: .output/public/assets/hero-model-body-Csa3-nsv.js                3.52 kB │ gzip:   1.81 kB
+@workspace/web measure:battle-budget: .output/public/assets/hero-model-preview-DiKQQ4ap.js             4.15 kB │ gzip:   1.99 kB
+@workspace/web measure:battle-budget: .output/public/assets/SearchField-C5E8pBjh.js                    4.54 kB │ gzip:   2.27 kB
+@workspace/web measure:battle-budget: .output/public/assets/Disclosure-Bra4RaJl.js                     4.74 kB │ gzip:   1.64 kB
+@workspace/web measure:battle-budget: .output/public/assets/pack-art-C-b2kvUF.js                       4.92 kB │ gzip:   2.17 kB
+@workspace/web measure:battle-budget: .output/public/assets/pool-filters-BLZcn1xB.js                   5.19 kB │ gzip:   2.19 kB
+@workspace/web measure:battle-budget: .output/public/assets/game-dialog-BPJ37E6l.js                    5.58 kB │ gzip:   1.81 kB
+@workspace/web measure:battle-budget: .output/public/assets/workbox-window.prod.es5-Bd17z0YL.js        5.65 kB │ gzip:   2.20 kB
+@workspace/web measure:battle-budget: .output/public/assets/test-hooks-CyxMzfJj.js                     5.69 kB │ gzip:   2.28 kB
+@workspace/web measure:battle-budget: .output/public/assets/battle.atoms-CLKPMXVl.js                   7.76 kB │ gzip:   3.07 kB
+@workspace/web measure:battle-budget: .output/public/assets/region-map-CQEIDTPG.js                     8.30 kB │ gzip:   3.20 kB
+@workspace/web measure:battle-budget: .output/public/assets/Tabs-C39WeFrB.js                           9.58 kB │ gzip:   3.34 kB
+@workspace/web measure:battle-budget: .output/public/assets/ListBox-CJk4hC2n.js                       10.84 kB │ gzip:   3.90 kB
+@workspace/web measure:battle-budget: .output/public/assets/battle-timeline-weMmbavU.js               12.83 kB │ gzip:   4.34 kB
+@workspace/web measure:battle-budget: .output/public/assets/result-rewards-DQ86v8aw.js                14.53 kB │ gzip:   5.32 kB
+@workspace/web measure:battle-budget: .output/public/assets/bazaar-screen-Bj5XzAZf.js                 21.70 kB │ gzip:   7.97 kB
+@workspace/web measure:battle-budget: .output/public/assets/pack-reveal-DADfaKrH.js                   24.44 kB │ gzip:   9.10 kB
+@workspace/web measure:battle-budget: .output/public/assets/menu-Dg7k6Hbo.js                          29.32 kB │ gzip:   7.80 kB
+@workspace/web measure:battle-budget: .output/public/assets/hero-screen-6KuOW5Il.js                   29.67 kB │ gzip:  10.02 kB
+@workspace/web measure:battle-budget: .output/public/assets/card-frame-B7-VqORp.js                    31.36 kB │ gzip:  10.74 kB
+@workspace/web measure:battle-budget: .output/public/assets/stage-panel-CJNtoBCB.js                   32.10 kB │ gzip:  11.04 kB
+@workspace/web measure:battle-budget: .output/public/assets/use-card-peek-DWZnzUBa.js                 34.34 kB │ gzip:  12.23 kB
+@workspace/web measure:battle-budget: .output/public/assets/unit-rig-D5iAhvFn.js                      34.89 kB │ gzip:  10.23 kB
+@workspace/web measure:battle-budget: .output/public/assets/seaport-screen-C4yVfNWi.js                37.12 kB │ gzip:  11.99 kB
+@workspace/web measure:battle-budget: .output/public/assets/achievements-screen-DGmydUTc.js           39.93 kB │ gzip:  13.12 kB
+@workspace/web measure:battle-budget: .output/public/assets/packs-screen-C7DqD_o6.js                  41.12 kB │ gzip:  13.86 kB
+@workspace/web measure:battle-budget: .output/public/assets/GridList-BYhjQYKN.js                      41.36 kB │ gzip:  12.51 kB
+@workspace/web measure:battle-budget: .output/public/assets/surfaces-l-PGCpm4.js                      42.20 kB │ gzip:  13.58 kB
+@workspace/web measure:battle-budget: .output/public/assets/heynspire-screen-DI-K67lZ.js              44.82 kB │ gzip:  15.64 kB
+@workspace/web measure:battle-budget: .output/public/assets/GLTFLoader-ahDWvzZ_.js                    44.92 kB │ gzip:  13.39 kB
+@workspace/web measure:battle-budget: .output/public/assets/dungeons-screen-I4j53jXN.js               46.73 kB │ gzip:  16.21 kB
+@workspace/web measure:battle-budget: .output/public/assets/deck-dialog-CW_psWD-.js                   48.36 kB │ gzip:  15.43 kB
+@workspace/web measure:battle-budget: .output/public/assets/campaign-screen-61_MXzlm.js               60.99 kB │ gzip:  19.18 kB
+@workspace/web measure:battle-budget: .output/public/assets/dist-DL29brTf.js                          74.57 kB │ gzip:  27.33 kB
+@workspace/web measure:battle-budget: .output/public/assets/unit-model-stage-DOhpZZhw.js              75.95 kB │ gzip:  23.17 kB
+@workspace/web measure:battle-budget: .output/public/assets/client-EK1e40NU.js                        77.35 kB │ gzip:  26.31 kB
+@workspace/web measure:battle-budget: .output/public/assets/game-scrim-Dzy1DCYN.js                    91.38 kB │ gzip:  30.42 kB
+@workspace/web measure:battle-budget: .output/public/assets/handbook-dialog-BEGMQAS1.js               99.82 kB │ gzip:  30.11 kB
+@workspace/web measure:battle-budget: .output/public/assets/workshop-screen-ESWoMCm6.js              104.42 kB │ gzip:  33.08 kB
+@workspace/web measure:battle-budget: .output/public/assets/battle-stage-CTVeZz6C.js                 118.73 kB │ gzip:  38.06 kB
+@workspace/web measure:battle-budget: .output/public/assets/play-B1cEbsWO.js                         122.89 kB │ gzip:  44.02 kB
+@workspace/web measure:battle-budget: .output/public/assets/Dialog-DOFtmCYY.js                       124.30 kB │ gzip:  39.74 kB
+@workspace/web measure:battle-budget: .output/public/assets/Schema-DV78m1_U.js                       130.88 kB │ gzip:  43.05 kB
+@workspace/web measure:battle-budget: .output/public/assets/index-BbG9cZcM.js                        140.01 kB │ gzip:  47.11 kB
+@workspace/web measure:battle-budget: .output/public/assets/battle-canvas-C_flLhEr.js                156.71 kB │ gzip:  57.87 kB
+@workspace/web measure:battle-budget: .output/public/assets/src-Bv5zg5mJ.js                          170.67 kB │ gzip:  40.67 kB
+@workspace/web measure:battle-budget: .output/public/assets/react-DK9JGPcW.js                        219.08 kB │ gzip:  68.35 kB
+@workspace/web measure:battle-budget: .output/public/assets/use-translation-V_f1o9cU.js              265.50 kB │ gzip:  90.01 kB
+@workspace/web measure:battle-budget: .output/public/assets/three.core-Dp-eO7LC.js                   377.28 kB │ gzip: 100.66 kB
+@workspace/web measure:battle-budget: .output/public/assets/react-three-fiber.esm-CMB7APxq.js        540.81 kB │ gzip: 144.62 kB
+@workspace/web measure:battle-budget: .output/public/assets/catalog-page-9fDqKosY.js               1,420.52 kB │ gzip: 393.70 kB
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: [plugin builtin:vite-reporter] 
+@workspace/web measure:battle-budget: (!) Some chunks are larger than 500 kB after minification. Consider:
+@workspace/web measure:battle-budget: - Using dynamic import() to code-split the application
+@workspace/web measure:battle-budget: - Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting
+@workspace/web measure:battle-budget: - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+@workspace/web measure:battle-budget: ✓ built in 8.25s
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: PWA v1.3.0
+@workspace/web measure:battle-budget: Building src/sw.ts service worker ("es" format)...
+@workspace/web measure:battle-budget: vite v8.3.5 building client environment for production...
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget:  WARN  inlineDynamicImports option is deprecated, please use codeSplitting: false instead.
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: transforming...
+@workspace/web measure:battle-budget: ✓ 78 modules transformed.
+@workspace/web measure:battle-budget: rendering chunks...
+@workspace/web measure:battle-budget: computing gzip size...
+@workspace/web measure:battle-budget: .output/public/sw.mjs  25.44 kB │ gzip: 8.35 kB
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: ✓ built in 56ms
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: PWA v1.3.0
+@workspace/web measure:battle-budget: mode      injectManifest
+@workspace/web measure:battle-budget: format:   es
+@workspace/web measure:battle-budget: precache  34 entries (1947.13 KiB)
+@workspace/web measure:battle-budget: files generated
+@workspace/web measure:battle-budget:   .output/public/sw.js
+@workspace/web measure:battle-budget: warnings
+@workspace/web measure:battle-budget:   One of the glob patterns doesn't match any files. Please remove or fix the following: {
+@workspace/web measure:battle-budget:   "globDirectory": "/Users/rizeki.rifandani/Desktop/dev/projects/heynbord/apps/web/.output/public",
+@workspace/web measure:battle-budget:   "globPattern": "offline.html",
+@workspace/web measure:battle-budget:   "globIgnores": [
+@workspace/web measure:battle-budget:     "**/node_modules/**/*",
+@workspace/web measure:battle-budget:     "sw.js",
+@workspace/web measure:battle-budget:     "sw.js"
+@workspace/web measure:battle-budget:   ]
+@workspace/web measure:battle-budget: }
+@workspace/web measure:battle-budget:   One of the glob patterns doesn't match any files. Please remove or fix the following: {
+@workspace/web measure:battle-budget:   "globDirectory": "/Users/rizeki.rifandani/Desktop/dev/projects/heynbord/apps/web/.output/public",
+@workspace/web measure:battle-budget:   "globPattern": "favicon.{ico,svg}",
+@workspace/web measure:battle-budget:   "globIgnores": [
+@workspace/web measure:battle-budget:     "**/node_modules/**/*",
+@workspace/web measure:battle-budget:     "sw.js",
+@workspace/web measure:battle-budget:     "sw.js"
+@workspace/web measure:battle-budget:   ]
+@workspace/web measure:battle-budget: }
+@workspace/web measure:battle-budget:   One of the glob patterns doesn't match any files. Please remove or fix the following: {
+@workspace/web measure:battle-budget:   "globDirectory": "/Users/rizeki.rifandani/Desktop/dev/projects/heynbord/apps/web/.output/public",
+@workspace/web measure:battle-budget:   "globPattern": "apple-touch-icon-180x180.png",
+@workspace/web measure:battle-budget:   "globIgnores": [
+@workspace/web measure:battle-budget:     "**/node_modules/**/*",
+@workspace/web measure:battle-budget:     "sw.js",
+@workspace/web measure:battle-budget:     "sw.js"
+@workspace/web measure:battle-budget:   ]
+@workspace/web measure:battle-budget: }
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: [33m[PLUGIN_TIMINGS] [0mJavaScript callbacks ran for 9.9s. The build took 8.2s. Callbacks such as `closeBundle` run after the build ends, so callback time can be more than build time.
+@workspace/web measure:battle-budget: The slowest callbacks, timed inside each callback (the wait before a callback starts is excluded, the time it awaits is included):
+@workspace/web measure:battle-budget:   - plugin @rolldown/plugin-babel transform (73%, 6.0s, 632 calls)
+@workspace/web measure:battle-budget:   - plugin vite-plugin-pwa:build closeBundle (26%, 2.1s, 1 call)
+@workspace/web measure:battle-budget: Additional callback time came from the callbacks below and from callbacks under 1s.
+@workspace/web measure:battle-budget: 2 callbacks are listed without a time. Their calls overlapped, so the time inside one call includes work from other calls. To find their cost, profile the build with `node --cpu-prof`:
+@workspace/web measure:battle-budget:   - plugin tanstack-start-core:import-protection resolveId (17837 calls)
+@workspace/web measure:battle-budget:   - plugin tanstack-start-core::server-fn:client transform (18 calls)
+@workspace/web measure:battle-budget: See https://rolldown.rs/reference/InputOptions.checks#bundlertimings for more details.
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: vite v8.3.5 building ssr environment for production...
+@workspace/web measure:battle-budget: transforming...
+@workspace/web measure:battle-budget: ✓ 756 modules transformed.
+@workspace/web measure:battle-budget: rendering chunks...
+@workspace/web measure:battle-budget: computing gzip size...
+@workspace/web measure:battle-budget: node_modules/.nitro/vite/services/ssr/manifest.webmanifest                             1.49 kB
+@workspace/web measure:battle-budget: node_modules/.nitro/vite/services/ssr/assets/router-aDCxoPjS.css                     442.33 kB │ gzip:  61.24 kB
+@workspace/web measure:battle-budget: node_modules/.nitro/vite/services/ssr/assets/playback-BgbbJwdH.js                      0.14 kB │ gzip:   0.13 kB
+@workspace/web measure:battle-budget: node_modules/.nitro/vite/services/ssr/assets/master-design-Q5JVVgEn.js                 0.25 kB │ gzip:   0.19 kB
+@workspace/web measure:battle-budget: node_modules/.nitro/vite/services/ssr/assets/hero-model-feature-DqyG6D0q.js            0.27 kB │ gzip:   0.18 kB
+@workspace/web measure:battle-budget: node_modules/.nitro/vite/services/ssr/assets/empty-plugin-adapters-CwTZhYWY.js         0.28 kB │ gzip:   0.18 kB
+@workspace/web measure:battle-budget: node_modules/.nitro/vite/services/ssr/assets/unit-clips-C410mCJY.js                    0.33 kB │ gzip:   0.25 kB
+@workspace/web measure:battle-budget: node_modules/.nitro/vite/services/ssr/assets/use-timeouts-Bgip-pRo.js                  0.47 kB │ gzip:   0.28 kB
+@workspace/web measure:battle-budget: node_modules/.nitro/vite/services/ssr/assets/model-error-boundary-D3i_aKQY.js          0.52 kB │ gzip:   0.31 kB
+@workspace/web measure:battle-budget: node_modules/.nitro/vite/services/ssr/assets/graveyard-icon-DsF0s9Nc.js                0.55 kB │ gzip:   0.41 kB
+@workspace/web measure:battle-budget: node_modules/.nitro/vite/services/ssr/assets/use-guarantee-text-DQ8prv76.js            0.63 kB │ gzip:   0.37 kB
+@workspace/web measure:battle-budget: node_modules/.nitro/vite/services/ssr/assets/use-handbook-CqBS9mKC.js                  0.67 kB │ gzip:   0.37 kB
+@workspace/web measure:battle-budget: node_modules/.nitro/vite/services/ssr/assets/panel-row-txDX2Bih.js                     0.68 kB │ gzip:   0.41 kB
+@workspace/web measure:battle-budget: node_modules/.nitro/vite/services/ssr/assets/heynspire.atoms-hzs0y5id.js               0.75 kB │ gzip:   0.39 kB
+@workspace/web measure:battle-budget: node_modules/.nitro/vite/services/ssr/assets/use-coin-format-d02Vgjee.js               0.91 kB │ gzip:   0.49 kB
+@workspace/web measure:battle-budget: node_modules/.nitro/vite/services/ssr/assets/handbook.atoms-DaRkzjV9.js                1.09 kB │ gzip:   0.51 kB
+@workspace/web measure:battle-budget: node_modules/.nitro/vite/services/ssr/assets/start-2mUYtWsi.js                         1.11 kB │ gzip:   0.52 kB
+@workspace/web measure:battle-budget: node_modules/.nitro/vite/services/ssr/assets/routes-CyWmtLVc.js                        1.16 kB │ gzip:   0.53 kB
+@workspace/web measure:battle-budget: node_modules/.nitro/vite/services/ssr/assets/game-screen-CMQWDTbT.js                   1.17 kB │ gzip:   0.66 kB
+@workspace/web measure:battle-budget: node_modules/.nitro/vite/services/ssr/assets/hero-model-loader-J9gSYSbD.js             1.18 kB │ gzip:   0.62 kB
+@workspace/web measure:battle-budget: node_modules/.nitro/vite/services/ssr/assets/hero-art-DPx6c5En.js                      1.27 kB │ gzip:   0.67 kB
+@workspace/web measure:battle-budget: node_modules/.nitro/vite/services/ssr/assets/battle-painting-BUtLMeHx.js               1.34 kB │ gzip:   0.63 kB
+@workspace/web measure:battle-budget: node_modules/.nitro/vite/services/ssr/assets/town.atoms-D-ZMTPvY.js                    1.38 kB │ gzip:   0.71 kB
+@workspace/web measure:battle-budget: node_modules/.nitro/vite/services/ssr/assets/hero-model-assets-DwSoe0p2.js             1.39 kB │ gzip:   0.66 kB
+@workspace/web measure:battle-budget: node_modules/.nitro/vite/services/ssr/assets/battle-preload-DqOM_3TZ.js                1.45 kB │ gzip:   0.68 kB
+@workspace/web measure:battle-budget: node_modules/.nitro/vite/services/ssr/assets/replace-profile-dialog-DOdd2GYS.js        1.58 kB │ gzip:   0.73 kB
+@workspace/web measure:battle-budget: node_modules/.nitro/vite/services/ssr/assets/hero-portrait-art-BU9z4gLQ.js             1.60 kB │ gzip:   0.69 kB
+@workspace/web measure:battle-budget: node_modules/.nitro/vite/services/ssr/assets/gear-look-art-BxHzeqik.js                 1.72 kB │ gzip:   0.82 kB
+@workspace/web measure:battle-budget: node_modules/.nitro/vite/services/ssr/assets/hero-model-canvas-CIddURHp.js             1.81 kB │ gzip:   0.83 kB
+@workspace/web measure:battle-budget: node_modules/.nitro/vite/services/ssr/assets/use-count-to-tStl4IkI.js                  1.85 kB │ gzip:   0.88 kB
+@workspace/web measure:battle-budget: node_modules/.nitro/vite/services/ssr/assets/_tanstack-start-manifest_v-Cy1U3UGB.js    1.94 kB │ gzip:   0.79 kB
+@workspace/web measure:battle-budget: node_modules/.nitro/vite/services/ssr/assets/language-toggle-CX5NBdFK.js               2.06 kB │ gzip:   1.02 kB
+@workspace/web measure:battle-budget: node_modules/.nitro/vite/services/ssr/assets/hero-portrait-IGcmv1hH.js                 2.53 kB │ gzip:   1.16 kB
+@workspace/web measure:battle-budget: node_modules/.nitro/vite/services/ssr/assets/board-skin-art-BVZ4tAcP.js                2.66 kB │ gzip:   1.22 kB
+@workspace/web measure:battle-budget: node_modules/.nitro/vite/services/ssr/assets/use-stat-format-DVjOQlh2.js               2.87 kB │ gzip:   1.26 kB
+@workspace/web measure:battle-budget: node_modules/.nitro/vite/services/ssr/assets/status-visuals-C-YuS5tM.js                2.93 kB │ gzip:   1.13 kB
+@workspace/web measure:battle-budget: node_modules/.nitro/vite/services/ssr/assets/button-BeN2FAWa.js                        3.01 kB │ gzip:   1.11 kB
+@workspace/web measure:battle-budget: node_modules/.nitro/vite/services/ssr/assets/reduced-motion-qmHemHBU.js                3.97 kB │ gzip:   1.22 kB
+@workspace/web measure:battle-budget: node_modules/.nitro/vite/services/ssr/assets/card-back-CajMCrGw.js                     4.08 kB │ gzip:   1.68 kB
+@workspace/web measure:battle-budget: node_modules/.nitro/vite/services/ssr/assets/packs-elFLavSw.js                         4.13 kB │ gzip:   1.71 kB
+@workspace/web measure:battle-budget: node_modules/.nitro/vite/services/ssr/assets/surfaces-1Lg6Q27w.js                      4.14 kB │ gzip:   1.68 kB
+@workspace/web measure:battle-budget: node_modules/.nitro/vite/services/ssr/assets/forge-stone-icon-DZfnXg5h.js              4.47 kB │ gzip:   2.01 kB
+@workspace/web measure:battle-budget: node_modules/.nitro/vite/services/ssr/assets/hero-model-preview-BWIw116h.js            4.56 kB │ gzip:   1.59 kB
+@workspace/web measure:battle-budget: node_modules/.nitro/vite/services/ssr/assets/achievements-screen.atoms-Bb353Ilk.js     4.81 kB │ gzip:   1.74 kB
+@workspace/web measure:battle-budget: node_modules/.nitro/vite/services/ssr/assets/locale.functions-oHy4TzhV.js              5.00 kB │ gzip:   2.03 kB
+@workspace/web measure:battle-budget: node_modules/.nitro/vite/services/ssr/assets/unit-model-stage-Dtgf9Hwc.js              5.55 kB │ gzip:   2.32 kB
+@workspace/web measure:battle-budget: node_modules/.nitro/vite/services/ssr/assets/hero-model-body-B_x__-62.js               5.66 kB │ gzip:   2.17 kB
+@workspace/web measure:battle-budget: node_modules/.nitro/vite/services/ssr/assets/server-fn-DsivRYmP.js                     6.50 kB │ gzip:   2.82 kB
+@workspace/web measure:battle-budget: node_modules/.nitro/vite/services/ssr/assets/game-dialog-D2tEjjyr.js                   6.86 kB │ gzip:   2.16 kB
+@workspace/web measure:battle-budget: node_modules/.nitro/vite/services/ssr/assets/pool-filters-Criv6WNR.js                  7.58 kB │ gzip:   2.87 kB
+@workspace/web measure:battle-budget: node_modules/.nitro/vite/services/ssr/assets/profile.atoms-Lw6t3foP.js                 8.28 kB │ gzip:   2.91 kB
+@workspace/web measure:battle-budget: node_modules/.nitro/vite/services/ssr/assets/pack-art-ER2RnPl0.js                      9.19 kB │ gzip:   3.56 kB
+@workspace/web measure:battle-budget: node_modules/.nitro/vite/services/ssr/assets/test-hooks-DlwtM9J7.js                   15.71 kB │ gzip:   4.82 kB
+@workspace/web measure:battle-budget: node_modules/.nitro/vite/services/ssr/assets/menu-DoNmiYLT.js                         17.59 kB │ gzip:   4.25 kB
+@workspace/web measure:battle-budget: node_modules/.nitro/vite/services/ssr/assets/result-rewards-BObuJkmL.js               17.64 kB │ gzip:   5.34 kB
+@workspace/web measure:battle-budget: node_modules/.nitro/vite/services/ssr/assets/balance-plate-DevJhcpu.js                18.24 kB │ gzip:   6.33 kB
+@workspace/web measure:battle-budget: node_modules/.nitro/vite/services/ssr/assets/region-map-B1SkmyQF.js                   23.92 kB │ gzip:   6.45 kB
+@workspace/web measure:battle-budget: node_modules/.nitro/vite/services/ssr/assets/battle.atoms-DjCOizdY.js                 24.40 kB │ gzip:   7.43 kB
+@workspace/web measure:battle-budget: node_modules/.nitro/vite/services/ssr/assets/pack-reveal-C_jiDB-5.js                  25.82 kB │ gzip:   7.67 kB
+@workspace/web measure:battle-budget: node_modules/.nitro/vite/services/ssr/assets/bazaar-screen-BoKleuXe.js                27.01 kB │ gzip:   7.82 kB
+@workspace/web measure:battle-budget: node_modules/.nitro/vite/services/ssr/assets/battle-timeline-B4a8SDem.js              27.81 kB │ gzip:   8.18 kB
+@workspace/web measure:battle-budget: node_modules/.nitro/vite/services/ssr/assets/hero-screen-Bfi5s22J.js                  34.71 kB │ gzip:   9.95 kB
+@workspace/web measure:battle-budget: node_modules/.nitro/vite/services/ssr/assets/stage-panel-CRMr_oy3.js                  37.10 kB │ gzip:  10.36 kB
+@workspace/web measure:battle-budget: node_modules/.nitro/vite/services/ssr/assets/card-frame-DXF1viuZ.js                   43.20 kB │ gzip:  12.08 kB
+@workspace/web measure:battle-budget: node_modules/.nitro/vite/services/ssr/assets/seaport-screen-C4mErxYP.js               46.21 kB │ gzip:  11.87 kB
+@workspace/web measure:battle-budget: node_modules/.nitro/vite/services/ssr/assets/packs-screen-DqXcWZof.js                 48.88 kB │ gzip:  13.29 kB
+@workspace/web measure:battle-budget: node_modules/.nitro/vite/services/ssr/assets/deck-dialog-BLgWv6jW.js                  49.10 kB │ gzip:  12.49 kB
+@workspace/web measure:battle-budget: node_modules/.nitro/vite/services/ssr/assets/achievements-screen-CmY7BWO9.js          51.52 kB │ gzip:  14.46 kB
+@workspace/web measure:battle-budget: node_modules/.nitro/vite/services/ssr/assets/heynspire-screen-qYKE4Ara.js             55.80 kB │ gzip:  15.82 kB
+@workspace/web measure:battle-budget: node_modules/.nitro/vite/services/ssr/assets/use-card-peek-BJt6qwpP.js                56.61 kB │ gzip:  17.08 kB
+@workspace/web measure:battle-budget: node_modules/.nitro/vite/services/ssr/assets/dungeons-screen-1bXKs6TI.js              58.50 kB │ gzip:  16.75 kB
+@workspace/web measure:battle-budget: node_modules/.nitro/vite/services/ssr/assets/unit-rig-CdtKJ9ht.js                     71.94 kB │ gzip:  17.44 kB
+@workspace/web measure:battle-budget: node_modules/.nitro/vite/services/ssr/assets/campaign-screen-BYu5odBR.js              89.52 kB │ gzip:  21.07 kB
+@workspace/web measure:battle-budget: node_modules/.nitro/vite/services/ssr/assets/handbook-dialog-C8H5rqLP.js             107.38 kB │ gzip:  24.97 kB
+@workspace/web measure:battle-budget: node_modules/.nitro/vite/services/ssr/assets/workshop-screen-DvMcsnGv.js             132.29 kB │ gzip:  34.12 kB
+@workspace/web measure:battle-budget: node_modules/.nitro/vite/services/ssr/assets/battle-canvas-8UkMePaO.js               139.88 kB │ gzip:  40.22 kB
+@workspace/web measure:battle-budget: node_modules/.nitro/vite/services/ssr/assets/battle-stage-DzybLlEs.js                145.80 kB │ gzip:  39.51 kB
+@workspace/web measure:battle-budget: node_modules/.nitro/vite/services/ssr/assets/play-CbbvGoRY.js                        213.90 kB │ gzip:  63.45 kB
+@workspace/web measure:battle-budget: node_modules/.nitro/vite/services/ssr/index.js                                       263.01 kB │ gzip:  61.97 kB
+@workspace/web measure:battle-budget: node_modules/.nitro/vite/services/ssr/assets/router-0OVHqDpD.js                      303.29 kB │ gzip:  95.26 kB
+@workspace/web measure:battle-budget: node_modules/.nitro/vite/services/ssr/assets/catalog-page-C8EtNNmh.js                365.58 kB │ gzip:  78.49 kB
+@workspace/web measure:battle-budget: node_modules/.nitro/vite/services/ssr/assets/game-scrim-1pcshm6Y.js                  461.12 kB │ gzip: 111.08 kB
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: ✓ built in 1.08s
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: PWA v1.3.0
+@workspace/web measure:battle-budget: Building src/sw.ts service worker ("es" format)...
+@workspace/web measure:battle-budget: vite v8.3.5 building client environment for production...
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget:  WARN  inlineDynamicImports option is deprecated, please use codeSplitting: false instead.
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: transforming...
+@workspace/web measure:battle-budget: ✓ 78 modules transformed.
+@workspace/web measure:battle-budget: rendering chunks...
+@workspace/web measure:battle-budget: computing gzip size...
+@workspace/web measure:battle-budget: .output/public/sw.mjs  25.44 kB │ gzip: 8.35 kB
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: ✓ built in 32ms
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: PWA v1.3.0
+@workspace/web measure:battle-budget: mode      injectManifest
+@workspace/web measure:battle-budget: format:   es
+@workspace/web measure:battle-budget: precache  34 entries (1947.13 KiB)
+@workspace/web measure:battle-budget: files generated
+@workspace/web measure:battle-budget:   .output/public/sw.js
+@workspace/web measure:battle-budget: warnings
+@workspace/web measure:battle-budget:   One of the glob patterns doesn't match any files. Please remove or fix the following: {
+@workspace/web measure:battle-budget:   "globDirectory": "/Users/rizeki.rifandani/Desktop/dev/projects/heynbord/apps/web/.output/public",
+@workspace/web measure:battle-budget:   "globPattern": "offline.html",
+@workspace/web measure:battle-budget:   "globIgnores": [
+@workspace/web measure:battle-budget:     "**/node_modules/**/*",
+@workspace/web measure:battle-budget:     "sw.js",
+@workspace/web measure:battle-budget:     "sw.js"
+@workspace/web measure:battle-budget:   ]
+@workspace/web measure:battle-budget: }
+@workspace/web measure:battle-budget:   One of the glob patterns doesn't match any files. Please remove or fix the following: {
+@workspace/web measure:battle-budget:   "globDirectory": "/Users/rizeki.rifandani/Desktop/dev/projects/heynbord/apps/web/.output/public",
+@workspace/web measure:battle-budget:   "globPattern": "favicon.{ico,svg}",
+@workspace/web measure:battle-budget:   "globIgnores": [
+@workspace/web measure:battle-budget:     "**/node_modules/**/*",
+@workspace/web measure:battle-budget:     "sw.js",
+@workspace/web measure:battle-budget:     "sw.js"
+@workspace/web measure:battle-budget:   ]
+@workspace/web measure:battle-budget: }
+@workspace/web measure:battle-budget:   One of the glob patterns doesn't match any files. Please remove or fix the following: {
+@workspace/web measure:battle-budget:   "globDirectory": "/Users/rizeki.rifandani/Desktop/dev/projects/heynbord/apps/web/.output/public",
+@workspace/web measure:battle-budget:   "globPattern": "apple-touch-icon-180x180.png",
+@workspace/web measure:battle-budget:   "globIgnores": [
+@workspace/web measure:battle-budget:     "**/node_modules/**/*",
+@workspace/web measure:battle-budget:     "sw.js",
+@workspace/web measure:battle-budget:     "sw.js"
+@workspace/web measure:battle-budget:   ]
+@workspace/web measure:battle-budget: }
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: [nitro] ◐ Building [Nitro] (preset: node-server, compatibility: 2026-10-31)
+@workspace/web measure:battle-budget: [nitro] ✔ Generated public .output/public
+@workspace/web measure:battle-budget: vite v8.3.5 building nitro environment for production...
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget:  WARN  manualChunks option is ignored because the codeSplitting option is specified.
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: `output.codeSplitting.groups[0].name` is a function. Set `output.codeSplitting.groups[0].debugName` so the bundler timing report can identify this group.
+@workspace/web measure:battle-budget: transforming...
+@workspace/web measure:battle-budget: ✓ 4290 modules transformed.
+@workspace/web measure:battle-budget: rendering chunks...
+@workspace/web measure:battle-budget: computing gzip size...
+@workspace/web measure:battle-budget: .output/server/manifest.webmanifest                          1.49 kB
+@workspace/web measure:battle-budget: .output/server/_libs/motion.mjs                              0.20 kB │ gzip:   0.15 kB
+@workspace/web measure:battle-budget: .output/server/_ssr/empty-plugin-adapters-CwTZhYWY.mjs       0.21 kB │ gzip:   0.15 kB
+@workspace/web measure:battle-budget: .output/server/_ssr/hero-model-feature-DqyG6D0q.mjs          0.31 kB │ gzip:   0.23 kB
+@workspace/web measure:battle-budget: .output/server/_ssr/master-design-Q5JVVgEn.mjs               0.33 kB │ gzip:   0.24 kB
+@workspace/web measure:battle-budget: .output/server/_ssr/unit-clips-C410mCJY.mjs                  0.36 kB │ gzip:   0.27 kB
+@workspace/web measure:battle-budget: .output/server/_libs/clsx.mjs                                0.56 kB │ gzip:   0.31 kB
+@workspace/web measure:battle-budget: .output/server/_ssr/use-guarantee-text-DQ8prv76.mjs          0.67 kB │ gzip:   0.40 kB
+@workspace/web measure:battle-budget: .output/server/_ssr/use-timeouts-Bgip-pRo.mjs                0.68 kB │ gzip:   0.39 kB
+@workspace/web measure:battle-budget: .output/server/_ssr/model-error-boundary-D3i_aKQY.mjs        0.70 kB │ gzip:   0.41 kB
+@workspace/web measure:battle-budget: .output/server/_ssr/graveyard-icon-DsF0s9Nc.mjs              0.70 kB │ gzip:   0.47 kB
+@workspace/web measure:battle-budget: .output/server/_ssr/heynspire.atoms-hzs0y5id.mjs             0.79 kB │ gzip:   0.43 kB
+@workspace/web measure:battle-budget: .output/server/_ssr/panel-row-txDX2Bih.mjs                   0.86 kB │ gzip:   0.47 kB
+@workspace/web measure:battle-budget: .output/server/_chunks/ssr-renderer.mjs                      0.99 kB │ gzip:   0.50 kB
+@workspace/web measure:battle-budget: .output/server/_ssr/start-2mUYtWsi.mjs                       1.03 kB │ gzip:   0.48 kB
+@workspace/web measure:battle-budget: .output/server/_ssr/use-coin-format-d02Vgjee.mjs             1.07 kB │ gzip:   0.57 kB
+@workspace/web measure:battle-budget: .output/server/_libs/hookable.mjs                            1.17 kB │ gzip:   0.51 kB
+@workspace/web measure:battle-budget: .output/server/_ssr/hero-art-DPx6c5En.mjs                    1.31 kB │ gzip:   0.70 kB
+@workspace/web measure:battle-budget: .output/server/_ssr/game-screen-CMQWDTbT.mjs                 1.34 kB │ gzip:   0.72 kB
+@workspace/web measure:battle-budget: .output/server/_ssr/battle-painting-BUtLMeHx.mjs             1.38 kB │ gzip:   0.66 kB
+@workspace/web measure:battle-budget: .output/server/_ssr/routes-CyWmtLVc.mjs                      1.40 kB │ gzip:   0.59 kB
+@workspace/web measure:battle-budget: .output/server/_ssr/battle-preload-DqOM_3TZ.mjs              1.49 kB │ gzip:   0.72 kB
+@workspace/web measure:battle-budget: .output/server/_runtime.mjs                                  1.55 kB │ gzip:   0.72 kB
+@workspace/web measure:battle-budget: .output/server/_ssr/hero-portrait-art-BU9z4gLQ.mjs           1.63 kB │ gzip:   0.72 kB
+@workspace/web measure:battle-budget: .output/server/_ssr/gear-look-art-BxHzeqik.mjs               1.76 kB │ gzip:   0.85 kB
+@workspace/web measure:battle-budget: .output/server/_ssr/replace-profile-dialog-DOdd2GYS.mjs      1.80 kB │ gzip:   0.79 kB
+@workspace/web measure:battle-budget: .output/server/_tanstack-start-manifest_v-Cy1U3UGB.mjs       2.00 kB │ gzip:   0.83 kB
+@workspace/web measure:battle-budget: .output/server/_ssr/use-count-to-tStl4IkI.mjs                2.09 kB │ gzip:   0.97 kB
+@workspace/web measure:battle-budget: .output/server/_ssr/hero-model-canvas-CIddURHp.mjs           2.15 kB │ gzip:   0.90 kB
+@workspace/web measure:battle-budget: .output/server/_libs/ufo.mjs                                 2.18 kB │ gzip:   0.70 kB
+@workspace/web measure:battle-budget: .output/server/_libs/react-is.mjs                            2.32 kB │ gzip:   0.80 kB
+@workspace/web measure:battle-budget: .output/server/_ssr/language-toggle-CX5NBdFK.mjs             2.40 kB │ gzip:   1.08 kB
+@workspace/web measure:battle-budget: .output/server/_ssr/hero-model-loader-J9gSYSbD.mjs           2.54 kB │ gzip:   1.17 kB
+@workspace/web measure:battle-budget: .output/server/_ssr/board-skin-art-BVZ4tAcP.mjs              2.70 kB │ gzip:   1.25 kB
+@workspace/web measure:battle-budget: .output/server/_ssr/hero-portrait-IGcmv1hH.mjs               2.81 kB │ gzip:   1.23 kB
+@workspace/web measure:battle-budget: .output/server/_ssr/status-visuals-C-YuS5tM.mjs              2.96 kB │ gzip:   1.15 kB
+@workspace/web measure:battle-budget: .output/server/_ssr/use-stat-format-DVjOQlh2.mjs             3.04 kB │ gzip:   1.36 kB
+@workspace/web measure:battle-budget: .output/server/_libs/embla-carousel-react+[...].mjs          3.20 kB │ gzip:   1.05 kB
+@workspace/web measure:battle-budget: .output/server/_libs/d3-path.mjs                             3.26 kB │ gzip:   1.17 kB
+@workspace/web measure:battle-budget: .output/server/_ssr/packs-elFLavSw.mjs                       4.17 kB │ gzip:   1.74 kB
+@workspace/web measure:battle-budget: .output/server/_ssr/card-back-CajMCrGw.mjs                   4.39 kB │ gzip:   1.74 kB
+@workspace/web measure:battle-budget: .output/server/_libs/internationalized__string.mjs           4.52 kB │ gzip:   1.36 kB
+@workspace/web measure:battle-budget: .output/server/_ssr/forge-stone-icon-DZfnXg5h.mjs            4.53 kB │ gzip:   2.02 kB
+@workspace/web measure:battle-budget: .output/server/_ssr/locale.functions-oHy4TzhV.mjs            4.82 kB │ gzip:   1.97 kB
+@workspace/web measure:battle-budget: .output/server/_libs/d3-interpolate.mjs                      5.28 kB │ gzip:   1.61 kB
+@workspace/web measure:battle-budget: .output/server/_ssr/hero-model-preview-BWIw116h.mjs          5.43 kB │ gzip:   1.72 kB
+@workspace/web measure:battle-budget: .output/server/_ssr/hero-model-body-B_x__-62.mjs             5.73 kB │ gzip:   2.19 kB
+@workspace/web measure:battle-budget: .output/server/_ssr/unit-model-stage-Dtgf9Hwc.mjs            6.15 kB │ gzip:   2.41 kB
+@workspace/web measure:battle-budget: .output/server/_ssr/server-fn-DsivRYmP.mjs                   6.58 kB │ gzip:   2.89 kB
+@workspace/web measure:battle-budget: .output/server/_libs/react-redux+[...].mjs                   6.58 kB │ gzip:   2.06 kB
+@workspace/web measure:battle-budget: .output/server/_libs/effect__platform-browser.mjs            7.52 kB │ gzip:   2.38 kB
+@workspace/web measure:battle-budget: .output/server/_ssr/game-dialog-D2tEjjyr.mjs                 8.24 kB │ gzip:   2.35 kB
+@workspace/web measure:battle-budget: .output/server/_libs/d3-array.mjs                            8.24 kB │ gzip:   2.23 kB
+@workspace/web measure:battle-budget: .output/server/_libs/eventemitter3.mjs                       8.30 kB │ gzip:   2.03 kB
+@workspace/web measure:battle-budget: .output/server/_ssr/pool-filters-Criv6WNR.mjs                8.39 kB │ gzip:   3.03 kB
+@workspace/web measure:battle-budget: .output/server/_ssr/pack-art-ER2RnPl0.mjs                    9.64 kB │ gzip:   3.61 kB
+@workspace/web measure:battle-budget: .output/server/_libs/d3-color.mjs                           10.41 kB │ gzip:   3.57 kB
+@workspace/web measure:battle-budget: .output/server/_libs/d3-format.mjs                          10.83 kB │ gzip:   3.02 kB
+@workspace/web measure:battle-budget: .output/server/_libs/tanstack__history.mjs                  11.83 kB │ gzip:   3.51 kB
+@workspace/web measure:battle-budget: .output/server/_ssr/reduced-motion-qmHemHBU.mjs             12.07 kB │ gzip:   4.02 kB
+@workspace/web measure:battle-budget: .output/server/_libs/input-otp.mjs                          13.20 kB │ gzip:   4.64 kB
+@workspace/web measure:battle-budget: .output/server/_ssr/test-hooks-DlwtM9J7.mjs                 15.62 kB │ gzip:   4.82 kB
+@workspace/web measure:battle-budget: .output/server/_libs/react-icons.mjs                        16.41 kB │ gzip:   3.67 kB
+@workspace/web measure:battle-budget: .output/server/_libs/internationalized__number.mjs          16.56 kB │ gzip:   4.20 kB
+@workspace/web measure:battle-budget: .output/server/_ssr/result-rewards-BObuJkmL.mjs             19.03 kB │ gzip:   5.49 kB
+@workspace/web measure:battle-budget: .output/server/_ssr/menu-DoNmiYLT.mjs                       19.39 kB │ gzip:   4.61 kB
+@workspace/web measure:battle-budget: .output/server/_libs/decimal.js-light.mjs                   23.33 kB │ gzip:   6.89 kB
+@workspace/web measure:battle-budget: .output/server/_libs/d3-shape.mjs                           25.02 kB │ gzip:   4.96 kB
+@workspace/web measure:battle-budget: .output/server/_ssr/battle-timeline-B4a8SDem.mjs            27.73 kB │ gzip:   8.19 kB
+@workspace/web measure:battle-budget: .output/server/_ssr/pack-reveal-C_jiDB-5.mjs                28.22 kB │ gzip:   7.94 kB
+@workspace/web measure:battle-budget: .output/server/_ssr/bazaar-screen-BoKleuXe.mjs              28.78 kB │ gzip:   7.95 kB
+@workspace/web measure:battle-budget: .output/server/_ssr/hero-screen-Bfi5s22J.mjs                37.57 kB │ gzip:  10.13 kB
+@workspace/web measure:battle-budget: .output/server/_ssr/stage-panel-CRMr_oy3.mjs                40.87 kB │ gzip:  10.78 kB
+@workspace/web measure:battle-budget: .output/server/_libs/embla-carousel.mjs                     43.16 kB │ gzip:  10.75 kB
+@workspace/web measure:battle-budget: .output/server/_libs/cn.mjs                                 44.50 kB │ gzip:  13.76 kB
+@workspace/web measure:battle-budget: .output/server/_ssr/card-frame-DXF1viuZ.mjs                 46.57 kB │ gzip:  12.32 kB
+@workspace/web measure:battle-budget: .output/server/_ssr/seaport-screen-C4mErxYP.mjs             50.33 kB │ gzip:  12.26 kB
+@workspace/web measure:battle-budget: .output/server/_ssr/packs-screen-DqXcWZof.mjs               53.62 kB │ gzip:  13.72 kB
+@workspace/web measure:battle-budget: .output/server/_libs/sonner.mjs                             53.68 kB │ gzip:  12.13 kB
+@workspace/web measure:battle-budget: .output/server/_ssr/deck-dialog-BLgWv6jW.mjs                54.17 kB │ gzip:  13.16 kB
+@workspace/web measure:battle-budget: .output/server/_ssr/achievements-screen-CmY7BWO9.mjs        55.06 kB │ gzip:  14.77 kB
+@workspace/web measure:battle-budget: .output/server/_libs/d3-scale+[...].mjs                     58.69 kB │ gzip:  12.07 kB
+@workspace/web measure:battle-budget: .output/server/_ssr/use-card-peek-BJt6qwpP.mjs              58.98 kB │ gzip:  17.26 kB
+@workspace/web measure:battle-budget: .output/server/_ssr/heynspire-screen-qYKE4Ara.mjs           59.90 kB │ gzip:  16.11 kB
+@workspace/web measure:battle-budget: .output/server/_libs/@reduxjs/toolkit+[...].mjs             62.31 kB │ gzip:  16.09 kB
+@workspace/web measure:battle-budget: .output/server/_ssr/dungeons-screen-1bXKs6TI.mjs            62.83 kB │ gzip:  17.14 kB
+@workspace/web measure:battle-budget: .output/server/_libs/es-toolkit.mjs                         69.57 kB │ gzip:  15.73 kB
+@workspace/web measure:battle-budget: .output/server/_libs/lodash-es+reactuses__core.mjs          69.62 kB │ gzip:  14.22 kB
+@workspace/web measure:battle-budget: .output/server/_libs/h3+rou3+srvx.mjs                       69.97 kB │ gzip:  18.32 kB
+@workspace/web measure:battle-budget: .output/server/_ssr/unit-rig-CdtKJ9ht.mjs                   71.89 kB │ gzip:  17.43 kB
+@workspace/web measure:battle-budget: .output/server/_libs/internationalized__date.mjs            77.86 kB │ gzip:  16.14 kB
+@workspace/web measure:battle-budget: .output/server/_libs/effect.mjs                             87.28 kB │ gzip:  23.06 kB
+@workspace/web measure:battle-budget: .output/server/_ssr/campaign-screen-BYu5odBR.mjs            94.59 kB │ gzip:  21.45 kB
+@workspace/web measure:battle-budget: .output/server/_ssr/handbook-dialog-C8H5rqLP.mjs           120.14 kB │ gzip:  26.23 kB
+@workspace/web measure:battle-budget: .output/server/_libs/tailwind-variants.mjs                 121.01 kB │ gzip:  21.79 kB
+@workspace/web measure:battle-budget: .output/server/_ssr/workshop-screen-DvMcsnGv.mjs           141.14 kB │ gzip:  35.10 kB
+@workspace/web measure:battle-budget: .output/server/_ssr/battle-canvas-8UkMePaO.mjs             143.07 kB │ gzip:  39.97 kB
+@workspace/web measure:battle-budget: .output/server/_ssr/battle-stage-DzybLlEs.mjs              154.69 kB │ gzip:  39.96 kB
+@workspace/web measure:battle-budget: .output/server/_libs/three.mjs                             209.77 kB │ gzip:  58.14 kB
+@workspace/web measure:battle-budget: .output/server/_ssr/ssr.mjs                                256.07 kB │ gzip:  61.08 kB
+@workspace/web measure:battle-budget: .output/server/_ssr/play-CbbvGoRY.mjs                      273.64 kB │ gzip:  78.93 kB
+@workspace/web measure:battle-budget: .output/server/index.mjs                                   275.75 kB │ gzip:  53.00 kB
+@workspace/web measure:battle-budget: .output/server/_ssr/router-0OVHqDpD.mjs                    310.38 kB │ gzip:  97.61 kB
+@workspace/web measure:battle-budget: .output/server/_libs/framer-motion+[...].mjs               376.44 kB │ gzip:  98.06 kB
+@workspace/web measure:battle-budget: .output/server/_ssr/catalog-page-C8EtNNmh.mjs              411.92 kB │ gzip:  83.52 kB
+@workspace/web measure:battle-budget: .output/server/_ssr/balance-plate-DevJhcpu.mjs             475.72 kB │ gzip: 116.50 kB
+@workspace/web measure:battle-budget: .output/server/_libs/react-aria-components+[...].mjs       572.36 kB │ gzip: 113.43 kB
+@workspace/web measure:battle-budget: .output/server/_libs/@tanstack/react-router+[...].mjs      685.29 kB │ gzip: 144.17 kB
+@workspace/web measure:battle-budget: .output/server/_libs/recharts+[...].mjs                    757.95 kB │ gzip: 156.06 kB
+@workspace/web measure:battle-budget: .output/server/_libs/@effect/atom-react+[...].mjs          871.56 kB │ gzip: 197.45 kB
+@workspace/web measure:battle-budget: .output/server/_libs/react-aria+react-stately.mjs        1,137.18 kB │ gzip: 217.66 kB
+@workspace/web measure:battle-budget: .output/server/_libs/@react-three/drei+[...].mjs         2,311.02 kB │ gzip: 472.76 kB
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "../../node_modules/.bun/@tanstack+react-router@1.170.41+6f4b9a1cfb20c0ae/node_modules/@tanstack/react-router/dist/esm/index.js" may not be preserved when bundling.
+@workspace/web measure:battle-budget:    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m ../../node_modules/.bun/@tanstack+react-router@1.170.41+6f4b9a1cfb20c0ae/node_modules/@tanstack/react-router/dist/esm/index.js:1:1 [38;5;246m][0m
+@workspace/web measure:battle-budget:    [38;5;246m│[0m
+@workspace/web measure:battle-budget:  [38;5;246m1 │[0m "use client";
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m ──────┬──────  
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m 
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+@workspace/web measure:battle-budget: [38;5;246m───╯[0m
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "../../node_modules/.bun/@tanstack+react-router@1.170.41+6f4b9a1cfb20c0ae/node_modules/@tanstack/react-router/dist/esm/utils.js" may not be preserved when bundling.
+@workspace/web measure:battle-budget:    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m ../../node_modules/.bun/@tanstack+react-router@1.170.41+6f4b9a1cfb20c0ae/node_modules/@tanstack/react-router/dist/esm/utils.js:1:1 [38;5;246m][0m
+@workspace/web measure:battle-budget:    [38;5;246m│[0m
+@workspace/web measure:battle-budget:  [38;5;246m1 │[0m "use client";
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m ──────┬──────  
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m 
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+@workspace/web measure:battle-budget: [38;5;246m───╯[0m
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "../../node_modules/.bun/@tanstack+react-router@1.170.41+6f4b9a1cfb20c0ae/node_modules/@tanstack/react-router/dist/esm/CatchBoundary.js" may not be preserved when bundling.
+@workspace/web measure:battle-budget:    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m ../../node_modules/.bun/@tanstack+react-router@1.170.41+6f4b9a1cfb20c0ae/node_modules/@tanstack/react-router/dist/esm/CatchBoundary.js:1:1 [38;5;246m][0m
+@workspace/web measure:battle-budget:    [38;5;246m│[0m
+@workspace/web measure:battle-budget:  [38;5;246m1 │[0m "use client";
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m ──────┬──────  
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m 
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+@workspace/web measure:battle-budget: [38;5;246m───╯[0m
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "../../node_modules/.bun/@tanstack+react-router@1.170.41+6f4b9a1cfb20c0ae/node_modules/@tanstack/react-router/dist/esm/useNavigate.js" may not be preserved when bundling.
+@workspace/web measure:battle-budget:    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m ../../node_modules/.bun/@tanstack+react-router@1.170.41+6f4b9a1cfb20c0ae/node_modules/@tanstack/react-router/dist/esm/useNavigate.js:1:1 [38;5;246m][0m
+@workspace/web measure:battle-budget:    [38;5;246m│[0m
+@workspace/web measure:battle-budget:  [38;5;246m1 │[0m "use client";
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m ──────┬──────  
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m 
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+@workspace/web measure:battle-budget: [38;5;246m───╯[0m
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "../../node_modules/.bun/@tanstack+react-router@1.170.41+6f4b9a1cfb20c0ae/node_modules/@tanstack/react-router/dist/esm/useRouter.js" may not be preserved when bundling.
+@workspace/web measure:battle-budget:    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m ../../node_modules/.bun/@tanstack+react-router@1.170.41+6f4b9a1cfb20c0ae/node_modules/@tanstack/react-router/dist/esm/useRouter.js:1:1 [38;5;246m][0m
+@workspace/web measure:battle-budget:    [38;5;246m│[0m
+@workspace/web measure:battle-budget:  [38;5;246m1 │[0m "use client";
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m ──────┬──────  
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m 
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+@workspace/web measure:battle-budget: [38;5;246m───╯[0m
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "../../node_modules/.bun/@tanstack+react-router@1.170.41+6f4b9a1cfb20c0ae/node_modules/@tanstack/react-router/dist/esm/ClientOnly.js" may not be preserved when bundling.
+@workspace/web measure:battle-budget:    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m ../../node_modules/.bun/@tanstack+react-router@1.170.41+6f4b9a1cfb20c0ae/node_modules/@tanstack/react-router/dist/esm/ClientOnly.js:1:1 [38;5;246m][0m
+@workspace/web measure:battle-budget:    [38;5;246m│[0m
+@workspace/web measure:battle-budget:  [38;5;246m1 │[0m "use client";
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m ──────┬──────  
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m 
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+@workspace/web measure:battle-budget: [38;5;246m───╯[0m
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "../../node_modules/.bun/@tanstack+react-router@1.170.41+6f4b9a1cfb20c0ae/node_modules/@tanstack/react-router/dist/esm/useBlocker.js" may not be preserved when bundling.
+@workspace/web measure:battle-budget:    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m ../../node_modules/.bun/@tanstack+react-router@1.170.41+6f4b9a1cfb20c0ae/node_modules/@tanstack/react-router/dist/esm/useBlocker.js:1:1 [38;5;246m][0m
+@workspace/web measure:battle-budget:    [38;5;246m│[0m
+@workspace/web measure:battle-budget:  [38;5;246m1 │[0m "use client";
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m ──────┬──────  
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m 
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+@workspace/web measure:battle-budget: [38;5;246m───╯[0m
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "../../node_modules/.bun/@tanstack+react-router@1.170.41+6f4b9a1cfb20c0ae/node_modules/@tanstack/react-router/dist/esm/useMatch.js" may not be preserved when bundling.
+@workspace/web measure:battle-budget:    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m ../../node_modules/.bun/@tanstack+react-router@1.170.41+6f4b9a1cfb20c0ae/node_modules/@tanstack/react-router/dist/esm/useMatch.js:1:1 [38;5;246m][0m
+@workspace/web measure:battle-budget:    [38;5;246m│[0m
+@workspace/web measure:battle-budget:  [38;5;246m1 │[0m "use client";
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m ──────┬──────  
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m 
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+@workspace/web measure:battle-budget: [38;5;246m───╯[0m
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "../../node_modules/.bun/@tanstack+react-router@1.170.41+6f4b9a1cfb20c0ae/node_modules/@tanstack/react-router/dist/esm/useRouterState.js" may not be preserved when bundling.
+@workspace/web measure:battle-budget:    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m ../../node_modules/.bun/@tanstack+react-router@1.170.41+6f4b9a1cfb20c0ae/node_modules/@tanstack/react-router/dist/esm/useRouterState.js:1:1 [38;5;246m][0m
+@workspace/web measure:battle-budget:    [38;5;246m│[0m
+@workspace/web measure:battle-budget:  [38;5;246m1 │[0m "use client";
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m ──────┬──────  
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m 
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+@workspace/web measure:battle-budget: [38;5;246m───╯[0m
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "../../node_modules/.bun/@tanstack+react-router@1.170.41+6f4b9a1cfb20c0ae/node_modules/@tanstack/react-router/dist/esm/useLocation.js" may not be preserved when bundling.
+@workspace/web measure:battle-budget:    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m ../../node_modules/.bun/@tanstack+react-router@1.170.41+6f4b9a1cfb20c0ae/node_modules/@tanstack/react-router/dist/esm/useLocation.js:1:1 [38;5;246m][0m
+@workspace/web measure:battle-budget:    [38;5;246m│[0m
+@workspace/web measure:battle-budget:  [38;5;246m1 │[0m "use client";
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m ──────┬──────  
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m 
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+@workspace/web measure:battle-budget: [38;5;246m───╯[0m
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "../../node_modules/.bun/@tanstack+react-router@1.170.41+6f4b9a1cfb20c0ae/node_modules/@tanstack/react-router/dist/esm/RouterProvider.js" may not be preserved when bundling.
+@workspace/web measure:battle-budget:    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m ../../node_modules/.bun/@tanstack+react-router@1.170.41+6f4b9a1cfb20c0ae/node_modules/@tanstack/react-router/dist/esm/RouterProvider.js:1:1 [38;5;246m][0m
+@workspace/web measure:battle-budget:    [38;5;246m│[0m
+@workspace/web measure:battle-budget:  [38;5;246m1 │[0m "use client";
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m ──────┬──────  
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m 
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+@workspace/web measure:battle-budget: [38;5;246m───╯[0m
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "../../node_modules/.bun/@tanstack+react-router@1.170.41+6f4b9a1cfb20c0ae/node_modules/@tanstack/react-router/dist/esm/Match.js" may not be preserved when bundling.
+@workspace/web measure:battle-budget:    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m ../../node_modules/.bun/@tanstack+react-router@1.170.41+6f4b9a1cfb20c0ae/node_modules/@tanstack/react-router/dist/esm/Match.js:1:1 [38;5;246m][0m
+@workspace/web measure:battle-budget:    [38;5;246m│[0m
+@workspace/web measure:battle-budget:  [38;5;246m1 │[0m "use client";
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m ──────┬──────  
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m 
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+@workspace/web measure:battle-budget: [38;5;246m───╯[0m
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "../../node_modules/.bun/@tanstack+react-router@1.170.41+6f4b9a1cfb20c0ae/node_modules/@tanstack/react-router/dist/esm/HeadContent.js" may not be preserved when bundling.
+@workspace/web measure:battle-budget:    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m ../../node_modules/.bun/@tanstack+react-router@1.170.41+6f4b9a1cfb20c0ae/node_modules/@tanstack/react-router/dist/esm/HeadContent.js:1:1 [38;5;246m][0m
+@workspace/web measure:battle-budget:    [38;5;246m│[0m
+@workspace/web measure:battle-budget:  [38;5;246m1 │[0m "use client";
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m ──────┬──────  
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m 
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+@workspace/web measure:battle-budget: [38;5;246m───╯[0m
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "../../node_modules/.bun/@tanstack+react-router@1.170.41+6f4b9a1cfb20c0ae/node_modules/@tanstack/react-router/dist/esm/Asset.js" may not be preserved when bundling.
+@workspace/web measure:battle-budget:    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m ../../node_modules/.bun/@tanstack+react-router@1.170.41+6f4b9a1cfb20c0ae/node_modules/@tanstack/react-router/dist/esm/Asset.js:1:1 [38;5;246m][0m
+@workspace/web measure:battle-budget:    [38;5;246m│[0m
+@workspace/web measure:battle-budget:  [38;5;246m1 │[0m "use client";
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m ──────┬──────  
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m 
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+@workspace/web measure:battle-budget: [38;5;246m───╯[0m
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "../../node_modules/.bun/@tanstack+react-router@1.170.41+6f4b9a1cfb20c0ae/node_modules/@tanstack/react-router/dist/esm/link.js" may not be preserved when bundling.
+@workspace/web measure:battle-budget:    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m ../../node_modules/.bun/@tanstack+react-router@1.170.41+6f4b9a1cfb20c0ae/node_modules/@tanstack/react-router/dist/esm/link.js:1:1 [38;5;246m][0m
+@workspace/web measure:battle-budget:    [38;5;246m│[0m
+@workspace/web measure:battle-budget:  [38;5;246m1 │[0m "use client";
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m ──────┬──────  
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m 
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+@workspace/web measure:battle-budget: [38;5;246m───╯[0m
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "../../node_modules/.bun/@tanstack+react-router@1.170.41+6f4b9a1cfb20c0ae/node_modules/@tanstack/react-router/dist/esm/Matches.js" may not be preserved when bundling.
+@workspace/web measure:battle-budget:    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m ../../node_modules/.bun/@tanstack+react-router@1.170.41+6f4b9a1cfb20c0ae/node_modules/@tanstack/react-router/dist/esm/Matches.js:1:1 [38;5;246m][0m
+@workspace/web measure:battle-budget:    [38;5;246m│[0m
+@workspace/web measure:battle-budget:  [38;5;246m1 │[0m "use client";
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m ──────┬──────  
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m 
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+@workspace/web measure:battle-budget: [38;5;246m───╯[0m
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "../../node_modules/.bun/@tanstack+react-router@1.170.41+6f4b9a1cfb20c0ae/node_modules/@tanstack/react-router/dist/esm/nonRouteComponentContext.js" may not be preserved when bundling.
+@workspace/web measure:battle-budget:    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m ../../node_modules/.bun/@tanstack+react-router@1.170.41+6f4b9a1cfb20c0ae/node_modules/@tanstack/react-router/dist/esm/nonRouteComponentContext.js:1:1 [38;5;246m][0m
+@workspace/web measure:battle-budget:    [38;5;246m│[0m
+@workspace/web measure:battle-budget:  [38;5;246m1 │[0m "use client";
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m ──────┬──────  
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m 
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+@workspace/web measure:battle-budget: [38;5;246m───╯[0m
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "../../node_modules/.bun/@tanstack+react-router@1.170.41+6f4b9a1cfb20c0ae/node_modules/@tanstack/react-router/dist/esm/routerContext.js" may not be preserved when bundling.
+@workspace/web measure:battle-budget:    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m ../../node_modules/.bun/@tanstack+react-router@1.170.41+6f4b9a1cfb20c0ae/node_modules/@tanstack/react-router/dist/esm/routerContext.js:1:1 [38;5;246m][0m
+@workspace/web measure:battle-budget:    [38;5;246m│[0m
+@workspace/web measure:battle-budget:  [38;5;246m1 │[0m "use client";
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m ──────┬──────  
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m 
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+@workspace/web measure:battle-budget: [38;5;246m───╯[0m
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "../../node_modules/.bun/@tanstack+react-router@1.170.41+6f4b9a1cfb20c0ae/node_modules/@tanstack/react-router/dist/esm/matchContext.js" may not be preserved when bundling.
+@workspace/web measure:battle-budget:    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m ../../node_modules/.bun/@tanstack+react-router@1.170.41+6f4b9a1cfb20c0ae/node_modules/@tanstack/react-router/dist/esm/matchContext.js:1:1 [38;5;246m][0m
+@workspace/web measure:battle-budget:    [38;5;246m│[0m
+@workspace/web measure:battle-budget:  [38;5;246m1 │[0m "use client";
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m ──────┬──────  
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m 
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+@workspace/web measure:battle-budget: [38;5;246m───╯[0m
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "../../node_modules/.bun/@tanstack+react-router@1.170.41+6f4b9a1cfb20c0ae/node_modules/@tanstack/react-router/dist/esm/Transitioner.js" may not be preserved when bundling.
+@workspace/web measure:battle-budget:    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m ../../node_modules/.bun/@tanstack+react-router@1.170.41+6f4b9a1cfb20c0ae/node_modules/@tanstack/react-router/dist/esm/Transitioner.js:1:1 [38;5;246m][0m
+@workspace/web measure:battle-budget:    [38;5;246m│[0m
+@workspace/web measure:battle-budget:  [38;5;246m1 │[0m "use client";
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m ──────┬──────  
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m 
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+@workspace/web measure:battle-budget: [38;5;246m───╯[0m
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "../../node_modules/.bun/sonner@2.0.8+352d071ee9593f59/node_modules/sonner/dist/index.mjs" may not be preserved when bundling.
+@workspace/web measure:battle-budget:    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m ../../node_modules/.bun/sonner@2.0.8+352d071ee9593f59/node_modules/sonner/dist/index.mjs:1:1 [38;5;246m][0m
+@workspace/web measure:battle-budget:    [38;5;246m│[0m
+@workspace/web measure:battle-budget:  [38;5;246m1 │[0m 'use client';
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m ──────┬──────  
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m 
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+@workspace/web measure:battle-budget: [38;5;246m───╯[0m
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "../../node_modules/.bun/@effect+atom-react@4.0.0+d29fddc806d8b729/node_modules/@effect/atom-react/dist/ReactHydration.js" may not be preserved when bundling.
+@workspace/web measure:battle-budget:     [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m ../../node_modules/.bun/@effect+atom-react@4.0.0+d29fddc806d8b729/node_modules/@effect/atom-react/dist/ReactHydration.js:10:1 [38;5;246m][0m
+@workspace/web measure:battle-budget:     [38;5;246m│[0m
+@workspace/web measure:battle-budget:  [38;5;246m10 │[0m "use client";
+@workspace/web measure:battle-budget:  [38;5;240m   │[0m ──────┬──────  
+@workspace/web measure:battle-budget:  [38;5;240m   │[0m       ╰──────── module level directive may not be preserved
+@workspace/web measure:battle-budget:  [38;5;240m   │[0m 
+@workspace/web measure:battle-budget:  [38;5;240m   │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+@workspace/web measure:battle-budget: [38;5;246m────╯[0m
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "../../node_modules/.bun/@effect+atom-react@4.0.0+d29fddc806d8b729/node_modules/@effect/atom-react/dist/RegistryContext.js" may not be preserved when bundling.
+@workspace/web measure:battle-budget:    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m ../../node_modules/.bun/@effect+atom-react@4.0.0+d29fddc806d8b729/node_modules/@effect/atom-react/dist/RegistryContext.js:9:1 [38;5;246m][0m
+@workspace/web measure:battle-budget:    [38;5;246m│[0m
+@workspace/web measure:battle-budget:  [38;5;246m9 │[0m "use client";
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m ──────┬──────  
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m 
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+@workspace/web measure:battle-budget: [38;5;246m───╯[0m
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "../../node_modules/.bun/@effect+atom-react@4.0.0+d29fddc806d8b729/node_modules/@effect/atom-react/dist/ScopedAtom.js" may not be preserved when bundling.
+@workspace/web measure:battle-budget:    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m ../../node_modules/.bun/@effect+atom-react@4.0.0+d29fddc806d8b729/node_modules/@effect/atom-react/dist/ScopedAtom.js:9:1 [38;5;246m][0m
+@workspace/web measure:battle-budget:    [38;5;246m│[0m
+@workspace/web measure:battle-budget:  [38;5;246m9 │[0m "use client";
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m ──────┬──────  
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m 
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+@workspace/web measure:battle-budget: [38;5;246m───╯[0m
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "../../node_modules/.bun/@effect+atom-react@4.0.0+d29fddc806d8b729/node_modules/@effect/atom-react/dist/Hooks.js" may not be preserved when bundling.
+@workspace/web measure:battle-budget:    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m ../../node_modules/.bun/@effect+atom-react@4.0.0+d29fddc806d8b729/node_modules/@effect/atom-react/dist/Hooks.js:9:1 [38;5;246m][0m
+@workspace/web measure:battle-budget:    [38;5;246m│[0m
+@workspace/web measure:battle-budget:  [38;5;246m9 │[0m "use client";
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m ──────┬──────  
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m 
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+@workspace/web measure:battle-budget: [38;5;246m───╯[0m
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/components/AnimatePresence/PresenceChild.mjs" may not be preserved when bundling.
+@workspace/web measure:battle-budget:    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m ../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/components/AnimatePresence/PresenceChild.mjs:1:1 [38;5;246m][0m
+@workspace/web measure:battle-budget:    [38;5;246m│[0m
+@workspace/web measure:battle-budget:  [38;5;246m1 │[0m "use client";
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m ──────┬──────  
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m 
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+@workspace/web measure:battle-budget: [38;5;246m───╯[0m
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/components/AnimatePresence/PopChild.mjs" may not be preserved when bundling.
+@workspace/web measure:battle-budget:    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m ../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/components/AnimatePresence/PopChild.mjs:1:1 [38;5;246m][0m
+@workspace/web measure:battle-budget:    [38;5;246m│[0m
+@workspace/web measure:battle-budget:  [38;5;246m1 │[0m "use client";
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m ──────┬──────  
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m 
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+@workspace/web measure:battle-budget: [38;5;246m───╯[0m
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/components/AnimatePresence/index.mjs" may not be preserved when bundling.
+@workspace/web measure:battle-budget:    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m ../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/components/AnimatePresence/index.mjs:1:1 [38;5;246m][0m
+@workspace/web measure:battle-budget:    [38;5;246m│[0m
+@workspace/web measure:battle-budget:  [38;5;246m1 │[0m "use client";
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m ──────┬──────  
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m 
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+@workspace/web measure:battle-budget: [38;5;246m───╯[0m
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/components/LazyMotion/index.mjs" may not be preserved when bundling.
+@workspace/web measure:battle-budget:    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m ../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/components/LazyMotion/index.mjs:1:1 [38;5;246m][0m
+@workspace/web measure:battle-budget:    [38;5;246m│[0m
+@workspace/web measure:battle-budget:  [38;5;246m1 │[0m "use client";
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m ──────┬──────  
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m 
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+@workspace/web measure:battle-budget: [38;5;246m───╯[0m
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/components/LayoutGroup/index.mjs" may not be preserved when bundling.
+@workspace/web measure:battle-budget:    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m ../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/components/LayoutGroup/index.mjs:1:1 [38;5;246m][0m
+@workspace/web measure:battle-budget:    [38;5;246m│[0m
+@workspace/web measure:battle-budget:  [38;5;246m1 │[0m "use client";
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m ──────┬──────  
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m 
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+@workspace/web measure:battle-budget: [38;5;246m───╯[0m
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/motion/utils/use-visual-state.mjs" may not be preserved when bundling.
+@workspace/web measure:battle-budget:    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m ../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/motion/utils/use-visual-state.mjs:1:1 [38;5;246m][0m
+@workspace/web measure:battle-budget:    [38;5;246m│[0m
+@workspace/web measure:battle-budget:  [38;5;246m1 │[0m "use client";
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m ──────┬──────  
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m 
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+@workspace/web measure:battle-budget: [38;5;246m───╯[0m
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/render/dom/features-min.mjs" may not be preserved when bundling.
+@workspace/web measure:battle-budget:    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m ../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/render/dom/features-min.mjs:1:1 [38;5;246m][0m
+@workspace/web measure:battle-budget:    [38;5;246m│[0m
+@workspace/web measure:battle-budget:  [38;5;246m1 │[0m "use client";
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m ──────┬──────  
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m 
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+@workspace/web measure:battle-budget: [38;5;246m───╯[0m
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/utils/use-unmount-effect.mjs" may not be preserved when bundling.
+@workspace/web measure:battle-budget:    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m ../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/utils/use-unmount-effect.mjs:1:1 [38;5;246m][0m
+@workspace/web measure:battle-budget:    [38;5;246m│[0m
+@workspace/web measure:battle-budget:  [38;5;246m1 │[0m "use client";
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m ──────┬──────  
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m 
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+@workspace/web measure:battle-budget: [38;5;246m───╯[0m
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/render/dom/features-animation.mjs" may not be preserved when bundling.
+@workspace/web measure:battle-budget:    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m ../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/render/dom/features-animation.mjs:1:1 [38;5;246m][0m
+@workspace/web measure:battle-budget:    [38;5;246m│[0m
+@workspace/web measure:battle-budget:  [38;5;246m1 │[0m "use client";
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m ──────┬──────  
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m 
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+@workspace/web measure:battle-budget: [38;5;246m───╯[0m
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/render/dom/features-max.mjs" may not be preserved when bundling.
+@workspace/web measure:battle-budget:    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m ../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/render/dom/features-max.mjs:1:1 [38;5;246m][0m
+@workspace/web measure:battle-budget:    [38;5;246m│[0m
+@workspace/web measure:battle-budget:  [38;5;246m1 │[0m "use client";
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m ──────┬──────  
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m 
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+@workspace/web measure:battle-budget: [38;5;246m───╯[0m
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/utils/use-isomorphic-effect.mjs" may not be preserved when bundling.
+@workspace/web measure:battle-budget:    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m ../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/utils/use-isomorphic-effect.mjs:1:1 [38;5;246m][0m
+@workspace/web measure:battle-budget:    [38;5;246m│[0m
+@workspace/web measure:battle-budget:  [38;5;246m1 │[0m "use client";
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m ──────┬──────  
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m 
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+@workspace/web measure:battle-budget: [38;5;246m───╯[0m
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/utils/use-force-update.mjs" may not be preserved when bundling.
+@workspace/web measure:battle-budget:    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m ../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/utils/use-force-update.mjs:1:1 [38;5;246m][0m
+@workspace/web measure:battle-budget:    [38;5;246m│[0m
+@workspace/web measure:battle-budget:  [38;5;246m1 │[0m "use client";
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m ──────┬──────  
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m 
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+@workspace/web measure:battle-budget: [38;5;246m───╯[0m
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/components/MotionConfig/index.mjs" may not be preserved when bundling.
+@workspace/web measure:battle-budget:    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m ../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/components/MotionConfig/index.mjs:1:1 [38;5;246m][0m
+@workspace/web measure:battle-budget:    [38;5;246m│[0m
+@workspace/web measure:battle-budget:  [38;5;246m1 │[0m "use client";
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m ──────┬──────  
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m 
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+@workspace/web measure:battle-budget: [38;5;246m───╯[0m
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/utils/use-motion-value-event.mjs" may not be preserved when bundling.
+@workspace/web measure:battle-budget:    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m ../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/utils/use-motion-value-event.mjs:1:1 [38;5;246m][0m
+@workspace/web measure:battle-budget:    [38;5;246m│[0m
+@workspace/web measure:battle-budget:  [38;5;246m1 │[0m "use client";
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m ──────┬──────  
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m 
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+@workspace/web measure:battle-budget: [38;5;246m───╯[0m
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/utils/reduced-motion/use-reduced-motion.mjs" may not be preserved when bundling.
+@workspace/web measure:battle-budget:    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m ../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/utils/reduced-motion/use-reduced-motion.mjs:1:1 [38;5;246m][0m
+@workspace/web measure:battle-budget:    [38;5;246m│[0m
+@workspace/web measure:battle-budget:  [38;5;246m1 │[0m "use client";
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m ──────┬──────  
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m 
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+@workspace/web measure:battle-budget: [38;5;246m───╯[0m
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/context/LayoutGroupContext.mjs" may not be preserved when bundling.
+@workspace/web measure:battle-budget:    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m ../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/context/LayoutGroupContext.mjs:1:1 [38;5;246m][0m
+@workspace/web measure:battle-budget:    [38;5;246m│[0m
+@workspace/web measure:battle-budget:  [38;5;246m1 │[0m "use client";
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m ──────┬──────  
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m 
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+@workspace/web measure:battle-budget: [38;5;246m───╯[0m
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/animation/hooks/use-animate-style.mjs" may not be preserved when bundling.
+@workspace/web measure:battle-budget:    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m ../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/animation/hooks/use-animate-style.mjs:1:1 [38;5;246m][0m
+@workspace/web measure:battle-budget:    [38;5;246m│[0m
+@workspace/web measure:battle-budget:  [38;5;246m1 │[0m "use client";
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m ──────┬──────  
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m 
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+@workspace/web measure:battle-budget: [38;5;246m───╯[0m
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/context/MotionConfigContext.mjs" may not be preserved when bundling.
+@workspace/web measure:battle-budget:    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m ../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/context/MotionConfigContext.mjs:1:1 [38;5;246m][0m
+@workspace/web measure:battle-budget:    [38;5;246m│[0m
+@workspace/web measure:battle-budget:  [38;5;246m1 │[0m "use client";
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m ──────┬──────  
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m 
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+@workspace/web measure:battle-budget: [38;5;246m───╯[0m
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/utils/reduced-motion/use-reduced-motion-config.mjs" may not be preserved when bundling.
+@workspace/web measure:battle-budget:    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m ../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/utils/reduced-motion/use-reduced-motion-config.mjs:1:1 [38;5;246m][0m
+@workspace/web measure:battle-budget:    [38;5;246m│[0m
+@workspace/web measure:battle-budget:  [38;5;246m1 │[0m "use client";
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m ──────┬──────  
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m 
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+@workspace/web measure:battle-budget: [38;5;246m───╯[0m
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/utils/use-in-view.mjs" may not be preserved when bundling.
+@workspace/web measure:battle-budget:    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m ../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/utils/use-in-view.mjs:1:1 [38;5;246m][0m
+@workspace/web measure:battle-budget:    [38;5;246m│[0m
+@workspace/web measure:battle-budget:  [38;5;246m1 │[0m "use client";
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m ──────┬──────  
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m 
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+@workspace/web measure:battle-budget: [38;5;246m───╯[0m
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/utils/use-cycle.mjs" may not be preserved when bundling.
+@workspace/web measure:battle-budget:    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m ../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/utils/use-cycle.mjs:1:1 [38;5;246m][0m
+@workspace/web measure:battle-budget:    [38;5;246m│[0m
+@workspace/web measure:battle-budget:  [38;5;246m1 │[0m "use client";
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m ──────┬──────  
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m 
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+@workspace/web measure:battle-budget: [38;5;246m───╯[0m
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/value/use-spring.mjs" may not be preserved when bundling.
+@workspace/web measure:battle-budget:    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m ../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/value/use-spring.mjs:1:1 [38;5;246m][0m
+@workspace/web measure:battle-budget:    [38;5;246m│[0m
+@workspace/web measure:battle-budget:  [38;5;246m1 │[0m "use client";
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m ──────┬──────  
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m 
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+@workspace/web measure:battle-budget: [38;5;246m───╯[0m
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/value/use-time.mjs" may not be preserved when bundling.
+@workspace/web measure:battle-budget:    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m ../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/value/use-time.mjs:1:1 [38;5;246m][0m
+@workspace/web measure:battle-budget:    [38;5;246m│[0m
+@workspace/web measure:battle-budget:  [38;5;246m1 │[0m "use client";
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m ──────┬──────  
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m 
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+@workspace/web measure:battle-budget: [38;5;246m───╯[0m
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/utils/use-instant-transition.mjs" may not be preserved when bundling.
+@workspace/web measure:battle-budget:    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m ../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/utils/use-instant-transition.mjs:1:1 [38;5;246m][0m
+@workspace/web measure:battle-budget:    [38;5;246m│[0m
+@workspace/web measure:battle-budget:  [38;5;246m1 │[0m "use client";
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m ──────┬──────  
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m 
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+@workspace/web measure:battle-budget: [38;5;246m───╯[0m
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/value/use-motion-template.mjs" may not be preserved when bundling.
+@workspace/web measure:battle-budget:    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m ../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/value/use-motion-template.mjs:1:1 [38;5;246m][0m
+@workspace/web measure:battle-budget:    [38;5;246m│[0m
+@workspace/web measure:battle-budget:  [38;5;246m1 │[0m "use client";
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m ──────┬──────  
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m 
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+@workspace/web measure:battle-budget: [38;5;246m───╯[0m
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/value/use-transform.mjs" may not be preserved when bundling.
+@workspace/web measure:battle-budget:    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m ../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/value/use-transform.mjs:1:1 [38;5;246m][0m
+@workspace/web measure:battle-budget:    [38;5;246m│[0m
+@workspace/web measure:battle-budget:  [38;5;246m1 │[0m "use client";
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m ──────┬──────  
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m 
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+@workspace/web measure:battle-budget: [38;5;246m───╯[0m
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/utils/use-page-in-view.mjs" may not be preserved when bundling.
+@workspace/web measure:battle-budget:    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m ../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/utils/use-page-in-view.mjs:1:1 [38;5;246m][0m
+@workspace/web measure:battle-budget:    [38;5;246m│[0m
+@workspace/web measure:battle-budget:  [38;5;246m1 │[0m "use client";
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m ──────┬──────  
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m 
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+@workspace/web measure:battle-budget: [38;5;246m───╯[0m
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/value/use-velocity.mjs" may not be preserved when bundling.
+@workspace/web measure:battle-budget:    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m ../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/value/use-velocity.mjs:1:1 [38;5;246m][0m
+@workspace/web measure:battle-budget:    [38;5;246m│[0m
+@workspace/web measure:battle-budget:  [38;5;246m1 │[0m "use client";
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m ──────┬──────  
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m 
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+@workspace/web measure:battle-budget: [38;5;246m───╯[0m
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/animation/hooks/use-animation.mjs" may not be preserved when bundling.
+@workspace/web measure:battle-budget:    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m ../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/animation/hooks/use-animation.mjs:1:1 [38;5;246m][0m
+@workspace/web measure:battle-budget:    [38;5;246m│[0m
+@workspace/web measure:battle-budget:  [38;5;246m1 │[0m "use client";
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m ──────┬──────  
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m 
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+@workspace/web measure:battle-budget: [38;5;246m───╯[0m
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/value/use-motion-value.mjs" may not be preserved when bundling.
+@workspace/web measure:battle-budget:    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m ../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/value/use-motion-value.mjs:1:1 [38;5;246m][0m
+@workspace/web measure:battle-budget:    [38;5;246m│[0m
+@workspace/web measure:battle-budget:  [38;5;246m1 │[0m "use client";
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m ──────┬──────  
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m 
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+@workspace/web measure:battle-budget: [38;5;246m───╯[0m
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/value/use-will-change/index.mjs" may not be preserved when bundling.
+@workspace/web measure:battle-budget:    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m ../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/value/use-will-change/index.mjs:1:1 [38;5;246m][0m
+@workspace/web measure:battle-budget:    [38;5;246m│[0m
+@workspace/web measure:battle-budget:  [38;5;246m1 │[0m "use client";
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m ──────┬──────  
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m 
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+@workspace/web measure:battle-budget: [38;5;246m───╯[0m
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/animation/hooks/use-animate.mjs" may not be preserved when bundling.
+@workspace/web measure:battle-budget:    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m ../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/animation/hooks/use-animate.mjs:1:1 [38;5;246m][0m
+@workspace/web measure:battle-budget:    [38;5;246m│[0m
+@workspace/web measure:battle-budget:  [38;5;246m1 │[0m "use client";
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m ──────┬──────  
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m 
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+@workspace/web measure:battle-budget: [38;5;246m───╯[0m
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/components/AnimatePresence/use-presence-data.mjs" may not be preserved when bundling.
+@workspace/web measure:battle-budget:    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m ../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/components/AnimatePresence/use-presence-data.mjs:1:1 [38;5;246m][0m
+@workspace/web measure:battle-budget:    [38;5;246m│[0m
+@workspace/web measure:battle-budget:  [38;5;246m1 │[0m "use client";
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m ──────┬──────  
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m 
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+@workspace/web measure:battle-budget: [38;5;246m───╯[0m
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/utils/use-animation-frame.mjs" may not be preserved when bundling.
+@workspace/web measure:battle-budget:    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m ../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/utils/use-animation-frame.mjs:1:1 [38;5;246m][0m
+@workspace/web measure:battle-budget:    [38;5;246m│[0m
+@workspace/web measure:battle-budget:  [38;5;246m1 │[0m "use client";
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m ──────┬──────  
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m 
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+@workspace/web measure:battle-budget: [38;5;246m───╯[0m
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/animation/hooks/use-animated-state.mjs" may not be preserved when bundling.
+@workspace/web measure:battle-budget:    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m ../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/animation/hooks/use-animated-state.mjs:1:1 [38;5;246m][0m
+@workspace/web measure:battle-budget:    [38;5;246m│[0m
+@workspace/web measure:battle-budget:  [38;5;246m1 │[0m "use client";
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m ──────┬──────  
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m 
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+@workspace/web measure:battle-budget: [38;5;246m───╯[0m
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/components/AnimateSharedLayout.mjs" may not be preserved when bundling.
+@workspace/web measure:battle-budget:    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m ../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/components/AnimateSharedLayout.mjs:1:1 [38;5;246m][0m
+@workspace/web measure:battle-budget:    [38;5;246m│[0m
+@workspace/web measure:battle-budget:  [38;5;246m1 │[0m "use client";
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m ──────┬──────  
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m 
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+@workspace/web measure:battle-budget: [38;5;246m───╯[0m
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/value/use-follow-value.mjs" may not be preserved when bundling.
+@workspace/web measure:battle-budget:    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m ../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/value/use-follow-value.mjs:1:1 [38;5;246m][0m
+@workspace/web measure:battle-budget:    [38;5;246m│[0m
+@workspace/web measure:battle-budget:  [38;5;246m1 │[0m "use client";
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m ──────┬──────  
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m 
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+@workspace/web measure:battle-budget: [38;5;246m───╯[0m
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/value/use-inverted-scale.mjs" may not be preserved when bundling.
+@workspace/web measure:battle-budget:    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m ../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/value/use-inverted-scale.mjs:1:1 [38;5;246m][0m
+@workspace/web measure:battle-budget:    [38;5;246m│[0m
+@workspace/web measure:battle-budget:  [38;5;246m1 │[0m "use client";
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m ──────┬──────  
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m 
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+@workspace/web measure:battle-budget: [38;5;246m───╯[0m
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/components/AnimatePresence/use-presence.mjs" may not be preserved when bundling.
+@workspace/web measure:battle-budget:    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m ../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/components/AnimatePresence/use-presence.mjs:1:1 [38;5;246m][0m
+@workspace/web measure:battle-budget:    [38;5;246m│[0m
+@workspace/web measure:battle-budget:  [38;5;246m1 │[0m "use client";
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m ──────┬──────  
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m 
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+@workspace/web measure:battle-budget: [38;5;246m───╯[0m
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/context/MotionContext/index.mjs" may not be preserved when bundling.
+@workspace/web measure:battle-budget:    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m ../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/context/MotionContext/index.mjs:1:1 [38;5;246m][0m
+@workspace/web measure:battle-budget:    [38;5;246m│[0m
+@workspace/web measure:battle-budget:  [38;5;246m1 │[0m "use client";
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m ──────┬──────  
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m 
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+@workspace/web measure:battle-budget: [38;5;246m───╯[0m
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/context/SwitchLayoutGroupContext.mjs" may not be preserved when bundling.
+@workspace/web measure:battle-budget:    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m ../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/context/SwitchLayoutGroupContext.mjs:1:1 [38;5;246m][0m
+@workspace/web measure:battle-budget:    [38;5;246m│[0m
+@workspace/web measure:battle-budget:  [38;5;246m1 │[0m "use client";
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m ──────┬──────  
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m 
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+@workspace/web measure:battle-budget: [38;5;246m───╯[0m
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/context/DeprecatedLayoutGroupContext.mjs" may not be preserved when bundling.
+@workspace/web measure:battle-budget:    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m ../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/context/DeprecatedLayoutGroupContext.mjs:1:1 [38;5;246m][0m
+@workspace/web measure:battle-budget:    [38;5;246m│[0m
+@workspace/web measure:battle-budget:  [38;5;246m1 │[0m "use client";
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m ──────┬──────  
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m 
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+@workspace/web measure:battle-budget: [38;5;246m───╯[0m
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/events/use-dom-event.mjs" may not be preserved when bundling.
+@workspace/web measure:battle-budget:    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m ../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/events/use-dom-event.mjs:1:1 [38;5;246m][0m
+@workspace/web measure:battle-budget:    [38;5;246m│[0m
+@workspace/web measure:battle-budget:  [38;5;246m1 │[0m "use client";
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m ──────┬──────  
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m 
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+@workspace/web measure:battle-budget: [38;5;246m───╯[0m
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/value/use-scroll.mjs" may not be preserved when bundling.
+@workspace/web measure:battle-budget:    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m ../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/value/use-scroll.mjs:1:1 [38;5;246m][0m
+@workspace/web measure:battle-budget:    [38;5;246m│[0m
+@workspace/web measure:battle-budget:  [38;5;246m1 │[0m "use client";
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m ──────┬──────  
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m 
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+@workspace/web measure:battle-budget: [38;5;246m───╯[0m
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/context/PresenceContext.mjs" may not be preserved when bundling.
+@workspace/web measure:battle-budget:    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m ../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/context/PresenceContext.mjs:1:1 [38;5;246m][0m
+@workspace/web measure:battle-budget:    [38;5;246m│[0m
+@workspace/web measure:battle-budget:  [38;5;246m1 │[0m "use client";
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m ──────┬──────  
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m 
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+@workspace/web measure:battle-budget: [38;5;246m───╯[0m
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/utils/use-constant.mjs" may not be preserved when bundling.
+@workspace/web measure:battle-budget:    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m ../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/utils/use-constant.mjs:1:1 [38;5;246m][0m
+@workspace/web measure:battle-budget:    [38;5;246m│[0m
+@workspace/web measure:battle-budget:  [38;5;246m1 │[0m "use client";
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m ──────┬──────  
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m 
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+@workspace/web measure:battle-budget: [38;5;246m───╯[0m
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/context/LazyContext.mjs" may not be preserved when bundling.
+@workspace/web measure:battle-budget:    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m ../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/context/LazyContext.mjs:1:1 [38;5;246m][0m
+@workspace/web measure:battle-budget:    [38;5;246m│[0m
+@workspace/web measure:battle-budget:  [38;5;246m1 │[0m "use client";
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m ──────┬──────  
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m 
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+@workspace/web measure:battle-budget: [38;5;246m───╯[0m
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/utils/use-is-mounted.mjs" may not be preserved when bundling.
+@workspace/web measure:battle-budget:    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m ../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/utils/use-is-mounted.mjs:1:1 [38;5;246m][0m
+@workspace/web measure:battle-budget:    [38;5;246m│[0m
+@workspace/web measure:battle-budget:  [38;5;246m1 │[0m "use client";
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m ──────┬──────  
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m 
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+@workspace/web measure:battle-budget: [38;5;246m───╯[0m
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/value/use-combine-values.mjs" may not be preserved when bundling.
+@workspace/web measure:battle-budget:    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m ../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/value/use-combine-values.mjs:1:1 [38;5;246m][0m
+@workspace/web measure:battle-budget:    [38;5;246m│[0m
+@workspace/web measure:battle-budget:  [38;5;246m1 │[0m "use client";
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m ──────┬──────  
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m 
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+@workspace/web measure:battle-budget: [38;5;246m───╯[0m
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/value/use-computed.mjs" may not be preserved when bundling.
+@workspace/web measure:battle-budget:    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m ../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/value/use-computed.mjs:1:1 [38;5;246m][0m
+@workspace/web measure:battle-budget:    [38;5;246m│[0m
+@workspace/web measure:battle-budget:  [38;5;246m1 │[0m "use client";
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m ──────┬──────  
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m 
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+@workspace/web measure:battle-budget: [38;5;246m───╯[0m
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/components/Reorder/Item.mjs" may not be preserved when bundling.
+@workspace/web measure:battle-budget:    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m ../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/components/Reorder/Item.mjs:1:1 [38;5;246m][0m
+@workspace/web measure:battle-budget:    [38;5;246m│[0m
+@workspace/web measure:battle-budget:  [38;5;246m1 │[0m "use client";
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m ──────┬──────  
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m 
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+@workspace/web measure:battle-budget: [38;5;246m───╯[0m
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/components/Reorder/Group.mjs" may not be preserved when bundling.
+@workspace/web measure:battle-budget:    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m ../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/components/Reorder/Group.mjs:1:1 [38;5;246m][0m
+@workspace/web measure:battle-budget:    [38;5;246m│[0m
+@workspace/web measure:battle-budget:  [38;5;246m1 │[0m "use client";
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m ──────┬──────  
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m 
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+@workspace/web measure:battle-budget: [38;5;246m───╯[0m
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/motion/index.mjs" may not be preserved when bundling.
+@workspace/web measure:battle-budget:    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m ../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/motion/index.mjs:1:1 [38;5;246m][0m
+@workspace/web measure:battle-budget:    [38;5;246m│[0m
+@workspace/web measure:battle-budget:  [38;5;246m1 │[0m "use client";
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m ──────┬──────  
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m 
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+@workspace/web measure:battle-budget: [38;5;246m───╯[0m
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/motion/features/layout/MeasureLayout.mjs" may not be preserved when bundling.
+@workspace/web measure:battle-budget:    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m ../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/motion/features/layout/MeasureLayout.mjs:1:1 [38;5;246m][0m
+@workspace/web measure:battle-budget:    [38;5;246m│[0m
+@workspace/web measure:battle-budget:  [38;5;246m1 │[0m "use client";
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m ──────┬──────  
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m 
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+@workspace/web measure:battle-budget: [38;5;246m───╯[0m
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/context/ReorderContext.mjs" may not be preserved when bundling.
+@workspace/web measure:battle-budget:    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m ../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/context/ReorderContext.mjs:1:1 [38;5;246m][0m
+@workspace/web measure:battle-budget:    [38;5;246m│[0m
+@workspace/web measure:battle-budget:  [38;5;246m1 │[0m "use client";
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m ──────┬──────  
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m 
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+@workspace/web measure:battle-budget: [38;5;246m───╯[0m
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/motion/utils/use-visual-element.mjs" may not be preserved when bundling.
+@workspace/web measure:battle-budget:    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m ../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/motion/utils/use-visual-element.mjs:1:1 [38;5;246m][0m
+@workspace/web measure:battle-budget:    [38;5;246m│[0m
+@workspace/web measure:battle-budget:  [38;5;246m1 │[0m "use client";
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m ──────┬──────  
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m 
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+@workspace/web measure:battle-budget: [38;5;246m───╯[0m
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/render/svg/use-svg-visual-state.mjs" may not be preserved when bundling.
+@workspace/web measure:battle-budget:    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m ../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/render/svg/use-svg-visual-state.mjs:1:1 [38;5;246m][0m
+@workspace/web measure:battle-budget:    [38;5;246m│[0m
+@workspace/web measure:battle-budget:  [38;5;246m1 │[0m "use client";
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m ──────┬──────  
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m 
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+@workspace/web measure:battle-budget: [38;5;246m───╯[0m
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/context/MotionContext/create.mjs" may not be preserved when bundling.
+@workspace/web measure:battle-budget:    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m ../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/context/MotionContext/create.mjs:1:1 [38;5;246m][0m
+@workspace/web measure:battle-budget:    [38;5;246m│[0m
+@workspace/web measure:battle-budget:  [38;5;246m1 │[0m "use client";
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m ──────┬──────  
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m 
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+@workspace/web measure:battle-budget: [38;5;246m───╯[0m
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/motion/utils/use-motion-ref.mjs" may not be preserved when bundling.
+@workspace/web measure:battle-budget:    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m ../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/motion/utils/use-motion-ref.mjs:1:1 [38;5;246m][0m
+@workspace/web measure:battle-budget:    [38;5;246m│[0m
+@workspace/web measure:battle-budget:  [38;5;246m1 │[0m "use client";
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m ──────┬──────  
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m 
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+@workspace/web measure:battle-budget: [38;5;246m───╯[0m
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/render/html/use-html-visual-state.mjs" may not be preserved when bundling.
+@workspace/web measure:battle-budget:    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m ../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/render/html/use-html-visual-state.mjs:1:1 [38;5;246m][0m
+@workspace/web measure:battle-budget:    [38;5;246m│[0m
+@workspace/web measure:battle-budget:  [38;5;246m1 │[0m "use client";
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m ──────┬──────  
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m 
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+@workspace/web measure:battle-budget: [38;5;246m───╯[0m
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/render/dom/use-render.mjs" may not be preserved when bundling.
+@workspace/web measure:battle-budget:    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m ../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/render/dom/use-render.mjs:1:1 [38;5;246m][0m
+@workspace/web measure:battle-budget:    [38;5;246m│[0m
+@workspace/web measure:battle-budget:  [38;5;246m1 │[0m "use client";
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m ──────┬──────  
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m 
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+@workspace/web measure:battle-budget: [38;5;246m───╯[0m
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/render/html/use-props.mjs" may not be preserved when bundling.
+@workspace/web measure:battle-budget:    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m ../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/render/html/use-props.mjs:1:1 [38;5;246m][0m
+@workspace/web measure:battle-budget:    [38;5;246m│[0m
+@workspace/web measure:battle-budget:  [38;5;246m1 │[0m "use client";
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m ──────┬──────  
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m 
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+@workspace/web measure:battle-budget: [38;5;246m───╯[0m
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level directive "use client" in "../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/render/svg/use-props.mjs" may not be preserved when bundling.
+@workspace/web measure:battle-budget:    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m ../../node_modules/.bun/framer-motion@13.5.0+6f4b9a1cfb20c0ae/node_modules/framer-motion/dist/es/render/svg/use-props.mjs:1:1 [38;5;246m][0m
+@workspace/web measure:battle-budget:    [38;5;246m│[0m
+@workspace/web measure:battle-budget:  [38;5;246m1 │[0m "use client";
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m ──────┬──────  
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m       ╰──────── module level directive may not be preserved
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m 
+@workspace/web measure:battle-budget:  [38;5;240m  │[0m [38;5;115mHelp[0m: For more information, see https://rolldown.rs/in-depth/directives#other-directives
+@workspace/web measure:battle-budget: [38;5;246m───╯[0m
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: ✓ built in 1.89s
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: PWA v1.3.0
+@workspace/web measure:battle-budget: Building src/sw.ts service worker ("es" format)...
+@workspace/web measure:battle-budget: vite v8.3.5 building client environment for production...
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget:  WARN  inlineDynamicImports option is deprecated, please use codeSplitting: false instead.
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: transforming...
+@workspace/web measure:battle-budget: ✓ 78 modules transformed.
+@workspace/web measure:battle-budget: rendering chunks...
+@workspace/web measure:battle-budget: computing gzip size...
+@workspace/web measure:battle-budget: .output/public/sw.mjs  25.44 kB │ gzip: 8.35 kB
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: ✓ built in 19ms
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: PWA v1.3.0
+@workspace/web measure:battle-budget: mode      injectManifest
+@workspace/web measure:battle-budget: format:   es
+@workspace/web measure:battle-budget: precache  38 entries (1960.91 KiB)
+@workspace/web measure:battle-budget: files generated
+@workspace/web measure:battle-budget:   .output/public/sw.js
+@workspace/web measure:battle-budget: ℹ Generated .output/nitro.json
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: [nitro] ✔ You can preview this build using npx vite preview
+@workspace/web measure:battle-budget: Stopping server gracefully (5s)... Press Ctrl+C again to force close.[2KServer closed successfully.
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: Decimal bytes. Assets < 50,000,000 published bytes before HTTP compression; warm cache gives no credit.
+@workspace/web measure:battle-budget: Both Decks, each start Unit, possible Tokens and Boss Rule summons, selected appearance/cosmetics, original card art, full Race atlas pages, selected models, painting, FX and music; shared URLs count once.
+@workspace/web measure:battle-budget: Read both result stings and count only the larger one. Missing required assets fail.
+@workspace/web measure:battle-budget: JavaScript < 5,000,000 bytes, gzip level 9, once per distinct emitted chunk. Exclude the initial /play static graph from this same build; stop at loaded chunks before following Battle lazy edges.
+@workspace/web measure:battle-budget: Meshopt decoder JavaScript is embedded in the loader chunks. Current vertex-colored Unit GLBs need no external texture decoder assets. External model images/buffers count when present.
+@workspace/web measure:battle-budget: Hero models are controlled by the explicit feature input; the separate appearance ceiling is at most 10,000,000 bytes. Production activation belongs to issue 168.
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: | Configuration | Stage | Asset bytes | Additional gzip JS bytes | Result |
+@workspace/web measure:battle-budget: | --- | --- | ---: | ---: | --- |
+@workspace/web measure:battle-budget: | stage-1-1-starter | 1-1 | 4493291 | 400240 | PASS |
+@workspace/web measure:battle-budget: | stage-5-10-late | 5-10 | 10001579 | 400240 | PASS |
+@workspace/web measure:battle-budget: 
+@workspace/web measure:battle-budget: Commit: 810b384b767f1bc7aefc1a5e7c6f28bd0e04aefe; dirty: true; report: /Users/rizeki.rifandani/Desktop/dev/projects/heynbord/docs/game/battle-budget-2026-10-31.json
+@workspace/web measure:battle-budget: Limits: assets < 50000000; JavaScript < 5000000.
+@workspace/web measure:battle-budget: Exited with code 0

@@ -36,8 +36,8 @@ const isModelCard = (key: Key | undefined): key is string =>
   MODEL_CARDS.some((id) => id === key);
 
 /**
- * The Unit Model of a card (art direction 2.2) next to its Cut-out Figure,
- * on the Battle light. Pick a card and a clip to play it on a loop: the rare
+ * The Unit Model of a card or a Token (art direction 2.2), on the Battle
+ * light. Pick a card or a Token and a clip to play it on a loop: the rare
  * clips (death, rebirth, Low HP) are hard to see in a Battle.
  */
 export const UnitModelShowcase = () => {
@@ -101,10 +101,7 @@ export const UnitModelShowcase = () => {
           <Switch>Battle camera distance</Switch>
         </SwitchField>
       </div>
-      <Variant
-        label="Unit Model (left) and Cut-out Figure (right)"
-        className="w-full"
-      >
+      <Variant label="Unit Model" className="w-full">
         <div className="from-elf-green via-battle-meadow to-crypt relative aspect-video w-full max-w-3xl overflow-hidden rounded-lg bg-radial-[at_50%_48%] from-0% via-42% to-100%">
           {mounted ? (
             <Suspense fallback={null}>

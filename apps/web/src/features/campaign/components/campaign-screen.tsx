@@ -21,6 +21,11 @@ import {
   RegionBanner,
   StarChests,
 } from "@/features/campaign/components/campaign-hud";
+import {
+  RegionStory,
+  useBossStory,
+  useRegionStory,
+} from "@/features/campaign/components/region-story";
 import { StageMarker } from "@/features/campaign/components/stage-marker";
 import { StagePanel } from "@/features/campaign/components/stage-panel";
 import { TrailLine } from "@/features/campaign/components/trail-line";
@@ -43,6 +48,7 @@ import {
   wakeUpStage,
 } from "@/features/campaign/region-map";
 import { CAMPAIGN_GROUND, CAMPAIGN_ROAD } from "@/features/campaign/tokens";
+import { profileReadyAtom } from "@/features/profile/profile.atoms";
 import { useTownBarHeight } from "@/features/town/use-town-bar-height";
 
 /** The phone-in-landscape layout (DESIGN.md, The Short Screen Rule). */
@@ -302,7 +308,10 @@ export const CampaignScreen = ({
   readonly onStart: (options: BattleOptions) => void;
 }) => {
   const { tr } = useGameText();
+  const ready = useAtomValue(profileReadyAtom);
   const results = useAtomValue(stageResultsAtom);
+  const boss = useBossStory(region, onStart);
+  const story = useRegionStory(region, ready);
   const trail = useMemo(
     () => trailStages(STAGES, region, results),
     [region, results]
@@ -341,6 +350,11 @@ export const CampaignScreen = ({
       />
       <RegionBanner
         region={region}
+        story={
+          story.available.length > 0
+            ? { setTrigger: story.setTrigger, open: story.open }
+            : undefined
+        }
         onRegion={(next) => {
           setSelected(null);
           onRegion(next);
@@ -351,12 +365,14 @@ export const CampaignScreen = ({
         count={stars}
         total={regionStarTotal(trail)}
       />
+      {ready ? <RegionStory region={region} story={story} /> : null}
       <StagePanel
         stop={panelStop}
         from={marker}
         onClose={() => setSelected(null)}
-        onStart={onStart}
+        onStart={boss.handleStart}
       />
+      {boss.scene}
     </main>
   );
 };

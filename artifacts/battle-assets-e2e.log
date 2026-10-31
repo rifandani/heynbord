@@ -1,0 +1,75 @@
+$ bun --elide-lines=0 --filter @workspace/web test "e2e/battle-assets.spec.ts" "--project=chromium" "--workers=1" "--reporter=line"
+@workspace/web test: [WebServer] (node:20248) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+@workspace/web test: [WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+@workspace/web test: 
+@workspace/web test: [WebServer] (!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+@workspace/web test: [WebServer]   - import "./scripts/battle-build-graph" without a file extension (vite.config.ts:15:34). Add the file extension
+@workspace/web test: [WebServer]   - import "./scripts/rules-hash" without a file extension (vite.config.ts:16:27). Add the file extension
+@workspace/web test: [WebServer] Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+@workspace/web test: 
+@workspace/web test: [WebServer] (node:20248) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+@workspace/web test: [WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+@workspace/web test: 
+@workspace/web test: [WebServer] 
+@workspace/web test: [WebServer]   VITE v8.3.5  ready in 5155 ms
+@workspace/web test: [WebServer] 
+@workspace/web test: [WebServer]   ➜  Local:   http://localhost:4169/
+@workspace/web test: [WebServer]   ➜  Network: use --host to expose
+@workspace/web test: 
+@workspace/web test: 
+@workspace/web test: Running 4 tests using 1 worker
+@workspace/web test: 
+@workspace/web test: (node:20571) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+@workspace/web test: (Use `node --trace-warnings ...` to show where the warning was created)
+@workspace/web test: 
+@workspace/web test: 
+@workspace/web test: [1/4] [chromium] › e2e/battle-assets.spec.ts:8:1 › Stage Panel preloads painting and FX; Fight reuses the FX image
+@workspace/web test: [WebServer] [Client] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+@workspace/web test: 
+@workspace/web test: [WebServer] [Client] src/core/providers/reload-prompt-sw.tsx:12:3 ✅ SW activated {}
+@workspace/web test: [WebServer] [Client] src/core/providers/reload-prompt-sw.tsx:12:3 ✅ SW activated {}
+@workspace/web test: 
+@workspace/web test: [WebServer] 12:22:36 AM [vite] (client) page reload html/visualizer-stats.html
+@workspace/web test: 
+@workspace/web test: [WebServer] 12:22:42 AM [vite] (client) [console.warn] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.
+@workspace/web test: 
+@workspace/web test: [WebServer] 12:22:42 AM [vite] (client) page reload html/visualizer-stats.html
+@workspace/web test: 
+@workspace/web test: [WebServer] [Client] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.
+@workspace/web test: 
+@workspace/web test: [2/4] [chromium] › e2e/battle-assets.spec.ts:45:1 › a failed Unit Model keeps the Cut-out Figure and permits the next Turn
+@workspace/web test: [WebServer] 12:22:44 AM [vite] (client) page reload .output/public/offline.html
+@workspace/web test: 
+@workspace/web test: [WebServer] [Client] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+@workspace/web test: 
+@workspace/web test: [WebServer] [Client] src/core/providers/reload-prompt-sw.tsx:12:3 ✅ SW activated {}
+@workspace/web test: [WebServer] [Client] src/core/providers/reload-prompt-sw.tsx:12:3 ✅ SW activated {}
+@workspace/web test: 
+@workspace/web test: [WebServer] 12:22:46 AM [vite] (client) [console.warn] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.
+@workspace/web test: 
+@workspace/web test: [WebServer] [Client] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.
+@workspace/web test: 
+@workspace/web test: [WebServer] 12:22:47 AM [vite] (client) [Unhandled error] Error: Could not load /models/units/warden-saelith.glb: fetch for "http://localhost:4169/models/units/warden-saelith.glb" responded with 404: Not Found
+@workspace/web test: [WebServer]  > ../../node_modules/.bun/@react-three+fiber@9.8.2+649af491055219bf/node_modules/@react-three/fiber/dist/events-e51d7528.esm.js:1458:35
+@workspace/web test: [WebServer]  > Object._onError [as onError] ../../node_modules/.bun/three@0.186.1/node_modules/three/examples/jsm/loaders/GLTFLoader.js:300:4
+@workspace/web test: [WebServer]  > ../../node_modules/.bun/three@0.186.1/node_modules/three/build/three.core.js:45285:38
+@workspace/web test: [WebServer] 
+@workspace/web test: 
+@workspace/web test: [3/4] [chromium] › e2e/battle-assets.spec.ts:84:1 › optimized Battle tracks decode as stereo and play in the browser
+@workspace/web test: [WebServer] [Client] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+@workspace/web test: 
+@workspace/web test: [4/4] [chromium] › e2e/battle-assets.spec.ts:136:1 › Race pages retain their full frame size on a landscape phone viewport
+@workspace/web test: [WebServer] [Client] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+@workspace/web test: 
+@workspace/web test: [WebServer] [Client] src/core/providers/reload-prompt-sw.tsx:12:3 ✅ SW activated {}
+@workspace/web test: 
+@workspace/web test: [WebServer] [Client] src/core/providers/reload-prompt-sw.tsx:12:3 ✅ SW activated {}
+@workspace/web test: 
+@workspace/web test: [WebServer] 12:22:53 AM [vite] (client) page reload html/visualizer-stats.html
+@workspace/web test: 
+@workspace/web test: [WebServer] 12:22:54 AM [vite] (client) [console.warn] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.
+@workspace/web test: 
+@workspace/web test: [WebServer] [Client] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.
+@workspace/web test: 
+@workspace/web test:   4 passed (37.3s)
+@workspace/web test: Exited with code 0

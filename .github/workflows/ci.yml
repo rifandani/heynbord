@@ -89,6 +89,10 @@ jobs:
           # gate: new-only
           dupes-mode: semantic
           coverage: coverage/vitest/coverage-final.json
+          # The coverage artifact stores absolute runner paths
+          # (/home/runner/work/heynbord/heynbord/...). Strip that prefix so
+          # fallow matches every file instead of estimating coverage.
+          coverage-root: ${{ github.workspace }}
 
   lint-typecheck:
     runs-on: ubuntu-latest
@@ -266,8 +270,16 @@ jobs:
             cp apps/web/.env.example apps/web/.env.local
           fi
 
-      - name: Build
-        run: bun web build
+      - name: Build and check both Battle budgets
+        run: bun check:battle-budget
+
+      - name: Save Battle budget record
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: battle-budget-record
+          path: artifacts/battle-budget.json
+          retention-days: 7
 
   pwa:
     runs-on: ubuntu-latest

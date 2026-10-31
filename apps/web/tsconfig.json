@@ -17,9 +17,12 @@
   "include": ["**/*.js", "**/*.jsx", "**/*.ts", "**/*.tsx", "**/*.json"],
   "exclude": [
     "node_modules",
+    "art",
+    "public",
     "dev-dist",
     "dist",
     "vite.config.*",
+    "scripts/battle-build-graph.ts",
     "scripts/rules-hash.ts",
     "playwright.config.*",
     "pwa-assets.config.*"

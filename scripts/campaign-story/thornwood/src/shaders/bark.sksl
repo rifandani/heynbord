@@ -1,0 +1,58 @@
+// The bark of the Old Bramble: irregular plates, stretched along the trunk and
+// split by deep crevices, with fine grain and patches of moss. uOffset and
+// uScale move the bark with the camera; uLight and uShade set the time of day.
+uniform float3 iResolution;
+uniform float2 uOffset;
+uniform float uScale;
+uniform float3 uLight;
+uniform float3 uShade;
+uniform float uMoss;
+
+// The distances to the nearest and second nearest cell points.
+float2 cells(float2 p) {
+    float2 ip = floor(p);
+    float2 fp = fract(p);
+    float f1 = 8.0;
+    float f2 = 8.0;
+    for (int j = -1; j <= 1; j++) {
+        for (int i = -1; i <= 1; i++) {
+            float2 o = float2(float(i), float(j));
+            float2 h = float2(hash(ip + o), hash(ip + o + float2(17.0, 31.0)));
+            float2 d = o + 0.15 + 0.7 * h - fp;
+            float dd = dot(d, d);
+            if (dd < f1) {
+                f2 = f1;
+                f1 = dd;
+            } else if (dd < f2) {
+                f2 = dd;
+            }
+        }
+    }
+    return float2(sqrt(f1), sqrt(f2));
+}
+
+half4 main(float2 coord) {
+    float2 w = (coord - iResolution.xy * 0.5) / uScale + uOffset;
+    float2 warp = float2(fbm(w / 160.0), fbm(w / 160.0 + float2(5.2, 1.3))) * 26.0;
+    float2 p = (w + warp) / float2(30.0, 110.0);
+    float2 f = cells(p);
+    float edge = f.y - f.x;
+    // 0 in a crevice, 1 in the middle of a plate.
+    float plate = smoothstep(0.02, 0.32, edge);
+    float crevice = 1.0 - smoothstep(0.0, 0.07, edge);
+    float grain = fbm(w / float2(5.0, 48.0));
+    float lump = fbm(w / 150.0 + float2(4.0, 1.0));
+    float3 c = mix(uShade, uLight * (0.66 + 0.5 * grain), 0.25 + 0.75 * plate);
+    c *= 0.74 + 0.48 * lump;
+    c = mix(c, uShade * 0.6, crevice * 0.85);
+    // Light from the upper left catches the upper left rim of each plate.
+    float2 e = float2(0.02, 0.0);
+    float lit = cells(p - float2(0.04, 0.012)).y - cells(p - float2(0.04, 0.012)).x - edge;
+    c += uLight * clamp(lit * 3.0, -0.12, 0.18) * (1.0 - crevice);
+    float tone = fbm(w / float2(90.0, 420.0) + float2(2.0, 5.0));
+    c = mix(c, c * float3(0.82, 0.86, 0.8), smoothstep(0.45, 0.7, tone));
+    float moss = smoothstep(0.6, 0.78, fbm(w / 190.0 + float2(9.0, 3.0))) * uMoss * (0.3 + 0.7 * plate);
+    float3 green = float3(0.24, 0.38, 0.12) * (0.6 + 0.6 * fbm(w / 8.0)) * (0.35 + 0.9 * uLight.g);
+    c = mix(c, green, moss);
+    return half4(half3(clamp(c, 0.0, 1.0)), 1.0);
+}

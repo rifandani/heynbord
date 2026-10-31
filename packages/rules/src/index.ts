@@ -194,12 +194,13 @@ export {
   BOSS_FLOOR_COSMETICS,
   COSMETIC_FAMILIES,
   COSMETIC_PRICES,
+  CosmeticId,
   getBazaarCosmetic,
   isCosmeticId,
   PREMIUM_CARD_BACK_FACTOR,
   PREMIUM_CARD_BACKS,
 } from "./content/cosmetics";
-export type { Cosmetic, CosmeticFamily, CosmeticId } from "./content/cosmetics";
+export type { Cosmetic, CosmeticFamily } from "./content/cosmetics";
 export { HEYNSTONE_SOURCES, HEYNSTONE_SUPPLY } from "./content/heynstones";
 export type { HeynstoneSource, HeynstoneSourceId } from "./content/heynstones";
 export { lossShare } from "./content/loss-reward";
@@ -229,6 +230,7 @@ export {
 } from "./content/keywords";
 export type { ActivatedKeyword } from "./content/keywords";
 export {
+  isRankAtLeast,
   rankPips,
   RANKS,
   ranksOf,

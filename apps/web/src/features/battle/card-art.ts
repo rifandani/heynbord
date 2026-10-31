@@ -1,4 +1,4 @@
-import type { BattleState, TokenId } from "@workspace/rules";
+import type { BattleState, HeroState, TokenId } from "@workspace/rules";
 import { getCard } from "@workspace/rules";
 
 import type { UnitSourceView } from "@/features/battle/battle-view";
@@ -89,6 +89,22 @@ export const unitIllustration = (source: UnitSourceView): string =>
     ? cardIllustration(source.cardId)
     : tokenIllustration(source.tokenId);
 
+/** Every card that one Hero holds, plus the Cards of its Boss Rule summons. */
+const heroCardIds = (hero: HeroState): readonly string[] => [
+  ...hero.hand.map((card) => card.cardId),
+  ...hero.deck.map((card) => card.cardId),
+  ...hero.graveyard.map((card) => card.cardId),
+  ...hero.bossRules.flatMap((rule) =>
+    rule.effect.type === "summon" ? [rule.effect.card.cardId] : []
+  ),
+];
+
+/** Every card that the Heroes of both Sides hold. */
+const battleCardIds = (state: BattleState): readonly string[] =>
+  Object.values(state.sides).flatMap((side) =>
+    side.heroes.flatMap((hero) => heroCardIds(hero))
+  );
+
 /**
  * The Creature Cards of both Sides in a Battle, and the Tokens that they can
  * summon, each one time: all that can put a Unit on the Board, to load their
@@ -97,14 +113,7 @@ export const unitIllustration = (source: UnitSourceView): string =>
 export const battleUnitSources = (
   state: BattleState
 ): readonly UnitSourceView[] => {
-  const cards = new Set<string>();
-  for (const side of Object.values(state.sides)) {
-    for (const hero of side.heroes) {
-      for (const card of [...hero.hand, ...hero.deck, ...hero.graveyard]) {
-        cards.add(card.cardId);
-      }
-    }
-  }
+  const cards = new Set(battleCardIds(state));
   const tokens = new Set<TokenId>();
   for (const unit of state.units) {
     if (unit.source._tag === "Card") {
@@ -113,11 +122,13 @@ export const battleUnitSources = (
       tokens.add(unit.source.tokenId);
     }
   }
-  const creatures = [...cards].flatMap((cardId) => {
+  const creatures = [];
+  for (const cardId of cards) {
     const card = getCard(cardId);
-    return card.kind === "creature" ? [card] : [];
-  });
-  for (const card of creatures) {
+    if (card.kind !== "creature") {
+      continue;
+    }
+    creatures.push(card);
     if (card.keywords.summon) {
       tokens.add(card.keywords.summon);
     }
@@ -133,3 +144,15 @@ export const battleUnitSources = (
     })),
   ];
 };
+
+/** Each Deck entry and each start Unit once; call only at Battle start. */
+export const battleModelCopies = (state: BattleState): readonly string[] => [
+  ...Object.values(state.sides).flatMap((side) =>
+    side.heroes.flatMap((hero) =>
+      [...hero.hand, ...hero.deck, ...hero.graveyard].map((card) => card.cardId)
+    )
+  ),
+  ...state.units.flatMap((unit) =>
+    unit.source._tag === "Card" ? [unit.source.card.cardId] : []
+  ),
+];

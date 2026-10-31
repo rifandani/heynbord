@@ -13,7 +13,7 @@ import type {
 } from "@workspace/rules";
 import { cn } from "cn";
 import type { ReactNode } from "react";
-import { useMemo, useState } from "react";
+import { lazy, Suspense, useMemo, useState } from "react";
 import { Button } from "react-aria-components";
 
 import { GameButton } from "@/core/components/game/game-button";
@@ -23,12 +23,13 @@ import { CardBack } from "@/features/battle/components/card-back";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import type { Glyph } from "@/features/battle/glyphs";
 import { useGameText } from "@/features/battle/use-game-text";
-import type { LookFamily } from "@/features/bazaar/bazaar";
+import type { LookFamily, ShelfPreview } from "@/features/bazaar/bazaar";
 import {
   bazaarGroups,
   canBuyCosmetic,
   cosmeticItemKey,
   isLookFamily,
+  shelfPreviewLook,
 } from "@/features/bazaar/bazaar";
 import { BazaarScene } from "@/features/bazaar/components/bazaar-scene";
 import { BoardSkinThumb } from "@/features/bazaar/components/board-skin-look";
@@ -44,6 +45,10 @@ import { useBazaar } from "@/features/bazaar/use-bazaar";
 import { HeroPortrait } from "@/features/hero/components/hero-portrait";
 import { BalancePlate } from "@/features/town/components/balance-plate";
 import { useCountTo } from "@/features/workshop/use-count-to";
+
+const HeroModelPreview = lazy(
+  () => import("@/features/hero/components/hero-model-preview")
+);
 
 /** The glyph of each family on the item plates. A look shows its face. */
 const FAMILY_GLYPH: Readonly<Record<CosmeticFamily, Glyph>> = {
@@ -297,11 +302,43 @@ const StandardPlate = ({
   );
 };
 
-/** The look on the shelf of one section. */
-interface Preview {
+/**
+ * The 3D preview at the right of a look shelf (Hero Models, decision 12): a
+ * candidate portrait wears the active Gear, and a candidate Gear goes on the
+ * active person. The painted portrait stands in while the model loads or
+ * fails, so the shelf never loses its look.
+ */
+const ShelfModelPreview = ({
+  family,
+  portrait,
+  gearLook,
+  classId,
+}: {
   readonly family: LookFamily;
-  readonly look: CosmeticId | null;
-}
+  readonly portrait: CosmeticId | null;
+  readonly gearLook: CosmeticId | null;
+  readonly classId: ClassId;
+}) => (
+  <div
+    className="h-44 w-60 [@media(max-height:500px)]:h-32 [@media(max-height:500px)]:w-48"
+    data-testid="bazaar-shelf-preview"
+    data-family={family}
+  >
+    <Suspense
+      fallback={
+        <div className="flex h-full items-center justify-center">
+          <HeroPortrait
+            id={portrait}
+            classId={classId}
+            className="h-full w-auto max-w-full"
+          />
+        </div>
+      }
+    >
+      <HeroModelPreview classId={classId} appearance={{ portrait, gearLook }} />
+    </Suspense>
+  </div>
+);
 
 /**
  * The Bazaar screen: one section for each family, in the order of the Economy
@@ -326,7 +363,7 @@ export const BazaarScreen = () => {
   const ownedSet = useMemo(() => new Set(owned), [owned]);
   const coin = useCountTo(balances.coin);
   const [said, setSaid] = useState("");
-  const [preview, setPreview] = useState<Preview | null>(null);
+  const [preview, setPreview] = useState<ShelfPreview | null>(null);
 
   const tryBuy = (item: Cosmetic) => {
     if (!buy(item.id, groups)) {
@@ -394,6 +431,13 @@ export const BazaarScreen = () => {
                 : tr("bazaar.price", { amount: shownItem.price ?? 0 });
           const shownActive =
             shownItem === null ? activeId === null : shownItem.id === activeId;
+          // The 2 look families that a Hero Model shows: each shelf previews
+          // its own candidate on the active look of the other family.
+          const shelfPreview = shelfPreviewLook(
+            lookFamily,
+            preview,
+            activeLooks
+          );
           return (
             <section
               key={family}
@@ -414,6 +458,14 @@ export const BazaarScreen = () => {
                     name={shownName}
                     status={shownStatus}
                     inUse={shownActive}
+                    trailing={
+                      shelfPreview === null ? undefined : (
+                        <ShelfModelPreview
+                          {...shelfPreview}
+                          classId={classId}
+                        />
+                      )
+                    }
                   />
                 </div>
               )}

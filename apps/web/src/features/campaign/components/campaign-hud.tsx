@@ -10,7 +10,7 @@ import {
 } from "@workspace/rules";
 import { cn } from "cn";
 import type { ReactElement, ReactNode, RefObject } from "react";
-import { useContext, useEffect, useRef, useState } from "react";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import type { PressEvent } from "react-aria-components";
 import {
   Button,
@@ -188,9 +188,15 @@ const RegionArrow = ({
 export const RegionBanner = ({
   region,
   onRegion,
+  story,
 }: {
   readonly region: number;
   readonly onRegion: (region: number) => void;
+  /** The Story control of the Region, when it has an available scene. */
+  readonly story?: {
+    readonly setTrigger: (element: HTMLButtonElement | null) => void;
+    readonly open: () => void;
+  };
 }) => {
   const { tr } = useGameText();
   const results = useAtomValue(stageResultsAtom);
@@ -199,6 +205,13 @@ export const RegionBanner = ({
   const why = line(region, regionStatus(STAGES, region, results));
   const previous = useRef<HTMLButtonElement>(null);
   const next = useRef<HTMLButtonElement>(null);
+  const setStoryTrigger = story?.setTrigger;
+  const storyRef = useCallback(
+    (element: HTMLButtonElement | null) => {
+      setStoryTrigger?.(element);
+    },
+    [setStoryTrigger]
+  );
   // When an arrow goes away at the first or the last Region, the focus goes
   // to the other arrow after the render, so that it does not go to the page.
   const go = (target: number) => {
@@ -214,6 +227,8 @@ export const RegionBanner = ({
       className={cn(
         PLATE,
         "absolute top-[max(0.5rem,env(safe-area-inset-top))] left-[max(0.5rem,env(safe-area-inset-left))] z-20 gap-1 pr-1.5",
+        // Keep clear of the Star chest plate on a narrow screen that is not short.
+        "[@media(min-height:501px)]:max-w-[calc(100vw-22rem)]",
         region > 1 ? "pl-1.5" : "pl-4 [@media(max-height:500px)]:pl-3"
       )}
       data-testid="region-banner"
@@ -263,6 +278,34 @@ export const RegionBanner = ({
           )}
         </p>
       </div>
+      {story ? (
+        <>
+          <span
+            className="bg-gold-trim/25 h-7 w-0.5 rounded-full"
+            aria-hidden
+          />
+          <Button
+            ref={storyRef}
+            onPress={() => story.open()}
+            aria-label={tr("story.label")}
+            className={cn(
+              "group text-cream/70 relative flex h-10 shrink-0 cursor-pointer items-center gap-2 rounded-lg px-2 outline-none",
+              "data-[hovered]:bg-cream/10 data-[hovered]:text-cream transition-colors duration-100",
+              "data-[focus-visible]:ring-focus-cream data-[focus-visible]:ring-4",
+              "[@media(max-height:500px)]:h-8 [@media(max-height:500px)]:px-2"
+            )}
+            data-testid="region-story"
+          >
+            <GlyphIcon
+              glyph="book"
+              className="text-gold-trim group-data-[hovered]:text-gold-light size-5 transition-colors duration-100 [@media(max-height:500px)]:hidden"
+            />
+            <span className="text-[13px] font-bold tracking-[0.02em] [@media(max-height:500px)]:text-[11px]">
+              {tr("story.label")}
+            </span>
+          </Button>
+        </>
+      ) : null}
       {region < CAMPAIGN_REGIONS ? (
         <>
           <span

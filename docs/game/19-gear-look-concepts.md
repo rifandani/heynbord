@@ -1,5 +1,11 @@
 # Gear Look Concepts
 
+The accepted [Hero Model design](./21-hero-models.md) extends each Gear look
+below to the four items on the Hero Model. These icon briefs remain the
+reference for their objects, materials and colors. The icon-only boundary
+is amended by [web ADR-0016](../../apps/web/docs/adr/0016-a-hero-portrait-defines-a-person-and-the-gear-look-dresses-it.md);
+the first model assets are drafts that still need art review.
+
 This document gives the art brief of the **Gear look** family: the 6 looks of the Gear that the Bazaar sells for Heynstones ([Economy 3.5](./07-economy.md#35-bazaar), [GDD 10](./03-game-design.md#10-achievements-cosmetics-and-the-bazaar)). A Gear look changes how the Gear looks and never changes gameplay: it changes no Gear level and no stat.
 
 A Gear look is one painted icon for each of the 4 Gear items: the Weapon, the Armor, the Trinket and the Banner, all in one material ([web ADR-0013](../../apps/web/docs/adr/0013-a-gear-look-is-a-set-of-4-gear-icons.md)). The icons replace the 4 icons on the Gear plates of the Hero screen. The look with no Gear look is the **Standard kit**: the 4 Gear icons of [Town Concepts 12](./11-town-concepts.md#12-gear-icons), in royal blue, gold and steel.

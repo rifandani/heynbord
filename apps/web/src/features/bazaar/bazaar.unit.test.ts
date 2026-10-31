@@ -12,6 +12,7 @@ import {
   cosmeticItemKey,
   isLookFamily,
   LOOK_FAMILIES,
+  shelfPreviewLook,
 } from "@/features/bazaar/bazaar";
 import { hasGearLookArt } from "@/features/hero/gear-look-art";
 import { hasHeroPortraitArt } from "@/features/hero/hero-portrait-art";
@@ -126,6 +127,62 @@ describe("cosmeticItemKey", () => {
       expect(idID.bazaar.standard[family]).toBeTruthy();
       expect(idID.bazaar.useStandard[family]).toBeTruthy();
     }
+  });
+});
+
+describe("shelfPreviewLook (Hero Models, decision 12)", () => {
+  const activeLooks = {
+    cardBack: null,
+    heroPortrait: "heroPortrait.tentRings",
+    gearLook: "gearLook.copperRim",
+    boardSkin: null,
+  } as const;
+
+  it("shows the active looks when the Player previews nothing", () => {
+    expect(shelfPreviewLook("heroPortrait", null, activeLooks)).toEqual({
+      family: "heroPortrait",
+      portrait: "heroPortrait.tentRings",
+      gearLook: "gearLook.copperRim",
+    });
+    expect(shelfPreviewLook("gearLook", null, activeLooks)).toEqual({
+      family: "gearLook",
+      portrait: "heroPortrait.tentRings",
+      gearLook: "gearLook.copperRim",
+    });
+  });
+
+  it("puts a candidate portrait in the active Gear", () => {
+    expect(
+      shelfPreviewLook(
+        "heroPortrait",
+        { family: "heroPortrait", look: "heroPortrait.saltWind" },
+        activeLooks
+      )
+    ).toEqual({
+      family: "heroPortrait",
+      portrait: "heroPortrait.saltWind",
+      gearLook: "gearLook.copperRim",
+    });
+  });
+
+  it("puts a candidate Gear on the active person", () => {
+    expect(
+      shelfPreviewLook(
+        "gearLook",
+        { family: "gearLook", look: "gearLook.ironVine" },
+        activeLooks
+      )
+    ).toEqual({
+      family: "gearLook",
+      portrait: "heroPortrait.tentRings",
+      gearLook: "gearLook.ironVine",
+    });
+  });
+
+  it("shows no Hero Model on the other look shelves", () => {
+    expect(shelfPreviewLook(null, null, activeLooks)).toBeNull();
+    expect(shelfPreviewLook("cardBack", null, activeLooks)).toBeNull();
+    expect(shelfPreviewLook("boardSkin", null, activeLooks)).toBeNull();
   });
 });
 

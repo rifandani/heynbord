@@ -34,6 +34,12 @@ const PLATE =
 const SMALL_LABEL =
   "text-xs font-bold text-cream-dim [@media(max-height:500px)]:text-[10px]";
 
+const detailLayout = (compact: boolean) => ({
+  row: compact ? "flex-row items-center" : "flex-col gap-2.5",
+  stat: compact ? "flex-[2]" : "w-full",
+  title: compact ? "flex-row" : "flex-col",
+});
+
 /**
  * The time that the Forge Stone of an upgrade takes to leap from the upgrade
  * into its Gear item. The strike of the stone is the beat of the upgrade: the
@@ -160,10 +166,12 @@ const GearIcon = ({
   item,
   strike,
   ref,
+  compact,
 }: {
   readonly item: GearItem;
   readonly strike: GearStrike | null;
   readonly ref: RefObject<HTMLSpanElement | null>;
+  readonly compact: boolean;
 }) => {
   const { tr } = useGameText();
   const look = useAtomValue(activeGearLookAtom);
@@ -173,7 +181,10 @@ const GearIcon = ({
     <span
       ref={ref}
       className={cn(
-        "relative grid size-24 shrink-0 place-items-center transition-[translate,filter] duration-200 ease-out [@media(max-height:500px)]:size-11",
+        "relative grid shrink-0 place-items-center transition-[translate,filter] duration-200 ease-out",
+        compact
+          ? "size-10 [@media(max-height:500px)]:size-6"
+          : "size-24 [@media(max-height:500px)]:size-11",
         // A disabled upgrade gets no hover and no focus, so only a ready item lifts.
         "group-has-[[data-gear-upgrade][data-hovered]]/gear:brightness-110 motion-safe:group-has-[[data-gear-upgrade][data-hovered]]/gear:-translate-y-1",
         "group-has-[[data-gear-upgrade][data-focus-visible]]/gear:brightness-110 motion-safe:group-has-[[data-gear-upgrade][data-focus-visible]]/gear:-translate-y-1"
@@ -242,10 +253,12 @@ const GearIcon = ({
 const GearLevel = ({
   level,
   flash,
+  compact,
 }: {
   readonly level: number;
   /** The serial of the last upgrade of this item in this visit, or 0. */
   readonly flash: number;
+  readonly compact: boolean;
 }) => {
   const { tr } = useGameText();
   return (
@@ -254,7 +267,10 @@ const GearLevel = ({
       minValue={0}
       maxValue={MAX_GEAR_LEVEL}
       valueLabel={tr("hero.levelLabel", { level, max: MAX_GEAR_LEVEL })}
-      className="flex w-full flex-col gap-1"
+      className={cn(
+        "flex min-w-0 flex-col gap-1",
+        compact ? "flex-1" : "w-full"
+      )}
     >
       <span className="flex items-baseline justify-between gap-2">
         <Label className={SMALL_LABEL}>{tr("hero.levelName")}</Label>
@@ -429,11 +445,13 @@ export const GearPlate = ({
   item,
   strike,
   onUpgrade,
+  compact = false,
 }: {
   readonly item: GearItem;
   /** The last upgrade of this item in this visit, or `null`. */
   readonly strike: GearStrike | null;
   readonly onUpgrade: () => void;
+  readonly compact?: boolean;
 }) => {
   const { tr } = useGameText();
   const stat = useStatFormat();
@@ -443,6 +461,7 @@ export const GearPlate = ({
   const titleId = `gear-${item.slot}-name`;
   const flash = strike?.serial ?? 0;
   const { plate, icon, cost, button, flight } = useStoneFlight(strike);
+  const layout = detailLayout(compact);
 
   return (
     <li
@@ -451,7 +470,9 @@ export const GearPlate = ({
       className={cn(
         PLATE,
         "group/gear relative flex min-w-0 flex-col items-center gap-2.5 px-3 pt-3 pb-3",
-        "[@media(max-height:500px)]:gap-1 [@media(max-height:500px)]:px-2 [@media(max-height:500px)]:pt-1.5 [@media(max-height:500px)]:pb-2"
+        "[@media(max-height:500px)]:gap-1 [@media(max-height:500px)]:px-2 [@media(max-height:500px)]:pt-1.5 [@media(max-height:500px)]:pb-2",
+        compact &&
+          "gap-1 px-2 py-1 [@media(max-height:500px)]:gap-0 [@media(max-height:500px)]:py-0.5"
       )}
       data-testid={`gear-${item.slot}`}
       data-level={item.level}
@@ -481,56 +502,71 @@ export const GearPlate = ({
           />
         </span>
       )}
-      <span className="flex w-full flex-col items-center gap-1.5 [@media(max-height:500px)]:flex-row [@media(max-height:500px)]:gap-2">
-        <GearIcon ref={icon} item={item} strike={strike} />
+      <span
+        className={cn(
+          "flex w-full items-center gap-1.5 [@media(max-height:500px)]:flex-row [@media(max-height:500px)]:gap-2",
+          layout.title
+        )}
+      >
+        <GearIcon ref={icon} item={item} strike={strike} compact={compact} />
         <h3
           id={titleId}
-          className="font-display text-gold-light text-lg leading-tight font-bold [@media(max-height:500px)]:text-sm"
+          className={cn(
+            "font-display text-gold-light text-lg leading-tight font-bold [@media(max-height:500px)]:text-sm",
+            compact && "text-sm"
+          )}
         >
           {name}
         </h3>
       </span>
-      <GearLevel level={item.level} flash={flash} />
-      <div className="flex w-full flex-col gap-0.5">
-        {/* On a narrow plate the value goes under its name, at the right,
+      <div className={cn("flex w-full gap-1", layout.row)}>
+        <GearLevel level={item.level} flash={flash} compact={compact} />
+        <div className={cn("flex min-w-0 flex-col gap-0.5", layout.stat)}>
+          {/* On a narrow plate the value goes under its name, at the right,
             so the name never breaks. */}
-        <span className="flex flex-wrap items-baseline justify-between gap-x-2">
-          <span className={cn(SMALL_LABEL, "whitespace-nowrap")}>
-            {tr(`hero.stats.${item.stat}`)}
-          </span>
-          <span
-            className="ml-auto flex items-baseline gap-1 font-black whitespace-nowrap tabular-nums"
-            data-testid="gear-stat"
-          >
-            <span
-              key={flash}
-              className={cn(
-                "text-cream inline-block text-base [@media(max-height:500px)]:text-xs",
-                flash > 0 &&
-                  "motion-safe:animate-[gear-roll_320ms_cubic-bezier(0.2,0.8,0.2,1)_both]"
-              )}
-              style={ON_STRIKE}
-            >
-              {stat(item.stat, item.now)}
+          <span className="flex flex-wrap items-baseline justify-between gap-x-2">
+            <span className={cn(SMALL_LABEL, "whitespace-nowrap")}>
+              {tr(`hero.stats.${item.stat}`)}
             </span>
-            {item.next === null ? null : (
-              <>
-                <span
-                  className="text-gold-trim/80 text-xs [@media(max-height:500px)]:text-[10px]"
-                  aria-hidden
-                >
-                  →
-                </span>
-                <span className="text-gold-light text-base [@media(max-height:500px)]:text-xs">
-                  {stat(item.stat, item.next)}
-                </span>
-              </>
-            )}
+            <span
+              className="ml-auto flex items-baseline gap-1 font-black whitespace-nowrap tabular-nums"
+              data-testid="gear-stat"
+            >
+              <span
+                key={flash}
+                className={cn(
+                  "text-cream inline-block text-base [@media(max-height:500px)]:text-xs",
+                  flash > 0 &&
+                    "motion-safe:animate-[gear-roll_320ms_cubic-bezier(0.2,0.8,0.2,1)_both]"
+                )}
+                style={ON_STRIKE}
+              >
+                {stat(item.stat, item.now)}
+              </span>
+              {item.next === null ? null : (
+                <>
+                  <span
+                    className="text-gold-trim/80 text-xs [@media(max-height:500px)]:text-[10px]"
+                    aria-hidden
+                  >
+                    →
+                  </span>
+                  <span className="text-gold-light text-base [@media(max-height:500px)]:text-xs">
+                    {stat(item.stat, item.next)}
+                  </span>
+                </>
+              )}
+            </span>
           </span>
-        </span>
-        <p className="text-cream-dim text-left text-xs leading-snug [@media(max-height:500px)]:sr-only">
-          {tr(`hero.statHelp.${item.stat}`)}
-        </p>
+          <p
+            className={cn(
+              "text-cream-dim text-left text-xs leading-snug [@media(max-height:500px)]:sr-only",
+              compact && "sr-only"
+            )}
+          >
+            {tr(`hero.statHelp.${item.stat}`)}
+          </p>
+        </div>
       </div>
       <div ref={button} className="mt-auto flex w-full flex-col">
         <GameButton

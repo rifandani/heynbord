@@ -1,6 +1,7 @@
 import type { Target as TargetType } from "@workspace/rules";
 import {
   ClassId,
+  BAZAAR_COSMETICS,
   Command,
   DeckEntry,
   MAX_GEAR_LEVEL,
@@ -57,6 +58,7 @@ const ReplayData = Schema.Struct({
     trinket: GearLevel,
     banner: GearLevel,
   }),
+  appearance: Schema.optional(Schema.Unknown),
   commands: Schema.Array(
     Schema.Array(Schema.Int.check(Schema.isGreaterThanOrEqualTo(0)))
   ),
@@ -128,16 +130,30 @@ const commandFromData = (data: readonly number[]): Command | null => {
     : null;
 };
 
-const toData = (replay: Replay): ReplayData => ({
-  rules: replay.rules,
-  seed: replay.seed,
-  place: placeToData(replay.place),
-  classId: replay.player.classId,
-  deck: replay.player.deck,
-  level: replay.player.level,
-  gear: replay.player.gear,
-  commands: replay.commands.map(commandToData),
-});
+const toData = (replay: Replay): ReplayData => {
+  const data: ReplayData = {
+    rules: replay.rules,
+    seed: replay.seed,
+    place: placeToData(replay.place),
+    classId: replay.player.classId,
+    deck: replay.player.deck,
+    level: replay.player.level,
+    gear: replay.player.gear,
+    commands: replay.commands.map(commandToData),
+  };
+  return replay.appearance ? { ...data, appearance: replay.appearance } : data;
+};
+
+const decodeAppearance = Schema.decodeUnknownResult(
+  Schema.Struct({
+    portrait: Schema.optionalKey(Schema.Unknown),
+    gearLook: Schema.optionalKey(Schema.Unknown),
+  })
+);
+const decodeString = Schema.decodeUnknownResult(Schema.String);
+const look = (id: string | null, family: "heroPortrait" | "gearLook") =>
+  BAZAAR_COSMETICS.find((item) => item.id === id && item.family === family)
+    ?.id ?? null;
 
 const fromData = (data: ReplayData): Replay | null => {
   const place = placeFromData(data.place);
@@ -152,7 +168,15 @@ const fromData = (data: ReplayData): Replay | null => {
     }
     commands.push(command);
   }
-  return {
+  const { appearance } = data;
+  const parsed = decodeAppearance(appearance);
+  const portrait = decodeString(
+    Result.isSuccess(parsed) ? parsed.success.portrait : null
+  );
+  const gearLook = decodeString(
+    Result.isSuccess(parsed) ? parsed.success.gearLook : null
+  );
+  const replay: Replay = {
     rules: data.rules,
     seed: data.seed,
     place,
@@ -164,6 +188,21 @@ const fromData = (data: ReplayData): Replay | null => {
     },
     commands,
   };
+  return appearance === undefined
+    ? replay
+    : {
+        ...replay,
+        appearance: {
+          portrait: look(
+            Result.isSuccess(portrait) ? portrait.success : null,
+            "heroPortrait"
+          ),
+          gearLook: look(
+            Result.isSuccess(gearLook) ? gearLook.success : null,
+            "gearLook"
+          ),
+        },
+      };
 };
 
 /** Runs the bytes through a compression stream of the browser. */

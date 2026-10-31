@@ -1,0 +1,1273 @@
+{
+  "region": "thornwood",
+  "version": 1,
+  "width": 1280,
+  "height": 720,
+  "fps": 30,
+  "frameCount": 4050,
+  "locales": ["en-us", "id-id"],
+  "playback": {
+    "autoAdvance": false,
+    "continueBeforeEnd": true,
+    "readingHold": "loop-from-loopStartSeconds-until-player-action",
+    "loopStartSeconds": 5.0,
+    "back": "restart-moment",
+    "reducedMotion": "poster",
+    "videoFailure": "poster",
+    "audioFailure": "silent",
+    "textAndControls": "external",
+    "stopEffectsOnLeave": true,
+    "profileMutations": false
+  },
+  "listeningReview": "pending",
+  "moments": [
+    {
+      "id": "OpeningForest",
+      "text": {
+        "en-us": "Lethiel leads you into the Thornwood, a deep, old forest of giant trees. Here even the hedges have thorns as long as spears.",
+        "id-id": "Lethiel menuntunmu masuk ke Thornwood, hutan tua yang dalam dengan pohon-pohon raksasa. Di sini, bahkan pagar semaknya punya duri sepanjang tombak."
+      },
+      "startFrame": 0,
+      "endFrame": 270,
+      "sceneKind": "opening",
+      "momentOrder": 1,
+      "clip": "opening-01.mp4",
+      "poster": "opening-01.webp",
+      "frameCount": 270,
+      "durationSeconds": 9.0,
+      "loopStartSeconds": 5.0,
+      "posterFrame": 269,
+      "clipBytes": 958172,
+      "posterBytes": 93376,
+      "clipSha256": "e11ae0ec8f1277f1923afbf85b99acb457d3236e0e60209994785cf30a2d3be4",
+      "posterRgbRmse": 7.327,
+      "effectCues": [
+        {
+          "file": "audio/wind.mp3",
+          "atSeconds": 0.3,
+          "gainDb": -6.0
+        },
+        {
+          "file": "audio/magic.mp3",
+          "atSeconds": 0.5,
+          "gainDb": -8.0
+        },
+        {
+          "file": "audio/leaves.mp3",
+          "atSeconds": 1.2,
+          "gainDb": -6.0
+        },
+        {
+          "file": "audio/creak.mp3",
+          "atSeconds": 2.0,
+          "gainDb": -6.0
+        },
+        {
+          "file": "audio/wings.mp3",
+          "atSeconds": 2.3,
+          "gainDb": -6.0
+        },
+        {
+          "file": "audio/boom.mp3",
+          "atSeconds": 3.4,
+          "gainDb": -10.0
+        },
+        {
+          "file": "audio/birds.mp3",
+          "atSeconds": 4.4,
+          "gainDb": -6.0
+        }
+      ]
+    },
+    {
+      "id": "OpeningGiant",
+      "text": {
+        "en-us": "On a hill of brambles sleeps the Old Bramble, a forest giant. The Elves sing it to sleep. When it wakes, the beasts in the caves under its roots wake with it.",
+        "id-id": "Di atas bukit semak berduri tidur Old Bramble, sang raksasa hutan. Para Elf bernyanyi agar ia tetap tidur. Saat ia bangun, binatang-binatang buas di gua di bawah akarnya ikut bangun."
+      },
+      "startFrame": 270,
+      "endFrame": 540,
+      "sceneKind": "opening",
+      "momentOrder": 2,
+      "clip": "opening-02.mp4",
+      "poster": "opening-02.webp",
+      "frameCount": 270,
+      "durationSeconds": 9.0,
+      "loopStartSeconds": 5.0,
+      "posterFrame": 269,
+      "clipBytes": 1023734,
+      "posterBytes": 77560,
+      "clipSha256": "4456ef132ecfd6787aa3f0fd6f41e9a74078178dd6d166fcd7b9bc61bbe0de07",
+      "posterRgbRmse": 6.134,
+      "effectCues": [
+        {
+          "file": "audio/groan.mp3",
+          "atSeconds": 0.4,
+          "gainDb": -6.0
+        },
+        {
+          "file": "audio/chime.mp3",
+          "atSeconds": 0.8,
+          "gainDb": -10.0
+        },
+        {
+          "file": "audio/chime-high.mp3",
+          "atSeconds": 1.3,
+          "gainDb": -10.0
+        },
+        {
+          "file": "audio/chime.mp3",
+          "atSeconds": 1.9,
+          "gainDb": -11.0
+        },
+        {
+          "file": "audio/growl.mp3",
+          "atSeconds": 2.7,
+          "gainDb": -6.0
+        },
+        {
+          "file": "audio/shimmer.mp3",
+          "atSeconds": 2.9,
+          "gainDb": -9.0
+        },
+        {
+          "file": "audio/groan.mp3",
+          "atSeconds": 4.4,
+          "gainDb": -9.0
+        }
+      ]
+    },
+    {
+      "id": "OpeningCuts",
+      "text": {
+        "en-us": "But at night, someone cuts the giant's bark and takes its amber: amber with black thorns. The Elves do not know who, so they trust no stranger.",
+        "id-id": "Tetapi pada malam hari, seseorang menyayat kulit kayu sang raksasa dan mengambil ambernya: amber berduri hitam. Para Elf tidak tahu siapa pelakunya, jadi mereka tidak percaya pada orang asing."
+      },
+      "startFrame": 540,
+      "endFrame": 810,
+      "sceneKind": "opening",
+      "momentOrder": 3,
+      "clip": "opening-03.mp4",
+      "poster": "opening-03.webp",
+      "frameCount": 270,
+      "durationSeconds": 9.0,
+      "loopStartSeconds": 5.0,
+      "posterFrame": 269,
+      "clipBytes": 291897,
+      "posterBytes": 18910,
+      "clipSha256": "f6ba308d859eccf6beab35f50bf49b11e2f37c6979c55101b854ce5305a145ae",
+      "posterRgbRmse": 3.314,
+      "effectCues": [
+        {
+          "file": "audio/wind.mp3",
+          "atSeconds": 0.0,
+          "gainDb": -10.0
+        },
+        {
+          "file": "audio/knife.mp3",
+          "atSeconds": 1.28,
+          "gainDb": -3.0
+        },
+        {
+          "file": "audio/crack.mp3",
+          "atSeconds": 1.4,
+          "gainDb": -6.0
+        },
+        {
+          "file": "audio/knife.mp3",
+          "atSeconds": 1.88,
+          "gainDb": -4.0
+        },
+        {
+          "file": "audio/crack.mp3",
+          "atSeconds": 2.0,
+          "gainDb": -7.0
+        },
+        {
+          "file": "audio/knife.mp3",
+          "atSeconds": 2.48,
+          "gainDb": -4.0
+        },
+        {
+          "file": "audio/crack.mp3",
+          "atSeconds": 2.6,
+          "gainDb": -7.0
+        },
+        {
+          "file": "audio/groan.mp3",
+          "atSeconds": 2.7,
+          "gainDb": -10.0
+        },
+        {
+          "file": "audio/drip.mp3",
+          "atSeconds": 3.0,
+          "gainDb": -6.0
+        },
+        {
+          "file": "audio/shimmer.mp3",
+          "atSeconds": 3.2,
+          "gainDb": -9.0
+        }
+      ]
+    },
+    {
+      "id": "OpeningAmbush",
+      "text": {
+        "en-us": "When the Elves see Lethiel with you, they think that you took the First Gardener prisoner. They block the road and call the beasts out of the caves.",
+        "id-id": "Saat para Elf melihat Lethiel bersamamu, mereka mengira kamu menawan sang Tukang Kebun Pertama. Mereka menutup jalan dan memanggil binatang-binatang buas keluar dari gua."
+      },
+      "startFrame": 810,
+      "endFrame": 1080,
+      "sceneKind": "opening",
+      "momentOrder": 4,
+      "clip": "opening-04.mp4",
+      "poster": "opening-04.webp",
+      "frameCount": 270,
+      "durationSeconds": 9.0,
+      "loopStartSeconds": 5.0,
+      "posterFrame": 269,
+      "clipBytes": 800202,
+      "posterBytes": 83262,
+      "clipSha256": "31afe96ec89cd9146d063dce1f8341c6540c3bc57cd5172f3e7f4e3ed220b351",
+      "posterRgbRmse": 6.426,
+      "effectCues": [
+        {
+          "file": "audio/horn.mp3",
+          "atSeconds": 0.2,
+          "gainDb": -3.0
+        },
+        {
+          "file": "audio/whoosh.mp3",
+          "atSeconds": 0.85,
+          "gainDb": -6.0
+        },
+        {
+          "file": "audio/leaves.mp3",
+          "atSeconds": 0.9,
+          "gainDb": -8.0
+        },
+        {
+          "file": "audio/growl.mp3",
+          "atSeconds": 1.4,
+          "gainDb": -6.0
+        },
+        {
+          "file": "audio/boar.mp3",
+          "atSeconds": 2.15,
+          "gainDb": -2.0
+        },
+        {
+          "file": "audio/crash.mp3",
+          "atSeconds": 2.65,
+          "gainDb": -3.0
+        },
+        {
+          "file": "audio/crash.mp3",
+          "atSeconds": 2.82,
+          "gainDb": -4.0
+        },
+        {
+          "file": "audio/crash.mp3",
+          "atSeconds": 2.95,
+          "gainDb": -4.0
+        },
+        {
+          "file": "audio/thud.mp3",
+          "atSeconds": 3.1,
+          "gainDb": -2.0
+        },
+        {
+          "file": "audio/boom.mp3",
+          "atSeconds": 3.1,
+          "gainDb": -8.0
+        }
+      ]
+    },
+    {
+      "id": "OpeningRoad",
+      "text": {
+        "en-us": "Fight your way to the Bramble Hill. The amber that paid Glimmerbough came from the giant's wounds, and you must learn who cut them.",
+        "id-id": "Bertarunglah sampai ke Bramble Hill. Amber yang membayar Glimmerbough berasal dari luka sang raksasa, dan kamu harus mencari tahu siapa yang menyayatnya."
+      },
+      "startFrame": 1080,
+      "endFrame": 1350,
+      "sceneKind": "opening",
+      "momentOrder": 5,
+      "clip": "opening-05.mp4",
+      "poster": "opening-05.webp",
+      "frameCount": 270,
+      "durationSeconds": 9.0,
+      "loopStartSeconds": 5.0,
+      "posterFrame": 269,
+      "clipBytes": 814245,
+      "posterBytes": 111614,
+      "clipSha256": "e199437620ddaceebd33a401ef7b7583444519209eaeece3404f0dbb8b52b73b",
+      "posterRgbRmse": 7.524,
+      "effectCues": [
+        {
+          "file": "audio/chime.mp3",
+          "atSeconds": 0.45,
+          "gainDb": -13.0
+        },
+        {
+          "file": "audio/thud.mp3",
+          "atSeconds": 0.45,
+          "gainDb": -10.0
+        },
+        {
+          "file": "audio/chime-high.mp3",
+          "atSeconds": 0.81,
+          "gainDb": -13.0
+        },
+        {
+          "file": "audio/chime.mp3",
+          "atSeconds": 1.17,
+          "gainDb": -12.0
+        },
+        {
+          "file": "audio/chime-high.mp3",
+          "atSeconds": 1.53,
+          "gainDb": -12.0
+        },
+        {
+          "file": "audio/chime.mp3",
+          "atSeconds": 1.89,
+          "gainDb": -11.0
+        },
+        {
+          "file": "audio/thud.mp3",
+          "atSeconds": 1.89,
+          "gainDb": -10.0
+        },
+        {
+          "file": "audio/chime-high.mp3",
+          "atSeconds": 2.25,
+          "gainDb": -11.0
+        },
+        {
+          "file": "audio/chime.mp3",
+          "atSeconds": 2.61,
+          "gainDb": -10.0
+        },
+        {
+          "file": "audio/chime-high.mp3",
+          "atSeconds": 2.97,
+          "gainDb": -10.0
+        },
+        {
+          "file": "audio/chime.mp3",
+          "atSeconds": 3.33,
+          "gainDb": -9.0
+        },
+        {
+          "file": "audio/chime-high.mp3",
+          "atSeconds": 3.69,
+          "gainDb": -8.0
+        },
+        {
+          "file": "audio/thud.mp3",
+          "atSeconds": 3.69,
+          "gainDb": -9.0
+        },
+        {
+          "file": "audio/groan.mp3",
+          "atSeconds": 4.0,
+          "gainDb": -4.0
+        },
+        {
+          "file": "audio/boom.mp3",
+          "atSeconds": 4.0,
+          "gainDb": -12.0
+        }
+      ]
+    },
+    {
+      "id": "BossWakes",
+      "text": {
+        "en-us": "The noise of your battles wakes the Old Bramble. The whole hill shakes, and two great eyes open in the bark. / Old Bramble: Who... cuts... my bark?",
+        "id-id": "Suara pertempuranmu membangunkan Old Bramble. Seluruh bukit berguncang, dan dua mata besar terbuka di kulit kayunya. / Old Bramble: Siapa... yang menyayat... kulit kayuku?"
+      },
+      "startFrame": 1350,
+      "endFrame": 1620,
+      "sceneKind": "boss",
+      "momentOrder": 1,
+      "clip": "boss-01.mp4",
+      "poster": "boss-01.webp",
+      "frameCount": 270,
+      "durationSeconds": 9.0,
+      "loopStartSeconds": 5.0,
+      "posterFrame": 269,
+      "clipBytes": 1193874,
+      "posterBytes": 53210,
+      "clipSha256": "38237705989763e9f8b6956bb881f3cde4cdc019b652f1bc64172e8b33581d94",
+      "posterRgbRmse": 4.838,
+      "effectCues": [
+        {
+          "file": "audio/quake.mp3",
+          "atSeconds": 0.5,
+          "gainDb": -2.0
+        },
+        {
+          "file": "audio/wings.mp3",
+          "atSeconds": 0.8,
+          "gainDb": -5.0
+        },
+        {
+          "file": "audio/leaves.mp3",
+          "atSeconds": 1.0,
+          "gainDb": -8.0
+        },
+        {
+          "file": "audio/wings.mp3",
+          "atSeconds": 1.2,
+          "gainDb": -7.0
+        },
+        {
+          "file": "audio/groan.mp3",
+          "atSeconds": 2.4,
+          "gainDb": -3.0
+        },
+        {
+          "file": "audio/shimmer.mp3",
+          "atSeconds": 2.6,
+          "gainDb": -10.0
+        },
+        {
+          "file": "audio/roar.mp3",
+          "atSeconds": 3.5,
+          "gainDb": 0.0
+        }
+      ]
+    },
+    {
+      "id": "BossBramble",
+      "text": {
+        "en-us": "You: I did not cut you. I came to find the ones who did. / Old Bramble: Small ones always say that. Small ones with small knives.",
+        "id-id": "You: Bukan aku yang menyayatmu. Aku datang untuk mencari pelakunya. / Old Bramble: Makhluk kecil selalu berkata begitu. Makhluk kecil dengan pisau kecil."
+      },
+      "startFrame": 1620,
+      "endFrame": 1890,
+      "sceneKind": "boss",
+      "momentOrder": 2,
+      "clip": "boss-02.mp4",
+      "poster": "boss-02.webp",
+      "frameCount": 270,
+      "durationSeconds": 9.0,
+      "loopStartSeconds": 5.0,
+      "posterFrame": 269,
+      "clipBytes": 757178,
+      "posterBytes": 47302,
+      "clipSha256": "031a1100b79c2325cbfa8f2e851e5a6e1c486d169752335e19438957c9f010d2",
+      "posterRgbRmse": 4.87,
+      "effectCues": [
+        {
+          "file": "audio/groan.mp3",
+          "atSeconds": 0.2,
+          "gainDb": -4.0
+        },
+        {
+          "file": "audio/crack.mp3",
+          "atSeconds": 1.2,
+          "gainDb": -2.0
+        },
+        {
+          "file": "audio/crack.mp3",
+          "atSeconds": 1.35,
+          "gainDb": -5.0
+        },
+        {
+          "file": "audio/boom.mp3",
+          "atSeconds": 2.6,
+          "gainDb": -10.0
+        },
+        {
+          "file": "audio/leaves.mp3",
+          "atSeconds": 3.0,
+          "gainDb": -10.0
+        }
+      ]
+    },
+    {
+      "id": "BossCutters",
+      "text": {
+        "en-us": "Old Bramble: Every night, they come with cold green fire. They cut my bark and carry my amber away. / Old Bramble: Every cut wakes me a little more. Now I am awake, and I am angry. / You: Then they did not want only your amber. They wanted you awake.",
+        "id-id": "Old Bramble: Setiap malam mereka datang membawa api hijau yang dingin. Mereka menyayat kulit kayuku dan membawa pergi amberku. / Old Bramble: Setiap sayatan membuatku sedikit lebih terjaga. Sekarang aku terjaga, dan aku marah. / You: Kalau begitu, mereka tidak hanya menginginkan ambermu. Mereka ingin kamu bangun."
+      },
+      "startFrame": 1890,
+      "endFrame": 2160,
+      "sceneKind": "boss",
+      "momentOrder": 3,
+      "clip": "boss-03.mp4",
+      "poster": "boss-03.webp",
+      "frameCount": 270,
+      "durationSeconds": 9.0,
+      "loopStartSeconds": 5.0,
+      "posterFrame": 269,
+      "clipBytes": 318217,
+      "posterBytes": 17864,
+      "clipSha256": "968d4cdac0b6b8de0ca538ec1cfcc357b537febb2e18c0fbd652cd1f0bc23936",
+      "posterRgbRmse": 3.178,
+      "effectCues": [
+        {
+          "file": "audio/wind.mp3",
+          "atSeconds": 0.0,
+          "gainDb": -10.0
+        },
+        {
+          "file": "audio/knife.mp3",
+          "atSeconds": 2.42,
+          "gainDb": -5.0
+        },
+        {
+          "file": "audio/crack.mp3",
+          "atSeconds": 2.5,
+          "gainDb": -7.0
+        },
+        {
+          "file": "audio/groan.mp3",
+          "atSeconds": 2.6,
+          "gainDb": -8.0
+        },
+        {
+          "file": "audio/knife.mp3",
+          "atSeconds": 2.92,
+          "gainDb": -5.0
+        },
+        {
+          "file": "audio/crack.mp3",
+          "atSeconds": 3.0,
+          "gainDb": -7.0
+        },
+        {
+          "file": "audio/drip.mp3",
+          "atSeconds": 3.2,
+          "gainDb": -8.0
+        },
+        {
+          "file": "audio/knife.mp3",
+          "atSeconds": 3.42,
+          "gainDb": -5.0
+        },
+        {
+          "file": "audio/crack.mp3",
+          "atSeconds": 3.5,
+          "gainDb": -6.0
+        },
+        {
+          "file": "audio/groan.mp3",
+          "atSeconds": 3.6,
+          "gainDb": -5.0
+        }
+      ]
+    },
+    {
+      "id": "BossThorn",
+      "text": {
+        "en-us": "You: Your amber paid for glowcaps in the Glowcap Hollows. I followed it here. / Old Bramble: My amber, with my thorn. And it is in your hand, thief!",
+        "id-id": "You: Ambermu dipakai untuk membayar glowcap di Glowcap Hollows. Aku mengikutinya sampai ke sini. / Old Bramble: Amberku, dengan duriku. Dan benda itu ada di tanganmu, pencuri!"
+      },
+      "startFrame": 2160,
+      "endFrame": 2430,
+      "sceneKind": "boss",
+      "momentOrder": 4,
+      "clip": "boss-04.mp4",
+      "poster": "boss-04.webp",
+      "frameCount": 270,
+      "durationSeconds": 9.0,
+      "loopStartSeconds": 5.0,
+      "posterFrame": 269,
+      "clipBytes": 368747,
+      "posterBytes": 16136,
+      "clipSha256": "99759c1563b697c2f5f964d801e23b29b794807095984d50b4ec95aa75e9b1f5",
+      "posterRgbRmse": 2.874,
+      "effectCues": [
+        {
+          "file": "audio/shimmer.mp3",
+          "atSeconds": 0.25,
+          "gainDb": -5.0
+        },
+        {
+          "file": "audio/magic.mp3",
+          "atSeconds": 1.6,
+          "gainDb": -10.0
+        },
+        {
+          "file": "audio/groan.mp3",
+          "atSeconds": 2.6,
+          "gainDb": -4.0
+        },
+        {
+          "file": "audio/crack.mp3",
+          "atSeconds": 2.9,
+          "gainDb": -1.0
+        },
+        {
+          "file": "audio/thud.mp3",
+          "atSeconds": 2.95,
+          "gainDb": -4.0
+        },
+        {
+          "file": "audio/leaves.mp3",
+          "atSeconds": 3.0,
+          "gainDb": -9.0
+        }
+      ]
+    },
+    {
+      "id": "BossChallenge",
+      "text": {
+        "en-us": "Old Bramble: Enough! Colossus, stand up! Brambles, close the first lane! / You: Then we fight, old giant. But I am not the one with the knife.",
+        "id-id": "Old Bramble: Cukup! Colossus, berdirilah! Semak duri, tutup jalur pertama! / You: Kalau begitu kita bertarung, raksasa tua. Tapi bukan aku yang membawa pisau."
+      },
+      "startFrame": 2430,
+      "endFrame": 2700,
+      "sceneKind": "boss",
+      "momentOrder": 5,
+      "clip": "boss-05.mp4",
+      "poster": "boss-05.webp",
+      "frameCount": 270,
+      "durationSeconds": 9.0,
+      "loopStartSeconds": 5.0,
+      "posterFrame": 269,
+      "clipBytes": 794070,
+      "posterBytes": 45748,
+      "clipSha256": "6fe8fa73b7528aa4adbda1b4e31df6e27d73b3db160b87bce42ff557caeefdc3",
+      "posterRgbRmse": 4.876,
+      "effectCues": [
+        {
+          "file": "audio/drums.mp3",
+          "atSeconds": 0.1,
+          "gainDb": -2.0
+        },
+        {
+          "file": "audio/whoosh.mp3",
+          "atSeconds": 0.3,
+          "gainDb": -8.0
+        },
+        {
+          "file": "audio/slam.mp3",
+          "atSeconds": 1.6,
+          "gainDb": -2.0
+        },
+        {
+          "file": "audio/creak.mp3",
+          "atSeconds": 1.65,
+          "gainDb": -6.0
+        },
+        {
+          "file": "audio/crack.mp3",
+          "atSeconds": 2.2,
+          "gainDb": -4.0
+        },
+        {
+          "file": "audio/rocks.mp3",
+          "atSeconds": 2.5,
+          "gainDb": -2.0
+        },
+        {
+          "file": "audio/quake.mp3",
+          "atSeconds": 2.5,
+          "gainDb": -6.0
+        },
+        {
+          "file": "audio/roar.mp3",
+          "atSeconds": 3.3,
+          "gainDb": -2.0
+        }
+      ]
+    },
+    {
+      "id": "EndingRest",
+      "text": {
+        "en-us": "The Old Bramble sits down with a sound like a hundred falling trees. Its eyes grow heavy, and the beasts creep back into their caves.",
+        "id-id": "Old Bramble duduk dengan suara seperti seratus pohon tumbang. Matanya menjadi berat, dan binatang-binatang buas merangkak kembali ke gua mereka."
+      },
+      "startFrame": 2700,
+      "endFrame": 2970,
+      "sceneKind": "ending",
+      "momentOrder": 1,
+      "clip": "ending-01.mp4",
+      "poster": "ending-01.webp",
+      "frameCount": 270,
+      "durationSeconds": 9.0,
+      "loopStartSeconds": 5.0,
+      "posterFrame": 269,
+      "clipBytes": 771988,
+      "posterBytes": 40736,
+      "clipSha256": "cfa30433141f3c3079aabfbd528dcefedb4951c27da2939d22ca00484e19ff7e",
+      "posterRgbRmse": 4.622,
+      "effectCues": [
+        {
+          "file": "audio/quake.mp3",
+          "atSeconds": 0.5,
+          "gainDb": -8.0
+        },
+        {
+          "file": "audio/thud.mp3",
+          "atSeconds": 0.55,
+          "gainDb": -2.0
+        },
+        {
+          "file": "audio/leaves.mp3",
+          "atSeconds": 0.7,
+          "gainDb": -8.0
+        },
+        {
+          "file": "audio/groan.mp3",
+          "atSeconds": 1.2,
+          "gainDb": -6.0
+        },
+        {
+          "file": "audio/wind.mp3",
+          "atSeconds": 2.9,
+          "gainDb": -8.0
+        },
+        {
+          "file": "audio/chime.mp3",
+          "atSeconds": 4.0,
+          "gainDb": -12.0
+        }
+      ]
+    },
+    {
+      "id": "EndingGardener",
+      "text": {
+        "en-us": "Lethiel touches the cuts with a glowing staff, and Holy light closes them. The Thornwood Elves lower their bows. / Lethiel: A fine old tree. Adequate.",
+        "id-id": "Lethiel menyentuh sayatan-sayatan itu dengan tongkat yang bercahaya, dan cahaya Holy menutupnya. Para Elf Thornwood menurunkan busur mereka. / Lethiel: Pohon tua yang bagus. Cukup."
+      },
+      "startFrame": 2970,
+      "endFrame": 3240,
+      "sceneKind": "ending",
+      "momentOrder": 2,
+      "clip": "ending-02.mp4",
+      "poster": "ending-02.webp",
+      "frameCount": 270,
+      "durationSeconds": 9.0,
+      "loopStartSeconds": 5.0,
+      "posterFrame": 269,
+      "clipBytes": 446761,
+      "posterBytes": 25000,
+      "clipSha256": "40c8f4b6a1cff24108c245f3ca96cc5d416f6ab40677a50dd8873c35bd2f353c",
+      "posterRgbRmse": 3.405,
+      "effectCues": [
+        {
+          "file": "audio/shimmer.mp3",
+          "atSeconds": 1.0,
+          "gainDb": -6.0
+        },
+        {
+          "file": "audio/chime-high.mp3",
+          "atSeconds": 1.5,
+          "gainDb": -12.0
+        },
+        {
+          "file": "audio/shimmer.mp3",
+          "atSeconds": 2.0,
+          "gainDb": -7.0
+        },
+        {
+          "file": "audio/chime-high.mp3",
+          "atSeconds": 2.5,
+          "gainDb": -12.0
+        },
+        {
+          "file": "audio/shimmer.mp3",
+          "atSeconds": 3.0,
+          "gainDb": -7.0
+        },
+        {
+          "file": "audio/chime-high.mp3",
+          "atSeconds": 3.5,
+          "gainDb": -11.0
+        },
+        {
+          "file": "audio/chime.mp3",
+          "atSeconds": 4.2,
+          "gainDb": -10.0
+        }
+      ]
+    },
+    {
+      "id": "EndingCamp",
+      "text": {
+        "en-us": "Under the roots, you find the cutters' empty camp. They left their pay behind: coins of bone, cold as ice, in a purse with the seal of three lanes, cut through.",
+        "id-id": "Di bawah akar, kamu menemukan perkemahan para penyayat yang kosong. Mereka meninggalkan upah mereka: koin-koin tulang, sedingin es, di dalam kantong bersegel tiga jalur yang terpotong."
+      },
+      "startFrame": 3240,
+      "endFrame": 3510,
+      "sceneKind": "ending",
+      "momentOrder": 3,
+      "clip": "ending-03.mp4",
+      "poster": "ending-03.webp",
+      "frameCount": 270,
+      "durationSeconds": 9.0,
+      "loopStartSeconds": 5.0,
+      "posterFrame": 269,
+      "clipBytes": 351735,
+      "posterBytes": 11758,
+      "clipSha256": "88d91d34b77988960e41c5e873c037b25085abe311d2feabf26c5c3f56a2a342",
+      "posterRgbRmse": 2.582,
+      "effectCues": [
+        {
+          "file": "audio/wind.mp3",
+          "atSeconds": 0.9,
+          "gainDb": -12.0
+        },
+        {
+          "file": "audio/pouch.mp3",
+          "atSeconds": 2.0,
+          "gainDb": -3.0
+        },
+        {
+          "file": "audio/rattle.mp3",
+          "atSeconds": 2.3,
+          "gainDb": -4.0
+        },
+        {
+          "file": "audio/coin.mp3",
+          "atSeconds": 2.4,
+          "gainDb": -8.0
+        },
+        {
+          "file": "audio/coin.mp3",
+          "atSeconds": 3.5,
+          "gainDb": -6.0
+        },
+        {
+          "file": "audio/shimmer.mp3",
+          "atSeconds": 3.8,
+          "gainDb": -10.0
+        },
+        {
+          "file": "audio/magic.mp3",
+          "atSeconds": 4.0,
+          "gainDb": -10.0
+        },
+        {
+          "file": "audio/boom.mp3",
+          "atSeconds": 4.0,
+          "gainDb": -12.0
+        }
+      ]
+    },
+    {
+      "id": "EndingColossus",
+      "text": {
+        "en-us": "Before its eyes close, the Old Bramble sends the Mountain Colossus with you. / Old Bramble: Find the ones with the knives, small one. My Colossus will walk with you.",
+        "id-id": "Sebelum matanya terpejam, Old Bramble mengirim Raksasa Gunung bersamamu. / Old Bramble: Temukan mereka yang membawa pisau, makhluk kecil. Colossus-ku akan berjalan bersamamu."
+      },
+      "startFrame": 3510,
+      "endFrame": 3780,
+      "sceneKind": "ending",
+      "momentOrder": 4,
+      "clip": "ending-04.mp4",
+      "poster": "ending-04.webp",
+      "frameCount": 270,
+      "durationSeconds": 9.0,
+      "loopStartSeconds": 5.0,
+      "posterFrame": 269,
+      "clipBytes": 536288,
+      "posterBytes": 35260,
+      "clipSha256": "e227f8a3c2e84cc4832f0031add224adef346066ce762fa11375c8bc8f968f86",
+      "posterRgbRmse": 5.072,
+      "effectCues": [
+        {
+          "file": "audio/rocks.mp3",
+          "atSeconds": 0.4,
+          "gainDb": -4.0
+        },
+        {
+          "file": "audio/rocks.mp3",
+          "atSeconds": 0.9,
+          "gainDb": -6.0
+        },
+        {
+          "file": "audio/rocks.mp3",
+          "atSeconds": 1.5,
+          "gainDb": -6.0
+        },
+        {
+          "file": "audio/thud.mp3",
+          "atSeconds": 2.3,
+          "gainDb": -3.0
+        },
+        {
+          "file": "audio/boom.mp3",
+          "atSeconds": 2.3,
+          "gainDb": -10.0
+        },
+        {
+          "file": "audio/shimmer.mp3",
+          "atSeconds": 2.4,
+          "gainDb": -5.0
+        },
+        {
+          "file": "audio/wings.mp3",
+          "atSeconds": 3.1,
+          "gainDb": -8.0
+        },
+        {
+          "file": "audio/birds.mp3",
+          "atSeconds": 3.6,
+          "gainDb": -6.0
+        }
+      ]
+    },
+    {
+      "id": "EndingMarches",
+      "text": {
+        "en-us": "Coins of bone are paid in one place only: the Hollow Marches, where a dead ferryman takes travelers over the water. The trail goes on.",
+        "id-id": "Koin tulang hanya dipakai di satu tempat: Hollow Marches, tempat seorang tukang perahu yang sudah mati menyeberangkan para pengelana. Jejaknya berlanjut."
+      },
+      "startFrame": 3780,
+      "endFrame": 4050,
+      "sceneKind": "ending",
+      "momentOrder": 5,
+      "clip": "ending-05.mp4",
+      "poster": "ending-05.webp",
+      "frameCount": 270,
+      "durationSeconds": 9.0,
+      "loopStartSeconds": 5.0,
+      "posterFrame": 269,
+      "clipBytes": 702913,
+      "posterBytes": 68594,
+      "clipSha256": "1fb0a893c1cb9298cd77f8c3b750042bf7eb9ba6232ff65ccbc2065a74fe3994",
+      "posterRgbRmse": 5.957,
+      "effectCues": [
+        {
+          "file": "audio/coin.mp3",
+          "atSeconds": 0.1,
+          "gainDb": -6.0
+        },
+        {
+          "file": "audio/whoosh.mp3",
+          "atSeconds": 1.6,
+          "gainDb": -4.0
+        },
+        {
+          "file": "audio/wind.mp3",
+          "atSeconds": 2.0,
+          "gainDb": -4.0
+        },
+        {
+          "file": "audio/magic.mp3",
+          "atSeconds": 3.0,
+          "gainDb": -10.0
+        },
+        {
+          "file": "audio/magic.mp3",
+          "atSeconds": 3.3,
+          "gainDb": -11.0
+        },
+        {
+          "file": "audio/shimmer.mp3",
+          "atSeconds": 3.6,
+          "gainDb": -8.0
+        },
+        {
+          "file": "audio/boom.mp3",
+          "atSeconds": 3.6,
+          "gainDb": -12.0
+        }
+      ]
+    }
+  ],
+  "audio": [
+    {
+      "path": "audio/birds.mp3",
+      "bytes": 32643,
+      "scenes": ["ending", "opening"],
+      "sha256": "9e82f20d3c63205d6902552bef8b7de0bd494a07afcf810d42260a3b20c8e47b",
+      "settingsBus": "effects",
+      "durationSeconds": 4.0,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/boar.mp3",
+      "bytes": 4640,
+      "scenes": ["opening"],
+      "sha256": "aa275f2ad97638d7db4a5c120fb686b0fa7a9f28ca424916ba93c70db16f0cf8",
+      "settingsBus": "effects",
+      "durationSeconds": 0.516667,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/boom.mp3",
+      "bytes": 28515,
+      "scenes": ["boss", "ending", "opening"],
+      "sha256": "cad553fcb8824e4b6bd463e9b917591a270615d791cc5d8d93ef94b4f80ce65c",
+      "settingsBus": "effects",
+      "durationSeconds": 3.5,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/boss-music.mp3",
+      "bytes": 546634,
+      "scenes": ["boss"],
+      "sha256": "5cee6edc388eba5f65fba41f107ce157d8bc1e08c2d9d36c5adc96c9242424e1",
+      "settingsBus": "music",
+      "durationSeconds": 78.0,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/chime-high.mp3",
+      "bytes": 13432,
+      "scenes": ["ending", "opening"],
+      "sha256": "d9c3b62d6044c2c2e7d4f3b77e9a8985d6ba1602342e34876eed56609b40c2bf",
+      "settingsBus": "effects",
+      "durationSeconds": 1.6,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/chime.mp3",
+      "bytes": 11551,
+      "scenes": ["ending", "opening"],
+      "sha256": "9d0e5eeebaba288d1eb5290dbc7d62b2355c70e536c4c134a1ccc8bd15f0a2b4",
+      "settingsBus": "effects",
+      "durationSeconds": 1.363379,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/coin.mp3",
+      "bytes": 11745,
+      "scenes": ["ending"],
+      "sha256": "61ef27d8fc698db5fa9476a1d253b81fb1fdb9c23cc59ae81af008759fe78eef",
+      "settingsBus": "effects",
+      "durationSeconds": 1.404694,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/crack.mp3",
+      "bytes": 2968,
+      "scenes": ["boss", "opening"],
+      "sha256": "af97785a4bb9328e9116a01fd22cbbd5540b4927936ecf5dc8782d01391b16f4",
+      "settingsBus": "effects",
+      "durationSeconds": 0.292971,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/crash.mp3",
+      "bytes": 4849,
+      "scenes": ["opening"],
+      "sha256": "abe1727cbe0f87c0751c1b627aeeb4979fb15ac4a95013a54fad188221e82ad5",
+      "settingsBus": "effects",
+      "durationSeconds": 0.52873,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/creak.mp3",
+      "bytes": 19687,
+      "scenes": ["boss", "opening"],
+      "sha256": "d0d2c287a8c53bc7ce11b72b67b95e5b419d740bc90bacd51cfb6e27d77fc337",
+      "settingsBus": "effects",
+      "durationSeconds": 2.4,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/drip.mp3",
+      "bytes": 3177,
+      "scenes": ["boss", "opening"],
+      "sha256": "b48715dcda41f45e1aa3d14ca9f1700cdba9c35a4fdc9b0ecdd0900bf7ec8df5",
+      "settingsBus": "effects",
+      "durationSeconds": 0.322494,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/drums.mp3",
+      "bytes": 19687,
+      "scenes": ["boss"],
+      "sha256": "4f3f7a68fa0ceb2bddec235c5be78a5b7ca04d9fdc172fa5a5c98c1f71f0a88d",
+      "settingsBus": "effects",
+      "durationSeconds": 2.4,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/ending-music.mp3",
+      "bytes": 511559,
+      "scenes": ["ending"],
+      "sha256": "c1d0dd37e6d667bc0fbb7fcbaa26ed69ec44e7ac079a2681cee810a5cf13e4c9",
+      "settingsBus": "music",
+      "durationSeconds": 73.0,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/groan.mp3",
+      "bytes": 19687,
+      "scenes": ["boss", "ending", "opening"],
+      "sha256": "f1377ebfea057b4109f231b219ec327d1fb288d0e66202d5646903e9bda1f690",
+      "settingsBus": "effects",
+      "durationSeconds": 2.4,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/growl.mp3",
+      "bytes": 9069,
+      "scenes": ["opening"],
+      "sha256": "0b6742c4a1bccbfaf03e8b722e643f4b5b8a16d1c9eb729058017b283b852b03",
+      "settingsBus": "effects",
+      "durationSeconds": 1.068322,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/horn.mp3",
+      "bytes": 27837,
+      "scenes": ["opening"],
+      "sha256": "9bf39364d57dd9cc0e8543f665a5ff9d15ab6cc069695ab6eaa04f35dc41e19e",
+      "settingsBus": "effects",
+      "durationSeconds": 3.4,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/knife.mp3",
+      "bytes": 6521,
+      "scenes": ["boss", "opening"],
+      "sha256": "8cd2ea8ecfe952334618f0f1f67c95b048df810c062cde539a4e78478d34eb5c",
+      "settingsBus": "effects",
+      "durationSeconds": 0.741973,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/leaves.mp3",
+      "bytes": 20523,
+      "scenes": ["boss", "ending", "opening"],
+      "sha256": "a7f570422abde8655ed623e27d757b6d6d58dad85ab1699ba494f5cb8e2ea131",
+      "settingsBus": "effects",
+      "durationSeconds": 2.5,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/magic.mp3",
+      "bytes": 13208,
+      "scenes": ["boss", "ending", "opening"],
+      "sha256": "63a8ec991603966ce1101c350bec20150cafa20d9cd7ff8283a06b0112520464",
+      "settingsBus": "effects",
+      "durationSeconds": 1.577664,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/opening-music.mp3",
+      "bytes": 476630,
+      "scenes": ["opening"],
+      "sha256": "f29600ed133ac98696a725fa7f14fe9f6011f21b42069e21a6a768f3b6558337",
+      "settingsBus": "music",
+      "durationSeconds": 68.0,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/pouch.mp3",
+      "bytes": 4013,
+      "scenes": ["ending"],
+      "sha256": "876aa013d1d81b6e158345c28777bf5d074c32ae3c4063146a789ea22c196777",
+      "settingsBus": "effects",
+      "durationSeconds": 0.442222,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/quake.mp3",
+      "bytes": 32643,
+      "scenes": ["boss", "ending"],
+      "sha256": "50a3fbfe1a9b56dd66a230eb1d4309f91dd444cdd70612b654103d0f31035188",
+      "settingsBus": "effects",
+      "durationSeconds": 4.0,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/rattle.mp3",
+      "bytes": 13470,
+      "scenes": ["ending"],
+      "sha256": "59b3e183c958daf7e123587379c348bfff5e682e77435f10648ee41439198159",
+      "settingsBus": "effects",
+      "durationSeconds": 1.6,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/roar.mp3",
+      "bytes": 37450,
+      "scenes": ["boss"],
+      "sha256": "1b343fa7a8b6f4d409b23f92444cfc8be1186407700424000a3244e5999ad849",
+      "settingsBus": "effects",
+      "durationSeconds": 4.6,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/rocks.mp3",
+      "bytes": 7775,
+      "scenes": ["boss", "ending"],
+      "sha256": "4caa6962f699fff4836b6900b4951df5d9afb5aef030988e4d25584d3c924bab",
+      "settingsBus": "effects",
+      "durationSeconds": 0.9,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/shimmer.mp3",
+      "bytes": 24521,
+      "scenes": ["boss", "ending", "opening"],
+      "sha256": "51f130ced054bedf9c543bcf4acd634c1826f4d0d52ad407e48fca677dc8d4d1",
+      "settingsBus": "effects",
+      "durationSeconds": 3.0,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/slam.mp3",
+      "bytes": 4013,
+      "scenes": ["boss"],
+      "sha256": "ec85d9d8e1bf013751b864f0045cc6af045a013f5c68759a00da7c20c291449b",
+      "settingsBus": "effects",
+      "durationSeconds": 0.430136,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/thud.mp3",
+      "bytes": 4640,
+      "scenes": ["boss", "ending", "opening"],
+      "sha256": "e4ef84edd2d049ff18753629bfda6720c2ebf26fcbfad84c9d011114a5a038c0",
+      "settingsBus": "effects",
+      "durationSeconds": 0.507098,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/whoosh.mp3",
+      "bytes": 3386,
+      "scenes": ["boss", "ending", "opening"],
+      "sha256": "df02280b53dd2147d22fe5e1c9c3c8a06b04e65ececb1274d24d6163ca0e67bd",
+      "settingsBus": "effects",
+      "durationSeconds": 0.365374,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/wind.mp3",
+      "bytes": 33688,
+      "scenes": ["boss", "ending", "opening"],
+      "sha256": "f3eb224822bc81d6230ee53fc39251bd66cd8786b0ca67a53600c57f31664d85",
+      "settingsBus": "effects",
+      "durationSeconds": 4.14034,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/wings.mp3",
+      "bytes": 21358,
+      "scenes": ["boss", "ending", "opening"],
+      "sha256": "5f4f9ecff5c010ec2928425b08b1554ab70c4f8cf4aae57ff17564fe803b1698",
+      "settingsBus": "effects",
+      "durationSeconds": 2.6,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    }
+  ],
+  "budgets": {
+    "opening": {
+      "videoBytes": 3888250,
+      "posterBytes": 384722,
+      "audioBytes": 782530
+    },
+    "boss": {
+      "videoBytes": 3432086,
+      "posterBytes": 180260,
+      "audioBytes": 850081
+    },
+    "ending": {
+      "videoBytes": 2809685,
+      "posterBytes": 181348,
+      "audioBytes": 808357
+    }
+  }
+}

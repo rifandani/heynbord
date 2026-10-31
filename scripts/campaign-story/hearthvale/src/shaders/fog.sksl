@@ -1,0 +1,19 @@
+uniform float3 iResolution;
+uniform float uPhase;
+uniform float uDensity;
+uniform float uSoft;
+uniform float3 uLight;
+uniform float3 uShade;
+uniform float2 uDir;
+uniform float uScale;
+uniform float uSeed;
+uniform float uOpacity;
+
+half4 main(float2 coord) {
+    float2 p = coord / iResolution.y * uScale + float2(uSeed, uSeed * 0.7);
+    float n = flow(p, uDir, uPhase) * 0.72 + flow(p * 2.2 + float2(3.0, 1.0), uDir * 1.8, uPhase) * 0.28;
+    float t = mix(0.86, 0.18, uDensity);
+    float a = smoothstep(t - uSoft, t + uSoft, n) * uOpacity;
+    float3 col = mix(uShade, uLight, smoothstep(0.35, 0.85, n));
+    return half4(half3(col * a), half(a));
+}

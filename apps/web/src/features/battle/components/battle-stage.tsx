@@ -1,13 +1,26 @@
 import { useAtomSet } from "@effect/atom-react";
 import { cn } from "cn";
-import { lazy, Suspense, useCallback, useEffect, useMemo } from "react";
+import {
+  lazy,
+  Suspense,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { toast } from "sonner";
 
+import { GameButton } from "@/core/components/game/game-button";
 import type { PadPress } from "@/core/input/gamepad";
 import { useGamepad } from "@/core/input/use-gamepad";
 import { battlePainting } from "@/features/battle/battle-painting";
+import type { BattleSession } from "@/features/battle/battle-session";
 import { heroOf } from "@/features/battle/battle-view";
-import { controlsGuideAtom, padIdAtom } from "@/features/battle/battle.atoms";
+import {
+  controlsGuideAtom,
+  leaveConfirmAtom,
+  padIdAtom,
+} from "@/features/battle/battle.atoms";
 import {
   dialogOpen,
   inDialog,
@@ -18,6 +31,7 @@ import type {
   BattleKeyCommand,
 } from "@/features/battle/components/battle-keys";
 import {
+  cancelAction,
   inspectDirection,
   keyCommand,
   logKeyAction,
@@ -39,6 +53,10 @@ import { TopBar } from "@/features/battle/components/top-bar";
 import { TutorialPanel } from "@/features/battle/components/tutorial-panel";
 import { UnitDetails } from "@/features/battle/components/unit-details";
 import type { useBattle } from "@/features/battle/use-battle";
+import {
+  clearBattleModels,
+  useBattleModels,
+} from "@/features/battle/use-battle-models";
 import { useGameText } from "@/features/battle/use-game-text";
 import { useHandbook } from "@/features/handbook/use-handbook";
 import { useBattleHints } from "@/features/hint/use-hints";
@@ -58,11 +76,16 @@ const hasWebgl2 = (): boolean => {
   }
 };
 
-/** What a Battle key can act on: the Battle, and the panels over it. */
-interface KeyContext {
-  readonly battle: Battle;
+/** The panels and the confirm that a Battle key or a pad press can open. */
+interface BattleOverlays {
   readonly openHandbook: () => void;
   readonly openControlsGuide: () => void;
+  readonly openLeave: () => void;
+}
+
+/** What a Battle key can act on: the Battle, and the panels over it. */
+interface KeyContext extends BattleOverlays {
+  readonly battle: Battle;
 }
 
 /**
@@ -146,7 +169,21 @@ const KEY_HANDLERS: Readonly<
     input.preventDefault?.();
     openControlsGuide();
   },
-  cancel: ({ battle }) => battle.select(null),
+  // Esc in Live (GDD 11.4) cancels what is open first. With nothing to cancel,
+  // it opens the Leave confirm, as the Leave button does. A finished Battle
+  // already shows its result, so there is no Live to leave.
+  cancel: ({ battle, openLeave }, input) => {
+    if (battle.liveSession?.view.result !== null) {
+      return;
+    }
+    const action = cancelAction(battle.selected !== null, input.command.source);
+    if (action === "select") {
+      battle.select(null);
+    } else if (action === "leave") {
+      input.preventDefault?.();
+      openLeave();
+    }
+  },
 };
 
 /**
@@ -266,11 +303,7 @@ const tabIntoDetails = (battle: Battle, event: KeyboardEvent): boolean => {
 };
 
 /** UI-02: a full Battle with only a keyboard. */
-const useBattleKeys = (
-  battle: Battle,
-  openHandbook: () => void,
-  openControlsGuide: () => void
-) => {
+const useBattleKeys = (battle: Battle, overlays: BattleOverlays) => {
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
       if (tabIntoDetails(battle, event)) {
@@ -279,7 +312,7 @@ const useBattleKeys = (
       const command = commandFromKey(event);
       if (command) {
         runKey(
-          { battle, openHandbook, openControlsGuide },
+          { battle, ...overlays },
           {
             command,
             shiftKey: event.shiftKey,
@@ -291,7 +324,7 @@ const useBattleKeys = (
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [battle, openControlsGuide, openHandbook]);
+  }, [battle, overlays]);
 };
 
 /**
@@ -313,11 +346,7 @@ const padCommandFor = (press: PadPress): BattleKeyCommand | null => {
 };
 
 /** UI-02: a full Battle with only a controller. The pad shares the key path. */
-const useBattlePad = (
-  battle: Battle,
-  openHandbook: () => void,
-  openControlsGuide: () => void
-) => {
+const useBattlePad = (battle: Battle, overlays: BattleOverlays) => {
   const { tr } = useGameText();
   const setPadId = useAtomSet(padIdAtom);
   useEffect(() => () => setPadId(null), [setPadId]);
@@ -325,7 +354,7 @@ const useBattlePad = (
     onPress: (press) => {
       const command = padCommandFor(press);
       if (command) {
-        runKey({ battle, openHandbook, openControlsGuide }, padInput(command));
+        runKey({ battle, ...overlays }, padInput(command));
       }
     },
     onConnect: (pad) => {
@@ -368,7 +397,7 @@ const BoardLayer = ({
  * Bar, the Battle Log and the result. It loads in its own chunk when a Battle
  * starts.
  */
-export const BattleStage = ({ battle }: { readonly battle: Battle }) => {
+const BattleStageContent = ({ battle }: { readonly battle: Battle }) => {
   const { tr } = useGameText();
   const webgl2 = useMemo(() => hasWebgl2(), []);
   const options = battle.session?.options;
@@ -378,12 +407,21 @@ export const BattleStage = ({ battle }: { readonly battle: Battle }) => {
   );
   const handbook = useHandbook();
   const setGuide = useAtomSet(controlsGuideAtom);
+  const setLeave = useAtomSet(leaveConfirmAtom);
   const openControlsGuide = useCallback(
     () => setGuide({ line: null }),
     [setGuide]
   );
-  useBattleKeys(battle, handbook.open, openControlsGuide);
-  useBattlePad(battle, handbook.open, openControlsGuide);
+  const overlays = useMemo(
+    () => ({
+      openHandbook: handbook.open,
+      openControlsGuide,
+      openLeave: () => setLeave(true),
+    }),
+    [handbook.open, openControlsGuide, setLeave]
+  );
+  useBattleKeys(battle, overlays);
+  useBattlePad(battle, overlays);
   useBattleHints(battle.liveSession);
   return (
     <div
@@ -426,3 +464,80 @@ export const BattleStage = ({ battle }: { readonly battle: Battle }) => {
     </div>
   );
 };
+
+/** The retry when one or more Unit Models did not load. */
+const BattleModelError = ({
+  retry,
+  leave,
+}: {
+  readonly retry: () => void;
+  readonly leave: () => void;
+}) => {
+  const { tr } = useGameText();
+  return (
+    <div className="bg-night-plate text-cream fixed inset-0 z-50 grid place-items-center px-6">
+      <div className="max-w-sm text-center">
+        <p className="font-display text-xl">{tr("battle.modelError")}</p>
+        <div className="mt-4 flex justify-center gap-2">
+          <GameButton intent="gold" size="lg" onPress={retry}>
+            {tr("battle.modelRetry")}
+          </GameButton>
+          <GameButton intent="wood" size="lg" onPress={leave}>
+            {tr("battle.quit")}
+          </GameButton>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const BattleStageModels = ({
+  battle,
+  session,
+  onRetry,
+}: {
+  readonly battle: Battle;
+  readonly session: BattleSession;
+  readonly onRetry: () => void;
+}) => {
+  const failed = useBattleModels(session);
+  if (failed.length > 0) {
+    return (
+      <BattleModelError
+        retry={onRetry}
+        leave={() => {
+          clearBattleModels(session);
+          battle.leave();
+        }}
+      />
+    );
+  }
+  return <BattleStageContent battle={battle} />;
+};
+
+const BattleStageGate = ({
+  battle,
+  session,
+}: {
+  readonly battle: Battle;
+  readonly session: BattleSession;
+}) => {
+  const [attempt, setAttempt] = useState(0);
+  return (
+    <BattleStageModels
+      key={attempt}
+      battle={battle}
+      session={session}
+      onRetry={() => {
+        clearBattleModels(session);
+        setAttempt((value) => value + 1);
+      }}
+    />
+  );
+};
+
+/** The Battle, after every Unit Model of the Battle is ready. */
+export const BattleStage = ({ battle }: { readonly battle: Battle }) =>
+  battle.liveSession ? (
+    <BattleStageGate battle={battle} session={battle.liveSession} />
+  ) : null;

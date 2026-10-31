@@ -1,0 +1,30 @@
+// The pale bone-white stone of Marrow Castle: long blocks in courses, with
+// soft mortar, pits and a warm light from the upper left.
+uniform float3 iResolution;
+uniform float2 uOffset;
+uniform float uScale;
+uniform float3 uLight;
+uniform float3 uShade;
+uniform float uGlow;
+
+half4 main(float2 coord) {
+    float2 p = (coord - iResolution.xy * 0.5) / uScale + uOffset;
+    float row = floor(p.y / 62.0);
+    float shift = hash(float2(row, 3.0)) * 120.0;
+    float2 b = float2((p.x + shift) / 180.0, p.y / 62.0);
+    float2 cell = floor(b);
+    float2 f = fract(b);
+    float id = hash(cell + float2(7.0, 1.0));
+    float mortar = smoothstep(0.0, 0.04, f.y) * smoothstep(0.0, 0.04, 1.0 - f.y)
+                 * smoothstep(0.0, 0.018, f.x) * smoothstep(0.0, 0.018, 1.0 - f.x);
+    float n = fbm(p / 38.0);
+    float pit = smoothstep(0.62, 0.7, vnoise(p / 7.0));
+    float bevel = smoothstep(0.0, 0.25, f.y) * 0.18 - smoothstep(0.7, 1.0, f.y) * 0.22;
+    float l = 0.78 + 0.18 * n + 0.08 * (id - 0.5) + bevel - 0.18 * pit;
+    float2 uv = coord / iResolution.xy;
+    float key = 1.0 - 0.55 * length(uv - float2(0.1, 0.0));
+    float3 c = mix(uShade, uLight, clamp(l * key, 0.0, 1.0));
+    c *= mix(0.55, 1.0, mortar);
+    c += uGlow * float3(0.1, 0.35, 0.18) * smoothstep(0.5, 0.9, n);
+    return half4(half3(c), 1.0);
+}

@@ -2,7 +2,10 @@ import { Effect } from "effect";
 
 import type { SoundName } from "@/core/audio/audio-sounds";
 import { Audio } from "@/core/audio/audio.service";
-import type { AudioService } from "@/core/audio/audio.service";
+import type {
+  AudioService,
+  PresentationAudio,
+} from "@/core/audio/audio.service";
 import type { MusicTrack } from "@/core/audio/music-catalog";
 import { audioRuntime } from "@/core/runtime/client";
 
@@ -43,4 +46,18 @@ export const playMusicTrack = (track: MusicTrack): void => {
 /** Plays one result sting, ducking the loop, then restores it. */
 export const playMusicSting = (result: "victory" | "defeat"): void => {
   fork((audio) => audio.sting(result));
+};
+
+/** Temporarily owns music playback; null restores the requested screen loop. */
+export const playPresentation = (
+  files: readonly PresentationAudio[] | null
+): void => {
+  fork((audio) => audio.presentation(files));
+};
+
+/** Replaces or cancels the cues of the current presentation moment. */
+export const playPresentationCue = (
+  files: readonly PresentationAudio[] | null
+): void => {
+  fork((audio) => audio.cue(files));
 };

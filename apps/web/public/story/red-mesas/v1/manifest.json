@@ -1,0 +1,1011 @@
+{
+  "region": "red-mesas",
+  "version": 1,
+  "width": 1280,
+  "height": 720,
+  "fps": 30,
+  "frameCount": 4050,
+  "locales": ["en-us", "id-id"],
+  "playback": {
+    "autoAdvance": false,
+    "continueBeforeEnd": true,
+    "readingHold": "loop-from-loopStartSeconds-until-player-action",
+    "loopStartSeconds": 5.0,
+    "back": "restart-moment",
+    "reducedMotion": "poster",
+    "videoFailure": "poster",
+    "audioFailure": "silent",
+    "textAndControls": "external",
+    "stopEffectsOnLeave": true,
+    "profileMutations": false
+  },
+  "listeningReview": "pending",
+  "moments": [
+    {
+      "id": "OpeningLand",
+      "text": {
+        "en-us": "The trail of painted gold leads you east, to the Red Mesas. Here the Orc tribes live on top of the mesas, and they love a good fight.",
+        "id-id": "Jejak emas palsu membawamu ke timur, ke Red Mesas. Di sini suku-suku Orc tinggal di puncak mesa, dan mereka sangat suka bertarung."
+      },
+      "startFrame": 0,
+      "endFrame": 270,
+      "sceneKind": "opening",
+      "momentOrder": 1,
+      "clip": "opening-01.mp4",
+      "poster": "opening-01.webp",
+      "frameCount": 270,
+      "durationSeconds": 9.0,
+      "loopStartSeconds": 5.0,
+      "posterFrame": 269,
+      "clipBytes": 1035733,
+      "posterBytes": 72634,
+      "clipSha256": "c0d46f6b12e922078f57fe79f6d7bdc339c5692c2e0d40620ce0922945732020",
+      "posterRgbRmse": 5.857,
+      "effectCues": [
+        {
+          "file": "audio/wind.mp3",
+          "atSeconds": 0.6,
+          "gainDb": -4.0
+        },
+        {
+          "file": "audio/boom.mp3",
+          "atSeconds": 3.12,
+          "gainDb": -1.0
+        }
+      ]
+    },
+    {
+      "id": "OpeningMines",
+      "text": {
+        "en-us": "Under the mesas, the Goblins dig. They dig for scrap, they sell scrap, and very often, they blow things up.",
+        "id-id": "Di bawah mesa, para Goblin menggali. Mereka menggali rongsokan, menjual rongsokan, dan sangat sering, mereka meledakkan sesuatu."
+      },
+      "startFrame": 270,
+      "endFrame": 540,
+      "sceneKind": "opening",
+      "momentOrder": 2,
+      "clip": "opening-02.mp4",
+      "poster": "opening-02.webp",
+      "frameCount": 270,
+      "durationSeconds": 9.0,
+      "loopStartSeconds": 5.0,
+      "posterFrame": 269,
+      "clipBytes": 1066961,
+      "posterBytes": 37520,
+      "clipSha256": "99b26d27bf06c60f1db512edc0280b16b9f5283dc180cd5f57895b8eb881f179",
+      "posterRgbRmse": 4.57,
+      "effectCues": [
+        {
+          "file": "audio/rumble.mp3",
+          "atSeconds": 0.2,
+          "gainDb": -6.0
+        },
+        {
+          "file": "audio/fuse.mp3",
+          "atSeconds": 1.25,
+          "gainDb": -3.0
+        },
+        {
+          "file": "audio/fuse.mp3",
+          "atSeconds": 1.8,
+          "gainDb": -4.0
+        },
+        {
+          "file": "audio/fuse.mp3",
+          "atSeconds": 2.35,
+          "gainDb": -4.0
+        },
+        {
+          "file": "audio/fuse.mp3",
+          "atSeconds": 2.9,
+          "gainDb": -3.0
+        },
+        {
+          "file": "audio/explosion.mp3",
+          "atSeconds": 3.3,
+          "gainDb": 0.0
+        }
+      ]
+    },
+    {
+      "id": "OpeningSnikkit",
+      "text": {
+        "en-us": "Boss Snikkit, the goblin mine king, rules the mines. He pays the Orcs in gold, so the Orcs fight for him.",
+        "id-id": "Boss Snikkit, raja tambang goblin, menguasai tambang-tambang itu. Ia membayar para Orc dengan emas, jadi para Orc bertarung untuknya."
+      },
+      "startFrame": 540,
+      "endFrame": 810,
+      "sceneKind": "opening",
+      "momentOrder": 3,
+      "clip": "opening-03.mp4",
+      "poster": "opening-03.webp",
+      "frameCount": 270,
+      "durationSeconds": 9.0,
+      "loopStartSeconds": 5.0,
+      "posterFrame": 269,
+      "clipBytes": 594825,
+      "posterBytes": 34648,
+      "clipSha256": "f55d553e732e542e5cd2f8993c12624a988f2e646cfbe3c14e5ac2d142ec3e6f",
+      "posterRgbRmse": 4.441,
+      "effectCues": [
+        {
+          "file": "audio/rumble.mp3",
+          "atSeconds": 0.3,
+          "gainDb": -2.0
+        },
+        {
+          "file": "audio/skid.mp3",
+          "atSeconds": 1.5,
+          "gainDb": -2.0
+        },
+        {
+          "file": "audio/thud.mp3",
+          "atSeconds": 1.9,
+          "gainDb": -2.0
+        },
+        {
+          "file": "audio/coins.mp3",
+          "atSeconds": 2.4,
+          "gainDb": -3.0
+        },
+        {
+          "file": "audio/drum.mp3",
+          "atSeconds": 3.1,
+          "gainDb": -3.0
+        }
+      ]
+    },
+    {
+      "id": "OpeningStone",
+      "text": {
+        "en-us": "But you know this gold. Under the paint is red stone from these mesas. The Orcs do not know it yet.",
+        "id-id": "Tetapi kamu kenal emas ini. Di balik catnya ada batu merah dari mesa-mesa ini. Para Orc belum mengetahuinya."
+      },
+      "startFrame": 810,
+      "endFrame": 1080,
+      "sceneKind": "opening",
+      "momentOrder": 4,
+      "clip": "opening-04.mp4",
+      "poster": "opening-04.webp",
+      "frameCount": 270,
+      "durationSeconds": 9.0,
+      "loopStartSeconds": 5.0,
+      "posterFrame": 269,
+      "clipBytes": 515811,
+      "posterBytes": 21026,
+      "clipSha256": "1187d1e128e2056e6f059bbf611fdc4f8d1f099161aca72a15ba81b224b63d19",
+      "posterRgbRmse": 3.711,
+      "effectCues": [
+        {
+          "file": "audio/magic.mp3",
+          "atSeconds": 0.6,
+          "gainDb": -6.0
+        },
+        {
+          "file": "audio/shimmer.mp3",
+          "atSeconds": 3.0,
+          "gainDb": -8.0
+        }
+      ]
+    },
+    {
+      "id": "OpeningRoad",
+      "text": {
+        "en-us": "Follow the rails up to Snikkit's Throne Hall. Somebody buys his painted gold, and you must learn who.",
+        "id-id": "Ikuti rel sampai ke Throne Hall milik Snikkit. Seseorang membeli emas palsunya, dan kamu harus mencari tahu siapa."
+      },
+      "startFrame": 1080,
+      "endFrame": 1350,
+      "sceneKind": "opening",
+      "momentOrder": 5,
+      "clip": "opening-05.mp4",
+      "poster": "opening-05.webp",
+      "frameCount": 270,
+      "durationSeconds": 9.0,
+      "loopStartSeconds": 5.0,
+      "posterFrame": 269,
+      "clipBytes": 1395146,
+      "posterBytes": 90052,
+      "clipSha256": "9f7e043198e040c4fa90a6d5bd3f95fab59707d22b9945e3231bd1386fb1e6aa",
+      "posterRgbRmse": 6.74,
+      "effectCues": [
+        {
+          "file": "audio/fuse.mp3",
+          "atSeconds": 0.35,
+          "gainDb": -4.0
+        },
+        {
+          "file": "audio/fuse.mp3",
+          "atSeconds": 1.6,
+          "gainDb": -6.0
+        },
+        {
+          "file": "audio/fuse.mp3",
+          "atSeconds": 2.8,
+          "gainDb": -6.0
+        },
+        {
+          "file": "audio/cannon.mp3",
+          "atSeconds": 4.0,
+          "gainDb": -6.0
+        },
+        {
+          "file": "audio/shimmer.mp3",
+          "atSeconds": 4.05,
+          "gainDb": -6.0
+        }
+      ]
+    },
+    {
+      "id": "BossHall",
+      "text": {
+        "en-us": "At the top of the rails stands Snikkit's Throne Hall, cut into the largest mesa. Its scrap gate rattles open. / Snikkit: Customers! Come in, come in! Mind the bombs.",
+        "id-id": "Di ujung rel berdiri Throne Hall milik Snikkit, dipahat di mesa terbesar. Gerbang rongsokannya terbuka sambil berderak. / Snikkit: Pelanggan! Masuk, masuk! Awas bomnya."
+      },
+      "startFrame": 1350,
+      "endFrame": 1620,
+      "sceneKind": "boss",
+      "momentOrder": 1,
+      "clip": "boss-01.mp4",
+      "poster": "boss-01.webp",
+      "frameCount": 270,
+      "durationSeconds": 9.0,
+      "loopStartSeconds": 5.0,
+      "posterFrame": 269,
+      "clipBytes": 631375,
+      "posterBytes": 34346,
+      "clipSha256": "d4b416f9282f74d1dbb866de19e8d3d3ff1faabcccf431fdfc45433dd70e2527",
+      "posterRgbRmse": 4.121,
+      "effectCues": [
+        {
+          "file": "audio/clank.mp3",
+          "atSeconds": 0.55,
+          "gainDb": -6.0
+        },
+        {
+          "file": "audio/clank.mp3",
+          "atSeconds": 0.85,
+          "gainDb": -8.0
+        },
+        {
+          "file": "audio/clank.mp3",
+          "atSeconds": 1.15,
+          "gainDb": -8.0
+        },
+        {
+          "file": "audio/slam.mp3",
+          "atSeconds": 1.5,
+          "gainDb": -4.0
+        },
+        {
+          "file": "audio/steam.mp3",
+          "atSeconds": 3.15,
+          "gainDb": -6.0
+        },
+        {
+          "file": "audio/cannon.mp3",
+          "atSeconds": 3.85,
+          "gainDb": -6.0
+        },
+        {
+          "file": "audio/shimmer.mp3",
+          "atSeconds": 3.9,
+          "gainDb": -8.0
+        }
+      ]
+    },
+    {
+      "id": "BossSnikkit",
+      "text": {
+        "en-us": "Snikkit: So you are the one who followed Snikkit's coins all the way from Hearthvale! They travel far, eh? / You: Your coins paid the Baron's sellswords, Snikkit. And they are painted stone. / Snikkit: Painted with the finest paint! Paint is not cheap, you know.",
+        "id-id": "Snikkit: Jadi kamu yang mengikuti koin-koin Snikkit jauh-jauh dari Hearthvale! Koinnya jalan-jalan jauh, ya? / You: Koinmu membayar tentara bayaran sang Baron, Snikkit. Dan koin itu batu yang dicat. / Snikkit: Dicat dengan cat terbaik! Cat itu tidak murah, tahu."
+      },
+      "startFrame": 1620,
+      "endFrame": 1890,
+      "sceneKind": "boss",
+      "momentOrder": 2,
+      "clip": "boss-02.mp4",
+      "poster": "boss-02.webp",
+      "frameCount": 270,
+      "durationSeconds": 9.0,
+      "loopStartSeconds": 5.0,
+      "posterFrame": 269,
+      "clipBytes": 695989,
+      "posterBytes": 35808,
+      "clipSha256": "f9e1c33e98265519aafe1cbed077fd8c3f0bde26c12ca151ae368541b5656c61",
+      "posterRgbRmse": 4.49,
+      "effectCues": [
+        {
+          "file": "audio/rumble.mp3",
+          "atSeconds": 0.3,
+          "gainDb": -3.0
+        },
+        {
+          "file": "audio/skid.mp3",
+          "atSeconds": 1.45,
+          "gainDb": -2.0
+        },
+        {
+          "file": "audio/thud.mp3",
+          "atSeconds": 1.9,
+          "gainDb": 0.0
+        },
+        {
+          "file": "audio/drum.mp3",
+          "atSeconds": 2.67,
+          "gainDb": -5.0
+        },
+        {
+          "file": "audio/drum.mp3",
+          "atSeconds": 2.89,
+          "gainDb": -7.0
+        },
+        {
+          "file": "audio/drum.mp3",
+          "atSeconds": 3.11,
+          "gainDb": -7.0
+        },
+        {
+          "file": "audio/drum.mp3",
+          "atSeconds": 3.33,
+          "gainDb": -4.0
+        }
+      ]
+    },
+    {
+      "id": "BossTrick",
+      "text": {
+        "en-us": "Snikkit: Orcs love gold. Goblins have rocks. So Snikkit paints the rocks, and everybody is happy! / You: Grukka's warriors fight and bleed for those rocks. Will they be happy when they learn the truth? / Snikkit: Then nobody tells them. Right, customer?",
+        "id-id": "Snikkit: Orc suka emas. Goblin punya batu. Jadi Snikkit mengecat batunya, dan semua senang! / You: Prajurit Grukka bertarung dan terluka demi batu-batu itu. Apa mereka akan senang saat tahu yang sebenarnya? / Snikkit: Kalau begitu jangan ada yang memberi tahu mereka. Ya kan, pelanggan?"
+      },
+      "startFrame": 1890,
+      "endFrame": 2160,
+      "sceneKind": "boss",
+      "momentOrder": 3,
+      "clip": "boss-03.mp4",
+      "poster": "boss-03.webp",
+      "frameCount": 270,
+      "durationSeconds": 9.0,
+      "loopStartSeconds": 5.0,
+      "posterFrame": 269,
+      "clipBytes": 423756,
+      "posterBytes": 11710,
+      "clipSha256": "174fea976a4577ce1448c98e19cf841233d805e3cf640dda7d520c937185bcc7",
+      "posterRgbRmse": 2.757,
+      "effectCues": [
+        {
+          "file": "audio/steam.mp3",
+          "atSeconds": 0.25,
+          "gainDb": -4.0
+        },
+        {
+          "file": "audio/rumble.mp3",
+          "atSeconds": 0.4,
+          "gainDb": -9.0
+        },
+        {
+          "file": "audio/coin.mp3",
+          "atSeconds": 2.79,
+          "gainDb": -6.0
+        },
+        {
+          "file": "audio/splash.mp3",
+          "atSeconds": 2.99,
+          "gainDb": -4.0
+        },
+        {
+          "file": "audio/coin.mp3",
+          "atSeconds": 4.79,
+          "gainDb": -6.0
+        }
+      ]
+    },
+    {
+      "id": "BossBuyer",
+      "text": {
+        "en-us": "You: Who buys a whole cart of painted gold? / Snikkit: A very good customer! A note comes up the deep tunnel, and Snikkit sends a cart of gold down. The cart comes back full of glowcaps. / Snikkit: Real glowcaps, that shine in the dark! No name, no face. Who cares? Glowcaps sell!",
+        "id-id": "You: Siapa yang membeli emas palsu satu kereta penuh? / Snikkit: Pelanggan yang sangat baik! Sebuah pesan datang dari terowongan dalam, lalu Snikkit mengirim satu kereta emas ke bawah. Keretanya kembali penuh glowcap. / Snikkit: Glowcap asli, yang bersinar dalam gelap! Tanpa nama, tanpa wajah. Siapa peduli? Glowcap laku keras!"
+      },
+      "startFrame": 2160,
+      "endFrame": 2430,
+      "sceneKind": "boss",
+      "momentOrder": 4,
+      "clip": "boss-04.mp4",
+      "poster": "boss-04.webp",
+      "frameCount": 270,
+      "durationSeconds": 9.0,
+      "loopStartSeconds": 5.0,
+      "posterFrame": 269,
+      "clipBytes": 311188,
+      "posterBytes": 11854,
+      "clipSha256": "0deae60c4e920c06531ce9bfe539447e5d50fc780957dfdfde8ca0afac526857",
+      "posterRgbRmse": 3.131,
+      "effectCues": [
+        {
+          "file": "audio/rumble.mp3",
+          "atSeconds": 0.3,
+          "gainDb": -4.0
+        },
+        {
+          "file": "audio/magic.mp3",
+          "atSeconds": 2.0,
+          "gainDb": -4.0
+        },
+        {
+          "file": "audio/rumble.mp3",
+          "atSeconds": 2.8,
+          "gainDb": -4.0
+        },
+        {
+          "file": "audio/shimmer.mp3",
+          "atSeconds": 3.4,
+          "gainDb": -6.0
+        },
+        {
+          "file": "audio/thud.mp3",
+          "atSeconds": 4.0,
+          "gainDb": -6.0
+        }
+      ]
+    },
+    {
+      "id": "BossChallenge",
+      "text": {
+        "en-us": "Snikkit: Enough talk! Grukka, show our customer the way out! / Grukka: Hrrr. Gold is gold. Grukka fights. / You: Then fight, Warchief. After this battle, take a good look at your gold.",
+        "id-id": "Snikkit: Cukup bicaranya! Grukka, tunjukkan jalan keluar kepada pelanggan kita! / Grukka: Hrrr. Emas ya emas. Grukka bertarung. / You: Kalau begitu bertarunglah, Warchief. Setelah pertempuran ini, lihat baik-baik emasmu."
+      },
+      "startFrame": 2430,
+      "endFrame": 2700,
+      "sceneKind": "boss",
+      "momentOrder": 5,
+      "clip": "boss-05.mp4",
+      "poster": "boss-05.webp",
+      "frameCount": 270,
+      "durationSeconds": 9.0,
+      "loopStartSeconds": 5.0,
+      "posterFrame": 269,
+      "clipBytes": 634719,
+      "posterBytes": 33170,
+      "clipSha256": "f88e3c6025b6ce16fdfc8a25347cb8ce93b26d8ee3afcb0c7f13547531328e4e",
+      "posterRgbRmse": 4.281,
+      "effectCues": [
+        {
+          "file": "audio/drums.mp3",
+          "atSeconds": 0.1,
+          "gainDb": -2.0
+        },
+        {
+          "file": "audio/slam.mp3",
+          "atSeconds": 1.3,
+          "gainDb": -2.0
+        },
+        {
+          "file": "audio/slam.mp3",
+          "atSeconds": 1.6,
+          "gainDb": -3.0
+        },
+        {
+          "file": "audio/cannon.mp3",
+          "atSeconds": 2.3,
+          "gainDb": -3.0
+        },
+        {
+          "file": "audio/roar.mp3",
+          "atSeconds": 2.45,
+          "gainDb": -3.0
+        },
+        {
+          "file": "audio/boom.mp3",
+          "atSeconds": 3.6,
+          "gainDb": -6.0
+        }
+      ]
+    },
+    {
+      "id": "EndingCrown",
+      "text": {
+        "en-us": "Snikkit's carts stop. His great bucket crown falls off and rolls across the clay, until it rocks to a stop.",
+        "id-id": "Kereta-kereta Snikkit berhenti. Mahkota embernya yang besar terjatuh dan menggelinding di atas tanah liat, sampai akhirnya bergoyang dan berhenti."
+      },
+      "startFrame": 2700,
+      "endFrame": 2970,
+      "sceneKind": "ending",
+      "momentOrder": 1,
+      "clip": "ending-01.mp4",
+      "poster": "ending-01.webp",
+      "frameCount": 270,
+      "durationSeconds": 9.0,
+      "loopStartSeconds": 5.0,
+      "posterFrame": 269,
+      "clipBytes": 865425,
+      "posterBytes": 63108,
+      "clipSha256": "62ad6792b4ee24aee11af53b8bf6da01896e72669ed9c2eb5e7e7516e83cf9a9",
+      "posterRgbRmse": 5.446,
+      "effectCues": [
+        {
+          "file": "audio/clank.mp3",
+          "atSeconds": 0.85,
+          "gainDb": 0.0
+        },
+        {
+          "file": "audio/ring.mp3",
+          "atSeconds": 0.9,
+          "gainDb": -6.0
+        },
+        {
+          "file": "audio/clank.mp3",
+          "atSeconds": 1.35,
+          "gainDb": -6.0
+        },
+        {
+          "file": "audio/skid.mp3",
+          "atSeconds": 1.9,
+          "gainDb": -8.0
+        },
+        {
+          "file": "audio/clank.mp3",
+          "atSeconds": 3.9,
+          "gainDb": -10.0
+        }
+      ]
+    },
+    {
+      "id": "EndingBite",
+      "text": {
+        "en-us": "Grukka wants his pay. He bites one of Snikkit's coins, and it cracks. Under the gold is stone.",
+        "id-id": "Grukka menuntut upahnya. Ia menggigit salah satu koin Snikkit, dan koin itu retak. Di balik emasnya ada batu."
+      },
+      "startFrame": 2970,
+      "endFrame": 3240,
+      "sceneKind": "ending",
+      "momentOrder": 2,
+      "clip": "ending-02.mp4",
+      "poster": "ending-02.webp",
+      "frameCount": 270,
+      "durationSeconds": 9.0,
+      "loopStartSeconds": 5.0,
+      "posterFrame": 269,
+      "clipBytes": 309389,
+      "posterBytes": 21618,
+      "clipSha256": "d57d796f8ea15ba840cf949adfe0b9f27ede2a13b8315657a7f4e6cfd4e59676",
+      "posterRgbRmse": 3.705,
+      "effectCues": [
+        {
+          "file": "audio/coin.mp3",
+          "atSeconds": 0.5,
+          "gainDb": -8.0
+        },
+        {
+          "file": "audio/crunch.mp3",
+          "atSeconds": 1.95,
+          "gainDb": 0.0
+        },
+        {
+          "file": "audio/stones.mp3",
+          "atSeconds": 2.05,
+          "gainDb": -4.0
+        },
+        {
+          "file": "audio/growl.mp3",
+          "atSeconds": 2.3,
+          "gainDb": -2.0
+        }
+      ]
+    },
+    {
+      "id": "EndingWarchief",
+      "text": {
+        "en-us": "The Orcs fought for stones. Grukka's roar shakes the mesas. Then he puts on the bucket crown and turns to you. / Grukka: You fight fair. Grukka fights with you now.",
+        "id-id": "Para Orc bertarung demi batu. Raungan Grukka mengguncang mesa. Lalu ia memakai mahkota ember itu dan berbalik kepadamu. / Grukka: Kamu bertarung dengan adil. Sekarang Grukka bertarung bersamamu."
+      },
+      "startFrame": 3240,
+      "endFrame": 3510,
+      "sceneKind": "ending",
+      "momentOrder": 3,
+      "clip": "ending-03.mp4",
+      "poster": "ending-03.webp",
+      "frameCount": 270,
+      "durationSeconds": 9.0,
+      "loopStartSeconds": 5.0,
+      "posterFrame": 269,
+      "clipBytes": 464957,
+      "posterBytes": 25224,
+      "clipSha256": "2ac09735ffdafd859daec63b9bd3a1f648bb931d2416c178b73f1ea5b34e9982",
+      "posterRgbRmse": 4.349,
+      "effectCues": [
+        {
+          "file": "audio/roar.mp3",
+          "atSeconds": 0.35,
+          "gainDb": 0.0
+        },
+        {
+          "file": "audio/drums.mp3",
+          "atSeconds": 0.7,
+          "gainDb": -4.0
+        },
+        {
+          "file": "audio/clank.mp3",
+          "atSeconds": 2.25,
+          "gainDb": -2.0
+        },
+        {
+          "file": "audio/ring.mp3",
+          "atSeconds": 2.3,
+          "gainDb": -8.0
+        },
+        {
+          "file": "audio/shimmer.mp3",
+          "atSeconds": 3.0,
+          "gainDb": -4.0
+        }
+      ]
+    },
+    {
+      "id": "EndingPayment",
+      "text": {
+        "en-us": "In Snikkit's vault, you find what the buyer paid: crates of glowcaps. Under them is a letter with a seal of three lanes, cut through.",
+        "id-id": "Di ruang harta Snikkit, kamu menemukan bayaran dari si pembeli: peti-peti berisi glowcap. Di bawahnya ada sepucuk surat dengan segel tiga jalur yang terpotong."
+      },
+      "startFrame": 3510,
+      "endFrame": 3780,
+      "sceneKind": "ending",
+      "momentOrder": 4,
+      "clip": "ending-04.mp4",
+      "poster": "ending-04.webp",
+      "frameCount": 270,
+      "durationSeconds": 9.0,
+      "loopStartSeconds": 5.0,
+      "posterFrame": 269,
+      "clipBytes": 400377,
+      "posterBytes": 12378,
+      "clipSha256": "2a7486b5928a7d2f71375f77eab2c39dba7ba03db20c0f89ec6835cdec93d09d",
+      "posterRgbRmse": 2.862,
+      "effectCues": [
+        {
+          "file": "audio/lid.mp3",
+          "atSeconds": 0.55,
+          "gainDb": -2.0
+        },
+        {
+          "file": "audio/magic.mp3",
+          "atSeconds": 0.6,
+          "gainDb": -4.0
+        },
+        {
+          "file": "audio/shimmer.mp3",
+          "atSeconds": 0.9,
+          "gainDb": -8.0
+        },
+        {
+          "file": "audio/paper.mp3",
+          "atSeconds": 2.2,
+          "gainDb": -3.0
+        },
+        {
+          "file": "audio/thud.mp3",
+          "atSeconds": 3.25,
+          "gainDb": -2.0
+        },
+        {
+          "file": "audio/magic.mp3",
+          "atSeconds": 3.3,
+          "gainDb": -8.0
+        }
+      ]
+    },
+    {
+      "id": "EndingTunnel",
+      "text": {
+        "en-us": "Glowcaps grow in only one place: the Glowcap Hollows. The deep tunnel leads there, and so does the trail.",
+        "id-id": "Glowcap hanya tumbuh di satu tempat: Glowcap Hollows. Terowongan dalam itu menuju ke sana, begitu pula jejaknya."
+      },
+      "startFrame": 3780,
+      "endFrame": 4050,
+      "sceneKind": "ending",
+      "momentOrder": 5,
+      "clip": "ending-05.mp4",
+      "poster": "ending-05.webp",
+      "frameCount": 270,
+      "durationSeconds": 9.0,
+      "loopStartSeconds": 5.0,
+      "posterFrame": 269,
+      "clipBytes": 482702,
+      "posterBytes": 32142,
+      "clipSha256": "3623bca2d434c7cc19d4fd5627be4280363c33e0283ab62b795ff1cc5f1fda74",
+      "posterRgbRmse": 5.082,
+      "effectCues": [
+        {
+          "file": "audio/rumble.mp3",
+          "atSeconds": 0.0,
+          "gainDb": -4.0
+        },
+        {
+          "file": "audio/rumble.mp3",
+          "atSeconds": 1.3,
+          "gainDb": -2.0
+        },
+        {
+          "file": "audio/wind.mp3",
+          "atSeconds": 2.4,
+          "gainDb": -3.0
+        },
+        {
+          "file": "audio/shimmer.mp3",
+          "atSeconds": 3.1,
+          "gainDb": -4.0
+        }
+      ]
+    }
+  ],
+  "audio": [
+    {
+      "path": "audio/boom.mp3",
+      "bytes": 28515,
+      "scenes": ["boss", "opening"],
+      "sha256": "cad553fcb8824e4b6bd463e9b917591a270615d791cc5d8d93ef94b4f80ce65c",
+      "settingsBus": "effects",
+      "durationSeconds": 3.5,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/boss-music.mp3",
+      "bytes": 524432,
+      "scenes": ["boss"],
+      "sha256": "72e1d4d70ec819e2d2b3bb99fee400106e6e833829e79e72d20264ec40b3843a",
+      "settingsBus": "music",
+      "durationSeconds": 74.8,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/cannon.mp3",
+      "bytes": 24493,
+      "scenes": ["boss", "opening"],
+      "sha256": "80d651ff81a0fa8390d785f85c37a93dfd876e22584028537e8b54e4d2ad22b7",
+      "settingsBus": "effects",
+      "durationSeconds": 3.0,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/clank.mp3",
+      "bytes": 4013,
+      "scenes": ["boss", "ending"],
+      "sha256": "77117e6f5f37045fd3f8d38a6211fcf5d98359b134ba89c03abeee79f4b94425",
+      "settingsBus": "effects",
+      "durationSeconds": 0.43,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/coin.mp3",
+      "bytes": 8227,
+      "scenes": ["boss", "ending"],
+      "sha256": "c1a141eb3ae190068f4e34528a2f2c82268070686ec7490bd4d523bd1392441d",
+      "settingsBus": "effects",
+      "durationSeconds": 0.946032,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/coins.mp3",
+      "bytes": 14499,
+      "scenes": ["opening"],
+      "sha256": "0de3d3fffb24dc6cecfa2b0c982066854f979796171068e632d772864d659229",
+      "settingsBus": "effects",
+      "durationSeconds": 1.725896,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/crunch.mp3",
+      "bytes": 7357,
+      "scenes": ["ending"],
+      "sha256": "3fa9228cd03a6b3b1c1f7fe62ac3aaca9cb29d6dd94ccf506c91ecfafd7288e0",
+      "settingsBus": "effects",
+      "durationSeconds": 0.86,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/drum.mp3",
+      "bytes": 4222,
+      "scenes": ["boss", "opening"],
+      "sha256": "230a4334426f8d48e300bd86e59ece916a0884211ac130be2bae3b2e9b52b0a8",
+      "settingsBus": "effects",
+      "durationSeconds": 0.45,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/drums.mp3",
+      "bytes": 19687,
+      "scenes": ["boss", "ending"],
+      "sha256": "4f3f7a68fa0ceb2bddec235c5be78a5b7ca04d9fdc172fa5a5c98c1f71f0a88d",
+      "settingsBus": "effects",
+      "durationSeconds": 2.4,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/ending-music.mp3",
+      "bytes": 473167,
+      "scenes": ["ending"],
+      "sha256": "a10bb1b10dde1950c446ce880f79a19baa894aab67d8946756010d19754415cd",
+      "settingsBus": "music",
+      "durationSeconds": 67.5,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/explosion.mp3",
+      "bytes": 26165,
+      "scenes": ["opening"],
+      "sha256": "c9241c8612abc7d3e212537607559258ef8790a838c848f0a35a7854e45da31c",
+      "settingsBus": "effects",
+      "durationSeconds": 3.2,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/fuse.mp3",
+      "bytes": 4849,
+      "scenes": ["opening"],
+      "sha256": "b1f9dfbf9f281569d944b1e30c1dfd5eed218c9bef369e713cfa48b606739b45",
+      "settingsBus": "effects",
+      "durationSeconds": 0.54,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/growl.mp3",
+      "bytes": 5105,
+      "scenes": ["ending"],
+      "sha256": "eee795cc89d653004c4c0e1138d73645717621fe3f402eeca9c546a4867491b9",
+      "settingsBus": "effects",
+      "durationSeconds": 0.56805,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/lid.mp3",
+      "bytes": 3386,
+      "scenes": ["ending"],
+      "sha256": "2d774b7a9f936683dc24389912c17e143454c5998869c43e00b873f20cff7fbf",
+      "settingsBus": "effects",
+      "durationSeconds": 0.343129,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/magic.mp3",
+      "bytes": 13208,
+      "scenes": ["boss", "ending", "opening"],
+      "sha256": "63a8ec991603966ce1101c350bec20150cafa20d9cd7ff8283a06b0112520464",
+      "settingsBus": "effects",
+      "durationSeconds": 1.577664,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/opening-music.mp3",
+      "bytes": 448506,
+      "scenes": ["opening"],
+      "sha256": "13fe0a1d05ff17b7261689ea4380522117215734ed48dd59bc692f397cd3690c",
+      "settingsBus": "music",
+      "durationSeconds": 64.0,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/paper.mp3",
+      "bytes": 4490,
+      "scenes": ["ending"],
+      "sha256": "ca603d79cb667a79545426e5d9c231c7f053e10cb195eb44ee78fc8135c27fb6",
+      "settingsBus": "effects",
+      "durationSeconds": 0.48,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/ring.mp3",
+      "bytes": 17388,
+      "scenes": ["ending"],
+      "sha256": "674a0367f2cce167290a10a6d616021b5e0d466c8a034a8f46e13f23e426a721",
+      "settingsBus": "effects",
+      "durationSeconds": 2.093741,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/roar.mp3",
+      "bytes": 7822,
+      "scenes": ["boss", "ending"],
+      "sha256": "bae6f075c9270a1775d9b5e06de1f4753e442d0016a17f0a05c5d2c4f561e9ce",
+      "settingsBus": "effects",
+      "durationSeconds": 0.909388,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/rumble.mp3",
+      "bytes": 21358,
+      "scenes": ["boss", "ending", "opening"],
+      "sha256": "3e5b3450e56e45671af804e71a860ff91c87a3664bdef762f4cf2919bd054a68",
+      "settingsBus": "effects",
+      "durationSeconds": 2.6,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/shimmer.mp3",
+      "bytes": 24521,
+      "scenes": ["boss", "ending", "opening"],
+      "sha256": "51f130ced054bedf9c543bcf4acd634c1826f4d0d52ad407e48fca677dc8d4d1",
+      "settingsBus": "effects",
+      "durationSeconds": 3.0,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/skid.mp3",
+      "bytes": 9238,
+      "scenes": ["boss", "ending", "opening"],
+      "sha256": "70d17e7d203e6b5a384926f8330f6fbcd23652bfbad884763fc34d51e00969c0",
+      "settingsBus": "effects",
+      "durationSeconds": 1.074376,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/slam.mp3",
+      "bytes": 4222,
+      "scenes": ["boss"],
+      "sha256": "2340ff789f32e6d6bcd3dbd53eeef78cb8c4ac56d9f90fb79cb6b82e0ed52a83",
+      "settingsBus": "effects",
+      "durationSeconds": 0.47,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/splash.mp3",
+      "bytes": 6521,
+      "scenes": ["boss"],
+      "sha256": "2105a7ac9e18727f508109cf9edc1367c1d2039ce9a046e80ddcaa094549880d",
+      "settingsBus": "effects",
+      "durationSeconds": 0.737891,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/steam.mp3",
+      "bytes": 13417,
+      "scenes": ["boss"],
+      "sha256": "556e4e9108f9dad04c870d1e9773a0b5256d5af9d0d88f05f94672db2afad1fd",
+      "settingsBus": "effects",
+      "durationSeconds": 1.6,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/stones.mp3",
+      "bytes": 7775,
+      "scenes": ["ending"],
+      "sha256": "650f828affaaf630cf445ada8b35a27d1f0a339a616ab4b75717bc888e36b0cc",
+      "settingsBus": "effects",
+      "durationSeconds": 0.900023,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/thud.mp3",
+      "bytes": 4640,
+      "scenes": ["boss", "ending", "opening"],
+      "sha256": "e4ef84edd2d049ff18753629bfda6720c2ebf26fcbfad84c9d011114a5a038c0",
+      "settingsBus": "effects",
+      "durationSeconds": 0.507098,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/wind.mp3",
+      "bytes": 33688,
+      "scenes": ["ending", "opening"],
+      "sha256": "f3eb224822bc81d6230ee53fc39251bd66cd8786b0ca67a53600c57f31664d85",
+      "settingsBus": "effects",
+      "durationSeconds": 4.14034,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    }
+  ],
+  "budgets": {
+    "opening": {
+      "videoBytes": 4608476,
+      "posterBytes": 255880,
+      "audioBytes": 657902
+    },
+    "boss": {
+      "videoBytes": 2697027,
+      "posterBytes": 126888,
+      "audioBytes": 718536
+    },
+    "ending": {
+      "videoBytes": 2522850,
+      "posterBytes": 154470,
+      "audioBytes": 665070
+    }
+  }
+}

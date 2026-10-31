@@ -298,6 +298,11 @@ export const GLYPHS = {
    */
   book: "M-7 -30 Q-24 -42 -46 -36 V34 Q-24 28 -7 38 Z M7 -30 Q24 -42 46 -36 V34 Q24 28 7 38 Z",
   /**
+   * A door with a knob and an arrow that leaves it: Leave the Battle. The arrow
+   * has a gap from the door, so the two parts stay apart at a small size.
+   */
+  door: `M-44 -48 H-6 V48 H-44 Z ${circle(-18, 0, 8)} M6 -8 H24 V-18 L48 0 L24 18 V8 H6 Z`,
+  /**
    * A scroll with a roll at the top and the bottom and three lines of writing:
    * the Battle Log. Fill only: the lines are cut out of the sheet.
    */

@@ -31,4 +31,6 @@ The Bazaar sells 25 Cosmetics in 4 families, and play gives 8 more (Economy 3.5,
 
 ## Amendments
 
+- **2026-10-30: a Hero portrait also defines a Hero Model.** [Web ADR-0016](../../apps/web/docs/adr/0016-a-hero-portrait-defines-a-person-and-the-gear-look-dresses-it.md) extends the face painting with a matching full-body figure for the Player's Hero on the Board and on the Hero screen. This replaces the 2026-10-22 removal from the Hero screen. The Active Gear look sets all four visible Gear items; one person serves all Classes. The first release keeps the enemy presentation. Implementation has not started.
+
 - **2026-10-22: the Hero portrait no longer shows on the Hero screen.** The Hero screen has no portrait plate, so the Active Hero portrait shows only in the player panel of the Top Bar and on the banner of the Player's Hero on the Board. The Class of the Active Deck stays on its name and its glyph: in the Deck builder and in the Battle player panel. The Bazaar shelf shows the portrait at the size of the portrait, and the `HeroPortrait` component, the art and the Profile field all stay.

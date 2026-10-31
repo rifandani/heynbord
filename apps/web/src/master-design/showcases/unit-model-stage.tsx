@@ -1,17 +1,11 @@
 import { useGLTF } from "@react-three/drei";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-import type { CanvasTexture, Mesh } from "three";
-import { CircleGeometry, PerspectiveCamera, PlaneGeometry } from "three";
+import { useEffect, useLayoutEffect, useMemo, useRef } from "react";
+import { CircleGeometry, PerspectiveCamera } from "three";
 
-import type { UnitSourceView } from "@/features/battle/battle-view";
 import { Environment } from "@/features/battle/scene/environment";
 import { CAMERA_PITCH, cameraFrame } from "@/features/battle/scene/layout";
-import {
-  blobShadowTexture,
-  loadedUnitArt,
-  unitArtTexture,
-} from "@/features/battle/scene/textures";
+import { blobShadowTexture } from "@/features/battle/scene/textures";
 import type { UnitClipName } from "@/features/battle/scene/unit-clips";
 import { unitModelOf } from "@/features/battle/scene/unit-models";
 import { emptyPose } from "@/features/battle/scene/unit-pose";
@@ -38,7 +32,7 @@ const CLIP_SECONDS: Readonly<
 const REPLAY_PAUSE = 0.6;
 
 export interface StageOptions {
-  /** A card that has a Unit Model. */
+  /** A card or a Token that has a Unit Model. */
   readonly cardId: string;
   readonly clip: UnitClipName;
   readonly enemy: boolean;
@@ -48,8 +42,6 @@ export interface StageOptions {
   readonly battleCamera: boolean;
 }
 
-const FIGURE = new PlaneGeometry(0.82, 1.03);
-FIGURE.translate(0, 0.515, 0);
 const SHADOW = new CircleGeometry(0.5, 20);
 
 /** The Unit Model of the card, playing one clip on a loop. */
@@ -99,62 +91,6 @@ const ModelFigure = ({
   );
 };
 
-/** The Cut-out Figure of the same card, for a side-by-side check. */
-const CutOutFigure = ({
-  x,
-  cardId,
-  enemy,
-}: {
-  readonly x: number;
-  readonly cardId: string;
-  readonly enemy: boolean;
-}) => {
-  const source = useMemo<UnitSourceView>(
-    () => ({ _tag: "Card", cardId }),
-    [cardId]
-  );
-  const [art, setArt] = useState<CanvasTexture | undefined>(() =>
-    loadedUnitArt(source)
-  );
-  const figure = useRef<Mesh>(null);
-  useEffect(() => {
-    let mounted = true;
-    const load = async () => {
-      const texture = await unitArtTexture(source);
-      if (mounted) {
-        setArt(texture);
-      }
-    };
-    void load();
-    return () => {
-      mounted = false;
-    };
-  }, [source]);
-  useFrame(({ camera }) => {
-    if (figure.current) {
-      figure.current.rotation.y = Math.atan2(
-        camera.position.x - x,
-        camera.position.z
-      );
-    }
-  });
-  if (!art) {
-    return null;
-  }
-  return (
-    <group position={[x, 0, 0]}>
-      <mesh ref={figure} geometry={FIGURE} scale={[enemy ? -1 : 1, 1, 1]}>
-        <meshBasicMaterial
-          map={art}
-          transparent
-          alphaTest={0.05}
-          toneMapped={false}
-        />
-      </mesh>
-    </group>
-  );
-};
-
 const Shadows = ({ xs }: { readonly xs: readonly number[] }) => {
   const shadow = useMemo(() => blobShadowTexture(), []);
   return xs.map((x) => (
@@ -198,12 +134,11 @@ const StageCamera = ({ battle }: { readonly battle: boolean }) => {
   return null;
 };
 
-const MODEL_X = -0.7;
-const CUT_OUT_X = 0.7;
+const MODEL_X = 0;
 
 /**
- * The Unit Model of a card next to its Cut-out Figure on the Battle light
- * (art direction 2.2). The Showcase gives the card, the clip and the options.
+ * The Unit Model of a card on the Battle light (art direction 2.2). The
+ * Showcase gives the card, the clip and the options.
  */
 const UnitModelStage = ({ options }: { readonly options: StageOptions }) => (
   <Canvas
@@ -214,14 +149,8 @@ const UnitModelStage = ({ options }: { readonly options: StageOptions }) => (
   >
     <StageCamera battle={options.battleCamera} />
     <Environment />
-    <Shadows xs={[MODEL_X, CUT_OUT_X]} />
+    <Shadows xs={[MODEL_X]} />
     <ModelFigure x={MODEL_X} options={options} />
-    <CutOutFigure
-      key={options.cardId}
-      x={CUT_OUT_X}
-      cardId={options.cardId}
-      enemy={options.enemy}
-    />
   </Canvas>
 );
 

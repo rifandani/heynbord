@@ -1,7 +1,9 @@
+import { useAtomValue } from "@effect/atom-react";
+import { useMediaQuery } from "@reactuses/core";
 import type { ForgeStoneTier, GearSlot } from "@workspace/rules";
 import { gearUpgradeForgeStone, MAX_GEAR_LEVEL } from "@workspace/rules";
 import { cn } from "cn";
-import { useLayoutEffect, useRef, useState } from "react";
+import { lazy, Suspense, useLayoutEffect, useRef, useState } from "react";
 
 import { GameScreen } from "@/core/components/game/game-screen";
 import { useTimeouts } from "@/core/hooks/use-timeouts";
@@ -9,12 +11,14 @@ import { playSound, unlockAudio } from "@/features/battle/battle-audio";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { prefersReducedMotion } from "@/features/battle/scene/reduced-motion";
 import { useGameText } from "@/features/battle/use-game-text";
+import { activeDeckClassAtom } from "@/features/deck/deck.atoms";
 import { ForgeStoneIcon } from "@/features/hero/components/forge-stone-icon";
 import type { GearStrike } from "@/features/hero/components/gear-item";
 import {
   GEAR_STRIKE_MS,
   GearPlate,
 } from "@/features/hero/components/gear-item";
+import { HeroPortrait } from "@/features/hero/components/hero-portrait";
 import { HeroScene } from "@/features/hero/components/hero-scene";
 import type { ForgeStoneCount, HeroHpParts } from "@/features/hero/hero";
 import { upgradeFocusAfter } from "@/features/hero/hero";
@@ -22,12 +26,34 @@ import { GEAR_GLYPH } from "@/features/hero/hero-art";
 import { HERO_GROOVE, HERO_GROOVE_PAINT } from "@/features/hero/tokens";
 import { useHero } from "@/features/hero/use-hero";
 import { useStatFormat } from "@/features/hero/use-stat-format";
+import {
+  activeGearLookAtom,
+  activeHeroPortraitAtom,
+} from "@/features/profile/profile.atoms";
 import { BalancePlate } from "@/features/town/components/balance-plate";
 import { useCountTo } from "@/features/workshop/use-count-to";
 
 /** The HUD plate (DESIGN.md, HUD plate). */
 const PLATE =
   "flex rounded-xl border-2 border-gold-trim/70 bg-night-plate/85 text-cream shadow-[0_3px_0_rgba(0,0,0,0.45)]";
+
+/** The Gear Rack order: Trinket and Banner, then Weapon and Armor. */
+const RACK_ORDER: readonly GearSlot[] = [
+  "trinket",
+  "banner",
+  "weapon",
+  "armor",
+];
+
+/**
+ * At this height, the four full Gear plates fit beside the Hero Model. Under
+ * it, the plates use their compact form so that no row is cut off.
+ */
+const FULL_PLATE_HEIGHT = "(min-height: 880px)";
+
+const HeroModelPreview = lazy(
+  () => import("@/features/hero/components/hero-model-preview")
+);
 
 /** The chime of a Gear item at level 25 comes this long after the strike. */
 const MAX_CHIME_MS = 180;
@@ -305,7 +331,14 @@ const useUpgradeSounds = () => {
  */
 export const HeroScreen = () => {
   const { tr } = useGameText();
+  const portrait = useAtomValue(activeHeroPortraitAtom);
+  const gearLook = useAtomValue(activeGearLookAtom);
+  const classId = useAtomValue(activeDeckClassAtom);
+  const fullPlates = useMediaQuery(FULL_PLATE_HEIGHT, false);
   const hero = useHero();
+  const rackItems = RACK_ORDER.flatMap((slot) =>
+    hero.items.filter((item) => item.slot === slot)
+  );
   const stat = useStatFormat();
   const sounds = useUpgradeSounds();
   const coin = useCountTo(hero.coin);
@@ -327,7 +360,7 @@ export const HeroScreen = () => {
       return;
     }
     pendingFocus.current = null;
-    const target = upgradeFocusAfter(hero.items, from);
+    const target = upgradeFocusAfter(rackItems, from);
     const node = rack.current;
     const button =
       target === null
@@ -338,7 +371,7 @@ export const HeroScreen = () => {
     } else if (node && !node.contains(document.activeElement)) {
       node.focus();
     }
-  }, [hero.items]);
+  }, [rackItems]);
 
   const upgrade = (slot: GearSlot) => {
     if (!hero.upgrade(slot)) {
@@ -391,27 +424,47 @@ export const HeroScreen = () => {
           the top plates and the Town Bar. */}
       <div
         className={cn(
-          "absolute top-[calc(max(0.5rem,env(safe-area-inset-top))+3.5rem)] bottom-[calc(var(--town-bar)+12px)] left-1/2 flex w-[min(calc(100vw-1.5rem),1080px)] -translate-x-1/2 flex-col justify-center gap-3",
-          "[@media(max-height:500px)]:top-[calc(max(0.5rem,env(safe-area-inset-top))+2.75rem)] [@media(max-height:500px)]:bottom-[calc(var(--town-bar)+6px)] [@media(max-height:500px)]:w-[calc(100vw-max(0.5rem,env(safe-area-inset-left))-max(0.5rem,env(safe-area-inset-right)))] [@media(max-height:500px)]:gap-2"
+          "absolute top-[calc(max(0.5rem,env(safe-area-inset-top))+3.5rem)] left-1/2 flex w-[min(calc(100vw-1.5rem),1080px)] -translate-x-1/2 flex-col justify-center gap-3",
+          "[@media(max-height:500px)]:top-[calc(max(0.5rem,env(safe-area-inset-top))+2.75rem)] [@media(max-height:500px)]:w-[calc(100vw-max(0.5rem,env(safe-area-inset-left))-max(0.5rem,env(safe-area-inset-right)))] [@media(max-height:500px)]:gap-2",
+          "bottom-[calc(var(--town-bar)+38px)] [@media(max-height:500px)]:bottom-[calc(var(--town-bar)+36px)]"
         )}
       >
         <StatusBar hp={hero.hp} counts={hero.forgeStones} spent={spent} />
-        <ul
-          ref={rack}
-          tabIndex={-1}
-          aria-label={tr("hero.gear")}
-          className="grid min-h-0 grid-cols-4 gap-3 outline-none [@media(max-height:500px)]:gap-2"
-          data-testid="gear-rack"
-        >
-          {hero.items.map((item) => (
-            <GearPlate
-              key={item.slot}
-              item={item}
-              strike={strikes[item.slot] ?? null}
-              onUpgrade={() => upgrade(item.slot)}
+        <div className="grid min-h-0 flex-1 grid-cols-[minmax(0,1fr)_minmax(0,2fr)] grid-rows-[minmax(0,1fr)] gap-3 overflow-hidden">
+          <Suspense
+            fallback={
+              <div className="flex min-h-0 items-center justify-center">
+                <HeroPortrait
+                  id={portrait}
+                  classId={classId}
+                  className="h-full w-auto max-w-full"
+                />
+              </div>
+            }
+          >
+            <HeroModelPreview
+              appearance={{ portrait, gearLook }}
+              classId={classId}
             />
-          ))}
-        </ul>
+          </Suspense>
+          <ul
+            ref={rack}
+            tabIndex={-1}
+            aria-label={tr("hero.gear")}
+            className="grid min-h-0 grid-cols-2 gap-3 overflow-y-auto outline-none [@media(max-height:500px)]:gap-2"
+            data-testid="gear-rack"
+          >
+            {rackItems.map((item) => (
+              <GearPlate
+                key={item.slot}
+                item={item}
+                compact={!fullPlates}
+                strike={strikes[item.slot] ?? null}
+                onUpgrade={() => upgrade(item.slot)}
+              />
+            ))}
+          </ul>
+        </div>
       </div>
       <p className="sr-only" aria-live="polite" data-testid="hero-said">
         {said}

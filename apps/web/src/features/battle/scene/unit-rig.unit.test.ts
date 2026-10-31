@@ -239,9 +239,9 @@ describe("buildRig", () => {
     );
     expect(rig.root.position.y).toBeCloseTo(0.32);
     expect(rig.root.scale.x).toBeCloseTo(1.2);
-    // The model has the clip, so it does not tilt as a Cut-out Figure.
+    // The model has the clip, so it does not take the fall tilt.
     expect(rig.root.rotation.x).toBe(0);
-    // The model has no walk clip: it idles and tilts as a Cut-out Figure.
+    // The model has no walk clip: it idles and takes the fall tilt.
     rig.update(pose({ tilt: 0.25 }), { name: "walk", phase: 0.5 }, 1);
     expect(rig.root.rotation.x).toBe(0.25);
   });

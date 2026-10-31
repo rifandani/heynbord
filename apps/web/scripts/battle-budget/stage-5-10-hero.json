@@ -1,0 +1,81 @@
+{
+  "appearance": {
+    "portrait": "heroPortrait.dawnGaze",
+    "gearLook": "gearLook.ironVine"
+  },
+  "cosmetics": {
+    "boardSkin": "boardSkin.hollowMoon",
+    "cardBack": "cardBack.goldFleur"
+  },
+  "features": {
+    "heroModel": true
+  },
+  "id": "stage-5-10-hero",
+  "stageId": "5-10",
+  "level": 30,
+  "deck": {
+    "classId": "warrior",
+    "deck": [
+      {
+        "cardId": "human.townBarricade",
+        "rank": "common"
+      },
+      {
+        "cardId": "human.militiaRecruit",
+        "rank": "common"
+      },
+      {
+        "cardId": "human.gateWarden",
+        "rank": "uncommon"
+      },
+      {
+        "cardId": "human.shieldbearer",
+        "rank": "common"
+      },
+      {
+        "cardId": "human.crossbowGuard",
+        "rank": "common"
+      },
+      {
+        "cardId": "human.crossbowGuard",
+        "rank": "common"
+      },
+      {
+        "cardId": "human.halberdier",
+        "rank": "common"
+      },
+      {
+        "cardId": "human.halberdier",
+        "rank": "common"
+      },
+      {
+        "cardId": "human.dawnCleric",
+        "rank": "uncommon"
+      },
+      {
+        "cardId": "human.riverKnight",
+        "rank": "uncommon"
+      },
+      {
+        "cardId": "human.riverKnight",
+        "rank": "uncommon"
+      },
+      {
+        "cardId": "warrior.shieldWall",
+        "rank": "common"
+      },
+      {
+        "cardId": "warrior.shieldBash",
+        "rank": "common"
+      },
+      {
+        "cardId": "warrior.callToArms",
+        "rank": "rare"
+      },
+      {
+        "cardId": "human.ironBulwark",
+        "rank": "epic"
+      }
+    ]
+  }
+}

@@ -1,5 +1,8 @@
 import type { CosmeticId } from "@workspace/rules";
 
+/** The new Standard person's painted face. */
+export const STANDARD_HERO_PORTRAIT = "/hero-portraits/standard.webp";
+
 /**
  * The painted face of each Hero portrait (Economy 3.5, Hero Portrait
  * Concepts): one 600 × 800 WebP in `public/hero-portraits/`, named after the

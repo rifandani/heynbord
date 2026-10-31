@@ -1,0 +1,787 @@
+{
+  "region": "hearthvale",
+  "version": 2,
+  "width": 1280,
+  "height": 720,
+  "fps": 30,
+  "frameCount": 4050,
+  "locales": ["en-us", "id-id"],
+  "playback": {
+    "autoAdvance": false,
+    "continueBeforeEnd": true,
+    "readingHold": "loop-from-loopStartSeconds-until-player-action",
+    "loopStartSeconds": 5.0,
+    "back": "restart-moment",
+    "reducedMotion": "poster",
+    "videoFailure": "poster",
+    "audioFailure": "silent",
+    "textAndControls": "external",
+    "stopEffectsOnLeave": true,
+    "profileMutations": false
+  },
+  "listeningReview": "pending",
+  "moments": [
+    {
+      "id": "OpeningFire",
+      "text": {
+        "en-us": "Long ago, the peoples of Heynbord went to war. The war burned for so long that the world almost turned to ash.",
+        "id-id": "Dahulu kala, bangsa-bangsa Heynbord saling berperang. Perang itu berkobar begitu lama hingga dunia nyaris menjadi abu."
+      },
+      "startFrame": 0,
+      "endFrame": 270,
+      "sceneKind": "opening",
+      "momentOrder": 1,
+      "clip": "opening-01.mp4",
+      "poster": "opening-01.webp",
+      "frameCount": 270,
+      "durationSeconds": 9.0,
+      "loopStartSeconds": 5.0,
+      "posterFrame": 269,
+      "clipBytes": 1000833,
+      "posterBytes": 37986,
+      "clipSha256": "ea20625c68bd7b053faee099b58d88307d94e0bcfa318aca5f61d474d6ba885e",
+      "posterRgbRmse": 4.466,
+      "effectCues": [
+        {
+          "file": "audio/fire.mp3",
+          "atSeconds": 0.0,
+          "gainDb": -4.0
+        },
+        {
+          "file": "audio/boom.mp3",
+          "atSeconds": 3.55,
+          "gainDb": 0.0
+        }
+      ]
+    },
+    {
+      "id": "OpeningAccord",
+      "text": {
+        "en-us": "Then the Lanekeepers drew three lanes of light and wrote the Accord. Since that day, every war is fought in the lanes, by the same rules.",
+        "id-id": "Lalu para Lanekeeper menggambar tiga jalur cahaya dan menulis Accord. Sejak hari itu, setiap perang terjadi di jalur, dengan aturan yang sama."
+      },
+      "startFrame": 270,
+      "endFrame": 540,
+      "sceneKind": "opening",
+      "momentOrder": 2,
+      "clip": "opening-02.mp4",
+      "poster": "opening-02.webp",
+      "frameCount": 270,
+      "durationSeconds": 9.0,
+      "loopStartSeconds": 5.0,
+      "posterFrame": 269,
+      "clipBytes": 664301,
+      "posterBytes": 26104,
+      "clipSha256": "41486d0d7bbe9e34fc5de889cbc3b675456775696d4d84385225e0031c7cf897",
+      "posterRgbRmse": 3.936,
+      "effectCues": [
+        {
+          "file": "audio/shimmer.mp3",
+          "atSeconds": 0.4,
+          "gainDb": -3.0
+        },
+        {
+          "file": "audio/boom.mp3",
+          "atSeconds": 3.35,
+          "gainDb": -2.0
+        }
+      ]
+    },
+    {
+      "id": "OpeningValley",
+      "text": {
+        "en-us": "The first lane battle was fought in Hearthvale. Today, its roads carry bread to every town in Heynbord.",
+        "id-id": "Pertempuran jalur pertama terjadi di Hearthvale. Kini, jalan-jalannya membawa roti ke setiap kota di Heynbord."
+      },
+      "startFrame": 540,
+      "endFrame": 810,
+      "sceneKind": "opening",
+      "momentOrder": 3,
+      "clip": "opening-03.mp4",
+      "poster": "opening-03.webp",
+      "frameCount": 270,
+      "durationSeconds": 9.0,
+      "loopStartSeconds": 5.0,
+      "posterFrame": 269,
+      "clipBytes": 870995,
+      "posterBytes": 96768,
+      "clipSha256": "cf522d49e72e28ef85033c537205e8770bbc0f82fd82cd52c96f1885201154ae",
+      "posterRgbRmse": 7.012,
+      "effectCues": [
+        {
+          "file": "audio/wind.mp3",
+          "atSeconds": 0.0,
+          "gainDb": -2.0
+        }
+      ]
+    },
+    {
+      "id": "OpeningBaron",
+      "text": {
+        "en-us": "Now Baron Brassbelly holds those roads. His outlaws and Orc sellswords stop every cart. He pays them in gold. Where does he get it?",
+        "id-id": "Kini Baron Brassbelly menguasai jalan-jalan itu. Bandit dan tentara bayaran Orc miliknya menghadang setiap kereta. Ia membayar mereka dengan emas. Dari mana emas itu?"
+      },
+      "startFrame": 810,
+      "endFrame": 1080,
+      "sceneKind": "opening",
+      "momentOrder": 4,
+      "clip": "opening-04.mp4",
+      "poster": "opening-04.webp",
+      "frameCount": 270,
+      "durationSeconds": 9.0,
+      "loopStartSeconds": 5.0,
+      "posterFrame": 269,
+      "clipBytes": 1040627,
+      "posterBytes": 52286,
+      "clipSha256": "ac113bb639f6cb8c14f726134316c8777341ff0a7270618e508741ecf9bd041c",
+      "posterRgbRmse": 5.19,
+      "effectCues": [
+        {
+          "file": "audio/thunder.mp3",
+          "atSeconds": 2.85,
+          "gainDb": 0.0
+        },
+        {
+          "file": "audio/drum.mp3",
+          "atSeconds": 3.05,
+          "gainDb": -2.0
+        }
+      ]
+    },
+    {
+      "id": "OpeningRoad",
+      "text": {
+        "en-us": "You are a new Hero. Start at the Muddy Ford, and take the road back one battle at a time.",
+        "id-id": "Kamu adalah Hero baru. Mulailah dari Muddy Ford, dan rebut kembali jalan itu, satu pertempuran demi satu pertempuran."
+      },
+      "startFrame": 1080,
+      "endFrame": 1350,
+      "sceneKind": "opening",
+      "momentOrder": 5,
+      "clip": "opening-05.mp4",
+      "poster": "opening-05.webp",
+      "frameCount": 270,
+      "durationSeconds": 9.0,
+      "loopStartSeconds": 5.0,
+      "posterFrame": 269,
+      "clipBytes": 971884,
+      "posterBytes": 107718,
+      "clipSha256": "83d42c140f13fcdcb28cfcdb75e03cebab18279a374fdb56fbc1ea200a8d7655",
+      "posterRgbRmse": 7.689,
+      "effectCues": [
+        {
+          "file": "audio/boom.mp3",
+          "atSeconds": 0.55,
+          "gainDb": -9.0
+        },
+        {
+          "file": "audio/shimmer.mp3",
+          "atSeconds": 1.0,
+          "gainDb": -6.0
+        }
+      ]
+    },
+    {
+      "id": "BossHall",
+      "text": {
+        "en-us": "At the end of the road stands Brassbelly Hall. Its torches light one by one. Someone expects you. / Baron: Open the gates! Our famous guest has walked a long way to see me.",
+        "id-id": "Di ujung jalan berdiri Brassbelly Hall. Obor-obornya menyala satu per satu. Seseorang sudah menunggumu. / Baron: Buka gerbangnya! Tamu terkenal kita sudah berjalan jauh untuk menemuiku."
+      },
+      "startFrame": 1350,
+      "endFrame": 1620,
+      "sceneKind": "boss",
+      "momentOrder": 1,
+      "clip": "boss-01.mp4",
+      "poster": "boss-01.webp",
+      "frameCount": 270,
+      "durationSeconds": 9.0,
+      "loopStartSeconds": 5.0,
+      "posterFrame": 269,
+      "clipBytes": 867780,
+      "posterBytes": 22860,
+      "clipSha256": "8fbdc8e746e8fd57c776cb7b74f9ed57bf8f109fa6c5c31b0a207543076b70be",
+      "posterRgbRmse": 3.243,
+      "effectCues": [
+        {
+          "file": "audio/torch.mp3",
+          "atSeconds": 0.9,
+          "gainDb": -3.0
+        },
+        {
+          "file": "audio/thunder.mp3",
+          "atSeconds": 2.0,
+          "gainDb": 0.0
+        },
+        {
+          "file": "audio/gate.mp3",
+          "atSeconds": 3.35,
+          "gainDb": 0.0
+        },
+        {
+          "file": "audio/boom.mp3",
+          "atSeconds": 3.35,
+          "gainDb": -9.0
+        }
+      ]
+    },
+    {
+      "id": "BossBaron",
+      "text": {
+        "en-us": "Baron: So you are the Hero who broke my toll gates, burned my camp and scared off my Orcs. Do you know what that cost me? / You: Less than you took from Hearthvale.",
+        "id-id": "Baron: Jadi kamu Hero yang merusak gerbang tolku, membakar kemahku, dan menakuti Orc-Orc-ku. Kamu tahu berapa kerugianku? / You: Masih lebih sedikit daripada yang kamu ambil dari Hearthvale."
+      },
+      "startFrame": 1620,
+      "endFrame": 1890,
+      "sceneKind": "boss",
+      "momentOrder": 2,
+      "clip": "boss-02.mp4",
+      "poster": "boss-02.webp",
+      "frameCount": 270,
+      "durationSeconds": 9.0,
+      "loopStartSeconds": 5.0,
+      "posterFrame": 269,
+      "clipBytes": 581984,
+      "posterBytes": 28358,
+      "clipSha256": "cc534b4fe691ec40fd857740c43d9d7767fa3b89830d704579f2981b4140d798",
+      "posterRgbRmse": 4.35,
+      "effectCues": [
+        {
+          "file": "audio/cloth.mp3",
+          "atSeconds": 0.3,
+          "gainDb": -2.0
+        },
+        {
+          "file": "audio/boom.mp3",
+          "atSeconds": 1.9,
+          "gainDb": -5.0
+        },
+        {
+          "file": "audio/drum.mp3",
+          "atSeconds": 2.3,
+          "gainDb": -3.0
+        },
+        {
+          "file": "audio/coin.mp3",
+          "atSeconds": 3.95,
+          "gainDb": -2.0
+        }
+      ]
+    },
+    {
+      "id": "BossToll",
+      "text": {
+        "en-us": "Baron: Hearthvale feeds all of Heynbord. Every loaf rolls out on my roads, and what rolls back to me? Crumbs! / Baron: So now every cart pays the Baron. Fair is fair. / You: The bread belongs to the people who bake it, Baron. The roads belong to everyone.",
+        "id-id": "Baron: Hearthvale memberi makan seluruh Heynbord. Setiap roti melintas di jalanku, dan apa yang kembali padaku? Remah-remah! / Baron: Jadi sekarang setiap kereta membayar sang Baron. Adil, kan? / You: Roti itu milik orang yang memanggangnya, Baron. Jalan itu milik semua orang."
+      },
+      "startFrame": 1890,
+      "endFrame": 2160,
+      "sceneKind": "boss",
+      "momentOrder": 3,
+      "clip": "boss-03.mp4",
+      "poster": "boss-03.webp",
+      "frameCount": 270,
+      "durationSeconds": 9.0,
+      "loopStartSeconds": 5.0,
+      "posterFrame": 269,
+      "clipBytes": 846346,
+      "posterBytes": 86154,
+      "clipSha256": "6847795a75204919a926e1feca0926ecb57805a824fc5b3bd4944a97072d53ea",
+      "posterRgbRmse": 6.978,
+      "effectCues": [
+        {
+          "file": "audio/thud.mp3",
+          "atSeconds": 1.0,
+          "gainDb": 0.0
+        },
+        {
+          "file": "audio/thud.mp3",
+          "atSeconds": 1.38,
+          "gainDb": -1.0
+        },
+        {
+          "file": "audio/thud.mp3",
+          "atSeconds": 1.76,
+          "gainDb": -2.0
+        },
+        {
+          "file": "audio/thud.mp3",
+          "atSeconds": 2.14,
+          "gainDb": -3.0
+        },
+        {
+          "file": "audio/thud.mp3",
+          "atSeconds": 2.52,
+          "gainDb": -2.0
+        },
+        {
+          "file": "audio/coins.mp3",
+          "atSeconds": 3.0,
+          "gainDb": -5.0
+        }
+      ]
+    },
+    {
+      "id": "BossFriend",
+      "text": {
+        "en-us": "You: Orc sellswords cost a fortune. Where does a bandit get so much gold? / Baron: From a friend with deep pockets. No name, no face. Just good, heavy gold, delivered at night. / Baron: My friend wants the roads closed. I want to be rich. Everybody wins!",
+        "id-id": "You: Tentara bayaran Orc itu mahal. Dari mana seorang bandit mendapat emas sebanyak itu? / Baron: Dari seorang teman yang kaya raya. Tanpa nama, tanpa wajah. Hanya emas yang bagus dan berat, dikirim pada malam hari. / Baron: Temanku ingin jalan-jalan ditutup. Aku ingin kaya. Semua senang!"
+      },
+      "startFrame": 2160,
+      "endFrame": 2430,
+      "sceneKind": "boss",
+      "momentOrder": 4,
+      "clip": "boss-04.mp4",
+      "poster": "boss-04.webp",
+      "frameCount": 270,
+      "durationSeconds": 9.0,
+      "loopStartSeconds": 5.0,
+      "posterFrame": 269,
+      "clipBytes": 312393,
+      "posterBytes": 8146,
+      "clipSha256": "1a266bee1508166302a45d3778309322bf5f105745e3884d0a3e5562bc46bb6d",
+      "posterRgbRmse": 2.36,
+      "effectCues": [
+        {
+          "file": "audio/magic.mp3",
+          "atSeconds": 0.5,
+          "gainDb": -3.0
+        },
+        {
+          "file": "audio/thud.mp3",
+          "atSeconds": 2.35,
+          "gainDb": 0.0
+        },
+        {
+          "file": "audio/coins.mp3",
+          "atSeconds": 2.65,
+          "gainDb": -2.0
+        }
+      ]
+    },
+    {
+      "id": "BossChallenge",
+      "text": {
+        "en-us": "Baron: Enough talk! Shieldbearer, show our guest the way out! / You: Hearthvale's roads open today. Starting with your door.",
+        "id-id": "Baron: Cukup bicaranya! Shieldbearer, tunjukkan jalan keluar kepada tamu kita! / You: Jalan-jalan Hearthvale terbuka hari ini. Dimulai dari pintumu."
+      },
+      "startFrame": 2430,
+      "endFrame": 2700,
+      "sceneKind": "boss",
+      "momentOrder": 5,
+      "clip": "boss-05.mp4",
+      "poster": "boss-05.webp",
+      "frameCount": 270,
+      "durationSeconds": 9.0,
+      "loopStartSeconds": 5.0,
+      "posterFrame": 269,
+      "clipBytes": 598329,
+      "posterBytes": 34274,
+      "clipSha256": "b1f8c694055dc9d38423bca9643816e7f743f7a7798f6e7bd88ff5b4e077547c",
+      "posterRgbRmse": 4.271,
+      "effectCues": [
+        {
+          "file": "audio/drums.mp3",
+          "atSeconds": 0.1,
+          "gainDb": -2.0
+        },
+        {
+          "file": "audio/shimmer.mp3",
+          "atSeconds": 0.4,
+          "gainDb": -8.0
+        },
+        {
+          "file": "audio/cannon.mp3",
+          "atSeconds": 1.95,
+          "gainDb": -2.5
+        },
+        {
+          "file": "audio/boom.mp3",
+          "atSeconds": 3.4,
+          "gainDb": -5.0
+        }
+      ]
+    },
+    {
+      "id": "EndingBanner",
+      "text": {
+        "en-us": "Brassbelly's banner falls. The roads are open, and the carts roll again. For once, the Baron has nothing to say.",
+        "id-id": "Panji Brassbelly jatuh. Jalan-jalan kembali terbuka, dan kereta-kereta kembali melaju. Untuk sekali ini, sang Baron kehabisan kata-kata."
+      },
+      "startFrame": 2700,
+      "endFrame": 2970,
+      "sceneKind": "ending",
+      "momentOrder": 1,
+      "clip": "ending-01.mp4",
+      "poster": "ending-01.webp",
+      "frameCount": 270,
+      "durationSeconds": 9.0,
+      "loopStartSeconds": 5.0,
+      "posterFrame": 269,
+      "clipBytes": 1210882,
+      "posterBytes": 110242,
+      "clipSha256": "d1d3c70ac25381e46b9f9a55cce052982d4dedcb0398a477b069996461eacc22",
+      "posterRgbRmse": 7.95,
+      "effectCues": [
+        {
+          "file": "audio/flap.mp3",
+          "atSeconds": 1.1,
+          "gainDb": -2.0
+        },
+        {
+          "file": "audio/boom.mp3",
+          "atSeconds": 1.1,
+          "gainDb": -6.0
+        },
+        {
+          "file": "audio/shimmer.mp3",
+          "atSeconds": 1.3,
+          "gainDb": -5.0
+        }
+      ]
+    },
+    {
+      "id": "EndingVault",
+      "text": {
+        "en-us": "In his vault, you find the sellswords' pay: chests of new gold coins. But one coin feels too light.",
+        "id-id": "Di ruang hartanya, kamu menemukan upah para tentara bayaran: peti-peti berisi koin emas baru. Tetapi satu koin terasa terlalu ringan."
+      },
+      "startFrame": 2970,
+      "endFrame": 3240,
+      "sceneKind": "ending",
+      "momentOrder": 2,
+      "clip": "ending-02.mp4",
+      "poster": "ending-02.webp",
+      "frameCount": 270,
+      "durationSeconds": 9.0,
+      "loopStartSeconds": 5.0,
+      "posterFrame": 269,
+      "clipBytes": 390122,
+      "posterBytes": 14750,
+      "clipSha256": "488c75b7ebff4c731a34a13780ff071ce788260034b2c0e3943639e2d638391a",
+      "posterRgbRmse": 3.366,
+      "effectCues": [
+        {
+          "file": "audio/coins.mp3",
+          "atSeconds": 0.3,
+          "gainDb": -2.0
+        },
+        {
+          "file": "audio/coin-spin.mp3",
+          "atSeconds": 3.8,
+          "gainDb": -1.0
+        }
+      ]
+    },
+    {
+      "id": "EndingStone",
+      "text": {
+        "en-us": "Under the gold paint is red stone. Stone like this comes from only one place: the Red Mesas.",
+        "id-id": "Di balik cat emas itu ada batu merah. Batu seperti ini hanya berasal dari satu tempat: Red Mesas."
+      },
+      "startFrame": 3240,
+      "endFrame": 3510,
+      "sceneKind": "ending",
+      "momentOrder": 3,
+      "clip": "ending-03.mp4",
+      "poster": "ending-03.webp",
+      "frameCount": 270,
+      "durationSeconds": 9.0,
+      "loopStartSeconds": 5.0,
+      "posterFrame": 269,
+      "clipBytes": 449718,
+      "posterBytes": 12628,
+      "clipSha256": "3ca39f5b26e84986d80b1a7f75d710615782561c4a1f3549b4e5ecb8d4538071",
+      "posterRgbRmse": 3.063,
+      "effectCues": [
+        {
+          "file": "audio/crack.mp3",
+          "atSeconds": 0.5,
+          "gainDb": 0.0
+        },
+        {
+          "file": "audio/crack.mp3",
+          "atSeconds": 1.15,
+          "gainDb": -7.0
+        }
+      ]
+    },
+    {
+      "id": "EndingSeal",
+      "text": {
+        "en-us": "The Baron never met the one who paid him. Each order came at night, under a seal of three lanes cut through.",
+        "id-id": "Sang Baron tidak pernah bertemu orang yang membayarnya. Setiap perintah datang pada malam hari, dengan segel tiga jalur yang terpotong."
+      },
+      "startFrame": 3510,
+      "endFrame": 3780,
+      "sceneKind": "ending",
+      "momentOrder": 4,
+      "clip": "ending-04.mp4",
+      "poster": "ending-04.webp",
+      "frameCount": 270,
+      "durationSeconds": 9.0,
+      "loopStartSeconds": 5.0,
+      "posterFrame": 269,
+      "clipBytes": 313233,
+      "posterBytes": 17728,
+      "clipSha256": "4e94f3ec73f824cdb7769261dbeddb7c443504cd12c2a5f46f92c1316c14b46b",
+      "posterRgbRmse": 3.145,
+      "effectCues": [
+        {
+          "file": "audio/paper.mp3",
+          "atSeconds": 0.15,
+          "gainDb": -3.0
+        },
+        {
+          "file": "audio/thud.mp3",
+          "atSeconds": 3.33,
+          "gainDb": 0.0
+        }
+      ]
+    },
+    {
+      "id": "EndingTrail",
+      "text": {
+        "en-us": "Someone wants to break the Accord. The trail of painted gold leads to the Red Mesas.",
+        "id-id": "Seseorang ingin menghancurkan Accord. Jejak emas palsu itu mengarah ke Red Mesas."
+      },
+      "startFrame": 3780,
+      "endFrame": 4050,
+      "sceneKind": "ending",
+      "momentOrder": 5,
+      "clip": "ending-05.mp4",
+      "poster": "ending-05.webp",
+      "frameCount": 270,
+      "durationSeconds": 9.0,
+      "loopStartSeconds": 5.0,
+      "posterFrame": 269,
+      "clipBytes": 857867,
+      "posterBytes": 51656,
+      "clipSha256": "534e06376f26cff778ae77d4109cc4a2826c29fda808b753ff2f695634b12512",
+      "posterRgbRmse": 5.374,
+      "effectCues": [
+        {
+          "file": "audio/wind.mp3",
+          "atSeconds": 1.3,
+          "gainDb": -3.0
+        }
+      ]
+    }
+  ],
+  "audio": [
+    {
+      "path": "audio/boom.mp3",
+      "bytes": 28515,
+      "scenes": ["boss", "ending", "opening"],
+      "sha256": "cad553fcb8824e4b6bd463e9b917591a270615d791cc5d8d93ef94b4f80ce65c",
+      "settingsBus": "effects",
+      "durationSeconds": 3.5,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/boss-music.mp3",
+      "bytes": 553880,
+      "scenes": ["boss"],
+      "sha256": "780c2211ddec191dda3bbbb43b4bd60b54ad2c94821f3f45aaf6febd79995c5f",
+      "settingsBus": "music",
+      "durationSeconds": 79.0,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/cannon.mp3",
+      "bytes": 24493,
+      "scenes": ["boss"],
+      "sha256": "80d651ff81a0fa8390d785f85c37a93dfd876e22584028537e8b54e4d2ad22b7",
+      "settingsBus": "effects",
+      "durationSeconds": 3.0,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/cloth.mp3",
+      "bytes": 3642,
+      "scenes": ["boss"],
+      "sha256": "7a0f5aa619338e1daa630f677a67d68351bfd938352cafdfc28c570c91da587b",
+      "settingsBus": "effects",
+      "durationSeconds": 0.383968,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/coin-spin.mp3",
+      "bytes": 11745,
+      "scenes": ["ending"],
+      "sha256": "94e4139ff29c60c4bd06e1de92e0466916a9d8126b110e3780bfe62ee4139f52",
+      "settingsBus": "effects",
+      "durationSeconds": 1.404694,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/coin.mp3",
+      "bytes": 8227,
+      "scenes": ["boss"],
+      "sha256": "c1a141eb3ae190068f4e34528a2f2c82268070686ec7490bd4d523bd1392441d",
+      "settingsBus": "effects",
+      "durationSeconds": 0.946032,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/coins.mp3",
+      "bytes": 14499,
+      "scenes": ["boss", "ending"],
+      "sha256": "0de3d3fffb24dc6cecfa2b0c982066854f979796171068e632d772864d659229",
+      "settingsBus": "effects",
+      "durationSeconds": 1.725896,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/crack.mp3",
+      "bytes": 9656,
+      "scenes": ["ending"],
+      "sha256": "f7e0cc53eb94ba014560ae9711beb108285c8da5c52cfa6c046c3fd142b239f9",
+      "settingsBus": "effects",
+      "durationSeconds": 1.133946,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/drum.mp3",
+      "bytes": 4222,
+      "scenes": ["boss", "opening"],
+      "sha256": "230a4334426f8d48e300bd86e59ece916a0884211ac130be2bae3b2e9b52b0a8",
+      "settingsBus": "effects",
+      "durationSeconds": 0.45,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/drums.mp3",
+      "bytes": 19687,
+      "scenes": ["boss"],
+      "sha256": "4f3f7a68fa0ceb2bddec235c5be78a5b7ca04d9fdc172fa5a5c98c1f71f0a88d",
+      "settingsBus": "effects",
+      "durationSeconds": 2.4,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/ending-music.mp3",
+      "bytes": 557100,
+      "scenes": ["ending"],
+      "sha256": "f010faeb42a60b177e6fad14b84cdf2819c02a21f02352c687277d17cc49b912",
+      "settingsBus": "music",
+      "durationSeconds": 79.5,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/fire.mp3",
+      "bytes": 72647,
+      "scenes": ["opening"],
+      "sha256": "fe45a0574d6104968f9b0041785ab6a2a26729d5939cb72aa11f69dec31f132c",
+      "settingsBus": "effects",
+      "durationSeconds": 9.0,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/flap.mp3",
+      "bytes": 21358,
+      "scenes": ["ending"],
+      "sha256": "f1c15cc70fac0af93c889bb52617df1b83882977c6f5bab9d92de1cb6c3573f7",
+      "settingsBus": "effects",
+      "durationSeconds": 2.6,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/gate.mp3",
+      "bytes": 2968,
+      "scenes": ["boss"],
+      "sha256": "1cc7a86353956e5f95dcefcdf9bdcd100627b0396a8efcdc4cd02704dbf295dd",
+      "settingsBus": "effects",
+      "durationSeconds": 0.307098,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/magic.mp3",
+      "bytes": 13208,
+      "scenes": ["boss"],
+      "sha256": "63a8ec991603966ce1101c350bec20150cafa20d9cd7ff8283a06b0112520464",
+      "settingsBus": "effects",
+      "durationSeconds": 1.577664,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/opening-music.mp3",
+      "bytes": 560574,
+      "scenes": ["opening"],
+      "sha256": "35c7a9b4fe4f2647b3251084b87c41b5f90b4990417eef54bb06c503c17c191d",
+      "settingsBus": "music",
+      "durationSeconds": 80.0,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/paper.mp3",
+      "bytes": 4490,
+      "scenes": ["ending"],
+      "sha256": "ca603d79cb667a79545426e5d9c231c7f053e10cb195eb44ee78fc8135c27fb6",
+      "settingsBus": "effects",
+      "durationSeconds": 0.48,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/shimmer.mp3",
+      "bytes": 24521,
+      "scenes": ["boss", "ending", "opening"],
+      "sha256": "51f130ced054bedf9c543bcf4acd634c1826f4d0d52ad407e48fca677dc8d4d1",
+      "settingsBus": "effects",
+      "durationSeconds": 3.0,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/thud.mp3",
+      "bytes": 4640,
+      "scenes": ["boss", "ending"],
+      "sha256": "e4ef84edd2d049ff18753629bfda6720c2ebf26fcbfad84c9d011114a5a038c0",
+      "settingsBus": "effects",
+      "durationSeconds": 0.507098,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/thunder.mp3",
+      "bytes": 41420,
+      "scenes": ["boss", "opening"],
+      "sha256": "4d10c132085774a1cef915c4d00df40f24a5eaeb4fd60c2f136d2a510ff19da7",
+      "settingsBus": "effects",
+      "durationSeconds": 5.104014,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/torch.mp3",
+      "bytes": 13417,
+      "scenes": ["boss"],
+      "sha256": "bbf4519d4f5017f67e010f1fb76aeb82ad8786c725468663a22cf0af3ae8eccb",
+      "settingsBus": "effects",
+      "durationSeconds": 1.6,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "path": "audio/wind.mp3",
+      "bytes": 33688,
+      "scenes": ["ending", "opening"],
+      "sha256": "f3eb224822bc81d6230ee53fc39251bd66cd8786b0ca67a53600c57f31664d85",
+      "settingsBus": "effects",
+      "durationSeconds": 4.14034,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+    }
+  ],
+  "budgets": {
+    "opening": {
+      "videoBytes": 4548640,
+      "posterBytes": 320862,
+      "audioBytes": 765587
+    },
+    "boss": {
+      "videoBytes": 3206832,
+      "posterBytes": 179792,
+      "audioBytes": 757339
+    },
+    "ending": {
+      "videoBytes": 3221822,
+      "posterBytes": 207004,
+      "audioBytes": 710212
+    }
+  }
+}

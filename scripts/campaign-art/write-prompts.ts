@@ -15,12 +15,15 @@
  *   Battle Painting conversation. The prompts come from the briefs in
  *   `docs/game/12-region-concepts.md` and `13-battlefield-concepts.md`, and
  *   from the scene lines in `scenes.ts`.
+ * - `raw/hearthvale/story-prompts.md`: the fframes production prompt, with
+ *   the current text from `docs/game/scenes/hearthvale-storyboard.md`.
  */
-import { mkdirSync, writeFileSync } from "node:fs";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 
 import sharp from "sharp";
 
+import { ROOT } from "../creature-art/concepts.ts";
 import {
   BATTLE_SET_REFERENCE,
   fromPublic,
@@ -175,6 +178,21 @@ const promptsFile = (
     "",
   ].join("\n");
 
+const storyPromptsFile = (dir: string): string => {
+  const designLink = path.relative(
+    dir,
+    path.join(ROOT, "docs/game/23-region-story-scenes.md")
+  );
+  const storyboard = readFileSync(
+    path.join(ROOT, "docs/game/scenes/hearthvale-storyboard.md"),
+    "utf-8"
+  ).replaceAll("](../23-region-story-scenes.md)", `](${designLink})`);
+  return readFileSync(
+    path.join(ROOT, "scripts/campaign-art/hearthvale-story-prompts.md"),
+    "utf-8"
+  ).replace("{{STORYBOARD}}", storyboard);
+};
+
 const { regions, clearings } = readCampaign();
 const known = new Set(regions.map((region) => region.slug));
 const extra = [...SCENE.keys()].filter((slug) => !known.has(slug));
@@ -192,8 +210,12 @@ for (const [index, region] of regions.entries()) {
     path.join(dir, "prompts.md"),
     promptsFile(region, index === 0, clearings)
   );
+  if (region.slug === "hearthvale") {
+    writeFileSync(path.join(dir, "story-prompts.md"), storyPromptsFile(dir));
+  }
   console.log(
     `${region.name}: ${region.landmarks.length} landmarks, ${region.battle ? "a" : "no"} Battle Painting brief`
   );
 }
 console.log(`References: ${RAW_DIR}\nPrompts: ${RAW_DIR}/<region>/prompts.md`);
+console.log(`Story prompt: ${RAW_DIR}/hearthvale/story-prompts.md`);

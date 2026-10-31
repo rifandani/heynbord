@@ -1,5 +1,10 @@
 # A Gear look is a set of 4 Gear icons
 
+Amended on 2026-10-30 by [web ADR-0016](./0016-a-hero-portrait-defines-a-person-and-the-gear-look-dresses-it.md).
+The four icons remain. The icon-only boundary and the rejection of a
+Hero figure wearing Gear below are historical decisions: the accepted
+design now also applies the Gear look to the Hero Model.
+
 The Bazaar sells 6 Gear looks for 100 Heynstones each (Economy 3.5). But the game draws Gear in one place only: the 4 painted icons on the Gear plates of the Hero screen. The Battle, the Top Bar and the Board show no Gear. Thus a Gear look had no surface, and the Bazaar sold it with a family glyph and no Use, the same problem that the Board skins had before web ADR-0012.
 
 ## Decision

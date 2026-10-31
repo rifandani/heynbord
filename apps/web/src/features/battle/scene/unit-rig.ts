@@ -44,7 +44,7 @@ const BLEND_SECONDS = 0.15;
 const isClipName = (name: string): name is UnitClipName =>
   UNIT_CLIP_NAMES.some((clip) => clip === name);
 
-/** The ink outline of a Unit Model, in world units, so it matches the Cut-out Figures. */
+/** The ink outline of a Unit Model, in world units, so it matches the card art lines. */
 const OUTLINE_WIDTH = 0.008;
 
 /** The ink of the outline: the dark brown of the card art lines. */
@@ -269,7 +269,7 @@ export const buildRig = (
     const shown = fallbackClip(clip, has);
     root.position.y = pose.y + FOOT_Y;
     root.scale.setScalar(pose.scale);
-    root.rotation.x = shown.cutOutPose ? pose.tilt : 0;
+    root.rotation.x = shown.tiltPose ? pose.tilt : 0;
     rememberClip(actions.get(shown.name) ?? actions.get("idle"), time);
     const blend = Math.min(1, (time - switchedAt) / BLEND_SECONDS);
     clearWeights();

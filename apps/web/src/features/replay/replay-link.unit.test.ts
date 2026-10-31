@@ -97,6 +97,7 @@ const dataOf = (json: string, format = REPLAY_FORMAT) =>
 
 /** Values in the JSON of a Replay Link. A newer build can give other values. */
 interface LinkValues {
+  readonly appearance?: unknown;
   readonly rules?: string | undefined;
   readonly classId?: string;
   readonly deck?: readonly { readonly cardId: string; readonly rank: string }[];
@@ -135,6 +136,34 @@ const reasonOf = (data: string) =>
   );
 
 describe("encodeReplay and decodeReplay", () => {
+  it.effect(
+    "keeps known appearances and falls back for wrong or unknown families",
+    () =>
+      Effect.gen(function* () {
+        const valid = {
+          portrait: "heroPortrait.tentRings",
+          gearLook: "gearLook.goldInlay",
+        } as const;
+        const replay: Replay = { ...eachTarget, appearance: valid };
+        expect(
+          (yield* decodeReplay(yield* encodeReplay(replay))).appearance
+        ).toEqual(valid);
+        const invalid = yield* dataOf(
+          jsonOf({
+            appearance: {
+              portrait: "gearLook.goldInlay",
+              gearLook: "gearLook.unknown",
+            },
+          })
+        );
+        expect((yield* decodeReplay(invalid)).appearance).toEqual({
+          portrait: null,
+          gearLook: null,
+        });
+        const old = yield* dataOf(jsonOf({}));
+        expect((yield* decodeReplay(old)).appearance).toBeUndefined();
+      })
+  );
   it.effect("give back the same Replay of a Stage Battle", () =>
     Effect.gen(function* () {
       const replay = replayFrom(stageBattle);

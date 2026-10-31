@@ -68,6 +68,22 @@ const reasonOf = (result: ReturnType<typeof runReplay>) =>
   Result.isFailure(result) ? result.failure.reason : null;
 
 describe("replayOf", () => {
+  it("keeps the appearance from Battle start in the Replay and Battle Log", () => {
+    const appearance = {
+      portrait: "heroPortrait.tentRings",
+      gearLook: "gearLook.goldInlay",
+    } as const;
+    const battle = playOut(startSession({ ...STAGE, appearance }));
+    const replay = replayFrom(battle);
+    expect(replay.appearance).toEqual(appearance);
+    const result = runReplay(replay);
+    if (Result.isFailure(result)) {
+      throw new Error("The Replay did not run");
+    }
+    expect(watchingSession(result.success).options.appearance).toEqual(
+      appearance
+    );
+  });
   it("takes the seed, the place, the Player and the Commands of both Sides", () => {
     const battle = stageBattle();
     const replay = replayFrom(battle);

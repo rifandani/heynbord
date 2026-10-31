@@ -483,6 +483,20 @@ export const installTestHooks = (
         throw new Error(`Unknown QA state: ${name}`);
       }
       const session = buildQaState(known, seed);
+      if (known !== "town") {
+        const profile = registry.get(profileAtom);
+        registry.set(profileAtom, {
+          ...profile,
+          seenStoryScenes: [
+            ...new Set([
+              ...profile.seenStoryScenes,
+              "region-1-opening",
+              "region-1-boss",
+              "region-1-ending",
+            ]),
+          ],
+        });
+      }
       if (known === "campaign-progress") {
         registry.set(profileAtom, {
           ...registry.get(profileAtom),

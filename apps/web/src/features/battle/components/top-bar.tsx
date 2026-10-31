@@ -1,4 +1,4 @@
-import { useAtomValue } from "@effect/atom-react";
+import { useAtomSet, useAtomValue } from "@effect/atom-react";
 import { cn } from "cn";
 import { ToggleButton } from "react-aria-components";
 
@@ -22,6 +22,11 @@ import { BOSS_CHIP_READY } from "@/features/battle/tokens";
 import type { useBattle } from "@/features/battle/use-battle";
 import { useGameText } from "@/features/battle/use-game-text";
 import { useHandbook } from "@/features/handbook/use-handbook";
+import { heroModelUrl } from "@/features/hero/hero-model-assets";
+import {
+  heroModelFailureAtom,
+  heroModelRetryAtom,
+} from "@/features/hero/hero-model.atoms";
 
 type Battle = ReturnType<typeof useBattle>;
 
@@ -104,8 +109,9 @@ const BattleLogButton = ({ battle }: { readonly battle: Battle }) => {
 };
 
 /**
- * Speed, Skip, the Battle Log, the Handbook and the Controls Guide (UI-02). The
- * sound is in the Settings, next to End Turn.
+ * Leave, Speed, Skip, the Battle Log, the Handbook and the Controls Guide
+ * (UI-02). Leave stands apart from the other controls, because it leaves the
+ * Battle. The sound is in the Settings, next to End Turn.
  */
 const BattleControls = ({
   battle,
@@ -116,35 +122,41 @@ const BattleControls = ({
 }) => {
   const { tr } = useGameText();
   return (
-    <div className="flex items-center gap-1">
-      <ToggleButton
-        isSelected={battle.speed === 2}
-        onChange={(selected) => battle.setSpeed(selected ? 2 : 1)}
-        aria-label={`${tr("battle.speed")} ${tr("battle.speedValue", { value: battle.speed })}`}
-        className={gameButtonStyles({
-          intent: battle.speed === 2 ? "gold" : "ghost",
-          size: "sm",
-          // One width for ×1 and ×2, so a toggle does not move the other controls.
-          className: "min-w-12 tabular-nums",
-        })}
-      >
-        {tr("battle.speedValue", { value: battle.speed })}
-      </ToggleButton>
-      {/* A Replay has no Live to Skip. */}
-      {battle.watching ? null : (
-        <GameButton
-          intent="ghost"
-          size="sm"
-          isDisabled={isIdle(session) || battle.held || battle.log !== null}
-          onPress={() => battle.skip()}
-          aria-label={tr("battle.skip")}
+    <div className="flex items-center gap-2">
+      <LeaveBattle
+        battle={battle}
+        finished={battle.liveSession?.view.result !== null}
+      />
+      <div className="flex items-center gap-1">
+        <ToggleButton
+          isSelected={battle.speed === 2}
+          onChange={(selected) => battle.setSpeed(selected ? 2 : 1)}
+          aria-label={`${tr("battle.speed")} ${tr("battle.speedValue", { value: battle.speed })}`}
+          className={gameButtonStyles({
+            intent: battle.speed === 2 ? "gold" : "ghost",
+            size: "sm",
+            // One width for ×1 and ×2, so a toggle does not move the other controls.
+            className: "min-w-12 tabular-nums",
+          })}
         >
-          <GlyphIcon glyph="step" className="size-4" />
-        </GameButton>
-      )}
-      <BattleLogButton battle={battle} />
-      <HandbookButton />
-      <ControlsGuide />
+          {tr("battle.speedValue", { value: battle.speed })}
+        </ToggleButton>
+        {/* A Replay has no Live to Skip. */}
+        {battle.watching ? null : (
+          <GameButton
+            intent="ghost"
+            size="sm"
+            isDisabled={isIdle(session) || battle.held || battle.log !== null}
+            onPress={() => battle.skip()}
+            aria-label={tr("battle.skip")}
+          >
+            <GlyphIcon glyph="step" className="size-4" />
+          </GameButton>
+        )}
+        <BattleLogButton battle={battle} />
+        <HandbookButton />
+        <ControlsGuide />
+      </div>
     </div>
   );
 };
@@ -189,6 +201,9 @@ export const TopBar = ({ battle }: { readonly battle: Battle }) => {
   const { tr, text } = useGameText();
   // The Heroes, the Turn and the enemy Hand of the selected moment in the Battle Log.
   const session = useAtomValue(shownSessionAtom);
+  const failed = useAtomValue(heroModelFailureAtom);
+  const retry = useAtomValue(heroModelRetryAtom);
+  const setRetry = useAtomSet(heroModelRetryAtom);
   const live = battle.liveSession;
   if (!session || !live) {
     return null;
@@ -201,13 +216,25 @@ export const TopBar = ({ battle }: { readonly battle: Battle }) => {
       className="pointer-events-none absolute inset-x-0 top-0 z-20 flex items-start justify-between gap-2 p-2 pt-[max(0.5rem,env(safe-area-inset-top))] pr-[max(0.5rem,env(safe-area-inset-right))] pl-[max(0.5rem,env(safe-area-inset-left))]"
     >
       <div className="pointer-events-auto flex min-w-0 items-start gap-2">
-        <LeaveBattle battle={battle} finished={live.view.result !== null} />
         <HeroPanel
           side="player"
           hero={heroOf(view, "player")}
           name={tr("battle.player")}
           active={yourTurn}
+          portrait={session.options.appearance?.portrait ?? null}
         />
+        {failed ===
+        heroModelUrl(
+          session.options.appearance ?? { portrait: null, gearLook: null }
+        ) ? (
+          <GameButton
+            intent="ghost"
+            size="sm"
+            onPress={() => setRetry(retry + 1)}
+          >
+            {tr("hero.modelRetry")}
+          </GameButton>
+        ) : null}
       </div>
       <div className="pointer-events-auto flex flex-col items-center gap-1">
         <TurnBadge turnNumber={view.turnNumber} yourTurn={yourTurn} />

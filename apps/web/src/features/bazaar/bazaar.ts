@@ -92,3 +92,45 @@ export const canBuyCosmetic = (
 ): boolean =>
   (item.price ?? Number.POSITIVE_INFINITY) <= heynstones &&
   !owned.includes(item.id);
+
+/** The look that the Player previews on the shelf of one family. */
+export interface ShelfPreview {
+  readonly family: LookFamily;
+  readonly look: CosmeticId | null;
+}
+
+/** The Hero Model appearance that a look shelf previews. */
+export interface ShelfLook {
+  readonly family: LookFamily;
+  readonly portrait: CosmeticId | null;
+  readonly gearLook: CosmeticId | null;
+}
+
+/**
+ * The Hero Model that a look shelf previews (Hero Models, decision 12): its
+ * own candidate on the active look of the other family. Only the Hero
+ * portrait and the Gear looks shelves show a Hero Model.
+ */
+export const shelfPreviewLook = (
+  family: LookFamily | null,
+  preview: ShelfPreview | null,
+  activeLooks: Readonly<Record<LookFamily, CosmeticId | null>>
+): ShelfLook | null => {
+  if (family === "heroPortrait") {
+    return {
+      family,
+      portrait:
+        preview?.family === family ? preview.look : activeLooks.heroPortrait,
+      gearLook: activeLooks.gearLook,
+    };
+  }
+  if (family === "gearLook") {
+    return {
+      family,
+      portrait: activeLooks.heroPortrait,
+      gearLook:
+        preview?.family === family ? preview.look : activeLooks.gearLook,
+    };
+  }
+  return null;
+};

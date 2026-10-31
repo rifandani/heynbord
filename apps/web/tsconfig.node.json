@@ -12,6 +12,7 @@
     "vite.config.*",
     "playwright.config.*",
     "pwa-assets.config.*",
+    "scripts/battle-build-graph.ts",
     "scripts/rules-hash.ts"
   ]
 }

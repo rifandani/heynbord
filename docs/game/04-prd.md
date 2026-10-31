@@ -147,7 +147,7 @@ Priority: **M** = Must (v1.0 cannot release without it), **S** = Should (do it i
 | NFR-02 | First load: the Town is interactive in less than 3 seconds on a 4G connection. | M |
 | NFR-04 | Graphics: WebGL 2. The game must show a clear message if WebGL 2 is not available. | M |
 | NFR-06 | The rules package must have unit tests for each rule in GDD section 4. | M |
-| NFR-07 | The game must work offline after the first load (PWA). | S |
+| NFR-07 | Battles target online play. The PWA keeps normal caching for faster loads. Offline Battle availability is not guaranteed. Add server availability checks with the future database integration. | S |
 | NFR-08 | The game must not send any player data to a server in v1. | M |
 
 ## 7. Release criteria for v1.0

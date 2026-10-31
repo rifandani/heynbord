@@ -2,6 +2,7 @@ import type { Target } from "@workspace/rules";
 import { LANE_LENGTH } from "@workspace/rules";
 import { Predicate } from "effect";
 import type { Object3D } from "three";
+import { BufferGeometry, Float32BufferAttribute } from "three";
 
 import type { BattleView } from "@/features/battle/battle-view";
 import { heroX, laneZ, squareX } from "@/features/battle/scene/layout";
@@ -73,21 +74,110 @@ export const targetAt = (
 };
 
 /**
- * The focused marker shines. The other markers pulse. `time` is in scene
- * seconds. When the focus ring of a Unit marks the focused target, the
- * focused marker is clear, because the ring already shows the focus.
+ * The width of the gold rim of a marker, in world units: about 3 px at 810p
+ * and 4 px at 1080p with the default camera.
  */
-export const markerOpacity = (
+export const TARGET_RIM_WIDTH = 0.05;
+
+/** How far the Night Plate hairline shows on each side of the gold rim. */
+export const TARGET_EDGE_WIDTH = 0.02;
+
+/** The gold inside a legal target stays weak, so the Board skin shows through. */
+export const TARGET_FILL = 0.22;
+
+/** The focused target gets a little more gold, and a cream rim. */
+export const TARGET_FILL_FOCUSED = 0.32;
+
+/** The rim pulse: 55% to 95%, and a still 75% with reduced motion. */
+export const TARGET_RIM_STILL = 0.75;
+const TARGET_RIM_SWING = 0.2;
+
+/** The alpha of the Night Plate hairline under the rim. */
+export const TARGET_EDGE = 0.65;
+
+export interface MarkerPaint {
+  /** The alpha of the gold inside the target. */
+  readonly fill: number;
+  /** The alpha of the gold rim. */
+  readonly rim: number;
+}
+
+const CLEAR: MarkerPaint = { fill: 0, rim: 0 };
+
+/**
+ * The paint of a marker. The rim carries the mark, not the fill, so the Board
+ * skin stays visible inside the Square. A focused target has a cream rim at
+ * full strength and a little more gold. The other targets pulse the rim, and
+ * hold it still with reduced motion. `time` is in scene seconds. When the
+ * focus ring of a Unit marks the focused target, the marker is clear, because
+ * the ring already shows the focus.
+ */
+export const markerPaint = (
   index: number,
   focused: number,
   time: number,
-  ringed = false
-): number => {
+  options: { readonly ringed?: boolean; readonly reducedMotion?: boolean } = {}
+): MarkerPaint => {
   if (index === focused) {
-    return ringed ? 0 : 0.95;
+    return options.ringed ? CLEAR : { fill: TARGET_FILL_FOCUSED, rim: 1 };
   }
-  // Keep at least 45% gold over the opaque dark marker plate (contrast >= 3:1).
-  return 0.65 + Math.sin(time * 6) * 0.2;
+  const rim = options.reducedMotion
+    ? TARGET_RIM_STILL
+    : TARGET_RIM_STILL + Math.sin(time * 6) * TARGET_RIM_SWING;
+  return { fill: TARGET_FILL, rim };
+};
+
+/** A point of a ring in the plane of the Board. */
+type Corner = readonly [number, number, number];
+
+/**
+ * The rim of a marker, in the plane of the Board: the gold edge of a legal
+ * target, or the Night Plate hairline under it. The middle is a hole, so the
+ * Board skin shows through the Square. A rim thicker than the Square is a
+ * solid plate.
+ */
+export const markerRing = (
+  width: number,
+  depth: number,
+  thickness: number
+): BufferGeometry => {
+  const outerWidth = width / 2;
+  const outerDepth = depth / 2;
+  const innerWidth = Math.max(0, outerWidth - thickness);
+  const innerDepth = Math.max(0, outerDepth - thickness);
+  const points: number[] = [];
+  const band = (a: Corner, b: Corner, c: Corner, d: Corner) => {
+    points.push(...a, ...b, ...c, ...a, ...c, ...d);
+  };
+  // The four bands of the ring: top, right, bottom, left.
+  band(
+    [-outerWidth, outerDepth, 0],
+    [outerWidth, outerDepth, 0],
+    [innerWidth, innerDepth, 0],
+    [-innerWidth, innerDepth, 0]
+  );
+  band(
+    [outerWidth, outerDepth, 0],
+    [outerWidth, -outerDepth, 0],
+    [innerWidth, -innerDepth, 0],
+    [innerWidth, innerDepth, 0]
+  );
+  band(
+    [outerWidth, -outerDepth, 0],
+    [-outerWidth, -outerDepth, 0],
+    [-innerWidth, -innerDepth, 0],
+    [innerWidth, -innerDepth, 0]
+  );
+  band(
+    [-outerWidth, -outerDepth, 0],
+    [-outerWidth, outerDepth, 0],
+    [-innerWidth, innerDepth, 0],
+    [-innerWidth, -innerDepth, 0]
+  );
+  const geometry = new BufferGeometry();
+  geometry.setAttribute("position", new Float32BufferAttribute(points, 3));
+  geometry.computeVertexNormals();
+  return geometry;
 };
 
 interface Point {

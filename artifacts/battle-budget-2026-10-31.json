@@ -1,0 +1,1818 @@
+{
+  "measuredAt": "2026-10-31T07:48:58.759Z",
+  "commit": "0fb375fc998780afdba2b042a89611876c8736af",
+  "dirty": false,
+  "workingTree": [],
+  "build": "bun web build (Vite production / Nitro node-server)",
+  "buildConfiguration": {
+    "mode": "production",
+    "base": "/",
+    "e2e": ""
+  },
+  "node": "v26.3.0",
+  "bun": "1.4.2",
+  "buildGraphSha256": "803d411a398b0606908ee3b56fdf06bc6f4c841290b6abbb3a9841733fd45347",
+  "playHtmlSha256": "af013b935c008b53d5b85bdd32d6c4ece86434b9b059f29bbb168b59000b779e",
+  "rules": [
+    "Decimal bytes. Assets < 50,000,000 published bytes before HTTP compression; warm cache gives no credit.",
+    "Both Decks, each start Unit, possible Tokens and Boss Rule summons, selected appearance/cosmetics, original card art, every Unit Model, painting, FX and music; shared URLs count once.",
+    "Read both result stings and count only the larger one. Missing required assets fail.",
+    "JavaScript < 5,000,000 bytes, gzip level 9, once per distinct emitted chunk. Exclude the initial /play static graph from this same build; stop at loaded chunks before following Battle lazy edges.",
+    "Meshopt decoder JavaScript is embedded in the loader chunks. Current vertex-colored Unit GLBs need no external texture decoder assets. External model images/buffers count when present.",
+    "Hero Models are always enabled. The separate appearance ceiling is at most 10,000,000 bytes."
+  ],
+  "results": [
+    {
+      "config": {
+        "id": "stage-1-1-starter",
+        "stageId": "1-1",
+        "level": 1,
+        "deck": {
+          "classId": "warrior",
+          "deck": [
+            {
+              "cardId": "human.militiaRecruit",
+              "rank": "common"
+            },
+            {
+              "cardId": "human.militiaRecruit",
+              "rank": "common"
+            },
+            {
+              "cardId": "human.crossbowGuard",
+              "rank": "common"
+            },
+            {
+              "cardId": "human.crossbowGuard",
+              "rank": "common"
+            },
+            {
+              "cardId": "human.crossbowGuard",
+              "rank": "common"
+            },
+            {
+              "cardId": "human.halberdier",
+              "rank": "common"
+            },
+            {
+              "cardId": "human.halberdier",
+              "rank": "common"
+            },
+            {
+              "cardId": "human.riverKnight",
+              "rank": "uncommon"
+            },
+            {
+              "cardId": "human.riverKnight",
+              "rank": "uncommon"
+            },
+            {
+              "cardId": "warrior.spearThrow",
+              "rank": "common"
+            }
+          ]
+        },
+        "appearance": {
+          "portrait": null,
+          "gearLook": null
+        },
+        "cosmetics": {
+          "boardSkin": null,
+          "cardBack": null
+        },
+        "features": {
+          "heroModel": false
+        }
+      },
+      "assets": {
+        "files": [
+          {
+            "url": "/battle/fx-atlas.webp",
+            "category": "effects",
+            "bytes": 648338,
+            "sha256": "a00ea2ae0fbf1aebc90922a59e3b3e54206b78a3b0ee833fe85aeea67dee4b6b"
+          },
+          {
+            "url": "/battle/hearthvale.webp",
+            "category": "painting",
+            "bytes": 206150,
+            "sha256": "45e76e0f92a9524161f6c3a488a605099cb49f5c18fa59555defe79d19c025e0"
+          },
+          {
+            "url": "/creature/human/crossbow-guard.webp",
+            "category": "original card art",
+            "bytes": 63684,
+            "sha256": "eeb6cb0870adda7c6085d1d02ea023af8610615c012210b97f582e1c1dd8e6e8"
+          },
+          {
+            "url": "/creature/human/halberdier.webp",
+            "category": "original card art",
+            "bytes": 61600,
+            "sha256": "2472e6f04615d8cf931e4a386abd73bdb63cba749fd82160af9f7c2b4dbaaaf9"
+          },
+          {
+            "url": "/creature/human/militia-recruit.webp",
+            "category": "original card art",
+            "bytes": 83598,
+            "sha256": "343d1370681f39b568d3c5fd36b6ce801657fbdfb783d056c02fbfaf6ab903cc"
+          },
+          {
+            "url": "/creature/human/river-knight.webp",
+            "category": "original card art",
+            "bytes": 88962,
+            "sha256": "deec0bea695fcad9f1e483e4bb1a990048586efada665e6de6626a610cc1993b"
+          },
+          {
+            "url": "/creature/human/shieldbearer.webp",
+            "category": "original card art",
+            "bytes": 71952,
+            "sha256": "6fcb890510d3149ce9334be183f79dc0e023deb9a791a75c9060b28d9c13e434"
+          },
+          {
+            "url": "/creature/orc/badland-runt.webp",
+            "category": "original card art",
+            "bytes": 73344,
+            "sha256": "43eb15efaea1189891ec05256960abd742a1e435392a0f1a6e50fdeb64be7532"
+          },
+          {
+            "url": "/creature/orc/scrap-raider.webp",
+            "category": "original card art",
+            "bytes": 71396,
+            "sha256": "7073d677ca498af7ae11ba6278e8c8482bf7d52d01a94cd6745ce98e511f06f2"
+          },
+          {
+            "url": "/models/units/badland-runt.glb",
+            "category": "Unit Model",
+            "bytes": 194040,
+            "sha256": "1c6222ed832a099f3f058d5250c02f53a1dd3f0948a1ccd63243214075fdd61a"
+          },
+          {
+            "url": "/models/units/crossbow-guard.glb",
+            "category": "Unit Model",
+            "bytes": 206764,
+            "sha256": "314fd718083f63c6f7c99f4ec0ece77e3a76470e3776d2c6d0301b8f77eefcaa"
+          },
+          {
+            "url": "/models/units/halberdier.glb",
+            "category": "Unit Model",
+            "bytes": 212848,
+            "sha256": "1a0d2579ac6ca0a24486b2dd02febc061690d459afb6678ff60f518dfe5ca8b5"
+          },
+          {
+            "url": "/models/units/militia-recruit.glb",
+            "category": "Unit Model",
+            "bytes": 184004,
+            "sha256": "ec3e2b18154ea69a1aaa9a65c283463d65ed0007f85dacc5595581a4ffaced12"
+          },
+          {
+            "url": "/models/units/river-knight.glb",
+            "category": "Unit Model",
+            "bytes": 227388,
+            "sha256": "0cf0ea84f6f65d9393bcae6c94337072c42486c504122b69ad6ba022ddc8c66e"
+          },
+          {
+            "url": "/models/units/scrap-raider.glb",
+            "category": "Unit Model",
+            "bytes": 199172,
+            "sha256": "45747848932af469e7b9b28d7878be55aa41453793ce6ea4fbb5a2082ef45de4"
+          },
+          {
+            "url": "/models/units/shieldbearer.glb",
+            "category": "Unit Model",
+            "bytes": 188052,
+            "sha256": "405947ec13c9fbe1f41112981f71da5f98f5213baa59e23bbc7c70c5d10d6728"
+          },
+          {
+            "url": "/music/defeat.ogg",
+            "category": "larger result sting",
+            "bytes": 135232,
+            "sha256": "44124ba340b5c647fb8357bbf2a4d5e96b253c11184efb2fe5c463fe13c7fa50"
+          },
+          {
+            "url": "/music/region-1.ogg",
+            "category": "music",
+            "bytes": 530737,
+            "sha256": "ef408275d71eda669ba37b2f358b24d204ed86ba63f2868ff7c1dea4c989852d"
+          },
+          {
+            "url": "/skills/warrior/spear-throw.webp",
+            "category": "original card art",
+            "bytes": 59992,
+            "sha256": "d3b21f732ab15b3df666bd83ca2396bfee920f0924d7b01b3add8aca2e672a0f"
+          }
+        ],
+        "models": [
+          "human.crossbowGuard",
+          "human.militiaRecruit",
+          "human.riverKnight",
+          "human.halberdier",
+          "orc.scrapRaider",
+          "human.shieldbearer",
+          "orc.badlandRunt"
+        ],
+        "stings": [
+          {
+            "url": "/music/victory.ogg",
+            "bytes": 122945
+          },
+          {
+            "url": "/music/defeat.ogg",
+            "bytes": 135232
+          }
+        ],
+        "heroBytes": 0,
+        "total": 3507253
+      },
+      "javascript": {
+        "files": [
+          {
+            "url": "/assets/SkeletonUtils-CHxfGqZJ.js",
+            "bytes": 449,
+            "gzip": 257,
+            "sha256": "b3f9946f6bb79fffc2a4f9a6f2bf71fbb6e5453dbb9596f42ff385741a9843bc"
+          },
+          {
+            "url": "/assets/battle-canvas-DlLJ1_b-.js",
+            "bytes": 129986,
+            "gzip": 49916,
+            "sha256": "f66e779bc39d3e3204b1aca62f7464647a63300ed4663d95efd28f4822b10271"
+          },
+          {
+            "url": "/assets/battle-painting-D9nCdkE0.js",
+            "bytes": 355,
+            "gzip": 245,
+            "sha256": "f561eb33a68a26f3412e4bd07bc11f88a02feeb95f537c3b4579b007dc642c21"
+          },
+          {
+            "url": "/assets/battle-preload-aSdtuMxU.js",
+            "bytes": 492,
+            "gzip": 317,
+            "sha256": "28f2be873d12005823d4236ccbad424cb50279281d063d2ecdc76f6bd99bdb78"
+          },
+          {
+            "url": "/assets/battle-stage-Dz1U7kEV.js",
+            "bytes": 121399,
+            "gzip": 38552,
+            "sha256": "1b956177aed33fa5da614981a3719c291a37586686460320e7a97a9620b8ad5a"
+          },
+          {
+            "url": "/assets/board-skin-art-Bpl72NkI.js",
+            "bytes": 749,
+            "gzip": 427,
+            "sha256": "b02a0af2a494b23e2fab788e39a491e32991404de73ca8188c5182e3db5e5dbe"
+          },
+          {
+            "url": "/assets/card-art-kOREXFAF.js",
+            "bytes": 1169,
+            "gzip": 627,
+            "sha256": "95b2a2b6cdc9c322e2e289beda6e18460140f3c3948f279132ce09754bedb13a"
+          },
+          {
+            "url": "/assets/card-back-BKW24Y3L.js",
+            "bytes": 2594,
+            "gzip": 1184,
+            "sha256": "9c22f6b32fddbecbf0856884cc350489efe34188a3f252db138cd752688a6d5c"
+          },
+          {
+            "url": "/assets/card-frame-CFEc1TUA.js",
+            "bytes": 31291,
+            "gzip": 10634,
+            "sha256": "344eb4da7dc1aef68d17f4927af0e395d86712eddee04558c9df1c3baa813bda"
+          },
+          {
+            "url": "/assets/forge-stone-icon-CQqnrIgD.js",
+            "bytes": 2239,
+            "gzip": 1104,
+            "sha256": "7c2c21641af0b7a3ceee22adefcdaa7b89e049996c959fd7b31725d423b8fbb9"
+          },
+          {
+            "url": "/assets/game-dialog-B8hfjJC-.js",
+            "bytes": 5585,
+            "gzip": 1805,
+            "sha256": "451b4799064b090a3a27e15605efbc649253235957ca39ffdafcc91f11ba46ac"
+          },
+          {
+            "url": "/assets/gltf-loader-Bj5S_nGh.js",
+            "bytes": 71543,
+            "gzip": 20511,
+            "sha256": "361d41a9610dc445abbacdf85406439d3016c002cd3fb5767ecf7fb9c7ccbdeb"
+          },
+          {
+            "url": "/assets/graveyard-icon-DdIir9Qe.js",
+            "bytes": 521,
+            "gzip": 398,
+            "sha256": "5e11ec9a5fb0faf36044acaa7514c1fe4fb296378bbd1347947f56fbb4fb9215"
+          },
+          {
+            "url": "/assets/hero-model-assets-CEyCywEC.js",
+            "bytes": 918,
+            "gzip": 482,
+            "sha256": "d8b60581e0b72be7b9aa56b19f0c08615debe069742dce83c9402e6140722151"
+          },
+          {
+            "url": "/assets/hero-model-body-C0YtptkH.js",
+            "bytes": 3516,
+            "gzip": 1797,
+            "sha256": "f2c68b143fd3cbec5a6e2ecb8f3218837409a0c79c729e176ac756e1e6797e2b"
+          },
+          {
+            "url": "/assets/hero-model-loader-D_N1lOzc.js",
+            "bytes": 983,
+            "gzip": 572,
+            "sha256": "622f8aa290de537e0c092135dee24e0ed99becfb23a3591bb717aadedb6ffd3d"
+          },
+          {
+            "url": "/assets/hero-portrait-CknwtTlL.js",
+            "bytes": 1866,
+            "gzip": 1005,
+            "sha256": "71e8be3d15a743958f445e5032d3a374bc46b3568da7375b2b7780f9e9e0b8c9"
+          },
+          {
+            "url": "/assets/hero-portrait-art-C5maVh9d.js",
+            "bytes": 546,
+            "gzip": 241,
+            "sha256": "5cc4e205b8e5055d2113d55ab209bc8be78f5a53a7091c70f8bf48ab51db91aa"
+          },
+          {
+            "url": "/assets/heynspire.atoms-ByrELkoc.js",
+            "bytes": 110,
+            "gzip": 105,
+            "sha256": "4cf3620e9d98e1729a10b9e2acb9a8dd229b3a10d6b838f61471b1ec7b718ad6"
+          },
+          {
+            "url": "/assets/model-error-boundary-2xUi5_y7.js",
+            "bytes": 365,
+            "gzip": 256,
+            "sha256": "c5dcb8b8d9dc7024e3ffc115e7e3381cd783a80ea32e2c428bb2ca03f83a405e"
+          },
+          {
+            "url": "/assets/react-three-fiber.esm-D25HElLj.js",
+            "bytes": 540819,
+            "gzip": 142874,
+            "sha256": "9b0e172016e1c13f0d873240e33cf3815365d92b6eb4c518278950fa4d48192c"
+          },
+          {
+            "url": "/assets/result-rewards-BNaCYt3K.js",
+            "bytes": 14533,
+            "gzip": 5248,
+            "sha256": "d91b994c2f6309b94f31b99716491a9f8ef66d1fc4d9b12b182cf1df8587d436"
+          },
+          {
+            "url": "/assets/status-visuals-RcqeGPSm.js",
+            "bytes": 1069,
+            "gzip": 449,
+            "sha256": "52db0c5081ef3ead700a0cf24fce344a7cd2439149b1615e48350a071b8f08d5"
+          },
+          {
+            "url": "/assets/three.core-Dp-eO7LC.js",
+            "bytes": 377285,
+            "gzip": 99557,
+            "sha256": "10ce628f40c24012f66cb3aeb5fe1533a45dfc4e43d8a4eebfda5f554c9fb7cd"
+          },
+          {
+            "url": "/assets/unit-clips-LDA7XKXT.js",
+            "bytes": 95,
+            "gzip": 98,
+            "sha256": "63291fbb845b32bbb208023d07a1178e5e312b75256ca1cebdc3753f914ad902"
+          },
+          {
+            "url": "/assets/unit-models-DaF9pJ34.js",
+            "bytes": 9208,
+            "gzip": 2773,
+            "sha256": "6d6db7060fefdadece4375756561205ed0e9d1404a64af1faa05fe588b6e9308"
+          },
+          {
+            "url": "/assets/unit-rig-DwDF19NV.js",
+            "bytes": 19954,
+            "gzip": 7890,
+            "sha256": "f02b59104f6c3ac9fa0c85588885f1a6b64b0aa09a9fc8b326339bf03787582e"
+          },
+          {
+            "url": "/assets/use-card-peek-Czfzbr_b.js",
+            "bytes": 34341,
+            "gzip": 12232,
+            "sha256": "263f9b98063070443519afb996492000275a6582cb0db136cbce3b0a695d735d"
+          },
+          {
+            "url": "/assets/useMediaQuery-BRutXKoe.js",
+            "bytes": 781,
+            "gzip": 433,
+            "sha256": "a3008f1348b7a579021004da28c405b4de0f077eeb88a4da9088e144db08dce2"
+          }
+        ],
+        "gzip": 401989
+      },
+      "pass": true
+    },
+    {
+      "config": {
+        "id": "stage-5-10-late",
+        "stageId": "5-10",
+        "level": 30,
+        "deck": {
+          "classId": "warrior",
+          "deck": [
+            {
+              "cardId": "human.townBarricade",
+              "rank": "common"
+            },
+            {
+              "cardId": "human.militiaRecruit",
+              "rank": "common"
+            },
+            {
+              "cardId": "human.gateWarden",
+              "rank": "uncommon"
+            },
+            {
+              "cardId": "human.shieldbearer",
+              "rank": "common"
+            },
+            {
+              "cardId": "human.crossbowGuard",
+              "rank": "common"
+            },
+            {
+              "cardId": "human.crossbowGuard",
+              "rank": "common"
+            },
+            {
+              "cardId": "human.halberdier",
+              "rank": "common"
+            },
+            {
+              "cardId": "human.halberdier",
+              "rank": "common"
+            },
+            {
+              "cardId": "human.dawnCleric",
+              "rank": "uncommon"
+            },
+            {
+              "cardId": "human.riverKnight",
+              "rank": "uncommon"
+            },
+            {
+              "cardId": "human.riverKnight",
+              "rank": "uncommon"
+            },
+            {
+              "cardId": "warrior.shieldWall",
+              "rank": "common"
+            },
+            {
+              "cardId": "warrior.shieldBash",
+              "rank": "common"
+            },
+            {
+              "cardId": "warrior.callToArms",
+              "rank": "rare"
+            },
+            {
+              "cardId": "human.ironBulwark",
+              "rank": "epic"
+            }
+          ]
+        },
+        "appearance": {
+          "portrait": "heroPortrait.goldCrest",
+          "gearLook": "gearLook.royalPlate"
+        },
+        "cosmetics": {
+          "boardSkin": "boardSkin.hollowMoon",
+          "cardBack": "cardBack.goldFleur"
+        },
+        "features": {
+          "heroModel": false
+        }
+      },
+      "assets": {
+        "files": [
+          {
+            "url": "/battle/fx-atlas.webp",
+            "category": "effects",
+            "bytes": 648338,
+            "sha256": "a00ea2ae0fbf1aebc90922a59e3b3e54206b78a3b0ee833fe85aeea67dee4b6b"
+          },
+          {
+            "url": "/battle/hollow-marches.webp",
+            "category": "painting",
+            "bytes": 277148,
+            "sha256": "4360f5490a3598071fd190b8ff82da119b414100dfe44efecc385e6b541dbd25"
+          },
+          {
+            "url": "/board-skins/hollow-moon.webp",
+            "category": "board skin",
+            "bytes": 250230,
+            "sha256": "86b38199c4da5c97e5c351c319e1e09e6f7eb98ee3efed8e7c285a2b82641691"
+          },
+          {
+            "url": "/card-backs/gold-fleur.webp",
+            "category": "card back",
+            "bytes": 43510,
+            "sha256": "d038138c7bbc361df5e06783a7468395692394f44b25c22d7a560a985c201b2c"
+          },
+          {
+            "url": "/creature/feral/frostfang-lynx.webp",
+            "category": "original card art",
+            "bytes": 96594,
+            "sha256": "1b3b5868ddcb66dace54b8de8b2edf3fb93cd996041734b50d73cdc4172a5e4c"
+          },
+          {
+            "url": "/creature/feral/rimebreath-drake.webp",
+            "category": "original card art",
+            "bytes": 101762,
+            "sha256": "ba2354ab126eab5602af33f1733c3ac190b9d6361670e1842c8993f5a371280d"
+          },
+          {
+            "url": "/creature/human/crossbow-guard.webp",
+            "category": "original card art",
+            "bytes": 63684,
+            "sha256": "eeb6cb0870adda7c6085d1d02ea023af8610615c012210b97f582e1c1dd8e6e8"
+          },
+          {
+            "url": "/creature/human/dawn-cleric.webp",
+            "category": "original card art",
+            "bytes": 69866,
+            "sha256": "3e23e6e9c21afcc81a13353aabcca19f0ca31799487d1799f2d51d6983836257"
+          },
+          {
+            "url": "/creature/human/gate-warden.webp",
+            "category": "original card art",
+            "bytes": 66700,
+            "sha256": "5749a363937480561df244b10f1e252e562597aac146afc5dc609dd6baafc512"
+          },
+          {
+            "url": "/creature/human/halberdier.webp",
+            "category": "original card art",
+            "bytes": 61600,
+            "sha256": "2472e6f04615d8cf931e4a386abd73bdb63cba749fd82160af9f7c2b4dbaaaf9"
+          },
+          {
+            "url": "/creature/human/iron-bulwark.webp",
+            "category": "original card art",
+            "bytes": 82084,
+            "sha256": "a30225a5d1cd61dbb43dffe77dec8deeb4c5a3676e8a12221d66793ec36e9531"
+          },
+          {
+            "url": "/creature/human/militia-recruit.webp",
+            "category": "original card art",
+            "bytes": 83598,
+            "sha256": "343d1370681f39b568d3c5fd36b6ce801657fbdfb783d056c02fbfaf6ab903cc"
+          },
+          {
+            "url": "/creature/human/river-knight.webp",
+            "category": "original card art",
+            "bytes": 88962,
+            "sha256": "deec0bea695fcad9f1e483e4bb1a990048586efada665e6de6626a610cc1993b"
+          },
+          {
+            "url": "/creature/human/shieldbearer.webp",
+            "category": "original card art",
+            "bytes": 71952,
+            "sha256": "6fcb890510d3149ce9334be183f79dc0e023deb9a791a75c9060b28d9c13e434"
+          },
+          {
+            "url": "/creature/human/town-barricade.webp",
+            "category": "original card art",
+            "bytes": 92028,
+            "sha256": "9169166cc454a7a752bb86423d14206ec0758e84d92a3b7aacdf5e190761fc7b"
+          },
+          {
+            "url": "/creature/token/restless-wisp.webp",
+            "category": "original card/Token art",
+            "bytes": 82240,
+            "sha256": "19184ba21916f4ddb9c134a973b926b210d61ccc9e8969b5c0058d86896309a3"
+          },
+          {
+            "url": "/creature/token/skeleton.webp",
+            "category": "original card/Token art",
+            "bytes": 93374,
+            "sha256": "e1ce9405df9d14386639149c5872dab70efb036ae59c4fa80ddf3dd995aa5ef4"
+          },
+          {
+            "url": "/creature/undead/backwatch-bailiff.webp",
+            "category": "original card art",
+            "bytes": 120380,
+            "sha256": "396fccbac02393f0840123631a91f7a40c93e53d15b83e60fff9f1b513133815"
+          },
+          {
+            "url": "/creature/undead/bone-rampart.webp",
+            "category": "original card art",
+            "bytes": 151972,
+            "sha256": "d341d6e7b7363af32a7cd2e849aee701fca71bf91ed92de5d790881602b0c934"
+          },
+          {
+            "url": "/creature/undead/chattering-cohort.webp",
+            "category": "original card art",
+            "bytes": 122546,
+            "sha256": "e4e5e888e36809769050716cee277ef4df45db6f9045c634ed973adf421f431a"
+          },
+          {
+            "url": "/creature/undead/coffin-lancer.webp",
+            "category": "original card art",
+            "bytes": 130916,
+            "sha256": "c9c2df834e67ab5c7e8e83d90a276082ba52275796353f82729e0668aaf43243"
+          },
+          {
+            "url": "/creature/undead/grave-bell-tender.webp",
+            "category": "original card art",
+            "bytes": 116418,
+            "sha256": "569668746ad78a1d099280396c55b1d55cc91c9f3c115774d21fbfb618517f50"
+          },
+          {
+            "url": "/creature/undead/graveyard-drudge.webp",
+            "category": "original card art",
+            "bytes": 95432,
+            "sha256": "d58fc6c443cb2668cfecb88d98bd11bd8be3cd496b0878a91b39784ddf5925b9"
+          },
+          {
+            "url": "/creature/undead/hushbow.webp",
+            "category": "original card art",
+            "bytes": 112850,
+            "sha256": "b7de6b4a729bb0e5be83621131765e7802cabf718553708534ad591ce41f42cd"
+          },
+          {
+            "url": "/creature/undead/lantern-widow.webp",
+            "category": "original card art",
+            "bytes": 128792,
+            "sha256": "8262e6832ca7ec3921ae8d53d03121d3220fbc812eb805b24afb0b5ed7e956b1"
+          },
+          {
+            "url": "/creature/undead/pale-galloper.webp",
+            "category": "original card art",
+            "bytes": 120592,
+            "sha256": "b0c1f1c1a5dd10ff44a3de80ad5c4da92a2f407f08b93c7384e6d062a755080e"
+          },
+          {
+            "url": "/creature/undead/rattleknife.webp",
+            "category": "original card art",
+            "bytes": 112900,
+            "sha256": "98a6659db7500ce46b6b4e0b597717ee7b1218cef1cebd39b253cab1810886dd"
+          },
+          {
+            "url": "/creature/undead/rime-eye-reaper.webp",
+            "category": "original card art",
+            "bytes": 132924,
+            "sha256": "6ade2c64b18ed79531165123c5f9f85133a4e00b39743fd83b7f2f3c44848d94"
+          },
+          {
+            "url": "/creature/undead/winter-maw.webp",
+            "category": "original card art",
+            "bytes": 133730,
+            "sha256": "77cbb7c89ebd4b0083b7cbccf5988e609ad3abe041919eb3883d861c9c66c18b"
+          },
+          {
+            "url": "/hero-portraits/gold-crest.webp",
+            "category": "Hero portrait",
+            "bytes": 60846,
+            "sha256": "3e0ec485ece2e33ff44d4e7c31cc4ef92e7f92de3fc89967764d0ec352235ad3"
+          },
+          {
+            "url": "/models/units/backwatch-bailiff.glb",
+            "category": "Unit Model",
+            "bytes": 223528,
+            "sha256": "90c757303e8434298de694f3678f63fae6be928333a20ec7f060f764539a0105"
+          },
+          {
+            "url": "/models/units/bone-rampart.glb",
+            "category": "Unit Model",
+            "bytes": 163148,
+            "sha256": "4eeb125b50d9d2188e170e70217da25f20776ff693e7fd5691b7fc79ab3739ad"
+          },
+          {
+            "url": "/models/units/chattering-cohort.glb",
+            "category": "Unit Model",
+            "bytes": 201808,
+            "sha256": "206fbab9232d2505f0417d4ff0e837aebefa3aef0a9ea8eda5ce5ba7d0f691a2"
+          },
+          {
+            "url": "/models/units/coffin-lancer.glb",
+            "category": "Unit Model",
+            "bytes": 198980,
+            "sha256": "69105f154067b52d7c109a71b3e278fc795e46d5768ba7cf32ba819c247af0e7"
+          },
+          {
+            "url": "/models/units/crossbow-guard.glb",
+            "category": "Unit Model",
+            "bytes": 206764,
+            "sha256": "314fd718083f63c6f7c99f4ec0ece77e3a76470e3776d2c6d0301b8f77eefcaa"
+          },
+          {
+            "url": "/models/units/dawn-cleric.glb",
+            "category": "Unit Model",
+            "bytes": 215336,
+            "sha256": "b6f04090fcb07690447f62ac912e86fe534dbab92e33db15799d1712dcd38823"
+          },
+          {
+            "url": "/models/units/frostfang-lynx.glb",
+            "category": "Unit Model",
+            "bytes": 169372,
+            "sha256": "905b395f72f5beaf672ad63bb35657c70388d04fb979b4eb9a55ccd7c4ea1207"
+          },
+          {
+            "url": "/models/units/gate-warden.glb",
+            "category": "Unit Model",
+            "bytes": 205320,
+            "sha256": "51fe55278c3dbfc017fc05427be7d4ba453876eb8702013a7c3e2efba8da7f81"
+          },
+          {
+            "url": "/models/units/grave-bell-tender.glb",
+            "category": "Unit Model",
+            "bytes": 238212,
+            "sha256": "a190e9d2b197fe9927e30a5520066ea12b30a374631b66a32e7601f97a464075"
+          },
+          {
+            "url": "/models/units/graveyard-drudge.glb",
+            "category": "Unit Model",
+            "bytes": 229644,
+            "sha256": "ccf6cf970922a29dacd426eb4e74a2c537150a74dab7513bf67f81c06ffee8b8"
+          },
+          {
+            "url": "/models/units/halberdier.glb",
+            "category": "Unit Model",
+            "bytes": 212848,
+            "sha256": "1a0d2579ac6ca0a24486b2dd02febc061690d459afb6678ff60f518dfe5ca8b5"
+          },
+          {
+            "url": "/models/units/hushbow.glb",
+            "category": "Unit Model",
+            "bytes": 241156,
+            "sha256": "78978cbc84aff53607d4b7d959953adf02307ef3486ee0282175664d691d203d"
+          },
+          {
+            "url": "/models/units/iron-bulwark.glb",
+            "category": "Unit Model",
+            "bytes": 185516,
+            "sha256": "2c62477ceac53bad648d3585d1489f6036a343b5abf1e3f4791fc8a2bb0360d2"
+          },
+          {
+            "url": "/models/units/lantern-widow.glb",
+            "category": "Unit Model",
+            "bytes": 196352,
+            "sha256": "2d15fc1fab6baaa5379159e16a3eec3ac22d33cf71a2708d38ae5cf75ebf4e3c"
+          },
+          {
+            "url": "/models/units/militia-recruit.glb",
+            "category": "Unit Model",
+            "bytes": 184004,
+            "sha256": "ec3e2b18154ea69a1aaa9a65c283463d65ed0007f85dacc5595581a4ffaced12"
+          },
+          {
+            "url": "/models/units/pale-galloper.glb",
+            "category": "Unit Model",
+            "bytes": 235468,
+            "sha256": "2bf38b495aea800534373712fa31883743718d62bafe8ccf8442876322151823"
+          },
+          {
+            "url": "/models/units/rattleknife.glb",
+            "category": "Unit Model",
+            "bytes": 184468,
+            "sha256": "7e338d51fc848ecc3f6473962a108fba90f4b16fbe890f83453da036a15aaaaa"
+          },
+          {
+            "url": "/models/units/restless-wisp.glb",
+            "category": "Unit Model",
+            "bytes": 85920,
+            "sha256": "c03b9d9963603bf9318871061ab2cdbd5aa1eecb587ec659487b0c8f8cd49151"
+          },
+          {
+            "url": "/models/units/rime-eye-reaper.glb",
+            "category": "Unit Model",
+            "bytes": 225208,
+            "sha256": "07142f4d5b9ad73fa75e895eae1c02eb1319ec9bcc52c9c01288a72258c045d4"
+          },
+          {
+            "url": "/models/units/rimebreath-drake.glb",
+            "category": "Unit Model",
+            "bytes": 183796,
+            "sha256": "fd265d9999f1ecb10b306a7ec0a637713a0bde835eabf51ca09b642445ae4eff"
+          },
+          {
+            "url": "/models/units/river-knight.glb",
+            "category": "Unit Model",
+            "bytes": 227388,
+            "sha256": "0cf0ea84f6f65d9393bcae6c94337072c42486c504122b69ad6ba022ddc8c66e"
+          },
+          {
+            "url": "/models/units/shieldbearer.glb",
+            "category": "Unit Model",
+            "bytes": 188052,
+            "sha256": "405947ec13c9fbe1f41112981f71da5f98f5213baa59e23bbc7c70c5d10d6728"
+          },
+          {
+            "url": "/models/units/skeleton.glb",
+            "category": "Unit Model",
+            "bytes": 196432,
+            "sha256": "399dc42ccadc917559ef92c38fc4f8b83193daef0364bf5189e9e5b2824a52fb"
+          },
+          {
+            "url": "/models/units/town-barricade.glb",
+            "category": "Unit Model",
+            "bytes": 139176,
+            "sha256": "8d4c2995a661eaa1bcc927d0989d3864b27fb8ca773783f7271ac04b3d40d250"
+          },
+          {
+            "url": "/models/units/winter-maw.glb",
+            "category": "Unit Model",
+            "bytes": 195164,
+            "sha256": "b291bcbf24eb249d080d173c9588b462a1c53153bba0d972c78cf2e450dba308"
+          },
+          {
+            "url": "/music/boss.ogg",
+            "category": "music",
+            "bytes": 1894505,
+            "sha256": "b66aee61e7a2d5d5cd1a05eef967057a36c1b491195503066edce5b822b3b382"
+          },
+          {
+            "url": "/music/defeat.ogg",
+            "category": "larger result sting",
+            "bytes": 135232,
+            "sha256": "44124ba340b5c647fb8357bbf2a4d5e96b253c11184efb2fe5c463fe13c7fa50"
+          },
+          {
+            "url": "/skills/mage/blizzard.webp",
+            "category": "original card art",
+            "bytes": 119824,
+            "sha256": "593d32cdf6d23d08f100e74d5aab79224157ec765b08223d118c0cc821bc1eee"
+          },
+          {
+            "url": "/skills/mage/frost-bolt.webp",
+            "category": "original card art",
+            "bytes": 70598,
+            "sha256": "782c49926e174f478ddf19e98df01c914814ef8e12899ce1795448add08f8b1d"
+          },
+          {
+            "url": "/skills/mage/frost-shards.webp",
+            "category": "original card art",
+            "bytes": 102056,
+            "sha256": "9d240765fe4d0bada9d2375fcff0749b4629f6d55209a120ca6973b4a420e5db"
+          },
+          {
+            "url": "/skills/mage/frost-wave.webp",
+            "category": "original card art",
+            "bytes": 115542,
+            "sha256": "671daa25f9d12ab6618a6f0bf0d750dc1c8ab5860c6bc63834fdc64678a12926"
+          },
+          {
+            "url": "/skills/mage/thunderstorm.webp",
+            "category": "original card art",
+            "bytes": 100782,
+            "sha256": "cbd0c97867b9975fc5dc948832a0155f079c9f1b4bde9785166db5bfab129fa5"
+          },
+          {
+            "url": "/skills/mage/wildfire.webp",
+            "category": "original card art",
+            "bytes": 138232,
+            "sha256": "1d43a1f0aed1aeaea2ef3b408ed6514643cb7b2d94c4ac4a48be53be652b6710"
+          },
+          {
+            "url": "/skills/warrior/call-to-arms.webp",
+            "category": "original card art",
+            "bytes": 93194,
+            "sha256": "c6080918f768750e61a404054e8480d1e47f4714a4a230779c3e9d0dc7066ef7"
+          },
+          {
+            "url": "/skills/warrior/shield-bash.webp",
+            "category": "original card art",
+            "bytes": 111578,
+            "sha256": "aa468c91cfaff774deda49df8fb086298c3f17ff8731803d5310f4a44cb26bb5"
+          },
+          {
+            "url": "/skills/warrior/shield-wall.webp",
+            "category": "original card art",
+            "bytes": 64962,
+            "sha256": "0bc42009d228f0c4b9f8a810b264426e81c29a93cc8eccf82062dcd18e6e8b80"
+          }
+        ],
+        "models": [
+          "human.riverKnight",
+          "human.halberdier",
+          "human.crossbowGuard",
+          "human.gateWarden",
+          "human.townBarricade",
+          "human.dawnCleric",
+          "human.militiaRecruit",
+          "human.ironBulwark",
+          "human.shieldbearer",
+          "undead.winterMaw",
+          "undead.graveyardDrudge",
+          "undead.hushbow",
+          "undead.rimeEyeReaper",
+          "undead.graveBellTender",
+          "undead.rattleknife",
+          "feral.frostfangLynx",
+          "feral.rimebreathDrake",
+          "undead.paleGalloper",
+          "undead.chatteringCohort",
+          "undead.backwatchBailiff",
+          "undead.boneRampart",
+          "undead.coffinLancer",
+          "undead.lanternWidow",
+          "token.skeleton",
+          "token.restlessWisp"
+        ],
+        "stings": [
+          {
+            "url": "/music/victory.ogg",
+            "bytes": 122945
+          },
+          {
+            "url": "/music/defeat.ogg",
+            "bytes": 135232
+          }
+        ],
+        "heroBytes": 0,
+        "total": 11693533
+      },
+      "javascript": {
+        "files": [
+          {
+            "url": "/assets/SkeletonUtils-CHxfGqZJ.js",
+            "bytes": 449,
+            "gzip": 257,
+            "sha256": "b3f9946f6bb79fffc2a4f9a6f2bf71fbb6e5453dbb9596f42ff385741a9843bc"
+          },
+          {
+            "url": "/assets/battle-canvas-DlLJ1_b-.js",
+            "bytes": 129986,
+            "gzip": 49916,
+            "sha256": "f66e779bc39d3e3204b1aca62f7464647a63300ed4663d95efd28f4822b10271"
+          },
+          {
+            "url": "/assets/battle-painting-D9nCdkE0.js",
+            "bytes": 355,
+            "gzip": 245,
+            "sha256": "f561eb33a68a26f3412e4bd07bc11f88a02feeb95f537c3b4579b007dc642c21"
+          },
+          {
+            "url": "/assets/battle-preload-aSdtuMxU.js",
+            "bytes": 492,
+            "gzip": 317,
+            "sha256": "28f2be873d12005823d4236ccbad424cb50279281d063d2ecdc76f6bd99bdb78"
+          },
+          {
+            "url": "/assets/battle-stage-Dz1U7kEV.js",
+            "bytes": 121399,
+            "gzip": 38552,
+            "sha256": "1b956177aed33fa5da614981a3719c291a37586686460320e7a97a9620b8ad5a"
+          },
+          {
+            "url": "/assets/board-skin-art-Bpl72NkI.js",
+            "bytes": 749,
+            "gzip": 427,
+            "sha256": "b02a0af2a494b23e2fab788e39a491e32991404de73ca8188c5182e3db5e5dbe"
+          },
+          {
+            "url": "/assets/card-art-kOREXFAF.js",
+            "bytes": 1169,
+            "gzip": 627,
+            "sha256": "95b2a2b6cdc9c322e2e289beda6e18460140f3c3948f279132ce09754bedb13a"
+          },
+          {
+            "url": "/assets/card-back-BKW24Y3L.js",
+            "bytes": 2594,
+            "gzip": 1184,
+            "sha256": "9c22f6b32fddbecbf0856884cc350489efe34188a3f252db138cd752688a6d5c"
+          },
+          {
+            "url": "/assets/card-frame-CFEc1TUA.js",
+            "bytes": 31291,
+            "gzip": 10634,
+            "sha256": "344eb4da7dc1aef68d17f4927af0e395d86712eddee04558c9df1c3baa813bda"
+          },
+          {
+            "url": "/assets/forge-stone-icon-CQqnrIgD.js",
+            "bytes": 2239,
+            "gzip": 1104,
+            "sha256": "7c2c21641af0b7a3ceee22adefcdaa7b89e049996c959fd7b31725d423b8fbb9"
+          },
+          {
+            "url": "/assets/game-dialog-B8hfjJC-.js",
+            "bytes": 5585,
+            "gzip": 1805,
+            "sha256": "451b4799064b090a3a27e15605efbc649253235957ca39ffdafcc91f11ba46ac"
+          },
+          {
+            "url": "/assets/gltf-loader-Bj5S_nGh.js",
+            "bytes": 71543,
+            "gzip": 20511,
+            "sha256": "361d41a9610dc445abbacdf85406439d3016c002cd3fb5767ecf7fb9c7ccbdeb"
+          },
+          {
+            "url": "/assets/graveyard-icon-DdIir9Qe.js",
+            "bytes": 521,
+            "gzip": 398,
+            "sha256": "5e11ec9a5fb0faf36044acaa7514c1fe4fb296378bbd1347947f56fbb4fb9215"
+          },
+          {
+            "url": "/assets/hero-model-assets-CEyCywEC.js",
+            "bytes": 918,
+            "gzip": 482,
+            "sha256": "d8b60581e0b72be7b9aa56b19f0c08615debe069742dce83c9402e6140722151"
+          },
+          {
+            "url": "/assets/hero-model-body-C0YtptkH.js",
+            "bytes": 3516,
+            "gzip": 1797,
+            "sha256": "f2c68b143fd3cbec5a6e2ecb8f3218837409a0c79c729e176ac756e1e6797e2b"
+          },
+          {
+            "url": "/assets/hero-model-loader-D_N1lOzc.js",
+            "bytes": 983,
+            "gzip": 572,
+            "sha256": "622f8aa290de537e0c092135dee24e0ed99becfb23a3591bb717aadedb6ffd3d"
+          },
+          {
+            "url": "/assets/hero-portrait-CknwtTlL.js",
+            "bytes": 1866,
+            "gzip": 1005,
+            "sha256": "71e8be3d15a743958f445e5032d3a374bc46b3568da7375b2b7780f9e9e0b8c9"
+          },
+          {
+            "url": "/assets/hero-portrait-art-C5maVh9d.js",
+            "bytes": 546,
+            "gzip": 241,
+            "sha256": "5cc4e205b8e5055d2113d55ab209bc8be78f5a53a7091c70f8bf48ab51db91aa"
+          },
+          {
+            "url": "/assets/heynspire.atoms-ByrELkoc.js",
+            "bytes": 110,
+            "gzip": 105,
+            "sha256": "4cf3620e9d98e1729a10b9e2acb9a8dd229b3a10d6b838f61471b1ec7b718ad6"
+          },
+          {
+            "url": "/assets/model-error-boundary-2xUi5_y7.js",
+            "bytes": 365,
+            "gzip": 256,
+            "sha256": "c5dcb8b8d9dc7024e3ffc115e7e3381cd783a80ea32e2c428bb2ca03f83a405e"
+          },
+          {
+            "url": "/assets/react-three-fiber.esm-D25HElLj.js",
+            "bytes": 540819,
+            "gzip": 142874,
+            "sha256": "9b0e172016e1c13f0d873240e33cf3815365d92b6eb4c518278950fa4d48192c"
+          },
+          {
+            "url": "/assets/result-rewards-BNaCYt3K.js",
+            "bytes": 14533,
+            "gzip": 5248,
+            "sha256": "d91b994c2f6309b94f31b99716491a9f8ef66d1fc4d9b12b182cf1df8587d436"
+          },
+          {
+            "url": "/assets/status-visuals-RcqeGPSm.js",
+            "bytes": 1069,
+            "gzip": 449,
+            "sha256": "52db0c5081ef3ead700a0cf24fce344a7cd2439149b1615e48350a071b8f08d5"
+          },
+          {
+            "url": "/assets/three.core-Dp-eO7LC.js",
+            "bytes": 377285,
+            "gzip": 99557,
+            "sha256": "10ce628f40c24012f66cb3aeb5fe1533a45dfc4e43d8a4eebfda5f554c9fb7cd"
+          },
+          {
+            "url": "/assets/unit-clips-LDA7XKXT.js",
+            "bytes": 95,
+            "gzip": 98,
+            "sha256": "63291fbb845b32bbb208023d07a1178e5e312b75256ca1cebdc3753f914ad902"
+          },
+          {
+            "url": "/assets/unit-models-DaF9pJ34.js",
+            "bytes": 9208,
+            "gzip": 2773,
+            "sha256": "6d6db7060fefdadece4375756561205ed0e9d1404a64af1faa05fe588b6e9308"
+          },
+          {
+            "url": "/assets/unit-rig-DwDF19NV.js",
+            "bytes": 19954,
+            "gzip": 7890,
+            "sha256": "f02b59104f6c3ac9fa0c85588885f1a6b64b0aa09a9fc8b326339bf03787582e"
+          },
+          {
+            "url": "/assets/use-card-peek-Czfzbr_b.js",
+            "bytes": 34341,
+            "gzip": 12232,
+            "sha256": "263f9b98063070443519afb996492000275a6582cb0db136cbce3b0a695d735d"
+          },
+          {
+            "url": "/assets/useMediaQuery-BRutXKoe.js",
+            "bytes": 781,
+            "gzip": 433,
+            "sha256": "a3008f1348b7a579021004da28c405b4de0f077eeb88a4da9088e144db08dce2"
+          }
+        ],
+        "gzip": 401989
+      },
+      "pass": true
+    },
+    {
+      "config": {
+        "id": "stage-5-10-hero",
+        "stageId": "5-10",
+        "level": 30,
+        "deck": {
+          "classId": "warrior",
+          "deck": [
+            {
+              "cardId": "human.townBarricade",
+              "rank": "common"
+            },
+            {
+              "cardId": "human.militiaRecruit",
+              "rank": "common"
+            },
+            {
+              "cardId": "human.gateWarden",
+              "rank": "uncommon"
+            },
+            {
+              "cardId": "human.shieldbearer",
+              "rank": "common"
+            },
+            {
+              "cardId": "human.crossbowGuard",
+              "rank": "common"
+            },
+            {
+              "cardId": "human.crossbowGuard",
+              "rank": "common"
+            },
+            {
+              "cardId": "human.halberdier",
+              "rank": "common"
+            },
+            {
+              "cardId": "human.halberdier",
+              "rank": "common"
+            },
+            {
+              "cardId": "human.dawnCleric",
+              "rank": "uncommon"
+            },
+            {
+              "cardId": "human.riverKnight",
+              "rank": "uncommon"
+            },
+            {
+              "cardId": "human.riverKnight",
+              "rank": "uncommon"
+            },
+            {
+              "cardId": "warrior.shieldWall",
+              "rank": "common"
+            },
+            {
+              "cardId": "warrior.shieldBash",
+              "rank": "common"
+            },
+            {
+              "cardId": "warrior.callToArms",
+              "rank": "rare"
+            },
+            {
+              "cardId": "human.ironBulwark",
+              "rank": "epic"
+            }
+          ]
+        },
+        "appearance": {
+          "portrait": "heroPortrait.dawnGaze",
+          "gearLook": "gearLook.ironVine"
+        },
+        "cosmetics": {
+          "boardSkin": "boardSkin.hollowMoon",
+          "cardBack": "cardBack.goldFleur"
+        },
+        "features": {
+          "heroModel": true
+        }
+      },
+      "assets": {
+        "files": [
+          {
+            "url": "/battle/fx-atlas.webp",
+            "category": "effects",
+            "bytes": 648338,
+            "sha256": "a00ea2ae0fbf1aebc90922a59e3b3e54206b78a3b0ee833fe85aeea67dee4b6b"
+          },
+          {
+            "url": "/battle/hollow-marches.webp",
+            "category": "painting",
+            "bytes": 277148,
+            "sha256": "4360f5490a3598071fd190b8ff82da119b414100dfe44efecc385e6b541dbd25"
+          },
+          {
+            "url": "/board-skins/hollow-moon.webp",
+            "category": "board skin",
+            "bytes": 250230,
+            "sha256": "86b38199c4da5c97e5c351c319e1e09e6f7eb98ee3efed8e7c285a2b82641691"
+          },
+          {
+            "url": "/card-backs/gold-fleur.webp",
+            "category": "card back",
+            "bytes": 43510,
+            "sha256": "d038138c7bbc361df5e06783a7468395692394f44b25c22d7a560a985c201b2c"
+          },
+          {
+            "url": "/creature/feral/frostfang-lynx.webp",
+            "category": "original card art",
+            "bytes": 96594,
+            "sha256": "1b3b5868ddcb66dace54b8de8b2edf3fb93cd996041734b50d73cdc4172a5e4c"
+          },
+          {
+            "url": "/creature/feral/rimebreath-drake.webp",
+            "category": "original card art",
+            "bytes": 101762,
+            "sha256": "ba2354ab126eab5602af33f1733c3ac190b9d6361670e1842c8993f5a371280d"
+          },
+          {
+            "url": "/creature/human/crossbow-guard.webp",
+            "category": "original card art",
+            "bytes": 63684,
+            "sha256": "eeb6cb0870adda7c6085d1d02ea023af8610615c012210b97f582e1c1dd8e6e8"
+          },
+          {
+            "url": "/creature/human/dawn-cleric.webp",
+            "category": "original card art",
+            "bytes": 69866,
+            "sha256": "3e23e6e9c21afcc81a13353aabcca19f0ca31799487d1799f2d51d6983836257"
+          },
+          {
+            "url": "/creature/human/gate-warden.webp",
+            "category": "original card art",
+            "bytes": 66700,
+            "sha256": "5749a363937480561df244b10f1e252e562597aac146afc5dc609dd6baafc512"
+          },
+          {
+            "url": "/creature/human/halberdier.webp",
+            "category": "original card art",
+            "bytes": 61600,
+            "sha256": "2472e6f04615d8cf931e4a386abd73bdb63cba749fd82160af9f7c2b4dbaaaf9"
+          },
+          {
+            "url": "/creature/human/iron-bulwark.webp",
+            "category": "original card art",
+            "bytes": 82084,
+            "sha256": "a30225a5d1cd61dbb43dffe77dec8deeb4c5a3676e8a12221d66793ec36e9531"
+          },
+          {
+            "url": "/creature/human/militia-recruit.webp",
+            "category": "original card art",
+            "bytes": 83598,
+            "sha256": "343d1370681f39b568d3c5fd36b6ce801657fbdfb783d056c02fbfaf6ab903cc"
+          },
+          {
+            "url": "/creature/human/river-knight.webp",
+            "category": "original card art",
+            "bytes": 88962,
+            "sha256": "deec0bea695fcad9f1e483e4bb1a990048586efada665e6de6626a610cc1993b"
+          },
+          {
+            "url": "/creature/human/shieldbearer.webp",
+            "category": "original card art",
+            "bytes": 71952,
+            "sha256": "6fcb890510d3149ce9334be183f79dc0e023deb9a791a75c9060b28d9c13e434"
+          },
+          {
+            "url": "/creature/human/town-barricade.webp",
+            "category": "original card art",
+            "bytes": 92028,
+            "sha256": "9169166cc454a7a752bb86423d14206ec0758e84d92a3b7aacdf5e190761fc7b"
+          },
+          {
+            "url": "/creature/token/restless-wisp.webp",
+            "category": "original card/Token art",
+            "bytes": 82240,
+            "sha256": "19184ba21916f4ddb9c134a973b926b210d61ccc9e8969b5c0058d86896309a3"
+          },
+          {
+            "url": "/creature/token/skeleton.webp",
+            "category": "original card/Token art",
+            "bytes": 93374,
+            "sha256": "e1ce9405df9d14386639149c5872dab70efb036ae59c4fa80ddf3dd995aa5ef4"
+          },
+          {
+            "url": "/creature/undead/backwatch-bailiff.webp",
+            "category": "original card art",
+            "bytes": 120380,
+            "sha256": "396fccbac02393f0840123631a91f7a40c93e53d15b83e60fff9f1b513133815"
+          },
+          {
+            "url": "/creature/undead/bone-rampart.webp",
+            "category": "original card art",
+            "bytes": 151972,
+            "sha256": "d341d6e7b7363af32a7cd2e849aee701fca71bf91ed92de5d790881602b0c934"
+          },
+          {
+            "url": "/creature/undead/chattering-cohort.webp",
+            "category": "original card art",
+            "bytes": 122546,
+            "sha256": "e4e5e888e36809769050716cee277ef4df45db6f9045c634ed973adf421f431a"
+          },
+          {
+            "url": "/creature/undead/coffin-lancer.webp",
+            "category": "original card art",
+            "bytes": 130916,
+            "sha256": "c9c2df834e67ab5c7e8e83d90a276082ba52275796353f82729e0668aaf43243"
+          },
+          {
+            "url": "/creature/undead/grave-bell-tender.webp",
+            "category": "original card art",
+            "bytes": 116418,
+            "sha256": "569668746ad78a1d099280396c55b1d55cc91c9f3c115774d21fbfb618517f50"
+          },
+          {
+            "url": "/creature/undead/graveyard-drudge.webp",
+            "category": "original card art",
+            "bytes": 95432,
+            "sha256": "d58fc6c443cb2668cfecb88d98bd11bd8be3cd496b0878a91b39784ddf5925b9"
+          },
+          {
+            "url": "/creature/undead/hushbow.webp",
+            "category": "original card art",
+            "bytes": 112850,
+            "sha256": "b7de6b4a729bb0e5be83621131765e7802cabf718553708534ad591ce41f42cd"
+          },
+          {
+            "url": "/creature/undead/lantern-widow.webp",
+            "category": "original card art",
+            "bytes": 128792,
+            "sha256": "8262e6832ca7ec3921ae8d53d03121d3220fbc812eb805b24afb0b5ed7e956b1"
+          },
+          {
+            "url": "/creature/undead/pale-galloper.webp",
+            "category": "original card art",
+            "bytes": 120592,
+            "sha256": "b0c1f1c1a5dd10ff44a3de80ad5c4da92a2f407f08b93c7384e6d062a755080e"
+          },
+          {
+            "url": "/creature/undead/rattleknife.webp",
+            "category": "original card art",
+            "bytes": 112900,
+            "sha256": "98a6659db7500ce46b6b4e0b597717ee7b1218cef1cebd39b253cab1810886dd"
+          },
+          {
+            "url": "/creature/undead/rime-eye-reaper.webp",
+            "category": "original card art",
+            "bytes": 132924,
+            "sha256": "6ade2c64b18ed79531165123c5f9f85133a4e00b39743fd83b7f2f3c44848d94"
+          },
+          {
+            "url": "/creature/undead/winter-maw.webp",
+            "category": "original card art",
+            "bytes": 133730,
+            "sha256": "77cbb7c89ebd4b0083b7cbccf5988e609ad3abe041919eb3883d861c9c66c18b"
+          },
+          {
+            "url": "/hero-portraits/dawn-gaze.webp",
+            "category": "Hero portrait",
+            "bytes": 60724,
+            "sha256": "95589ab260279e543c4f3618e132a070056abe8e270fa8441f9f9ad7bd10edc3"
+          },
+          {
+            "url": "/models/heroes/dawn-gaze-iron-vine.glb",
+            "category": "Hero appearance",
+            "bytes": 536656,
+            "sha256": "c32c6138025afb92a4dc580cee66799779a604521f632948e10375a70213a9f9"
+          },
+          {
+            "url": "/models/units/backwatch-bailiff.glb",
+            "category": "Unit Model",
+            "bytes": 223528,
+            "sha256": "90c757303e8434298de694f3678f63fae6be928333a20ec7f060f764539a0105"
+          },
+          {
+            "url": "/models/units/bone-rampart.glb",
+            "category": "Unit Model",
+            "bytes": 163148,
+            "sha256": "4eeb125b50d9d2188e170e70217da25f20776ff693e7fd5691b7fc79ab3739ad"
+          },
+          {
+            "url": "/models/units/chattering-cohort.glb",
+            "category": "Unit Model",
+            "bytes": 201808,
+            "sha256": "206fbab9232d2505f0417d4ff0e837aebefa3aef0a9ea8eda5ce5ba7d0f691a2"
+          },
+          {
+            "url": "/models/units/coffin-lancer.glb",
+            "category": "Unit Model",
+            "bytes": 198980,
+            "sha256": "69105f154067b52d7c109a71b3e278fc795e46d5768ba7cf32ba819c247af0e7"
+          },
+          {
+            "url": "/models/units/crossbow-guard.glb",
+            "category": "Unit Model",
+            "bytes": 206764,
+            "sha256": "314fd718083f63c6f7c99f4ec0ece77e3a76470e3776d2c6d0301b8f77eefcaa"
+          },
+          {
+            "url": "/models/units/dawn-cleric.glb",
+            "category": "Unit Model",
+            "bytes": 215336,
+            "sha256": "b6f04090fcb07690447f62ac912e86fe534dbab92e33db15799d1712dcd38823"
+          },
+          {
+            "url": "/models/units/frostfang-lynx.glb",
+            "category": "Unit Model",
+            "bytes": 169372,
+            "sha256": "905b395f72f5beaf672ad63bb35657c70388d04fb979b4eb9a55ccd7c4ea1207"
+          },
+          {
+            "url": "/models/units/gate-warden.glb",
+            "category": "Unit Model",
+            "bytes": 205320,
+            "sha256": "51fe55278c3dbfc017fc05427be7d4ba453876eb8702013a7c3e2efba8da7f81"
+          },
+          {
+            "url": "/models/units/grave-bell-tender.glb",
+            "category": "Unit Model",
+            "bytes": 238212,
+            "sha256": "a190e9d2b197fe9927e30a5520066ea12b30a374631b66a32e7601f97a464075"
+          },
+          {
+            "url": "/models/units/graveyard-drudge.glb",
+            "category": "Unit Model",
+            "bytes": 229644,
+            "sha256": "ccf6cf970922a29dacd426eb4e74a2c537150a74dab7513bf67f81c06ffee8b8"
+          },
+          {
+            "url": "/models/units/halberdier.glb",
+            "category": "Unit Model",
+            "bytes": 212848,
+            "sha256": "1a0d2579ac6ca0a24486b2dd02febc061690d459afb6678ff60f518dfe5ca8b5"
+          },
+          {
+            "url": "/models/units/hushbow.glb",
+            "category": "Unit Model",
+            "bytes": 241156,
+            "sha256": "78978cbc84aff53607d4b7d959953adf02307ef3486ee0282175664d691d203d"
+          },
+          {
+            "url": "/models/units/iron-bulwark.glb",
+            "category": "Unit Model",
+            "bytes": 185516,
+            "sha256": "2c62477ceac53bad648d3585d1489f6036a343b5abf1e3f4791fc8a2bb0360d2"
+          },
+          {
+            "url": "/models/units/lantern-widow.glb",
+            "category": "Unit Model",
+            "bytes": 196352,
+            "sha256": "2d15fc1fab6baaa5379159e16a3eec3ac22d33cf71a2708d38ae5cf75ebf4e3c"
+          },
+          {
+            "url": "/models/units/militia-recruit.glb",
+            "category": "Unit Model",
+            "bytes": 184004,
+            "sha256": "ec3e2b18154ea69a1aaa9a65c283463d65ed0007f85dacc5595581a4ffaced12"
+          },
+          {
+            "url": "/models/units/pale-galloper.glb",
+            "category": "Unit Model",
+            "bytes": 235468,
+            "sha256": "2bf38b495aea800534373712fa31883743718d62bafe8ccf8442876322151823"
+          },
+          {
+            "url": "/models/units/rattleknife.glb",
+            "category": "Unit Model",
+            "bytes": 184468,
+            "sha256": "7e338d51fc848ecc3f6473962a108fba90f4b16fbe890f83453da036a15aaaaa"
+          },
+          {
+            "url": "/models/units/restless-wisp.glb",
+            "category": "Unit Model",
+            "bytes": 85920,
+            "sha256": "c03b9d9963603bf9318871061ab2cdbd5aa1eecb587ec659487b0c8f8cd49151"
+          },
+          {
+            "url": "/models/units/rime-eye-reaper.glb",
+            "category": "Unit Model",
+            "bytes": 225208,
+            "sha256": "07142f4d5b9ad73fa75e895eae1c02eb1319ec9bcc52c9c01288a72258c045d4"
+          },
+          {
+            "url": "/models/units/rimebreath-drake.glb",
+            "category": "Unit Model",
+            "bytes": 183796,
+            "sha256": "fd265d9999f1ecb10b306a7ec0a637713a0bde835eabf51ca09b642445ae4eff"
+          },
+          {
+            "url": "/models/units/river-knight.glb",
+            "category": "Unit Model",
+            "bytes": 227388,
+            "sha256": "0cf0ea84f6f65d9393bcae6c94337072c42486c504122b69ad6ba022ddc8c66e"
+          },
+          {
+            "url": "/models/units/shieldbearer.glb",
+            "category": "Unit Model",
+            "bytes": 188052,
+            "sha256": "405947ec13c9fbe1f41112981f71da5f98f5213baa59e23bbc7c70c5d10d6728"
+          },
+          {
+            "url": "/models/units/skeleton.glb",
+            "category": "Unit Model",
+            "bytes": 196432,
+            "sha256": "399dc42ccadc917559ef92c38fc4f8b83193daef0364bf5189e9e5b2824a52fb"
+          },
+          {
+            "url": "/models/units/town-barricade.glb",
+            "category": "Unit Model",
+            "bytes": 139176,
+            "sha256": "8d4c2995a661eaa1bcc927d0989d3864b27fb8ca773783f7271ac04b3d40d250"
+          },
+          {
+            "url": "/models/units/winter-maw.glb",
+            "category": "Unit Model",
+            "bytes": 195164,
+            "sha256": "b291bcbf24eb249d080d173c9588b462a1c53153bba0d972c78cf2e450dba308"
+          },
+          {
+            "url": "/music/boss.ogg",
+            "category": "music",
+            "bytes": 1894505,
+            "sha256": "b66aee61e7a2d5d5cd1a05eef967057a36c1b491195503066edce5b822b3b382"
+          },
+          {
+            "url": "/music/defeat.ogg",
+            "category": "larger result sting",
+            "bytes": 135232,
+            "sha256": "44124ba340b5c647fb8357bbf2a4d5e96b253c11184efb2fe5c463fe13c7fa50"
+          },
+          {
+            "url": "/skills/mage/blizzard.webp",
+            "category": "original card art",
+            "bytes": 119824,
+            "sha256": "593d32cdf6d23d08f100e74d5aab79224157ec765b08223d118c0cc821bc1eee"
+          },
+          {
+            "url": "/skills/mage/frost-bolt.webp",
+            "category": "original card art",
+            "bytes": 70598,
+            "sha256": "782c49926e174f478ddf19e98df01c914814ef8e12899ce1795448add08f8b1d"
+          },
+          {
+            "url": "/skills/mage/frost-shards.webp",
+            "category": "original card art",
+            "bytes": 102056,
+            "sha256": "9d240765fe4d0bada9d2375fcff0749b4629f6d55209a120ca6973b4a420e5db"
+          },
+          {
+            "url": "/skills/mage/frost-wave.webp",
+            "category": "original card art",
+            "bytes": 115542,
+            "sha256": "671daa25f9d12ab6618a6f0bf0d750dc1c8ab5860c6bc63834fdc64678a12926"
+          },
+          {
+            "url": "/skills/mage/thunderstorm.webp",
+            "category": "original card art",
+            "bytes": 100782,
+            "sha256": "cbd0c97867b9975fc5dc948832a0155f079c9f1b4bde9785166db5bfab129fa5"
+          },
+          {
+            "url": "/skills/mage/wildfire.webp",
+            "category": "original card art",
+            "bytes": 138232,
+            "sha256": "1d43a1f0aed1aeaea2ef3b408ed6514643cb7b2d94c4ac4a48be53be652b6710"
+          },
+          {
+            "url": "/skills/warrior/call-to-arms.webp",
+            "category": "original card art",
+            "bytes": 93194,
+            "sha256": "c6080918f768750e61a404054e8480d1e47f4714a4a230779c3e9d0dc7066ef7"
+          },
+          {
+            "url": "/skills/warrior/shield-bash.webp",
+            "category": "original card art",
+            "bytes": 111578,
+            "sha256": "aa468c91cfaff774deda49df8fb086298c3f17ff8731803d5310f4a44cb26bb5"
+          },
+          {
+            "url": "/skills/warrior/shield-wall.webp",
+            "category": "original card art",
+            "bytes": 64962,
+            "sha256": "0bc42009d228f0c4b9f8a810b264426e81c29a93cc8eccf82062dcd18e6e8b80"
+          }
+        ],
+        "models": [
+          "human.riverKnight",
+          "human.halberdier",
+          "human.crossbowGuard",
+          "human.gateWarden",
+          "human.townBarricade",
+          "human.dawnCleric",
+          "human.militiaRecruit",
+          "human.ironBulwark",
+          "human.shieldbearer",
+          "undead.winterMaw",
+          "undead.graveyardDrudge",
+          "undead.hushbow",
+          "undead.rimeEyeReaper",
+          "undead.graveBellTender",
+          "undead.rattleknife",
+          "feral.frostfangLynx",
+          "feral.rimebreathDrake",
+          "undead.paleGalloper",
+          "undead.chatteringCohort",
+          "undead.backwatchBailiff",
+          "undead.boneRampart",
+          "undead.coffinLancer",
+          "undead.lanternWidow",
+          "token.skeleton",
+          "token.restlessWisp"
+        ],
+        "stings": [
+          {
+            "url": "/music/victory.ogg",
+            "bytes": 122945
+          },
+          {
+            "url": "/music/defeat.ogg",
+            "bytes": 135232
+          }
+        ],
+        "heroBytes": 536656,
+        "total": 12230067
+      },
+      "javascript": {
+        "files": [
+          {
+            "url": "/assets/SkeletonUtils-CHxfGqZJ.js",
+            "bytes": 449,
+            "gzip": 257,
+            "sha256": "b3f9946f6bb79fffc2a4f9a6f2bf71fbb6e5453dbb9596f42ff385741a9843bc"
+          },
+          {
+            "url": "/assets/battle-canvas-DlLJ1_b-.js",
+            "bytes": 129986,
+            "gzip": 49916,
+            "sha256": "f66e779bc39d3e3204b1aca62f7464647a63300ed4663d95efd28f4822b10271"
+          },
+          {
+            "url": "/assets/battle-painting-D9nCdkE0.js",
+            "bytes": 355,
+            "gzip": 245,
+            "sha256": "f561eb33a68a26f3412e4bd07bc11f88a02feeb95f537c3b4579b007dc642c21"
+          },
+          {
+            "url": "/assets/battle-preload-aSdtuMxU.js",
+            "bytes": 492,
+            "gzip": 317,
+            "sha256": "28f2be873d12005823d4236ccbad424cb50279281d063d2ecdc76f6bd99bdb78"
+          },
+          {
+            "url": "/assets/battle-stage-Dz1U7kEV.js",
+            "bytes": 121399,
+            "gzip": 38552,
+            "sha256": "1b956177aed33fa5da614981a3719c291a37586686460320e7a97a9620b8ad5a"
+          },
+          {
+            "url": "/assets/board-skin-art-Bpl72NkI.js",
+            "bytes": 749,
+            "gzip": 427,
+            "sha256": "b02a0af2a494b23e2fab788e39a491e32991404de73ca8188c5182e3db5e5dbe"
+          },
+          {
+            "url": "/assets/card-art-kOREXFAF.js",
+            "bytes": 1169,
+            "gzip": 627,
+            "sha256": "95b2a2b6cdc9c322e2e289beda6e18460140f3c3948f279132ce09754bedb13a"
+          },
+          {
+            "url": "/assets/card-back-BKW24Y3L.js",
+            "bytes": 2594,
+            "gzip": 1184,
+            "sha256": "9c22f6b32fddbecbf0856884cc350489efe34188a3f252db138cd752688a6d5c"
+          },
+          {
+            "url": "/assets/card-frame-CFEc1TUA.js",
+            "bytes": 31291,
+            "gzip": 10634,
+            "sha256": "344eb4da7dc1aef68d17f4927af0e395d86712eddee04558c9df1c3baa813bda"
+          },
+          {
+            "url": "/assets/forge-stone-icon-CQqnrIgD.js",
+            "bytes": 2239,
+            "gzip": 1104,
+            "sha256": "7c2c21641af0b7a3ceee22adefcdaa7b89e049996c959fd7b31725d423b8fbb9"
+          },
+          {
+            "url": "/assets/game-dialog-B8hfjJC-.js",
+            "bytes": 5585,
+            "gzip": 1805,
+            "sha256": "451b4799064b090a3a27e15605efbc649253235957ca39ffdafcc91f11ba46ac"
+          },
+          {
+            "url": "/assets/gltf-loader-Bj5S_nGh.js",
+            "bytes": 71543,
+            "gzip": 20511,
+            "sha256": "361d41a9610dc445abbacdf85406439d3016c002cd3fb5767ecf7fb9c7ccbdeb"
+          },
+          {
+            "url": "/assets/graveyard-icon-DdIir9Qe.js",
+            "bytes": 521,
+            "gzip": 398,
+            "sha256": "5e11ec9a5fb0faf36044acaa7514c1fe4fb296378bbd1347947f56fbb4fb9215"
+          },
+          {
+            "url": "/assets/hero-model-assets-CEyCywEC.js",
+            "bytes": 918,
+            "gzip": 482,
+            "sha256": "d8b60581e0b72be7b9aa56b19f0c08615debe069742dce83c9402e6140722151"
+          },
+          {
+            "url": "/assets/hero-model-body-C0YtptkH.js",
+            "bytes": 3516,
+            "gzip": 1797,
+            "sha256": "f2c68b143fd3cbec5a6e2ecb8f3218837409a0c79c729e176ac756e1e6797e2b"
+          },
+          {
+            "url": "/assets/hero-model-loader-D_N1lOzc.js",
+            "bytes": 983,
+            "gzip": 572,
+            "sha256": "622f8aa290de537e0c092135dee24e0ed99becfb23a3591bb717aadedb6ffd3d"
+          },
+          {
+            "url": "/assets/hero-portrait-CknwtTlL.js",
+            "bytes": 1866,
+            "gzip": 1005,
+            "sha256": "71e8be3d15a743958f445e5032d3a374bc46b3568da7375b2b7780f9e9e0b8c9"
+          },
+          {
+            "url": "/assets/hero-portrait-art-C5maVh9d.js",
+            "bytes": 546,
+            "gzip": 241,
+            "sha256": "5cc4e205b8e5055d2113d55ab209bc8be78f5a53a7091c70f8bf48ab51db91aa"
+          },
+          {
+            "url": "/assets/heynspire.atoms-ByrELkoc.js",
+            "bytes": 110,
+            "gzip": 105,
+            "sha256": "4cf3620e9d98e1729a10b9e2acb9a8dd229b3a10d6b838f61471b1ec7b718ad6"
+          },
+          {
+            "url": "/assets/model-error-boundary-2xUi5_y7.js",
+            "bytes": 365,
+            "gzip": 256,
+            "sha256": "c5dcb8b8d9dc7024e3ffc115e7e3381cd783a80ea32e2c428bb2ca03f83a405e"
+          },
+          {
+            "url": "/assets/react-three-fiber.esm-D25HElLj.js",
+            "bytes": 540819,
+            "gzip": 142874,
+            "sha256": "9b0e172016e1c13f0d873240e33cf3815365d92b6eb4c518278950fa4d48192c"
+          },
+          {
+            "url": "/assets/result-rewards-BNaCYt3K.js",
+            "bytes": 14533,
+            "gzip": 5248,
+            "sha256": "d91b994c2f6309b94f31b99716491a9f8ef66d1fc4d9b12b182cf1df8587d436"
+          },
+          {
+            "url": "/assets/status-visuals-RcqeGPSm.js",
+            "bytes": 1069,
+            "gzip": 449,
+            "sha256": "52db0c5081ef3ead700a0cf24fce344a7cd2439149b1615e48350a071b8f08d5"
+          },
+          {
+            "url": "/assets/three.core-Dp-eO7LC.js",
+            "bytes": 377285,
+            "gzip": 99557,
+            "sha256": "10ce628f40c24012f66cb3aeb5fe1533a45dfc4e43d8a4eebfda5f554c9fb7cd"
+          },
+          {
+            "url": "/assets/unit-clips-LDA7XKXT.js",
+            "bytes": 95,
+            "gzip": 98,
+            "sha256": "63291fbb845b32bbb208023d07a1178e5e312b75256ca1cebdc3753f914ad902"
+          },
+          {
+            "url": "/assets/unit-models-DaF9pJ34.js",
+            "bytes": 9208,
+            "gzip": 2773,
+            "sha256": "6d6db7060fefdadece4375756561205ed0e9d1404a64af1faa05fe588b6e9308"
+          },
+          {
+            "url": "/assets/unit-rig-DwDF19NV.js",
+            "bytes": 19954,
+            "gzip": 7890,
+            "sha256": "f02b59104f6c3ac9fa0c85588885f1a6b64b0aa09a9fc8b326339bf03787582e"
+          },
+          {
+            "url": "/assets/use-card-peek-Czfzbr_b.js",
+            "bytes": 34341,
+            "gzip": 12232,
+            "sha256": "263f9b98063070443519afb996492000275a6582cb0db136cbce3b0a695d735d"
+          },
+          {
+            "url": "/assets/useMediaQuery-BRutXKoe.js",
+            "bytes": 781,
+            "gzip": 433,
+            "sha256": "a3008f1348b7a579021004da28c405b4de0f077eeb88a4da9088e144db08dce2"
+          }
+        ],
+        "gzip": 401989
+      },
+      "pass": true
+    }
+  ]
+}

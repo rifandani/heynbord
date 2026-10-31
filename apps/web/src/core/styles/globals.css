@@ -1938,6 +1938,11 @@ html[data-reduced-motion="true"] {
   outline: none;
 }
 
+/* Story controls must remain clear of device and update notifications. */
+body:has([data-testid="story-player"]) [data-sonner-toaster] {
+  visibility: hidden;
+}
+
 /*
  * The Battle screen keeps the Board, the Hand Bar and End Turn free: toasts
  * show in a narrow column at the bottom right, above End Turn. A wide screen
