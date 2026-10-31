@@ -22,6 +22,7 @@
     "dev-dist",
     "dist",
     "vite.config.*",
+    "scripts/battle-build-graph.ts",
     "scripts/rules-hash.ts",
     "playwright.config.*",
     "pwa-assets.config.*"

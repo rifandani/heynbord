@@ -28,6 +28,22 @@ import { NEW_PLAYER } from "@/features/profile/profile";
 // SAFETY: `TOKENS` is a record with a key for each Token ID, and no other key.
 const TOKEN_IDS = Object.keys(TOKENS) as TokenId[];
 
+const firstHero = (state: BattleState) => {
+  const hero = state.sides.player.heroes.at(0);
+  if (!hero) {
+    throw new Error("The player Side has no Hero");
+  }
+  return hero;
+};
+
+const firstUnit = (state: BattleState) => {
+  const unit = state.units.at(0);
+  if (!unit) {
+    throw new Error("The Battle has no Unit");
+  }
+  return unit;
+};
+
 const inPublic = (file: string) =>
   existsSync(new URL(`../../../public${file}`, import.meta.url));
 
@@ -314,5 +330,116 @@ describe("Battle model copy counts", () => {
     expect(
       cards.filter((id) => id === "human.crossbowGuard").length
     ).toBeGreaterThanOrEqual(3);
+  });
+
+  it("counts Graveyard Cards and ignores Token Units", () => {
+    const session = startSession({
+      stageId: "1-10",
+      deck: getStarterDeck("vanguard"),
+      player: NEW_PLAYER,
+      seed: 7,
+    });
+    const hero = firstHero(session.rules);
+    const start = firstUnit(session.rules);
+    const state: BattleState = {
+      ...session.rules,
+      sides: {
+        ...session.rules.sides,
+        player: {
+          ...session.rules.sides.player,
+          heroes: [
+            {
+              ...hero,
+              graveyard: [
+                ...hero.graveyard,
+                {
+                  instanceId: 9100,
+                  cardId: "orc.warchiefGrukka",
+                  rank: "rare",
+                },
+              ],
+            },
+          ],
+        },
+      },
+      units: [
+        ...session.rules.units,
+        {
+          ...start,
+          id: 999,
+          source: { _tag: "Token", tokenId: "token.skeleton", rank: "common" },
+        },
+      ],
+    };
+    const cards = battleModelCopies(state);
+    expect(cards).toContain("orc.warchiefGrukka");
+    expect(cards).not.toContain("token.skeleton");
+  });
+});
+
+describe("battleUnitSources with Boss Rules and Skill Cards", () => {
+  it("adds the summon Card of a Boss Rule and skips Skill Cards", () => {
+    const { rules } = startSession({
+      stageId: "1-1",
+      deck: getStarterDeck("vanguard"),
+      player: NEW_PLAYER,
+      seed: 7,
+    });
+    const hero = firstHero(rules);
+    const state: BattleState = {
+      ...rules,
+      sides: {
+        ...rules.sides,
+        player: {
+          ...rules.sides.player,
+          heroes: [
+            {
+              ...hero,
+              hand: [
+                {
+                  instanceId: 9001,
+                  cardId: "mage.fireball",
+                  rank: "common",
+                  countdown: 0,
+                },
+              ],
+              deck: [],
+              graveyard: [
+                {
+                  instanceId: 9002,
+                  cardId: "orc.warchiefGrukka",
+                  rank: "rare",
+                },
+              ],
+              bossRules: [
+                {
+                  threshold: 50,
+                  effect: {
+                    type: "summon",
+                    card: {
+                      instanceId: 9003,
+                      cardId: "human.militiaRecruit",
+                      rank: "common",
+                    },
+                    lane: 0,
+                    position: 0,
+                  },
+                  activated: false,
+                },
+                {
+                  threshold: 25,
+                  effect: { type: "draw", cards: 1 },
+                  activated: false,
+                },
+              ],
+            },
+          ],
+        },
+      },
+    };
+    const ids = battleUnitSources(state).map(sourceId);
+    expect(ids).not.toContain("mage.fireball");
+    expect(ids).toContain("orc.warchiefGrukka");
+    expect(ids).toContain("human.militiaRecruit");
   });
 });
