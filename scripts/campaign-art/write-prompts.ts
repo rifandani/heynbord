@@ -16,7 +16,7 @@
  *   `docs/game/12-region-concepts.md` and `13-battlefield-concepts.md`, and
  *   from the scene lines in `scenes.ts`.
  * - `raw/hearthvale/story-prompts.md`: the fframes production prompt, with
- *   the current text from `docs/game/hearthvale-storyboard.md`.
+ *   the current text from `docs/game/scenes/hearthvale-storyboard.md`.
  */
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
@@ -181,12 +181,12 @@ const promptsFile = (
 const storyPromptsFile = (dir: string): string => {
   const designLink = path.relative(
     dir,
-    path.join(ROOT, "docs/game/region-story-scenes.md")
+    path.join(ROOT, "docs/game/23-region-story-scenes.md")
   );
   const storyboard = readFileSync(
-    path.join(ROOT, "docs/game/hearthvale-storyboard.md"),
+    path.join(ROOT, "docs/game/scenes/hearthvale-storyboard.md"),
     "utf-8"
-  ).replaceAll("](./region-story-scenes.md)", `](${designLink})`);
+  ).replaceAll("](../23-region-story-scenes.md)", `](${designLink})`);
   return readFileSync(
     path.join(ROOT, "scripts/campaign-art/hearthvale-story-prompts.md"),
     "utf-8"

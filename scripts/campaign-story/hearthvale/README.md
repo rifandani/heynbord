@@ -1,6 +1,6 @@
 # Hearthvale Story Scenes, version 2
 
-This macOS project uses fframes 1.3.0 with Skia on Metal. It produces fifteen 9-second Story Moments at 1280 × 720 and 30 fps: five each for the opening, the Boss scene and the ending. The text, lore and shot plan are in the [storyboard](../../../docs/game/hearthvale-storyboard.md). The game uses the delivery copy in `apps/web/public/story/hearthvale/v2/`. See [integration checks](../../../docs/game/region-story-scenes.md#implementation-checks).
+This macOS project uses fframes 1.3.0 with Skia on Metal. It produces fifteen 9-second Story Moments at 1280 × 720 and 30 fps: five each for the opening, the Boss scene and the ending. The text, lore and shot plan are in the [storyboard](../../../docs/game/scenes/hearthvale-storyboard.md). The game uses the delivery copy in `apps/web/public/story/hearthvale/v2/`. See [integration checks](../../../docs/game/23-region-story-scenes.md#implementation-checks).
 
 ## How a moment plays
 

@@ -185,7 +185,7 @@ bun check:battle-budget
 ```
 
 The first report checks the raw exports. The second checks the 56 published
-GLBs. The committed [56-appearance size report](./hero-model-sizes-2026-10-31.json)
+GLBs. The committed [56-appearance size report](../../artifacts/hero-model-sizes-2026-10-31.json)
 records each published byte count. `check:battle-budget` measures the Stage
 fixtures, including a Hero-enabled Stage 5-10 with the Dawn Gaze person in
 the Iron Vine look. The unit test `hero-model-budget.unit.test.ts` fails when
@@ -308,7 +308,7 @@ Sources: `battle-timeline.ts`, `scene/playback-driver.tsx`,
 
 Sources: [Technical Design](./06-technical-design.md),
 [PRD NFR-01](./04-prd.md#69-non-functional-requirements-nfr),
-[performance record](./performance.md#frame-rate-nfr-01),
+[performance record](./22-performance.md#frame-rate-nfr-01),
 `apps/web/src/features/battle/scene/layout.ts`, the target marker modules,
 `apps/web/src/features/replay/replay-link.ts`,
 `apps/web/src/features/bazaar/bazaar.ts`,

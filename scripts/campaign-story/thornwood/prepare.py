@@ -67,7 +67,7 @@ def fonts():
 
 
 def script(lato):
-    text = (ROOT / "docs/game/thornwood-storyboard.md").read_text()
+    text = (ROOT / "docs/game/scenes/thornwood-storyboard.md").read_text()
     en = re.findall(r"\*\*English:\*\* (.+)", text)
     ind = re.findall(r"\*\*Indonesian:\*\* (.+)", text)
     if len(en) != MOMENTS or len(ind) != MOMENTS:

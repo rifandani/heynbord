@@ -17,7 +17,7 @@ import type { Browser, Page } from "@playwright/test";
 
 const webRoot = path.resolve(import.meta.dirname, "..");
 const repoRoot = path.resolve(webRoot, "../..");
-const recordPath = path.join(repoRoot, "docs/game/performance.md");
+const recordPath = path.join(repoRoot, "docs/game/22-performance.md");
 const section = "## First load (NFR-02)";
 const budget = 500_000;
 const timeout = 120_000;

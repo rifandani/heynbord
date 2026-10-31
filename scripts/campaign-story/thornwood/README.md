@@ -1,6 +1,6 @@
 # Thornwood Story Scenes, version 1
 
-This macOS project uses fframes 1.3.0 with Skia on Metal. It produces fifteen 9-second Story Moments at 1280 × 720 and 30 fps: five each for the opening, the Boss scene and the ending of Region 4. The text, lore and shot plan are in the [storyboard](../../../docs/game/thornwood-storyboard.md). The game uses the delivery copy in `apps/web/public/story/thornwood/v1/`. See [integration checks](../../../docs/game/region-story-scenes.md#implementation-checks).
+This macOS project uses fframes 1.3.0 with Skia on Metal. It produces fifteen 9-second Story Moments at 1280 × 720 and 30 fps: five each for the opening, the Boss scene and the ending of Region 4. The text, lore and shot plan are in the [storyboard](../../../docs/game/scenes/thornwood-storyboard.md). The game uses the delivery copy in `apps/web/public/story/thornwood/v1/`. See [integration checks](../../../docs/game/23-region-story-scenes.md#implementation-checks).
 
 The project continues the [Glowcap Hollows scenes](../glowcap-hollows/README.md). `src/lib.rs` includes the motion toolkit `../hearthvale/src/fx.rs` with its shaders, the props `../red-mesas/src/mesa.rs` and the props `../glowcap-hollows/src/hollows.rs` with their shaders. A change in any of these files affects the earlier Regions too, so render them after it.
 

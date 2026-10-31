@@ -1,6 +1,6 @@
 # Thornwood Storyboard
 
-Status: version 1, a draft. It continues the story of the [Glowcap Hollows storyboard](./glowcap-hollows-storyboard.md) and uses the same format: an opening, a Boss scene and an ending, with 5 Story Moments each. The text, lore and shots need the owner's review, the human listening review and the Player checks at the end of this page. The trial design is in [Region Story Scenes](./region-story-scenes.md).
+Status: version 1, a draft. It continues the story of the [Glowcap Hollows storyboard](./glowcap-hollows-storyboard.md) and uses the same format: an opening, a Boss scene and an ending, with 5 Story Moments each. The text, lore and shots need the owner's review, the human listening review and the Player checks at the end of this page. The trial design is in [Region Story Scenes](../23-region-story-scenes.md).
 
 Each moment is one 9-second fframes clip. The action finishes at 5 seconds. Seconds 5 to 9 are a seamless 4-second loop, so the picture stays alive while the Player reads. The Player controls reading time. Proper names keep their spelling in both Locales.
 
@@ -20,10 +20,10 @@ These facts are story text only. They add no item, currency, reward or Battle ru
 | Fact | Where it appears | Note |
 | --- | --- | --- |
 | Lethiel leads the Hero into the Thornwood. | Opening 1 | Continues the Glowcap Hollows ending. |
-| The Elves sing the Old Bramble to sleep. When it wakes, the Feral beasts in the caves under its roots wake with it. | Opening 2 | From [Campaign Stages 5](./14-campaign-stages.md#5-region-4-the-thornwood). |
+| The Elves sing the Old Bramble to sleep. When it wakes, the Feral beasts in the caves under its roots wake with it. | Opening 2 | From [Campaign Stages 5](../14-campaign-stages.md#5-region-4-the-thornwood). |
 | Someone cuts the Old Bramble at night and takes its amber, the amber with black thorns. | Opening 3, Boss 3 | Answers the Glowcap Hollows clue. The friend's amber came from the giant's wounds. |
-| The Elves think that the Hero took Lethiel prisoner. | Opening 4 | From [Campaign Stages 5](./14-campaign-stages.md#5-region-4-the-thornwood). |
-| The noise of the Battles wakes the Old Bramble, and it wakes up angry. | Opening 5, Boss 1 | From [Campaign Stages 5](./14-campaign-stages.md#5-region-4-the-thornwood). |
+| The Elves think that the Hero took Lethiel prisoner. | Opening 4 | From [Campaign Stages 5](../14-campaign-stages.md#5-region-4-the-thornwood). |
+| The noise of the Battles wakes the Old Bramble, and it wakes up angry. | Opening 5, Boss 1 | From [Campaign Stages 5](../14-campaign-stages.md#5-region-4-the-thornwood). |
 | The cutters carry lanterns of cold green fire. Each cut wakes the giant a little more. | Boss 3 | The Hero suspects that the cutters wanted the giant awake. The green fire also burns on the Witchfire Bridge of the Hollow Marches (Ending 5); the text does not say so. |
 | Lethiel closes the cuts with Holy light. | Ending 2 | Agrees with the gameplay cue of Lethiel's card: Holy light that closes a split in the bark. "Adequate" is from the card's flavor text. |
 | The cutters ran and left their pay: coins of bone, cold as ice, in a purse with the cut seal. | Ending 3 | The concrete clue. The same seal as in the earlier Regions. It is still unexplained. |

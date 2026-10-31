@@ -23,7 +23,7 @@ interface SizeReport {
 
 const report: SizeReport = JSON.parse(
   readFileSync(
-    path.join(ROOT, "docs/game/hero-model-sizes-2026-10-31.json"),
+    path.join(ROOT, "artifacts/hero-model-sizes-2026-10-31.json"),
     "utf-8"
   )
 );

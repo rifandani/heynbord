@@ -25,7 +25,7 @@
     "check:health": "bun test:unit:cov && fallow health --css --top 10 --quiet",
     "check:dead-code": "fallow dead-code --quiet --fail-on-issues",
     "check:dupes": "fallow dupes --mode semantic --quiet --fail-on-issues",
-    "check:battle-budget": "bun test scripts/unit-model/model-check.test.ts scripts/hero-model/model-check.test.ts && bun web measure:battle-budget --config apps/web/scripts/battle-budget/stage-1-1.json --config apps/web/scripts/battle-budget/stage-5-10.json --config apps/web/scripts/battle-budget/stage-5-10-hero.json --report docs/game/battle-budget-2026-10-31.json",
+    "check:battle-budget": "bun test scripts/unit-model/model-check.test.ts scripts/hero-model/model-check.test.ts && bun web measure:battle-budget --config apps/web/scripts/battle-budget/stage-1-1.json --config apps/web/scripts/battle-budget/stage-5-10.json --config apps/web/scripts/battle-budget/stage-5-10-hero.json --report artifacts/battle-budget-2026-10-31.json",
     "check:pwa": "bun scripts/check-pwa.ts",
     "check:tokens": "bun scripts/check-design-tokens.ts",
     "check:security": "fallow security --surface  --quiet",

@@ -22,4 +22,4 @@ another Player's Cosmetic grants no ownership and does not make it active.
 Existing Replay links remain readable.
 
 See the accepted choices and implementation status in
-[Hero Models](../../../../docs/game/hero-models.md).
+[Hero Models](../../../../docs/game/21-hero-models.md).

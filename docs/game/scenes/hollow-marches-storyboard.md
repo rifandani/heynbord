@@ -1,6 +1,6 @@
 # Hollow Marches Storyboard
 
-Status: version 1, a draft. It continues the story of the [Thornwood storyboard](./thornwood-storyboard.md) and uses the same format: an opening, a Boss scene and an ending, with 5 Story Moments each. The text, lore and shots need the owner's review, the human listening review and the Player checks at the end of this page. The trial design is in [Region Story Scenes](./region-story-scenes.md).
+Status: version 1, a draft. It continues the story of the [Thornwood storyboard](./thornwood-storyboard.md) and uses the same format: an opening, a Boss scene and an ending, with 5 Story Moments each. The text, lore and shots need the owner's review, the human listening review and the Player checks at the end of this page. The trial design is in [Region Story Scenes](../23-region-story-scenes.md).
 
 Each moment is one 9-second fframes clip. The action finishes at 5 seconds. Seconds 5 to 9 are a seamless 4-second loop, so the picture stays alive while the Player reads. The Player controls reading time. Proper names keep their spelling in both Locales.
 
@@ -21,18 +21,18 @@ These facts are story text only. They add no item, currency, reward or Battle ru
 | --- | --- | --- |
 | The coins of bone lead the Hero and the Mountain Colossus into the Hollow Marches. | Opening 1 | Continues the Thornwood ending. |
 | The marsh never freezes. Now frost covers the reeds. | Opening 1 | Story text only. It shows that something is wrong before the cause is told. |
-| When the Old Bramble woke, the noise woke the frost beasts in the ice caves, and they came down into the marsh on their own. | Opening 2 | From [Campaign Stages 6](./14-campaign-stages.md#6-region-5-the-hollow-marches). The frost beasts are the Feral cards of the cold; Feral beasts serve no people ([GDD 3.2](./03-game-design.md#32-races)). |
+| When the Old Bramble woke, the noise woke the frost beasts in the ice caves, and they came down into the marsh on their own. | Opening 2 | From [Campaign Stages 6](../14-campaign-stages.md#6-region-5-the-hollow-marches). The frost beasts are the Feral cards of the cold; Feral beasts serve no people ([GDD 3.2](../03-game-design.md#32-races)). |
 | The dead of the marsh flee from the beasts. | Opening 2, Boss 2 | Story text only. |
-| The court of Queen Marrow sees the Colossus and decides that the Hero sent the beasts and came to take the castle. | Opening 3, Opening 4 | From [Campaign Stages 6](./14-campaign-stages.md#6-region-5-the-hollow-marches). |
-| A wisp carries the alarm to Marrow Castle. | Opening 3 | The Restless Wisps of the Lantern Widows ([Campaign Stages 6.1](./14-campaign-stages.md#61-stages), Stage 5-7). |
+| The court of Queen Marrow sees the Colossus and decides that the Hero sent the beasts and came to take the castle. | Opening 3, Opening 4 | From [Campaign Stages 6](../14-campaign-stages.md#6-region-5-the-hollow-marches). |
+| A wisp carries the alarm to Marrow Castle. | Opening 3 | The Restless Wisps of the Lantern Widows ([Campaign Stages 6.1](../14-campaign-stages.md#61-stages), Stage 5-7). |
 | The Bone Ferry turns the Hero away, and chains close the Witchfire Bridge. | Opening 4 | The landmarks of Stages 5-7 and 5-9. |
 | Only Queen Marrow pays in coins of bone. She pays her dead with them. | Opening 5, Boss 3 | Agrees with the Thornwood ending: coins of bone are paid only in the Hollow Marches. |
-| Queen Marrow has ruled the Hollow Marches for 300 quiet years. She likes a good fight. | Boss 1, Boss 4 | From [Campaign Stages 6](./14-campaign-stages.md#6-region-5-the-hollow-marches). |
+| Queen Marrow has ruled the Hollow Marches for 300 quiet years. She likes a good fight. | Boss 1, Boss 4 | From [Campaign Stages 6](../14-campaign-stages.md#6-region-5-the-hollow-marches). |
 | Queen Marrow did not pay the cutters. Someone spent her coin without her leave. | Boss 4 | Pays off the Thornwood clue. Who paid the cutters stays unknown. |
 | The beasts go back to their ice caves, because the Old Bramble sleeps again. | Ending 1 | Agrees with the Thornwood ending. |
 | One coin in the cutters' purse is pale tower stone with a small tower mark. Queen Marrow knows the stone: Heynspire. | Ending 3 | The concrete clue. The seal is still unexplained. The Queen is cautious, not afraid. |
 | Queen Marrow gives the Hero a Bone Rampart from her castle wall. | Ending 4 | Agrees with the first-win card of Stage 5-10. |
-| Queen Marrow points to Heynspire, the white tower above the Town. | Ending 5 | Heynspire opens with the first win of Stage 5-10 ([GDD 8.2](./03-game-design.md#82-heynspire-draft-name)). It is the tall tower of the Town ([Town Concepts 2.2](./11-town-concepts.md#22-heynspire-tower)). |
+| Queen Marrow points to Heynspire, the white tower above the Town. | Ending 5 | Heynspire opens with the first win of Stage 5-10 ([GDD 8.2](../03-game-design.md#82-heynspire-draft-name)). It is the tall tower of the Town ([Town Concepts 2.2](../11-town-concepts.md#22-heynspire-tower)). |
 
 ## Shared direction
 

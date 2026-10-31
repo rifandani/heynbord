@@ -49,4 +49,4 @@ input, Replay and reference-device performance checks remain required
 release evidence.
 
 The full design and current status are in
-[Hero Models](../../../../docs/game/hero-models.md).
+[Hero Models](../../../../docs/game/21-hero-models.md).

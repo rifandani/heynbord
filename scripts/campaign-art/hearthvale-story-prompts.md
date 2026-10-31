@@ -1,6 +1,6 @@
 # Hearthvale animated Story Scene prompt
 
-Status: version 1. Version 2 replaces it; its shot plan is in `docs/game/hearthvale-storyboard.md` and its production notes are in `scripts/campaign-story/hearthvale/README.md`.
+Status: version 1. Version 2 replaces it; its shot plan is in `docs/game/scenes/hearthvale-storyboard.md` and its production notes are in `scripts/campaign-story/hearthvale/README.md`.
 
 Use this prompt with `/fframes-video` in this repository. All paths below start at the repository root. The generated copy includes the approved English and Indonesian storyboard at the end.
 
@@ -16,8 +16,8 @@ Read these files before creating the project:
 
 - `AGENTS.md` and any guidance for the output folders.
 - `.agents/skills/fframes-video/SKILL.md`, then its `references/design.md`, `references/api.md` and `references/audio.md`.
-- `docs/game/region-story-scenes.md`: agreed story, controls, progress and delivery rules.
-- `docs/game/hearthvale-storyboard.md`: the canonical text for both Locales.
+- `docs/game/23-region-story-scenes.md`: agreed story, controls, progress and delivery rules.
+- `docs/game/scenes/hearthvale-storyboard.md`: the canonical text for both Locales.
 - `docs/game/05-art-direction.md`: brush, light, materials, humor and audio direction.
 - `docs/research/region-story-audio.md`: source and license checks for audio candidates.
 
@@ -186,7 +186,7 @@ Keep the main action within the center 80% of the frame. Preserve room for narra
 - Keep music and ambience independent of reading time. They may continue quietly during a reading hold. Effects play once when their moment starts, and stop on leaving it.
 - Use each exported final-frame poster for reduced motion. If video fails, show the poster and preserve the text and controls. If the poster also fails, use the plain scene surface and text. An audio failure remains silent.
 - Use the same clean clips for `en-us` and `id-id`. The canonical text is in the appended storyboard. Keep text and all visible labels outside delivery pixels.
-- Preserve the agreed first-visit, pending-ending, save and reward behavior in `docs/game/region-story-scenes.md`. This media task adds no rules or Profile mutations.
+- Preserve the agreed first-visit, pending-ending, save and reward behavior in `docs/game/23-region-story-scenes.md`. This media task adds no rules or Profile mutations.
 
 ## Audio selection and delivery
 

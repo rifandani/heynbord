@@ -1,6 +1,6 @@
 # Glowcap Hollows Story Scenes, version 1
 
-This macOS project uses fframes 1.3.0 with Skia on Metal. It produces fifteen 9-second Story Moments at 1280 × 720 and 30 fps: five each for the opening, the Boss scene and the ending of Region 3. The text, lore and shot plan are in the [storyboard](../../../docs/game/glowcap-hollows-storyboard.md). The game uses the delivery copy in `apps/web/public/story/glowcap-hollows/v1/`. See [integration checks](../../../docs/game/region-story-scenes.md#implementation-checks).
+This macOS project uses fframes 1.3.0 with Skia on Metal. It produces fifteen 9-second Story Moments at 1280 × 720 and 30 fps: five each for the opening, the Boss scene and the ending of Region 3. The text, lore and shot plan are in the [storyboard](../../../docs/game/scenes/glowcap-hollows-storyboard.md). The game uses the delivery copy in `apps/web/public/story/glowcap-hollows/v1/`. See [integration checks](../../../docs/game/23-region-story-scenes.md#implementation-checks).
 
 The project continues the [Red Mesas scenes](../red-mesas/README.md). `src/lib.rs` includes the motion toolkit `../hearthvale/src/fx.rs` with its shaders, and the props `../red-mesas/src/mesa.rs` with its shader. A change in either file affects the earlier Regions too, so render them after it.
 

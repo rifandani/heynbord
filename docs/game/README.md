@@ -27,16 +27,16 @@ All documents use ASD-STE100 Simplified Technical English.
 | 17 | [Hero Portrait Concepts](./17-hero-portrait-concepts.md) | The art brief and the image prompts for the Hero portraits. `bun hero-portrait:prompts` makes the prompts. | Art director |
 | 18 | [Board Skin Concepts](./18-board-skin-concepts.md) | The art brief and the image prompts for the Square sheets of the Board skins. `bun board-skin:prompts` makes the prompts. | Art director |
 | 19 | [Gear Look Concepts](./19-gear-look-concepts.md) | The art brief and the image prompts for the 4 Gear icons of each Gear look. `bun gear-look:prompts` makes the prompts. | Art director |
-| 20 | [Performance Records](./performance.md) | The dated measurements of the game: frame rate, First Load, bundle size and the pass or fail of each requirement. | Lead engineer |
+| 20 | [Battle Budgets](./20-battle-budgets.md) | The counting rules, explicit fixtures, CI command and Battle music record. | Lead engineer |
+| 21 | [Hero Models](./21-hero-models.md) | The 22 accepted decisions for eight 3D Hero appearances, visible Gear, animations, previews, Replay appearance and release checks. | Lead engineer |
+| 22 | [Performance Records](./22-performance.md) | The dated measurements of the game: frame rate, First Load, bundle size and the pass or fail of each requirement. | Lead engineer |
+| 23 | [Region Story Scenes](./23-region-story-scenes.md) | The agreed MOD-07 trial, its [Hearthvale](./scenes/hearthvale-storyboard.md), [Red Mesas](./scenes/red-mesas-storyboard.md), [Glowcap Hollows](./scenes/glowcap-hollows-storyboard.md), [Thornwood](./scenes/thornwood-storyboard.md) and [Hollow Marches](./scenes/hollow-marches-storyboard.md) storyboards and its fframes production prompt. | Game designer and art director |
 
 One person (the solo developer) has all the roles. The roles show which point of view each document has.
 
 ## Related files
 
-- [Hero Models](./hero-models.md): the 22 accepted decisions for eight 3D Hero appearances, visible Gear, animations, previews, Replay appearance and release checks.
-- [Region Story Scenes](./region-story-scenes.md): the agreed MOD-07 trial, its [Hearthvale](./hearthvale-storyboard.md), [Red Mesas](./red-mesas-storyboard.md), [Glowcap Hollows](./glowcap-hollows-storyboard.md), [Thornwood](./thornwood-storyboard.md) and [Hollow Marches](./hollow-marches-storyboard.md) storyboards and its fframes production prompt.
 - [`packages/rules/GLOSSARY.md`](../../packages/rules/GLOSSARY.md): the game glossary. All documents use its terms.
-- [Performance records](./performance.md): the dated First Load and bundle measurements.
 - [ADR-0006](../adr/0006-game-rules-are-a-deterministic-package.md): why the game rules are a separate deterministic package.
 - [ADR-0008](../adr/0008-heynstones-buy-only-cosmetics-and-conveniences.md): why Heynstones buy only Cosmetics and Conveniences.
 - [ADR-0013](../adr/0013-v1-has-90-creature-cards.md): why v1 has 15 Creature Cards for each Race.
@@ -69,5 +69,4 @@ These decisions come from a design review on 2026-10-03:
 | Progression | Combine (no failure), Extract, Craft and hero gear. No Energy and no VIP. |
 | Languages | `en-us` and `id-id` from v1. |
 
-- [Battle budgets](./battle-budgets.md) — counting rules, explicit fixtures and CI command.
-- [Release checklist](./release-checklist.md) — required game release checks.
+- [Battle budgets](./20-battle-budgets.md) — counting rules, explicit fixtures and CI command.

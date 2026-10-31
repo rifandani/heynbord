@@ -1,6 +1,6 @@
 # Red Mesas Storyboard
 
-Status: version 1, a draft. It continues the story of the [Hearthvale storyboard](./hearthvale-storyboard.md) and uses the same format: an opening, a Boss scene and an ending, with 5 Story Moments each. The text, lore and shots need the owner's review, the human listening review and the Player checks at the end of this page. The trial design is in [Region Story Scenes](./region-story-scenes.md).
+Status: version 1, a draft. It continues the story of the [Hearthvale storyboard](./hearthvale-storyboard.md) and uses the same format: an opening, a Boss scene and an ending, with 5 Story Moments each. The text, lore and shots need the owner's review, the human listening review and the Player checks at the end of this page. The trial design is in [Region Story Scenes](../23-region-story-scenes.md).
 
 Each moment is one 9-second fframes clip. The action finishes at 5 seconds. Seconds 5 to 9 are a seamless 4-second loop, so the picture stays alive while the Player reads. The Player controls reading time. Proper names keep their spelling in both Locales.
 
@@ -19,8 +19,8 @@ These facts are story text only. They add no item, currency, reward or Battle ru
 
 | Fact | Where it appears | Note |
 | --- | --- | --- |
-| The Orc tribes live on the tops of the mesas, and the Goblins dig under them. | Opening 1, 2 | From [Region Concepts 2.2](./12-region-concepts.md#22-the-red-mesas). |
-| Snikkit pays the Orcs with stones that he paints gold. | Opening 3, 4 | From [Campaign Stages 3](./14-campaign-stages.md#3-region-2-the-red-mesas). The Hero already knows the trick from the Hearthvale ending. |
+| The Orc tribes live on the tops of the mesas, and the Goblins dig under them. | Opening 1, 2 | From [Region Concepts 2.2](../12-region-concepts.md#22-the-red-mesas). |
+| Snikkit pays the Orcs with stones that he paints gold. | Opening 3, 4 | From [Campaign Stages 3](../14-campaign-stages.md#3-region-2-the-red-mesas). The Hero already knows the trick from the Hearthvale ending. |
 | Snikkit sells carts of painted gold to a buyer that he never met. | Boss 4 | Answers how the Baron's patron got the coins. |
 | The buyer pays in glowcaps, and the orders come up the deep tunnel. | Boss 4, Ending 4 | Agrees with the Glowcap Hollows plot: the Goblins sell glowcaps in the Red Mesas as lamps. |
 | The buyer's letter has the seal of three lanes cut through. | Ending 4 | The same mark as in Hearthvale. It is still unexplained. |

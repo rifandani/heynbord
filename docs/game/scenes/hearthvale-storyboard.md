@@ -1,6 +1,6 @@
 # Hearthvale Storyboard
 
-Status: version 2, a cinematic remake of the trial. The text, lore and shots below replace version 1. They need the owner's review, the human listening review and the Player checks at the end of this page. The trial design is in [Region Story Scenes](./region-story-scenes.md).
+Status: version 2, a cinematic remake of the trial. The text, lore and shots below replace version 1. They need the owner's review, the human listening review and the Player checks at the end of this page. The trial design is in [Region Story Scenes](../23-region-story-scenes.md).
 
 The opening, the Boss scene and the ending each have 5 Story Moments. Each moment is one 9-second fframes clip. The action finishes at 5 seconds. Seconds 5 to 9 are a seamless 4-second loop, so the picture stays alive while the Player reads. The Player controls reading time. Proper names keep their spelling in both Locales.
 
@@ -11,7 +11,7 @@ The Region tells one local adventure and opens one mystery.
 - **Local adventure:** Baron Brassbelly closes the roads of Hearthvale. You open them again, from the Muddy Ford to Brassbelly Hall.
 - **Mystery:** The Baron pays his sellswords with gold coins. The coins are red stone under gold paint, and the orders came under a seal that nobody knows: three lanes, cut through. Someone wants to break the Accord. The painted stone points to the Red Mesas.
 
-The Red Mesas plot already has Boss Snikkit, who pays Orcs with rocks that he paints gold ([Campaign Stages](./14-campaign-stages.md)). The clue therefore points to a real place and a real habit in the next Region. It does not say that Snikkit is the patron. The seal owner stays unknown.
+The Red Mesas plot already has Boss Snikkit, who pays Orcs with rocks that he paints gold ([Campaign Stages](../14-campaign-stages.md)). The clue therefore points to a real place and a real habit in the next Region. It does not say that Snikkit is the patron. The seal owner stays unknown.
 
 ## Lore added in version 2 (draft)
 
@@ -19,7 +19,7 @@ These facts are story text only. They add no item, currency, reward or Battle ru
 
 | Fact | Where it appears | Note |
 | --- | --- | --- |
-| The war before the Accord burned the world almost to ash. | Opening 1 | Expands [GDD 3.1](./03-game-design.md#31-premise). |
+| The war before the Accord burned the world almost to ash. | Opening 1 | Expands [GDD 3.1](../03-game-design.md#31-premise). |
 | The Lanekeepers drew three lanes of light. | Opening 2 | Explains why a Stage has 3 Lanes. The Accord Seal is a circle with three lanes. |
 | The first lane battle under the Accord was in Hearthvale. | Opening 3 | Makes the Region the symbolic start of the journey. |
 | Hearthvale's roads carry bread to every town in Heynbord. | Opening 3 | Gives the closed roads a cost for everybody. |

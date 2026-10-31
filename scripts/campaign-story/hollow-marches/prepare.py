@@ -99,7 +99,7 @@ def fonts():
 
 
 def script(lato):
-    text = (ROOT / "docs/game/hollow-marches-storyboard.md").read_text()
+    text = (ROOT / "docs/game/scenes/hollow-marches-storyboard.md").read_text()
     en = re.findall(r"\*\*English:\*\* (.+)", text)
     ind = re.findall(r"\*\*Indonesian:\*\* (.+)", text)
     if len(en) != MOMENTS or len(ind) != MOMENTS:

@@ -255,16 +255,16 @@ already loaded chunks before following unrelated screen imports. Count mixed
 chunks conservatively, including the Hero code that every Battle build now
 retains. This is a reachable-graph total, not a measured browser transfer.
 
-The [complete machine record](./battle-budget-2026-10-31.json) contains the
+The [complete machine record](../../artifacts/battle-budget-2026-10-31.json) contains the
 configuration, selected model IDs, complete file lists, exact bytes, gzip
 bytes, SHA-256 hashes, build configuration and dirty file list. The
-[measurement guide](./battle-budgets.md) defines the command and counting
+[measurement guide](./20-battle-budgets.md) defines the command and counting
 rules. CI runs all three fixtures on main pushes and pull requests.
 
 Hero Model checks: `check_references.py --all` passes the 56 published
 appearances (10 clips, a skeleton and embedded resources). The published
 bytes total 27,713,416; the largest appearance is 536,656. The full
-[56-appearance size report](./hero-model-sizes-2026-10-31.json) records each
+[56-appearance size report](../../artifacts/hero-model-sizes-2026-10-31.json) records each
 file. The 560 pose images and the 8 × 7 idle matrix are under the ignored
 `art/heroes/raw/` review folder. These are structural and draft visual
 checks, not art approval.
@@ -273,7 +273,7 @@ Asset checks: all 96 compressed Unit Models load, retain their source bounds,
 skinning and animation contracts, and pass the individual limits. All 98
 transparent Unit/Token frames pass alpha, 512 px height and Race ownership
 checks; their 12 pages total 4,709,900 bytes and stay within 2048 px. The
-[battle music record](./battle-music-optimization.md) lists reductions and
+[battle music record](./20-battle-budgets.md#battle-music-optimization) lists reductions and
 objective quality checks for all eight tracks. Chromium checks pass for
 Stage preload reuse, failed-model fallback with continued play, stereo
 audio decoding/playback, and the 844 × 390 landscape phone viewport. This is

@@ -1,6 +1,6 @@
 # Glowcap Hollows Storyboard
 
-Status: version 1, a draft. It continues the story of the [Red Mesas storyboard](./red-mesas-storyboard.md) and uses the same format: an opening, a Boss scene and an ending, with 5 Story Moments each. The text, lore and shots need the owner's review, the human listening review and the Player checks at the end of this page. The trial design is in [Region Story Scenes](./region-story-scenes.md).
+Status: version 1, a draft. It continues the story of the [Red Mesas storyboard](./red-mesas-storyboard.md) and uses the same format: an opening, a Boss scene and an ending, with 5 Story Moments each. The text, lore and shots need the owner's review, the human listening review and the Player checks at the end of this page. The trial design is in [Region Story Scenes](../23-region-story-scenes.md).
 
 Each moment is one 9-second fframes clip. The action finishes at 5 seconds. Seconds 5 to 9 are a seamless 4-second loop, so the picture stays alive while the Player reads. The Player controls reading time. Proper names keep their spelling in both Locales.
 
@@ -19,11 +19,11 @@ These facts are story text only. They add no item, currency, reward or Battle ru
 
 | Fact | Where it appears | Note |
 | --- | --- | --- |
-| The deep tunnel from Snikkit's mines comes out in the Glowcap Hollows. | Opening 1 | Continues the Red Mesas ending. Agrees with [Campaign Stages 4](./14-campaign-stages.md#4-region-3-the-glowcap-hollows). |
-| The glowcaps light up at dusk. | Opening 2 | From [Region Concepts 2.3](./12-region-concepts.md#23-the-glowcap-hollows): the hollows are in soft shade, so the mushrooms glow. |
+| The deep tunnel from Snikkit's mines comes out in the Glowcap Hollows. | Opening 1 | Continues the Red Mesas ending. Agrees with [Campaign Stages 4](../14-campaign-stages.md#4-region-3-the-glowcap-hollows). |
+| The glowcaps light up at dusk. | Opening 2 | From [Region Concepts 2.3](../12-region-concepts.md#23-the-glowcap-hollows): the hollows are in soft shade, so the mushrooms glow. |
 | Elf wounds close, their arrows carry poison, and their roots hold fast. | Opening 2 | Introduces the Elf Debut: Regenerate, Poison and Entangle. |
-| Glimmerbough hired goblin diggers to build walls and set traps, and she pays them in glowcaps. | Opening 3, Boss 3 | From [Campaign Stages 4](./14-campaign-stages.md#4-region-3-the-glowcap-hollows). |
-| The Elves think that the Hero is one more digger. | Opening 4, Boss 1, 2 | From [Campaign Stages 4](./14-campaign-stages.md#4-region-3-the-glowcap-hollows). |
+| Glimmerbough hired goblin diggers to build walls and set traps, and she pays them in glowcaps. | Opening 3, Boss 3 | From [Campaign Stages 4](../14-campaign-stages.md#4-region-3-the-glowcap-hollows). |
+| The Elves think that the Hero is one more digger. | Opening 4, Boss 1, 2 | From [Campaign Stages 4](../14-campaign-stages.md#4-region-3-the-glowcap-hollows). |
 | A "friend of the grove" writes to Glimmerbough. The friend told her that the Accord is failing and that diggers will take her grove. | Boss 2, 3 | Explains why she built the walls. She never met the friend. |
 | Glimmerbough sends glowcaps down the deep tunnel, and the friend pays in amber. | Boss 4 | Answers where Snikkit's glowcaps came from. The friend is the buyer of the Red Mesas. |
 | The friend's letters have the seal of three lanes cut through. | Ending 2 | The same mark as in Hearthvale and the Red Mesas. It is still unexplained. |

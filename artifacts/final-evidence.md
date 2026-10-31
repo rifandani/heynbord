@@ -4,7 +4,7 @@ The approved Battle budget implementation is complete in the working tree. Exist
 
 ## Byte records
 
-Run `bun check:battle-budget`. The final dated machine record is [battle-budget-2026-10-31.json](../docs/game/battle-budget-2026-10-31.json), with its explanation in [performance.md](../docs/game/performance.md). It records commit810b384b767f1bc7aefc1a5e7c6f28bd0e04aefe and dirty status, public build flags, exact fixtures, selected models, complete files and hashes.
+Run `bun check:battle-budget`. The final dated machine record is [battle-budget-2026-10-31.json](./battle-budget-2026-10-31.json), with its explanation in [performance.md](../docs/game/22-performance.md). It records commit810b384b767f1bc7aefc1a5e7c6f28bd0e04aefe and dirty status, public build flags, exact fixtures, selected models, complete files and hashes.
 
 Stage1-1:4493291assetbytes. Stage5-10:10001579assetbytes. Additional Battle JavaScript:400240bytes at gzip9 for both. Both strict limits pass.
 

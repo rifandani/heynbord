@@ -1,6 +1,6 @@
 # Hollow Marches Story Scenes, version 1
 
-This macOS project uses fframes 1.3.0 with Skia on Metal. It produces fifteen 9-second Story Moments at 1280 × 720 and 30 fps: five each for the opening, the Boss scene and the ending of Region 5, the last Region of the Campaign. The text, lore and shot plan are in the [storyboard](../../../docs/game/hollow-marches-storyboard.md). The game uses the delivery copy in `apps/web/public/story/hollow-marches/v1/`. See [integration checks](../../../docs/game/region-story-scenes.md#implementation-checks).
+This macOS project uses fframes 1.3.0 with Skia on Metal. It produces fifteen 9-second Story Moments at 1280 × 720 and 30 fps: five each for the opening, the Boss scene and the ending of Region 5, the last Region of the Campaign. The text, lore and shot plan are in the [storyboard](../../../docs/game/scenes/hollow-marches-storyboard.md). The game uses the delivery copy in `apps/web/public/story/hollow-marches/v1/`. See [integration checks](../../../docs/game/23-region-story-scenes.md#implementation-checks).
 
 The project continues the [Thornwood scenes](../thornwood/README.md). `src/lib.rs` includes the motion toolkit `../hearthvale/src/fx.rs` with its shaders, the props `../red-mesas/src/mesa.rs`, `../glowcap-hollows/src/hollows.rs` and `../thornwood/src/wood.rs` (the coins of bone, the purse and the green fire). This project changes none of these files. A change in any of them affects the earlier Regions too, so render them after it.
 

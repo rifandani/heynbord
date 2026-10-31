@@ -94,7 +94,7 @@ It uses only information that the active side can see (`visibleTo`): the Hand of
 
 ### 4.2 Scene structure
 
-- The current game screen has its active `<Canvas>`: Battle, the Hero screen or the Bazaar previews. The Bazaar shows the shared Hero Model preview at the right of the Hero portrait shelf and of the Gear looks shelf, each as a small canvas. The Town is a 2D painting with no Canvas. Load these scenes as lazy chunks, so the Three.js code is not in the first bundle. The accepted [Hero Model design](./hero-models.md) extends the previous Battle-only rule.
+- The current game screen has its active `<Canvas>`: Battle, the Hero screen or the Bazaar previews. The Bazaar shows the shared Hero Model preview at the right of the Hero portrait shelf and of the Gear looks shelf, each as a small canvas. The Town is a 2D painting with no Canvas. Load these scenes as lazy chunks, so the Three.js code is not in the first bundle. The accepted [Hero Model design](./21-hero-models.md) extends the previous Battle-only rule.
 - The ground is a Battle Painting behind the transparent canvas (web ADR-0006). An optional Board skin draws Lane runners.
 - Every Unit is a rigged 3D Unit Model ([Art Direction 2.2](./05-art-direction.md#22-rigged-unit-models)). Each Creature Card and each Token has one. There is no Cut-out Figure and no per-Battle model-type limit. Each model must stay in the model budget (section 6).
 - The Battle loads every Unit Model that can appear before the Board shows: both Decks, the start Units, possible Tokens and Boss Rule summons. A failed load blocks the Battle and offers a retry.
@@ -145,7 +145,7 @@ It uses only information that the active side can see (`visibleTo`): the Hand of
 - Every Unit Model is texture-free and vertex-colored. A future model that needs a texture uses one KTX2 image of at most 1024 × 1024.
 - Opening a Stage Panel preloads its Battle Painting and FX atlas. Fight reuses the same asset URLs and image cache.
 - Load all Unit Models that can appear in the Battle before the Board shows. Count each model once, including both Decks, the start Units, possible Tokens and Boss Rule summons. A failed model load does not use a Cut-out Figure. If the Android target fails, lower the DPR, shadows and effects first; use a lower-detail model only after a measurement.
-- Run `bun check:battle-budget` for the two explicit Stage/Deck fixtures. See [Battle budget measurement](./battle-budgets.md) and the dated records in [performance](./performance.md). Exact byte thresholds fail.
+- Run `bun check:battle-budget` for the two explicit Stage/Deck fixtures. See [Battle budget measurement](./20-battle-budgets.md) and the dated records in [performance](./22-performance.md). Exact byte thresholds fail.
 - Measure with the browser profiler and `r3f-perf` in each Milestone.
 
 ## 7. Languages

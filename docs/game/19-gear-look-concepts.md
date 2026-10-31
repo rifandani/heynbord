@@ -1,6 +1,6 @@
 # Gear Look Concepts
 
-The accepted [Hero Model design](./hero-models.md) extends each Gear look
+The accepted [Hero Model design](./21-hero-models.md) extends each Gear look
 below to the four items on the Hero Model. These icon briefs remain the
 reference for their objects, materials and colors. The icon-only boundary
 is amended by [web ADR-0016](../../apps/web/docs/adr/0016-a-hero-portrait-defines-a-person-and-the-gear-look-dresses-it.md);

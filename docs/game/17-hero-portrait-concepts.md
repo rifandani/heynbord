@@ -1,6 +1,6 @@
 # Hero Portrait Concepts
 
-The accepted [Hero Model design](./hero-models.md) extends each portrait
+The accepted [Hero Model design](./21-hero-models.md) extends each portrait
 below with a matching full-body figure and adds one Human Standard
 character. These painting briefs remain the reference for each person's
 face, palette and key features. The model design and animation requirements
