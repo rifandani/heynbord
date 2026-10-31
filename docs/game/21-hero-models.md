@@ -6,9 +6,11 @@ published runtime assets are the compressed GLBs in
 `apps/web/public/models/heroes` (27,713,416 bytes for all 56; the largest
 appearance is 536,656 bytes, under the 10,000,000-byte ceiling). The
 3D feature is enabled in all builds. A manual desktop spot check reports
-60 fps, 16 ms and 57 current draw calls. The full laptop NFR-01 record
-and the Android record are pending; no Android device is available. The
-56-look art review remains open evidence.
+60 fps, 16 ms and 57 current draw calls, and the maintainer accepted it
+as the laptop NFR-01 evidence. The protocol re-runs are in the frame-rate
+record and miss p95 by 0.9–1.0 ms on a busy host. The Android record is
+pending; no Android device is available. The 56-look art review remains
+open evidence.
 
 Tracking issue: [#168 — Hero Models](https://github.com/rifandani/heynbord/issues/168).
 It contains all 22 decisions, acceptance criteria and the work checklist

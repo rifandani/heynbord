@@ -1,6 +1,6 @@
 {
   "meta": {
-    "measuredAt": "2026-10-31T12:35:10.159Z",
+    "measuredAt": "2026-10-31T13:10:29.591Z",
     "device": "macbook-pro-m2",
     "host": {
       "model": "Mac14,7",
@@ -13,14 +13,14 @@
       "cores": 8,
       "memoryGb": 16,
       "loadAverage": [
-        6.4,
-        4.36,
-        3.02
+        8.42,
+        6.88,
+        5.38
       ]
     },
     "build": {
-      "head": "11acc0db1a14e57608ade1068c70b536996f872c",
-      "dirty": "M apps/web/scripts/measure-frame-rate.ts"
+      "head": "e3501ef1b75c126465c0f454162538b45779b248",
+      "dirty": "M apps/web/artifacts/performance/2026-10-31-macbook-pro-m2-baseline-run-1.json"
     },
     "browser": {
       "version": "156.0.8078.79",
@@ -42,7 +42,7 @@
       "height": 783,
       "dpr": 2
     },
-    "measuredDurationMs": 87152,
+    "measuredDurationMs": 85324,
     "turns": 10,
     "result": {
       "winner": "player",
@@ -57,15 +57,15 @@
   },
   "snapshot": {
     "frames": {
-      "fps": 59,
-      "frameMs": 16.93,
-      "meanFps": 59.7,
+      "fps": 60,
+      "frameMs": 16.65,
+      "meanFps": 60,
       "p50": 16.7,
-      "p95": 17.7,
-      "p99": 19.2,
-      "worst": 228.2,
-      "samples": 5204,
-      "total": 5204,
+      "p95": 17.6,
+      "p99": 18.1,
+      "worst": 57.5,
+      "samples": 5115,
+      "total": 5115,
       "cap": 72000,
       "wrapped": false
     },

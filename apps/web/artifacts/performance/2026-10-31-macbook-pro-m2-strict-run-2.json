@@ -1,6 +1,6 @@
 {
   "meta": {
-    "measuredAt": "2026-10-31T12:40:41.367Z",
+    "measuredAt": "2026-10-31T13:15:41.553Z",
     "device": "macbook-pro-m2",
     "host": {
       "model": "Mac14,7",
@@ -13,14 +13,14 @@
       "cores": 8,
       "memoryGb": 16,
       "loadAverage": [
-        7.01,
-        6.29,
-        4.2
+        5.89,
+        6.81,
+        5.75
       ]
     },
     "build": {
-      "head": "2bc8a394ec88564b35d3eb15bce0f2105233de39",
-      "dirty": "M apps/web/docs/adr/0014-first-load-is-measured-on-slow-4g.md\n M apps/web/scripts/measure-first-load.ts\n M apps/web/scripts/measure-frame-rate.ts\n?? apps/web/artifacts/performance/2026-10-31-macbook-pro-m2-baseline-run-1.json\n?? apps/web/artifacts/performance/2026-10-31-macbook-pro-m2-baseline-run-2.json"
+      "head": "e3501ef1b75c126465c0f454162538b45779b248",
+      "dirty": "M apps/web/artifacts/performance/2026-10-31-macbook-pro-m2-baseline-run-1.json\n M apps/web/artifacts/performance/2026-10-31-macbook-pro-m2-baseline-run-2.json"
     },
     "browser": {
       "version": "156.0.8078.79",
@@ -42,7 +42,7 @@
       "height": 783,
       "dpr": 2
     },
-    "measuredDurationMs": 120108,
+    "measuredDurationMs": 121755,
     "turns": 11,
     "result": {
       "winner": "enemy",
@@ -57,15 +57,15 @@
   },
   "snapshot": {
     "frames": {
-      "fps": 60,
-      "frameMs": 16.67,
-      "meanFps": 59.8,
+      "fps": 61,
+      "frameMs": 16.46,
+      "meanFps": 59.9,
       "p50": 16.7,
-      "p95": 17.5,
-      "p99": 20.7,
-      "worst": 178.8,
-      "samples": 7182,
-      "total": 7182,
+      "p95": 17.6,
+      "p99": 18.8,
+      "worst": 142,
+      "samples": 7294,
+      "total": 7294,
       "cap": 72000,
       "wrapped": false
     },
