@@ -223,6 +223,70 @@ M .github/workflows/ci.yml
 
 </details>
 
+### 2026-10-31T12:43:18.365Z — FAIL
+
+- Command (repository root): `bun web measure:first-load`. This removes the previous production output, builds the app, starts a compressed Nitro production origin, runs Chromium, writes this section, and stops both processes. Install the existing browser first with `bun web test:install` if needed.
+- Commit: `b096b093a0b63506a3b91e0b419f5f85406359ce`. Clean working tree.
+- Browser: Chromium 153.0.8010.12, headless; host: darwin 25.5.0.
+- Device: emulated mid-range Android (Pixel 6a user agent), 915×412 CSS pixels in landscape, DPR 2, mobile touch, 4× CPU slowdown. The game shows a landscape guard to a coarse pointer in portrait, so the measured phone is held sideways.
+- Network: Slow 4G, 1.6 Mbps down, 750 kbps up, 150 ms RTT, a local HTTP proxy adds 150 ms before response headers and limits response bodies to a shared 200,000 B/s download queue and request bodies to a shared 93,750 B/s upload queue. Both page and Service Worker traffic cross this origin. Headers and loopback overhead are extra; this is an emulated link.
+- Origin: http://127.0.0.1:52583; entry: http://127.0.0.1:52583/play (direct navigation).
+- Cache: a new browser context and cleared HTTP cache for each cold run, with no prior storage or active Service Worker. New workers can install during the visit. Warm Load reuses the third context with its HTTP cache, storage and current Service Worker state. The worker status is recorded; an incomplete precache is not treated as ready.
+- Input: one trusted touch at the Town Settings control center as soon as the Town and control are visible. An input listener records pointer-up time from navigation start. A frame observer records the first visible Settings dialog. No overlay is removed and no failed tap is retried.
+
+| Run | Navigation to tap | Tap to visible dialog | ≤50 ms interaction | Page JavaScript encoded body bytes at tap | Precache decoded bytes | Navigation to SW ready |
+| --- | ---: | --- | --- | ---: | ---: | ---: |
+| Cold 1 | 3287.7 ms | 207.3 ms | FAIL | 427939 | 1985815 | 4311.6 ms |
+| Cold 2 | 3168.1 ms | 183.6 ms | FAIL | 427939 | 1985815 | 4963.0 ms |
+| Cold 3 | 3097.6 ms | 185.0 ms | FAIL | 427939 | 1985815 | 4870.0 ms |
+| Warm (context only) | 1101.9 ms | 127.9 ms | FAIL | 1538880 | 1985815 | 200.9 ms |
+
+- Median of 3 cold tap times: **3168.1 ms**.
+- Median qualified First Load: **not reached — the Settings interaction gate failed**. A tap time alone is not time to interactive.
+- NFR-02 (less than 3000 ms and a Settings response of at most 50 ms): **FAIL**. Observed tap targets: "town-settings", "town-settings", "town-settings".
+- First JavaScript: 1538880 bytes uncompressed; **496548 bytes gzip**; 426710 bytes brotli. Budget: less than 500,000 bytes gzip (500 KB, decimal): **PASS**. This sums distinct page JavaScript resources completed by the tap, including module preloads; it excludes worker precache traffic. The bundle table lists their URLs.
+- Compression check: `/assets/play-BJKqbX13.js` returns `content-encoding: gzip` with `Accept-Encoding: gzip`. Page encoded body bytes use the encoding Chromium negotiated; gzip (level 9) and brotli sizes above are computed from the same built files.
+- Service Worker precache: 34 / 34 / 34 entries in the cold runs. Bytes are decoded response bodies stored in Workbox precaches, not wire bytes. If activation does not finish within 15 seconds after the tap result, the runner records the observation time and partial cache. Time is navigation to `navigator.serviceWorker.ready`, including registration and installation. It is separate from the tap gate.
+- Follow-up for failures: [#139](https://github.com/rifandani/heynbord/issues/139). Bundle reduction is outside this measurement.
+
+<details>
+<summary>Measured JavaScript files</summary>
+
+| File | Uncompressed bytes | Gzip bytes | Brotli bytes |
+| --- | ---: | ---: | ---: |
+| `/assets/Dialog-DOFtmCYY.js` | 124309 | 39300 | 33350 |
+| `/assets/Hooks-DlCcD2Y5.js` | 1521 | 770 | 696 |
+| `/assets/Link-D3A98xe_.js` | 1504 | 770 | 681 |
+| `/assets/ListBox-CJk4hC2n.js` | 10844 | 3920 | 3545 |
+| `/assets/Schema-DV78m1_U.js` | 130888 | 42730 | 37533 |
+| `/assets/achievements-screen.atoms-C3xTKLzf.js` | 1647 | 756 | 719 |
+| `/assets/battle-timeline-pdCCvN9H.js` | 12838 | 4334 | 3998 |
+| `/assets/battle.atoms-BzcAtvjb.js` | 7651 | 3055 | 2791 |
+| `/assets/button-DDgDPb8E.js` | 2557 | 1085 | 947 |
+| `/assets/client-BgAoEbL0.js` | 77347 | 26079 | 23244 |
+| `/assets/dist-DL29brTf.js` | 74577 | 27105 | 24085 |
+| `/assets/game-scrim-CFRyags3.js` | 80674 | 26896 | 23664 |
+| `/assets/handbook.atoms-Ce0pO9qb.js` | 188 | 155 | 129 |
+| `/assets/index-_TaobTsU.js` | 140011 | 46769 | 41490 |
+| `/assets/language-toggle-BhYkjP0-.js` | 1718 | 1000 | 902 |
+| `/assets/menu-Dg7k6Hbo.js` | 29321 | 7757 | 6780 |
+| `/assets/play-BJKqbX13.js` | 123634 | 44043 | 37072 |
+| `/assets/playback-DH29zyEo.js` | 72 | 88 | 76 |
+| `/assets/profile.atoms-BwBF6KS1.js` | 2024 | 1047 | 957 |
+| `/assets/react-DK9JGPcW.js` | 219089 | 67740 | 58166 |
+| `/assets/reduced-motion-CEG1ID_f.js` | 1304 | 612 | 513 |
+| `/assets/region-map-CQEIDTPG.js` | 8307 | 3153 | 2669 |
+| `/assets/rolldown-runtime-XKyaHtl9.js` | 726 | 431 | 382 |
+| `/assets/shim-CAofzGC6.js` | 864 | 468 | 410 |
+| `/assets/src-Bv5zg5mJ.js` | 170678 | 40490 | 34377 |
+| `/assets/surfaces-l-PGCpm4.js` | 42201 | 13470 | 11872 |
+| `/assets/town.atoms-BB9KGlS2.js` | 504 | 321 | 295 |
+| `/assets/use-handbook-HTE0KUn7.js` | 462 | 321 | 295 |
+| `/assets/use-translation-DqY9LsXd.js` | 265767 | 89667 | 73122 |
+| `/assets/workbox-window.prod.es5-Bd17z0YL.js` | 5653 | 2216 | 1950 |
+
+</details>
+
 ## Repeat a record
 
 The frame-rate runner is `apps/web/scripts/measure-frame-rate.ts`. Run
