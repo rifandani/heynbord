@@ -2,21 +2,13 @@
 
 > **2026-10-26:** The application has one theme now: the Heynbord material palette. The light and dark rows below describe the scope at the audit date. The current alias pairs are in `DESIGN.md`, "Semantic Aliases", with their ratios.
 
-Requirement: [issue 133, NFR-06](https://github.com/rifandani/heynbord/issues/133).
-Criteria: [WCAG 2.2, 1.4.3](https://www.w3.org/TR/WCAG22/#contrast-minimum)
-and [1.4.11](https://www.w3.org/TR/WCAG22/#non-text-contrast).
+Requirement: [issue 133, NFR-06](https://github.com/rifandani/heynbord/issues/133). Criteria: [WCAG 2.2, 1.4.3](https://www.w3.org/TR/WCAG22/#contrast-minimum) and [1.4.11](https://www.w3.org/TR/WCAG22/#non-text-contrast).
 
 ## Result
 
-**NFR-06 contrast result: Pass for the documented product scope.**
-The eight display combinations pass the browser checks. The graphical and
-artwork bounds below meet the required ratios, including disabled cues.
+**NFR-06 contrast result: Pass for the documented product scope.** The eight display combinations pass the browser checks. The graphical and artwork bounds below meet the required ratios, including disabled cues.
 
-Normal text must have a ratio of at least 4.5:1. Large text must have at least
-3:1: 24 CSS px, or 18.67 CSS px with a weight of at least 700. Meaningful icons,
-control boundaries, selected-state cues and focus indicators must have at least
-3:1 against adjacent colors. The project applies these same limits to visible
-disabled-control text and cues. WCAG itself exempts inactive controls.
+Normal text must have a ratio of at least 4.5:1. Large text must have at least 3:1: 24 CSS px, or 18.67 CSS px with a weight of at least 700. Meaningful icons, control boundaries, selected-state cues and focus indicators must have at least 3:1 against adjacent colors. The project applies these same limits to visible disabled-control text and cues. WCAG itself exempts inactive controls.
 
 ## Tools and method
 
@@ -24,37 +16,21 @@ disabled-control text and cues. WCAG itself exempts inactive controls.
 - Browser-computed colors, sizes, font weights, opacity and color filters.
 - `sharp` to read sRGB background pixels from browser screenshots.
 - The WCAG relative-luminance formula, with unrounded ratios for assertions.
-- Manual source and screenshot review for SVG text, WebGL textures, painted
-  icons, halos and Board graphics. Bounds for translucent plates use a white
-  background as the worst case for light text.
-- The dev-only Component Catalog to identify the shared button, plate, dialog,
-  text, resource and Rank components. Product checks use `/` and `/play`.
+- Manual source and screenshot review for SVG text, WebGL textures, painted icons, halos and Board graphics. Bounds for translucent plates use a white background as the worst case for light text.
+- The dev-only Component Catalog to identify the shared button, plate, dialog, text, resource and Rank components. Product checks use `/` and `/play`.
 
-The browser helper temporarily hides text fill and text shadows without
-changing layout. It samples up to nine background points for each visible text
-run. It checks overflow clips and hit targets. It rejects stale positions when
-a timed notice leaves or a layout changes during capture. It also checks opaque
-control cues from their computed foreground and background colors.
+The browser helper temporarily hides text fill and text shadows without changing layout. It samples up to nine background points for each visible text run. It checks overflow clips and hit targets. It rejects stale positions when a timed notice leaves or a layout changes during capture. It also checks opaque control cues from their computed foreground and background colors.
 
-Card Details ignore pointer input and cover other content. Their checks select
-the details surface explicitly. The underlying screen has its own preceding
-check. SVG and WebGL lettering are in the manual checks below.
+Card Details ignore pointer input and cover other content. Their checks select the details surface explicitly. The underlying screen has its own preceding check. SVG and WebGL lettering are in the manual checks below.
 
-The checks use reduced motion and stop CSS animations and transitions at steady
-states. The pulse extrema of Board targets are checked separately. A regression
-fixture verifies that the helper detects low-contrast text and faded disabled
-text, and gives 21:1 for black on white.
+The checks use reduced motion and stop CSS animations and transitions at steady states. The pulse extrema of Board targets are checked separately. A regression fixture verifies that the helper detects low-contrast text and faded disabled text, and gives 21:1 for black on white.
 
 ## Display combinations
 
-Desktop: 1440 × 900 CSS px. Mobile game: 844 × 390 CSS px, with touch and mobile
-browser emulation. Mobile Home and the game's rotation message also use
-390 × 844 CSS px. Each check asserts the applied class on `<html>` and sets the
-locale cookie before navigation. The game keeps its wood and parchment palette
-in both color modes; Home and its menus follow the selected mode.
+Desktop: 1440 × 900 CSS px. Mobile game: 844 × 390 CSS px, with touch and mobile browser emulation. Mobile Home and the game's rotation message also use 390 × 844 CSS px. Each check asserts the applied class on `<html>` and sets the locale cookie before navigation. The game keeps its wood and parchment palette in both color modes; Home and its menus follow the selected mode.
 
 | Locale | Applied mode | Display | Checkpoints | Text runs | Lowest normal | Lowest large | Result |
-| --- | --- | --- | ---: | ---: | ---: | ---: | --- |
+| --- | --- | --- | --: | --: | --: | --: | --- |
 | en-us | dark | desktop | 40 | 1362 | 4.73:1 | 4.95:1 | Pass |
 | en-us | dark | mobile | 42 | 941 | 4.66:1 | 4.95:1 | Pass |
 | en-us | light | desktop | 40 | 1365 | 4.73:1 | 4.95:1 | Pass |
@@ -91,14 +67,11 @@ Each display combination checks these product surfaces and states:
 | Results and Replay | Victory, Defeat, rewards, share notification, Watching a Replay and transport controls |
 | Dungeon Battle | Three Boss plates, HP, Lanes and Boss Rule labels |
 
-Shared dialog, tooltip and notification recipes are part of the review. The
-catalog is a reference surface and is outside the product pass result.
+Shared dialog, tooltip and notification recipes are part of the review. The catalog is a reference surface and is outside the product pass result.
 
 ## Failures and fixes
 
-Before ratios below are from the initial browser checks or the original color
-pair. A background-dependent result means that the old styling had no stable
-minimum over the supported artwork.
+Before ratios below are from the initial browser checks or the original color pair. A background-dependent result means that the old styling had no stable minimum over the supported artwork.
 
 | Failure | Before | Fix and recheck |
 | --- | --- | --- |
@@ -122,12 +95,7 @@ minimum over the supported artwork.
 
 ## Manual artwork and graphical checks
 
-These checks use rendered captures and the paint/texture recipes. They apply
-to the five Region paintings, the Dungeon and Heynspire paintings, the loading
-ground, Standard ground, and all six supported Board skins: Meadow Dawn, Mesa
-Dusk, Harbor Night, Hollow Moon, Spire Noon and Deep Crystal. The bounds do not
-depend on which image pixel is behind the overlay. Browser captures use
-Standard ground; the color bounds cover the other ground variants.
+These checks use rendered captures and the paint/texture recipes. They apply to the five Region paintings, the Dungeon and Heynspire paintings, the loading ground, Standard ground, and all six supported Board skins: Meadow Dawn, Mesa Dusk, Harbor Night, Hollow Moon, Spire Noon and Deep Crystal. The bounds do not depend on which image pixel is behind the overlay. Browser captures use Standard ground; the color bounds cover the other ground variants.
 
 | Object | Measurement and result |
 | --- | --- |
@@ -141,12 +109,7 @@ Standard ground; the color bounds cover the other ground variants.
 | Battle Log and fallen marks | Parchment or cream marks have opaque ink edges. The fallen ring and cross keep both colors, including on dark skins. |
 | Painted controls and resource icons | Review checks their shape, dark rim and adjacent label or value. Lock seals, counts and selected markers remain independent of the decorative painting. |
 
-The automated suite does not derive ratios from antialiased SVG letter edges,
-WebGL texture pixels, painted icon interiors, particle effects, or a moving
-animation frame. Changes to those assets, text strokes, geometry widths, tone
-mapping, or material opacity require the same manual review. The current review
-uses emulated mobile Chromium. Physical-device display output and other browser
-engines are outside this run.
+The automated suite does not derive ratios from antialiased SVG letter edges, WebGL texture pixels, painted icon interiors, particle effects, or a moving animation frame. Changes to those assets, text strokes, geometry widths, tone mapping, or material opacity require the same manual review. The current review uses emulated mobile Chromium. Physical-device display output and other browser engines are outside this run.
 
 ## Reproduce
 
@@ -158,10 +121,7 @@ rtk proxy bun web typecheck
 rtk proxy bun web:test:unit apps/web/src/features/battle/scene/markers.unit.test.ts apps/web/src/features/toast/toast.atoms.unit.test.ts
 ```
 
-Each browser case saves its screenshots and `contrast-measurements.json` under
-`apps/web/playwright-test-results/`. The JSON gives the surface, text, source,
-computed color, opacity, required ratio and measured ratio. These generated
-files are ignored by Git. The dated result summary is stored beside this report.
+Each browser case saves its screenshots and `contrast-measurements.json` under `apps/web/playwright-test-results/`. The JSON gives the surface, text, source, computed color, opacity, required ratio and measured ratio. These generated files are ignored by Git. The dated result summary is stored beside this report.
 
 ## Verification
 
@@ -177,15 +137,6 @@ files are ignored by Git. The dated result summary is stored beside this report.
 | Existing two-Side Unit-detail smoke | Fails in QA setup on the first run and retry; see below |
 | Full repository lint | Fails in separate music and game-flow work; see the note below |
 
-The full lint command reports errors in `battle-audio.ts`, `music-catalog.ts`,
-`music-player.ts` and `components/play-screen.tsx`. They concern promise style,
-a type assertion, shadowed names, event registration and function complexity.
-Those files contain separate work in the shared checkout and are outside this
-contrast change.
+The full lint command reports errors in `battle-audio.ts`, `music-catalog.ts`, `music-player.ts` and `components/play-screen.tsx`. They concern promise style, a type assertion, shadowed names, event registration and function complexity. Those files contain separate work in the shared checkout and are outside this contrast change.
 
-The existing Unit-detail smoke fails at its setup requirement that QA seed 7
-must expose Units of both Sides. It receives one Side before it tests a hover.
-An isolated invocation with one retry gives the same result.
-The contrast suite checks Unit details for a visible Unit in every display case.
-The contrast changes do not change Battle rules, QA seeds or Unit ownership.
-
+The existing Unit-detail smoke fails at its setup requirement that QA seed 7 must expose Units of both Sides. It receives one Side before it tests a hover. An isolated invocation with one retry gives the same result. The contrast suite checks Unit details for a visible Unit in every display case. The contrast changes do not change Battle rules, QA seeds or Unit ownership.

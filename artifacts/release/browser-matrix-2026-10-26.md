@@ -1,41 +1,26 @@
 # Browser matrix — 2026-10-26
 
-Requirement: [issue 132](https://github.com/rifandani/heynbord/issues/132). The
-PRD removed NFR-03 on 2026-10-26 after this record.
+Requirement: [issue 132](https://github.com/rifandani/heynbord/issues/132). The PRD removed NFR-03 on 2026-10-26 after this record.
 
 ## Result
 
 **The automated browser matrix passes.**
 
-The 7 automated rows pass the 8 main flows. The run passed 49 tests on a
-production build. Each row runs 7 tests, because one test covers Town and
-Campaign.
+The 7 automated rows pass the 8 main flows. The run passed 49 tests on a production build. Each row runs 7 tests, because one test covers Town and Campaign.
 
-The PRD removed NFR-03 on 2026-10-26. This record keeps the evidence for the
-removed requirement.
+The PRD removed NFR-03 on 2026-10-26. This record keeps the evidence for the removed requirement.
 
-This automated record does not cover three real-device rows. No iOS or Android
-device and no cloud device service were available. Playwright cannot emulate
-mobile Firefox. The record also covers one engine version, not the previous
-version.
+This automated record does not cover three real-device rows. No iOS or Android device and no cloud device service were available. Playwright cannot emulate mobile Firefox. The record also covers one engine version, not the previous version.
 
 ## Tools and method
 
 - Playwright 1.63.0, with the `chromium`, `firefox` and `webkit` engines.
-- Branded Google Chrome and Microsoft Edge channels. The matrix does not report
-  Playwright Chromium as Chrome or Edge on desktop.
-- Playwright device descriptors for Pixel 7 and iPhone 15. The mobile rows use
-  a landscape viewport of 844 × 390 CSS px, because the game asks the player to
-  turn a phone.
+- Branded Google Chrome and Microsoft Edge channels. The matrix does not report Playwright Chromium as Chrome or Edge on desktop.
+- Playwright device descriptors for Pixel 7 and iPhone 15. The mobile rows use a landscape viewport of 844 × 390 CSS px, because the game asks the player to turn a phone.
 - Host: MacBook Pro (Mac14,7), Apple M2, 16 GB, macOS 26.5.1 (25F80).
-- Production build with `VITE_E2E=true` and
-  `VITE_APP_URL=http://localhost:4100`. The build ran on the working tree at
-  commit `dd81072401`. Unrelated uncommitted changes were also present. This
-  record does not claim that the result came from a clean checkout.
-- The build was copied before the run, because other local processes rebuild
-  `apps/web/.output`. A Nitro server served the copy on port 4100.
-- Main flows: first load, Town, Campaign, Deck builder, Battle, Workshop,
-  Packs, and save export/import.
+- Production build with `VITE_E2E=true` and `VITE_APP_URL=http://localhost:4100`. The build ran on the working tree at commit `dd81072401`. Unrelated uncommitted changes were also present. This record does not claim that the result came from a clean checkout.
+- The build was copied before the run, because other local processes rebuild `apps/web/.output`. A Nitro server served the copy on port 4100.
+- Main flows: first load, Town, Campaign, Deck builder, Battle, Workshop, Packs, and save export/import.
 
 Commands:
 
@@ -47,13 +32,9 @@ PORT=4100 HOST=127.0.0.1 node /tmp/heynbord-matrix-build/server/index.mjs
 PW_PORT=4100 bun web test:matrix
 ```
 
-The matrix tests use a 120 s timeout per test. The Battle test uses 180 s. The
-action timeout is 20 s and the navigation timeout is 60 s. The final run took
-1.1 min with the default worker count.
+The matrix tests use a 120 s timeout per test. The Battle test uses 180 s. The action timeout is 20 s and the navigation timeout is 60 s. The final run took 1.1 min with the default worker count.
 
-`bun web test` runs the full Chromium suite and the 49 matrix tests.
-`bun web test:matrix` runs only the tests with the `@browser-matrix` tag in the
-7 matrix projects.
+`bun web test` runs the full Chromium suite and the 49 matrix tests. `bun web test:matrix` runs only the tests with the `@browser-matrix` tag in the 7 matrix projects.
 
 ## Matrix
 
@@ -73,8 +54,7 @@ action timeout is 20 s and the navigation timeout is 60 s. The final run took
 
 ## Flow coverage
 
-Each automated row runs 7 tests from
-`apps/web/e2e/browser-matrix.spec.ts`. The tests cover these 8 flows:
+Each automated row runs 7 tests from `apps/web/e2e/browser-matrix.spec.ts`. The tests cover these 8 flows:
 
 | Flow | Test |
 | --- | --- |
@@ -93,15 +73,11 @@ This run tested one version of each engine: the current stable version.
 
 The previous version is not in this record for these reasons:
 
-- Playwright 1.63.0 supplies one bundled build of Firefox and one build of
-  WebKit. It does not supply the previous build.
-- The `chrome` and `msedge` channels use the installed stable browser. They do
-  not install a second stable version next to it.
-- No cloud device service is configured. A previous-version run needs one, or
-  a manual install on a second machine.
+- Playwright 1.63.0 supplies one bundled build of Firefox and one build of WebKit. It does not supply the previous build.
+- The `chrome` and `msedge` channels use the installed stable browser. They do not install a second stable version next to it.
+- No cloud device service is configured. A previous-version run needs one, or a manual install on a second machine.
 
-The exact versions above make the result repeatable. A later run can add the
-previous version, but the PRD no longer lists this requirement.
+The exact versions above make the result repeatable. A later run can add the previous version, but the PRD no longer lists this requirement.
 
 ## Failures and fixes
 
@@ -116,8 +92,7 @@ The final run had 0 failures, 0 retries and 0 skipped tests.
 ## Evidence
 
 - [JSON summary](./browser-matrix-2026-10-26.json)
-- `apps/web/playwright.config.ts` — matrix projects and the `@browser-matrix`
-  filter
+- `apps/web/playwright.config.ts` — matrix projects and the `@browser-matrix` filter
 - `apps/web/e2e/browser-matrix.spec.ts` — 7 tests that cover the 8 main flows
 - `apps/web/e2e/_diagnostics.ts` — shared Battle diagnostics types
 - `apps/web/package.json` — `test:install`, `test:matrix` and `test:ci`
