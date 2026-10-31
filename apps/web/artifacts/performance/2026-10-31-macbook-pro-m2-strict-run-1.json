@@ -1,0 +1,82 @@
+{
+  "meta": {
+    "measuredAt": "2026-10-31T13:13:29.820Z",
+    "device": "macbook-pro-m2",
+    "host": {
+      "model": "Mac14,7",
+      "cpu": "Apple M2",
+      "os": "darwin 25.5.0",
+      "arch": "arm64",
+      "powerSource": "AC power",
+      "lowPowerMode": false,
+      "powerMode": "lowpowermode         0",
+      "cores": 8,
+      "memoryGb": 16,
+      "loadAverage": [
+        5.89,
+        6.81,
+        5.75
+      ]
+    },
+    "build": {
+      "head": "e3501ef1b75c126465c0f454162538b45779b248",
+      "dirty": "M apps/web/artifacts/performance/2026-10-31-macbook-pro-m2-baseline-run-1.json\n M apps/web/artifacts/performance/2026-10-31-macbook-pro-m2-baseline-run-2.json"
+    },
+    "browser": {
+      "version": "156.0.8078.79",
+      "channel": "chrome",
+      "headed": true
+    },
+    "scene": {
+      "scenario": "strict",
+      "stage": "dungeon-3",
+      "seed": 4,
+      "deck": "vanguard",
+      "speed": 1,
+      "skip": false,
+      "input": "real mouse input",
+      "warmUpDiscardedMs": 3000
+    },
+    "viewport": {
+      "width": 1224,
+      "height": 783,
+      "dpr": 2
+    },
+    "measuredDurationMs": 121733,
+    "turns": 11,
+    "result": {
+      "winner": "enemy",
+      "reason": "heroDefeated"
+    },
+    "page": {
+      "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36",
+      "hardwareConcurrency": 8,
+      "visibility": "visible"
+    },
+    "consoleErrors": []
+  },
+  "snapshot": {
+    "frames": {
+      "fps": 60,
+      "frameMs": 16.65,
+      "meanFps": 60,
+      "p50": 16.7,
+      "p95": 17.6,
+      "p99": 19.2,
+      "worst": 46.3,
+      "samples": 7300,
+      "total": 7300,
+      "cap": 72000,
+      "wrapped": false
+    },
+    "drawCalls": {
+      "current": 59,
+      "max": 122
+    },
+    "dpr": {
+      "native": 2,
+      "current": 2,
+      "changes": []
+    }
+  }
+}

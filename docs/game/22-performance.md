@@ -5,9 +5,9 @@ its date, its method, and the build that it measured.
 
 ## Frame rate (NFR-01)
 
-**NFR-01: FAIL.** The 2022 laptop misses the frame-time budget in both Battles, and no 2022 mid-range Android phone is measured. The laptop runs are also host-limited: the load average was 3.8 to 5.1 and other applications were open, so the protocol condition "no other heavy application" did not hold. The numbers are the observed result, not proof of the device limit. Follow-up: [#140](https://github.com/rifandani/heynbord/issues/140).
+**NFR-01: the 2022 laptop is accepted on the maintainer's manual evidence. The protocol p95 remains 0.9–1.0 ms over the 16.7 ms record threshold. The Android phone target is deferred.** The maintainer's manual browser check on 2026-10-31 reported 60 fps, 16 ms frame time and 57 current draw calls, and the maintainer accepted it as the laptop evidence. The 2026-10-31 protocol re-runs reached a 60 fps mean in three of four runs and 59.9 fps in the fourth. The p95 was 17.6–17.7 ms on a host that was not idle: the load average was 5.9 to 8.4. Issue [#140](https://github.com/rifandani/heynbord/issues/140) is closed on the maintainer's acceptance; the protocol gap stays recorded.
 
-A manual desktop spot check on 2026-10-31 with Hero Models enabled reported 60 fps, 16 ms frame time and 57 current draw calls. It is not a protocol run and does not change this result.
+The maintainer deferred all mobile device testing on 2026-10-31 because no Android phone is available. The 30 fps phone target is not measured.
 
 ### 2026-10-26 — MacBook Pro 13-inch (M2, 2022)
 
@@ -37,27 +37,55 @@ A manual desktop spot check on 2026-10-31 with Hero Models enabled reported 60 f
   - [`2026-10-26-macbook-pro-m2-strict-run-1.json`](../../apps/web/artifacts/performance/2026-10-26-macbook-pro-m2-strict-run-1.json)
   - [`2026-10-26-macbook-pro-m2-strict-run-2.json`](../../apps/web/artifacts/performance/2026-10-26-macbook-pro-m2-strict-run-2.json)
 
-### 2026-10-26 — 2022 mid-range Android phone
+### 2026-10-31 — MacBook Pro 13-inch (M2, 2022), protocol re-run
 
-Not measured. No Android phone was attached to the measuring host; `adb devices` listed no device. The runner can drive a real phone over USB:
+- Device, OS and browser: the same MacBook Pro 13-inch (`Mac14,7`) with Apple M2 and macOS 26.5.1. Google Chrome 156.0.8078.79, headed, 1224 × 783 CSS pixels, native DPR 2. AC power, Low Power Mode off.
+- Build: commit `e3501ef1b7`. The frame-rate runner now dismisses the Region opening Story Scene before the Stage screen. Each raw file records the full dirty list; the other raw files were still being written during a run.
+- Host: load average 8.42 at the start of the Stage 1-1 runs and 5.89 at the start of the Dungeon 3 runs. A concurrent measurement session, T3 Code and Microsoft Defender were active. The heavy YouTube tab was closed before these runs. The host was not idle.
+- Command: `bun web measure:frame-rate --scenario=baseline --runs=2 --device=macbook-pro-m2` and `bun web measure:frame-rate --scenario=strict --runs=2 --device=macbook-pro-m2`.
+- Baseline scene: Stage 1-1, Raiders Deck, seed 4.
+- Strict scene: Dungeon 3, Vanguard Deck, seed 4. The profile was set to level 30 with the QA hook.
+- Hero Models were enabled for every run.
+
+| Run | Scene | Duration | Mean fps | p50 | p95 | p99 | Worst | Max draw calls | Native DPR | Settled DPR | DPR changes | Result |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
+| 1 | Stage 1-1, Raiders, seed 4 | 87.1 s | 60.0 | 16.7 ms | 17.7 ms | 20.7 ms | 37.8 ms | 75 | 2 | 2 | 0 | Win |
+| 2 | Stage 1-1, Raiders, seed 4 | 85.3 s | 60.0 | 16.7 ms | 17.6 ms | 18.1 ms | 57.5 ms | 75 | 2 | 2 | 0 | Win |
+| 3 | Dungeon 3, Vanguard, seed 4 | 121.7 s | 60.0 | 16.7 ms | 17.6 ms | 19.2 ms | 46.3 ms | 122 | 2 | 2 | 0 | Loss |
+| 4 | Dungeon 3, Vanguard, seed 4 | 121.8 s | 59.9 | 16.7 ms | 17.6 ms | 18.8 ms | 142.0 ms | 122 | 2 | 2 | 0 | Loss |
+
+- Budget: mean fps 60 or more and p95 frame time 16.7 ms or less. Runs 1 to 3 meet the mean. Run 4 is 0.1 fps under it. All four runs miss p95 by 0.9 to 1.0 ms. The p50 is 16.7 ms in every run, so the miss is the tail of the 60 Hz frame interval, not a cluster of dropped frames.
+- The DPR stayed at 2 in every run. Hero Models raised the draw calls to 75 in Stage 1-1 and 122 in Dungeon 3, both under the 150 limit.
+- The maintainer accepted the manual check as the laptop evidence. The protocol p95 gap stays recorded.
+- Raw files:
+  - [`2026-10-31-macbook-pro-m2-baseline-run-1.json`](../../apps/web/artifacts/performance/2026-10-31-macbook-pro-m2-baseline-run-1.json)
+  - [`2026-10-31-macbook-pro-m2-baseline-run-2.json`](../../apps/web/artifacts/performance/2026-10-31-macbook-pro-m2-baseline-run-2.json)
+  - [`2026-10-31-macbook-pro-m2-strict-run-1.json`](../../apps/web/artifacts/performance/2026-10-31-macbook-pro-m2-strict-run-1.json)
+  - [`2026-10-31-macbook-pro-m2-strict-run-2.json`](../../apps/web/artifacts/performance/2026-10-31-macbook-pro-m2-strict-run-2.json)
+
+### 2026-10-31 — 2022 mid-range Android phone: deferred
+
+Not measured. The maintainer deferred all mobile device testing on 2026-10-31 because no Android phone is available. The 30 fps mean and 33 ms p95 target stays in PRD NFR-01, but it is out of scope until a device is attached.
+
+When a device is available, the runner can drive a real phone over USB:
 
 ```sh
 adb forward tcp:9222 localabstract:chrome_devtools_remote
 bun web measure:frame-rate --url=http://<host>:<port> --device=<phone> --cdp=http://127.0.0.1:9222
 ```
 
-The phone must be in landscape, with a normal brightness and no charger. The budget is 30 fps mean and p95 33 ms. NFR-01 cannot pass until this record exists. The Android measurement remains pending because no device is available.
+The phone must be in landscape, with a normal brightness and no charger.
 
-### 2026-10-31 — Hero Models manual desktop spot check
+### 2026-10-31 — Hero Models manual desktop check
 
-This is a manual observation, not the NFR-01 protocol.
+This is a manual observation, not the full NFR-01 protocol. The maintainer accepted it as the laptop evidence on 2026-10-31.
 
 - Build: commit `2f164f615b`. The check did not save a raw file.
-- Method: manual Battle in the browser with `__THREE_GAME_DIAGNOSTICS__`.
+- Method: manual Battle in the maintainer's own Google Chrome on the 2022 MacBook Pro 13-inch (M2, 2022), with `__THREE_GAME_DIAGNOSTICS__`.
 - Observed: 60 fps, 16 ms frame time, 57 draw calls in the current frame.
-- Missing for NFR-01: mean fps and p95 over a full Battle, p99, DPR, host record, exact Stage/seed, Hero appearance and raw JSON. The current draw-call count also does not prove that the per-frame maximum is under 150.
-- Laptop NFR-01 with Hero Models: pending.
-- Android NFR-01 with Hero Models: pending; no device is available.
+- Missing from the full protocol: mean fps and p95 over a full Battle, p99, DPR, host load, exact Stage/seed, Hero appearance and raw JSON. The current draw-call count also does not prove that the per-frame maximum is under 150.
+- Laptop: accepted by the maintainer. The full protocol re-run is tracked in [#140](https://github.com/rifandani/heynbord/issues/140).
+- Android: deferred; all mobile device testing is skipped until a device is attached.
 - The full run should use the largest Hero appearance (Dawn Gaze + Iron Vine).
 
 ## Bundle — 2026-10-26 — First Load JavaScript for `/play`
@@ -193,6 +221,71 @@ M .github/workflows/ci.yml
  M packages/rules/scripts/simulate.ts
 ?? apps/web/scripts/measure-first-load.ts
 ```
+
+</details>
+
+### 2026-10-31T12:43:18.365Z — FAIL
+
+- Command (repository root): `bun web measure:first-load`. This removes the previous production output, builds the app, starts a compressed Nitro production origin, runs Chromium, writes this section, and stops both processes. Install the existing browser first with `bun web test:install` if needed.
+- Commit: `b096b093a0b63506a3b91e0b419f5f85406359ce`. Clean working tree.
+- Browser: Chromium 153.0.8010.12, headless; host: darwin 25.5.0.
+- Device: emulated mid-range Android (Pixel 6a user agent), 915×412 CSS pixels in landscape, DPR 2, mobile touch, 4× CPU slowdown. The Portrait Guard covers the Town for a coarse pointer in portrait, so the measured phone is held sideways.
+- Network: Slow 4G, 1.6 Mbps down, 750 kbps up, 150 ms RTT, a local HTTP proxy adds 150 ms before response headers and limits response bodies to a shared 200,000 B/s download queue and request bodies to a shared 93,750 B/s upload queue. Both page and Service Worker traffic cross this origin. Headers and loopback overhead are extra; this is an emulated link.
+- Origin: http://127.0.0.1:52583; entry: http://127.0.0.1:52583/play (direct navigation).
+- Cache: a new browser context and cleared HTTP cache for each cold run, with no prior storage or active Service Worker. New workers can install during the visit. Warm Load reuses the third context with its HTTP cache, storage and current Service Worker state. The worker status is recorded; an incomplete precache is not treated as ready.
+- Input: one trusted touch at the Town Settings control center as soon as the Town and control are visible. An input listener records pointer-up time from navigation start. A frame observer records the first visible Settings dialog. No overlay is removed and no failed tap is retried.
+
+| Run | Navigation to tap | Tap to visible dialog | ≤50 ms interaction | Page JavaScript encoded body bytes at tap | Precache decoded bytes | Navigation to SW ready |
+| --- | ---: | --- | --- | ---: | ---: | ---: |
+| Cold 1 | 3287.7 ms | 207.3 ms | FAIL | 427939 | 1985815 | 4311.6 ms |
+| Cold 2 | 3168.1 ms | 183.6 ms | FAIL | 427939 | 1985815 | 4963.0 ms |
+| Cold 3 | 3097.6 ms | 185.0 ms | FAIL | 427939 | 1985815 | 4870.0 ms |
+| Warm (context only) | 1101.9 ms | 127.9 ms | FAIL | 1538880 | 1985815 | 200.9 ms |
+
+- Median of 3 cold tap times: **3168.1 ms**.
+- Median qualified First Load: **not reached — the Settings interaction gate failed**. A tap time alone is not time to interactive.
+- NFR-02 (less than 3000 ms and a Settings response of at most 50 ms): **FAIL**. Observed tap targets: "town-settings", "town-settings", "town-settings".
+- First JavaScript: 1538880 bytes uncompressed; **496548 bytes gzip**; 426710 bytes brotli. Budget: less than 500,000 bytes gzip (500 KB, decimal): **PASS**. This sums distinct page JavaScript resources completed by the tap, including module preloads; it excludes worker precache traffic. The bundle table lists their URLs.
+- The set differs from the #139 bundle record above: that record counts the files that the `/play` HTML preloads; this runner counts the page JavaScript that completed before the tap, so a chunk that the HTML does not name can be included. The totals are not directly comparable.
+- Compression check: `/assets/play-BJKqbX13.js` returns `content-encoding: gzip` with `Accept-Encoding: gzip`. Page encoded body bytes use the encoding Chromium negotiated; gzip (level 9) and brotli sizes above are computed from the same built files.
+- Service Worker precache: 34 / 34 / 34 entries in the cold runs. Bytes are decoded response bodies stored in Workbox precaches, not wire bytes. If activation does not finish within 15 seconds after the tap result, the runner records the observation time and partial cache. Time is navigation to `navigator.serviceWorker.ready`, including registration and installation. It is separate from the tap gate.
+- Follow-up: the NFR-02 time and interaction failure is recorded here. Bundle reduction is outside this measurement.
+
+<details>
+<summary>Measured JavaScript files</summary>
+
+| File | Uncompressed bytes | Gzip bytes | Brotli bytes |
+| --- | ---: | ---: | ---: |
+| `/assets/Dialog-DOFtmCYY.js` | 124309 | 39300 | 33350 |
+| `/assets/Hooks-DlCcD2Y5.js` | 1521 | 770 | 696 |
+| `/assets/Link-D3A98xe_.js` | 1504 | 770 | 681 |
+| `/assets/ListBox-CJk4hC2n.js` | 10844 | 3920 | 3545 |
+| `/assets/Schema-DV78m1_U.js` | 130888 | 42730 | 37533 |
+| `/assets/achievements-screen.atoms-C3xTKLzf.js` | 1647 | 756 | 719 |
+| `/assets/battle-timeline-pdCCvN9H.js` | 12838 | 4334 | 3998 |
+| `/assets/battle.atoms-BzcAtvjb.js` | 7651 | 3055 | 2791 |
+| `/assets/button-DDgDPb8E.js` | 2557 | 1085 | 947 |
+| `/assets/client-BgAoEbL0.js` | 77347 | 26079 | 23244 |
+| `/assets/dist-DL29brTf.js` | 74577 | 27105 | 24085 |
+| `/assets/game-scrim-CFRyags3.js` | 80674 | 26896 | 23664 |
+| `/assets/handbook.atoms-Ce0pO9qb.js` | 188 | 155 | 129 |
+| `/assets/index-_TaobTsU.js` | 140011 | 46769 | 41490 |
+| `/assets/language-toggle-BhYkjP0-.js` | 1718 | 1000 | 902 |
+| `/assets/menu-Dg7k6Hbo.js` | 29321 | 7757 | 6780 |
+| `/assets/play-BJKqbX13.js` | 123634 | 44043 | 37072 |
+| `/assets/playback-DH29zyEo.js` | 72 | 88 | 76 |
+| `/assets/profile.atoms-BwBF6KS1.js` | 2024 | 1047 | 957 |
+| `/assets/react-DK9JGPcW.js` | 219089 | 67740 | 58166 |
+| `/assets/reduced-motion-CEG1ID_f.js` | 1304 | 612 | 513 |
+| `/assets/region-map-CQEIDTPG.js` | 8307 | 3153 | 2669 |
+| `/assets/rolldown-runtime-XKyaHtl9.js` | 726 | 431 | 382 |
+| `/assets/shim-CAofzGC6.js` | 864 | 468 | 410 |
+| `/assets/src-Bv5zg5mJ.js` | 170678 | 40490 | 34377 |
+| `/assets/surfaces-l-PGCpm4.js` | 42201 | 13470 | 11872 |
+| `/assets/town.atoms-BB9KGlS2.js` | 504 | 321 | 295 |
+| `/assets/use-handbook-HTE0KUn7.js` | 462 | 321 | 295 |
+| `/assets/use-translation-DqY9LsXd.js` | 265767 | 89667 | 73122 |
+| `/assets/workbox-window.prod.es5-Bd17z0YL.js` | 5653 | 2216 | 1950 |
 
 </details>
 

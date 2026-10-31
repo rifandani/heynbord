@@ -26,3 +26,7 @@ The same problem applies to the word "interactive". A painted Town is not a usab
 - The gate runs in Chromium, the engine that most Players use. It does not prove Safari.
 - A record needs the commit SHA, the browser version and the profile. Without them, the next record cannot compare with it.
 - The bundle budget of Technical Design section 6 (less than 500 KB gzip) is the leading measure. A First Load can pass the time gate with a bundle above the budget on a faster link, so both values go in the record.
+
+## Amendments
+
+**2026-10-31 — the phone is held in landscape.** The Portrait Guard covers the Town for a coarse pointer in portrait, so the original 412×915 portrait profile could never reach the Settings control. The measured device is the same 412×915 mid-range Android, held sideways: the viewport is 915×412. A fine pointer in a portrait window still reaches Settings; the guard applies only to a coarse pointer. The rest of the decision is unchanged.

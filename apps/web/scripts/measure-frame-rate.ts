@@ -437,9 +437,23 @@ const waitForBattle = async (page: Page) => {
   );
 };
 
+/** Dismisses the Region opening Story Scene before the Stage screen. */
+const skipStory = async (page: Page) => {
+  await page.getByTestId("campaign").waitFor({
+    state: "visible",
+    timeout: 30_000,
+  });
+  const skip = page.getByTestId("story-skip");
+  if (await skip.isVisible().catch(() => false)) {
+    await skip.click();
+    await skip.waitFor({ state: "hidden", timeout: 30_000 });
+  }
+};
+
 const startBaseline = async (page: Page, url: string) => {
   await page.goto(url, { waitUntil: "domcontentloaded", timeout: 60_000 });
   await page.getByTestId("building-townGate").click();
+  await skipStory(page);
   await page.getByTestId("stage-1-1").click();
   await page.getByTestId("deck-raiders").click();
   await page.getByTestId("start-battle").click();
