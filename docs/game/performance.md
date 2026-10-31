@@ -208,13 +208,13 @@ The 5-type Unit Model selection and the Unit atlas pages in this record were
 removed on 2026-10-31. Its byte totals include assets that the current Battle
 no longer loads.
 
-- Measurement time: `2026-10-31T07:44:01.610Z` (UTC); 2026-10-31 in Asia/Jakarta.
-- Build: commit `810b384b767f1bc7aefc1a5e7c6f28bd0e04aefe`, dirty working tree. The record includes the existing Story changes, the Hero Models and this implementation. It does not describe the unmodified commit.
+- Measurement time: `2026-10-31T07:48:58.759Z` (UTC); 2026-10-31 in Asia/Jakarta.
+- Build: commit `0fb375fc998780afdba2b042a89611876c8736af`, clean working tree. The record includes the Story, Battle budget and Hero Model work on this branch.
 - Command: `bun check:battle-budget`. Run from the repository root. The command builds the production app with Hero Models enabled.
 - One production build serves all three fixtures: Vite production mode, Nitro node-server, base `/`, Node `v26.3.0`, Bun `1.4.2`. Public E2E flags are empty.
 - Stage 1-1: level 1, the valid 10-card Vanguard Starter Deck, Standard appearance, Board and Card Back. The measured set contains 19 distinct files.
 - Stage 5-10: level 30, the valid 15-card Vanguard Archetype plus one Epic Iron Bulwark, Gold Crest portrait, Royal Plate Gear look, Hollow Moon Board skin and Gold Fleur Card Back. The measured set contains 66 distinct files.
-- Stage 5-10 Hero: the same Battle with the Hero Model feature on, Dawn Gaze portrait and Iron Vine Gear look. This is the largest published appearance at 536,656 bytes. The measured set contains 67 distinct files.
+- Stage 5-10 Hero: the same Battle with Hero Models enabled, Dawn Gaze portrait and Iron Vine Gear look. This is the largest published appearance at 536,656 bytes. The measured set contains 67 distinct files.
 
 | Stage | Configuration | Asset bytes | Additional JavaScript, gzip level 9 | Result |
 | --- | --- | ---: | ---: | --- |
