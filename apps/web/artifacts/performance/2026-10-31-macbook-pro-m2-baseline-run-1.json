@@ -1,0 +1,82 @@
+{
+  "meta": {
+    "measuredAt": "2026-10-31T12:33:35.801Z",
+    "device": "macbook-pro-m2",
+    "host": {
+      "model": "Mac14,7",
+      "cpu": "Apple M2",
+      "os": "darwin 25.5.0",
+      "arch": "arm64",
+      "powerSource": "AC power",
+      "lowPowerMode": false,
+      "powerMode": "lowpowermode         0",
+      "cores": 8,
+      "memoryGb": 16,
+      "loadAverage": [
+        6.4,
+        4.36,
+        3.02
+      ]
+    },
+    "build": {
+      "head": "11acc0db1a14e57608ade1068c70b536996f872c",
+      "dirty": "M apps/web/scripts/measure-frame-rate.ts"
+    },
+    "browser": {
+      "version": "156.0.8078.79",
+      "channel": "chrome",
+      "headed": true
+    },
+    "scene": {
+      "scenario": "baseline",
+      "stage": "1-1",
+      "seed": 4,
+      "deck": "raiders",
+      "speed": 1,
+      "skip": false,
+      "input": "real mouse input",
+      "warmUpDiscardedMs": 3000
+    },
+    "viewport": {
+      "width": 1224,
+      "height": 783,
+      "dpr": 2
+    },
+    "measuredDurationMs": 87673,
+    "turns": 10,
+    "result": {
+      "winner": "player",
+      "reason": "routed"
+    },
+    "page": {
+      "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36",
+      "hardwareConcurrency": 8,
+      "visibility": "visible"
+    },
+    "consoleErrors": []
+  },
+  "snapshot": {
+    "frames": {
+      "fps": 53,
+      "frameMs": 19,
+      "meanFps": 58.4,
+      "p50": 16.7,
+      "p95": 17.7,
+      "p99": 19,
+      "worst": 476.4,
+      "samples": 5120,
+      "total": 5120,
+      "cap": 72000,
+      "wrapped": false
+    },
+    "drawCalls": {
+      "current": 30,
+      "max": 75
+    },
+    "dpr": {
+      "native": 2,
+      "current": 2,
+      "changes": []
+    }
+  }
+}

@@ -5,9 +5,9 @@ its date, its method, and the build that it measured.
 
 ## Frame rate (NFR-01)
 
-**NFR-01: FAIL.** The 2022 laptop misses the frame-time budget in both Battles, and no 2022 mid-range Android phone is measured. The laptop runs are also host-limited: the load average was 3.8 to 5.1 and other applications were open, so the protocol condition "no other heavy application" did not hold. The numbers are the observed result, not proof of the device limit. Follow-up: [#140](https://github.com/rifandani/heynbord/issues/140).
+**NFR-01: FAIL on the full protocol runs. The Android phone target is deferred.** The 2022 laptop misses the frame-time budget in both Battles. The maintainer's manual browser check on 2026-10-31 reported 60 fps and 16 ms, and the maintainer accepted it as the laptop evidence, but it is not a full protocol run. The protocol runs are host-limited: the load average was 3.8 to 7.0 and other applications were open, so the condition "no other heavy application" did not hold. The numbers are the observed result, not proof of the device limit. Follow-up: [#140](https://github.com/rifandani/heynbord/issues/140).
 
-A manual desktop spot check on 2026-10-31 with Hero Models enabled reported 60 fps, 16 ms frame time and 57 current draw calls. It is not a protocol run and does not change this result.
+The maintainer deferred all mobile device testing on 2026-10-31 because no Android phone is available. The 30 fps phone target is not measured.
 
 ### 2026-10-26 — MacBook Pro 13-inch (M2, 2022)
 
@@ -37,27 +37,54 @@ A manual desktop spot check on 2026-10-31 with Hero Models enabled reported 60 f
   - [`2026-10-26-macbook-pro-m2-strict-run-1.json`](../../apps/web/artifacts/performance/2026-10-26-macbook-pro-m2-strict-run-1.json)
   - [`2026-10-26-macbook-pro-m2-strict-run-2.json`](../../apps/web/artifacts/performance/2026-10-26-macbook-pro-m2-strict-run-2.json)
 
-### 2026-10-26 — 2022 mid-range Android phone
+### 2026-10-31 — MacBook Pro 13-inch (M2, 2022), protocol re-run
 
-Not measured. No Android phone was attached to the measuring host; `adb devices` listed no device. The runner can drive a real phone over USB:
+- Device, OS and browser: the same MacBook Pro 13-inch (`Mac14,7`) with Apple M2 and macOS 26.5.1. Google Chrome 156.0.8078.79, headed, 1224 × 783 CSS pixels, native DPR 2. AC power, Low Power Mode off.
+- Build: baseline at commit `11acc0db1a`; strict at commit `2bc8a394ec`. Both used the Story Scene skip in the working-tree frame-rate runner. Each raw file records the full dirty list.
+- Host: load average 6.4 to 7.0. A YouTube tab in Chrome used about 98% CPU. T3 Code and Microsoft Defender were also open. The host was not idle.
+- Command: `bun web measure:frame-rate --scenario=baseline --runs=2 --device=macbook-pro-m2` and `bun web measure:frame-rate --scenario=strict --runs=2 --device=macbook-pro-m2`.
+- Baseline scene: Stage 1-1, Raiders Deck, seed 4.
+- Strict scene: Dungeon 3, Vanguard Deck, seed 4. The profile was set to level 30 with the QA hook.
+- Hero Models were enabled for every run.
+
+| Run | Scene | Duration | Mean fps | p50 | p95 | p99 | Worst | Max draw calls | Native DPR | Settled DPR | DPR changes | Result |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
+| 1 | Stage 1-1, Raiders, seed 4 | 87.7 s | 58.4 | 16.7 ms | 17.7 ms | 19.0 ms | 476.4 ms | 75 | 2 | 2 | 0 | Win |
+| 2 | Stage 1-1, Raiders, seed 4 | 87.2 s | 59.7 | 16.7 ms | 17.7 ms | 19.2 ms | 228.2 ms | 75 | 2 | 2 | 0 | Win |
+| 3 | Dungeon 3, Vanguard, seed 4 | 120.9 s | 60.0 | 16.7 ms | 17.7 ms | 19.2 ms | 46.1 ms | 122 | 2 | 2 | 0 | Loss |
+| 4 | Dungeon 3, Vanguard, seed 4 | 120.1 s | 59.8 | 16.7 ms | 17.5 ms | 20.7 ms | 178.8 ms | 122 | 2 | 2 | 0 | Loss |
+
+- Budget: mean fps 60 or more and p95 frame time 16.7 ms or less. All four runs miss the p95 budget. Runs 1 and 2 also miss the mean. Runs 3 and 4 make the mean within rounding and miss p95.
+- The DPR stayed at 2 in every run. Hero Models raised the draw calls to 75 in Stage 1-1 and 122 in Dungeon 3, both under the 150 limit.
+- Raw files:
+  - [`2026-10-31-macbook-pro-m2-baseline-run-1.json`](../../apps/web/artifacts/performance/2026-10-31-macbook-pro-m2-baseline-run-1.json)
+  - [`2026-10-31-macbook-pro-m2-baseline-run-2.json`](../../apps/web/artifacts/performance/2026-10-31-macbook-pro-m2-baseline-run-2.json)
+  - [`2026-10-31-macbook-pro-m2-strict-run-1.json`](../../apps/web/artifacts/performance/2026-10-31-macbook-pro-m2-strict-run-1.json)
+  - [`2026-10-31-macbook-pro-m2-strict-run-2.json`](../../apps/web/artifacts/performance/2026-10-31-macbook-pro-m2-strict-run-2.json)
+
+### 2026-10-31 — 2022 mid-range Android phone: deferred
+
+Not measured. The maintainer deferred all mobile device testing on 2026-10-31 because no Android phone is available. The 30 fps mean and 33 ms p95 target stays in PRD NFR-01, but it is out of scope until a device is attached.
+
+When a device is available, the runner can drive a real phone over USB:
 
 ```sh
 adb forward tcp:9222 localabstract:chrome_devtools_remote
 bun web measure:frame-rate --url=http://<host>:<port> --device=<phone> --cdp=http://127.0.0.1:9222
 ```
 
-The phone must be in landscape, with a normal brightness and no charger. The budget is 30 fps mean and p95 33 ms. NFR-01 cannot pass until this record exists. The Android measurement remains pending because no device is available.
+The phone must be in landscape, with a normal brightness and no charger.
 
-### 2026-10-31 — Hero Models manual desktop spot check
+### 2026-10-31 — Hero Models manual desktop check
 
-This is a manual observation, not the NFR-01 protocol.
+This is a manual observation, not the full NFR-01 protocol. The maintainer accepted it as the laptop evidence on 2026-10-31.
 
 - Build: commit `2f164f615b`. The check did not save a raw file.
-- Method: manual Battle in the browser with `__THREE_GAME_DIAGNOSTICS__`.
+- Method: manual Battle in the maintainer's own Google Chrome on the 2022 MacBook Pro 13-inch (M2, 2022), with `__THREE_GAME_DIAGNOSTICS__`.
 - Observed: 60 fps, 16 ms frame time, 57 draw calls in the current frame.
-- Missing for NFR-01: mean fps and p95 over a full Battle, p99, DPR, host record, exact Stage/seed, Hero appearance and raw JSON. The current draw-call count also does not prove that the per-frame maximum is under 150.
-- Laptop NFR-01 with Hero Models: pending.
-- Android NFR-01 with Hero Models: pending; no device is available.
+- Missing from the full protocol: mean fps and p95 over a full Battle, p99, DPR, host load, exact Stage/seed, Hero appearance and raw JSON. The current draw-call count also does not prove that the per-frame maximum is under 150.
+- Laptop: accepted by the maintainer. The full protocol re-run is tracked in [#140](https://github.com/rifandani/heynbord/issues/140).
+- Android: deferred; all mobile device testing is skipped until a device is attached.
 - The full run should use the largest Hero appearance (Dawn Gaze + Iron Vine).
 
 ## Bundle — 2026-10-26 — First Load JavaScript for `/play`
