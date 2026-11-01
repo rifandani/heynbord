@@ -37,6 +37,16 @@ export interface FloorTemplate {
    * the first copies, so the order is part of the template.
    */
   readonly deck: readonly string[];
+  /**
+   * The change of the strength curve for this template. A template that is
+   * easier or harder than the curve gets a small Hero HP offset and a small
+   * change in the number of copies with the extra Rank step, so that one
+   * template can be tuned without a global curve change (ADR-0040).
+   */
+  readonly strength?: {
+    readonly heroHpOffset?: number;
+    readonly extraStepCopiesOffset?: number;
+  };
 }
 
 /** The Start Unit of a Boss Floor: a Start Unit of its Boss Stage. */
@@ -695,6 +705,19 @@ export const floorRecommendedLevels = (
 
 const RECOMMENDED_LEVELS = floorRecommendedLevels();
 
+/** The template of Floor `floor`: a Boss Floor template or a Floor template. */
+const floorTemplate = (floor: number): FloorTemplate | BossFloorTemplate => {
+  assertFloor(floor);
+  const template = isBossFloor(floor)
+    ? BOSS_FLOOR_TEMPLATES[floor / HEYNSPIRE_BOSS_FLOOR_EVERY - 1]
+    : FLOOR_TEMPLATES[(floor % HEYNSPIRE_BOSS_FLOOR_EVERY) - 1];
+  /* v8 ignore next -- @preserve */
+  if (template === undefined) {
+    throw new RangeError(`No template for Floor ${floor}`);
+  }
+  return template;
+};
+
 /** The strength of a Floor, from the strength curve (ADR-0040). */
 export interface FloorStrength extends TierStrength {
   /** The Deck size: the largest that the Recommended level allows (GDD 6). */
@@ -717,25 +740,25 @@ export const floorStrength = (floor: number): FloorStrength => {
         ...NORMAL_FLOOR_STRENGTH,
         heroHp: NORMAL_FLOOR_STRENGTH.heroHp + HERO_HP_PER_TIER * tier,
       };
-  return { ...strength, deckSize: deckSizeLimits(level).max };
+  const deckSize = deckSizeLimits(level).max;
+  const offsets = floorTemplate(floor).strength ?? {};
+  return {
+    ...strength,
+    heroHp: strength.heroHp + (offsets.heroHpOffset ?? 0),
+    extraStepCopies: Math.max(
+      0,
+      Math.min(
+        deckSize,
+        strength.extraStepCopies + (offsets.extraStepCopiesOffset ?? 0)
+      )
+    ),
+    deckSize,
+  };
 };
 
 /** `rank` with `steps` more Rank steps, at most Legendary. */
 const stepRank = (rank: RankId, steps: number): RankId =>
   RANKS[Math.min(RANKS.indexOf(rank) + steps, RANKS.length - 1)] ?? rank;
-
-/** The template of Floor `floor`: a Boss Floor template or a Floor template. */
-const floorTemplate = (floor: number): FloorTemplate | BossFloorTemplate => {
-  assertFloor(floor);
-  const template = isBossFloor(floor)
-    ? BOSS_FLOOR_TEMPLATES[floor / HEYNSPIRE_BOSS_FLOOR_EVERY - 1]
-    : FLOOR_TEMPLATES[(floor % HEYNSPIRE_BOSS_FLOOR_EVERY) - 1];
-  /* v8 ignore next -- @preserve */
-  if (template === undefined) {
-    throw new RangeError(`No template for Floor ${floor}`);
-  }
-  return template;
-};
 
 /**
  * Makes Floor `floor` from its template and the strength curve (ADR-0040):

@@ -16,4 +16,5 @@ The difficulty does not go up from Floor 1 to Floor 50, as in the Regions. Each 
 - A template has its own cards. A change to a Stage Deck does not change a Floor.
 - A content test checks each generated Floor: each copy is at its Base Rank or higher, each card is in the Campaign card pool, and the Deck size is legal at the Recommended level.
 - `sim floor` plays all 50 Floors, and `rules:sim:check` in CI fails when a Floor is not on its target.
+- A Floor template can carry a small correction to the curve: `strength.heroHpOffset` and `strength.extraStepCopiesOffset`. Then one template is tuned without a global curve change, which would move the other 8. No template uses it now.
 - The economy sim models each Boss Floor at the Boss target, not at the normal target.
