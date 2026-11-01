@@ -436,6 +436,22 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Hint**: A one-line tip that shows one time, when the Player first meets something that the Tutorial does not teach. It is not part of the Tutorial. _Avoid_: tutorial step, tooltip, popup
 
+### Balance
+
+**Win-rate target**: The interval of win rates that a Stage, a Dungeon or a Floor must reach in the simulation, for example 60% to 80% for a normal Stage. A Boss row has its own target. _Avoid_: difficulty band, win chance, balance target
+
+**Window**: The width of a **Win-rate target** in percentage points: 20 for a normal Stage or Floor, 30 for a Boss row. _Avoid_: band, range, tolerance
+
+**Row**: One line of the simulation check: one Stage, Dungeon or Floor, one **Starter Deck**, and one Gear setting. _Avoid_: entry, case, sample
+
+**Gear row**: A **Row** with no Gear, or a **Row** with the **Expected Gear** (or with the Gear of `--gear`). _Avoid_: gear level, gear tier
+
+**Gear spread**: The difference between the Gear row and the no-Gear row of the same Deck, in percentage points. _Avoid_: gear gap, gear bonus
+
+**Deck spread**: The difference between the Raiders row and the Vanguard row of the same Gear row, in percentage points. _Avoid_: deck gap, deck imbalance
+
+**Span**: The difference between the highest and the lowest **Row** of one Stage, Dungeon or Floor. It is about the **Gear spread** plus the **Deck spread**. _Avoid_: gap, range
+
 ## Relationships
 
 - A **Player** controls one **Hero**. The Hero has one **Class**: the Class of the **Active Deck**. The Player changes the Hero Class when the Player selects a Deck of another Class.
@@ -538,3 +554,4 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 - The Keyword **Bulwark N** had the name "Armor N" before. "Armor" is also the name of a Gear slot, but Armor Gear gives Hero HP and does not reduce damage. Now "Armor" is only the Gear slot. ADR-0030 and the old rows of the balance log still say "Armor".
 - GDD 4.12 had watched **Auto-play** on each won Stage. Then an Auto-play win could give more **Stars**, and the AI could open **Star chests** for the Player. Now a Stage has the **Sweep**, only at 3 Stars. A Sweep is not Auto-play: it plays no Battle. Watched Auto-play stayed only on won **Dungeons**. Then the **Dungeon Sweep** replaced it, and now the Player cannot start Auto-play ([ADR-0039](../../docs/adr/0039-dungeons-have-a-dungeon-sweep-with-their-own-tickets.md)). "Skip Ticket" is not a term, because **Skip** already means to skip the animations of a Resolution Phase. "Sweep Ticket" was the name of the **Campaign Sweep Ticket** before the **Dungeon Sweep Ticket** was added. It is not a term now: say which type.
 - The first name of **Forge Stone** was "Enchanting Gem". It is not a term: "gems" is a word to avoid for **Heynstones**, and a Player can think that money buys them. "Enchant" is a word to avoid for **Gear upgrade**. For the same reasons, the item for Gear levels 21 to 25 is not a "Legendary Gem". It is the Legendary **Forge Stone tier**.
+- "Gap" is not a term. It meant the **Gear spread** in one place and the **Deck spread** in another, and the two numbers have different fixes. Say which one, or say **Span** for the whole Stage or Floor.

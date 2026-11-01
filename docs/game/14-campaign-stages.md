@@ -28,6 +28,10 @@ The **Expected Gear** of a Stage is the highest Gear that a Player on the First-
 
 With `--check`, the sim fails when a row with no Gear or a row with Expected Gear is not on its target. `--level N` plays N levels above the Recommended level, and `--gear N` sets all 4 Gear items to level N, with the same Deck. They measure the win-chance bonuses of the economy simulation, so with these flags the sim plays no Expected Gear rows.
 
+**The window has two parts.** Each Stage and each Floor has 4 rows in the sim: the 2 Starter Decks, each with no Gear and with the Expected Gear. The **Gear spread** is the difference between the Gear row and the no-Gear row of one Deck. The **Deck spread** is the difference between the 2 Decks in one Gear row. The 2 spreads add up to the **span** of the 4 rows, and the span must fit in the 20-point window. On a Floor, the Expected Gear adds 7 to 13 points, so the Deck spread must stay at 7 points or less. On a Stage, the Gear adds 3 to 6 points, so the Deck spread can be larger. A rate from 1000 Battles has about 1.5 points of sampling error, so keep 1 point of margin at each end of the window: 61% to 79%.
+
+On 2026-11-01, Floor 1 used 17 of the 20 points: 62% / 68% with no Gear, then 76% / 79% with the Expected Gear. Thus a change of 3 points or more to a card line can break the window, and a full card rebalance breaks it on most Floors. A rebalance needs new Decks, not a wider window ([ADR-0055](../adr/0055-a-higher-base-rank-gives-a-power-budget-bonus.md)).
+
 The expected Deck is the Starter Deck (10 cards), then the first-win cards of the earlier Stages, in Stage order, up to the maximum Deck size at the Recommended level (GDD 6). It skips a fourth copy of a card, a Skill Card of another Class and a card that puts the Deck over the Countdown Limit of the Recommended level ([ADR-0021](../adr/0021-countdown-is-a-real-cost.md)). For example, at Stage 1-5 (level 3, maximum 12 cards) the expected Vanguard Deck is the Starter Deck, Militia Recruit and Scrap Raider. The expected Raiders Deck already has 3 Scrap Raiders and 3 Ember Shamans, so it skips the first-win cards of Stages 1-2 and 1-3, and it gets Militia Recruit and Shieldbearer.
 
 A content test checks that each Recommended level is the level of the First-try Path. A Player who loses or plays again has more XP, so the Recommended level is a floor. When the XP table, a first-win XP reward (Economy 2.1) or the Stage order changes, update the `recommendedLevel` values in `stages.ts`. Then run `bun run sim stage` again.
@@ -657,7 +661,7 @@ Heynspire is not a part of the Campaign ([GDD 8.2](./03-game-design.md#82-heynsp
 - **The order of a template Deck.** The curve gives 1 Rank step to the first copies of the Deck. The Battle seed shuffles the Deck in its order. Thus the order changes the win rates, and the order is part of the template.
 - **Content tests.** A content test checks each generated Floor: each copy is at its Base Rank or higher and never above Legendary, each card is in the Campaign card pool, there is no Epic Skill Card, a Deck has at most 3 copies of a card, the Deck size is the largest at the Recommended level, and each Start Unit is in the Front.
 - **Recommended level and Expected Gear.** They come from the First-try Path: all Stages, then the earlier Floors (`floorRecommendedLevels`). Floors 1 to 15 have Recommended level 23, and Floors 43 to 50 have level 27. The maximum Deck size is 30 at all these levels, so each Floor Deck has 30 cards. The Expected Gear goes from 13 / 13 / 13 / 13 before Floor 1 to 16 / 16 / 15 / 15 before Floor 50.
-- **Win-rate target.** The difficulty does not go up. A normal Floor has the target of a normal Stage (60% to 80%), and a Boss Floor has the target of a Boss Stage (30% to 50%; in `sim:check`, 25% to 50% with no Gear and 30% to 55% with the Expected Gear, [ADR-0033](../adr/0033-a-stage-hits-its-target-with-no-gear-and-with-the-expected-gear.md)). Each Floor must hit its target at its Recommended level, with no Gear and with the Expected Gear ([ADR-0033](../adr/0033-a-stage-hits-its-target-with-no-gear-and-with-the-expected-gear.md)).
+- **Win-rate target.** The difficulty does not go up. A normal Floor has the target of a normal Stage (60% to 80%), and a Boss Floor has the target of a Boss Stage (30% to 50%; in `sim:check`, 25% to 50% with no Gear and 30% to 55% with the Expected Gear, [ADR-0033](../adr/0033-a-stage-hits-its-target-with-no-gear-and-with-the-expected-gear.md)). Each Floor must hit its target at its Recommended level, with no Gear and with the Expected Gear ([ADR-0033](../adr/0033-a-stage-hits-its-target-with-no-gear-and-with-the-expected-gear.md)). The window has two parts (1.1): on a Floor the Expected Gear adds 7 to 13 points, so the Deck spread must stay at 7 points or less.
 
 ### 8.2 Simulation
 
@@ -676,6 +680,8 @@ The economy simulation (Economy 7.1) gives a Boss Floor the base chance of a Bos
 | 41 to 49 | 0 | The first 12 | 58 | 0 / 0 / 0 / 0 | 30 |
 
 Each Boss Floor has its own row, in 8.5. The Deck size is the largest at the Recommended level (GDD 6). No copy goes above Legendary.
+
+A template can also carry a small correction to the curve: `strength.heroHpOffset` and `strength.extraStepCopiesOffset`. Then one template can be tuned without a global curve change, which would move the other 8. No template uses it now. It is there for a retune, and a content test keeps each Floor legal.
 
 Notes from the first tuning (Vanguard and Raiders, 200 to 1000 Battles):
 
