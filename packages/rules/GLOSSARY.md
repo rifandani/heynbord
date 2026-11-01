@@ -160,7 +160,7 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Power Points**: The strength of one Card at its Base Rank. A Creature Card gets them from its Attack, HP, Speed, Range, Damage Type and Keywords. A Skill Card gets them from its effect, its Damage Type and its Recall. _Avoid_: power level, rating, score, value, Skill Points
 
-**Power Budget**: The Power Points that a Card can have for its Countdown. A Creature Card and a Skill Card with the same Countdown have the same Power Budget. A Card must stay near its Power Budget. _Avoid_: cost, mana curve, stat budget, Skill Power Budget
+**Power Budget**: The Power Points that a Card can have for its Countdown and Base Rank. A higher Base Rank has a written bonus ([ADR-0055](../../docs/adr/0055-a-higher-base-rank-gives-a-power-budget-bonus.md)). A Creature Card and a Skill Card with the same Countdown and Base Rank have the same Power Budget. A Card must stay near its Power Budget. _Avoid_: cost, mana curve, stat budget, Skill Power Budget
 
 **Countdown Band**: The Countdowns that the Creature Cards of one Race can have for each Base Rank. For example, a Feral Common has Countdown 2 or 3, and no Feral card has Countdown 1. _Avoid_: Countdown range, cost tier, mana band
 

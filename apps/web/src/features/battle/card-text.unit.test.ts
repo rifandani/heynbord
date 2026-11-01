@@ -512,7 +512,7 @@ describe("cardText (CRD-08)", () => {
     ]);
     expect(names("human.marshalElianVoss", "epic")).toEqual([
       "Unique",
-      "Bulwark 1",
+      "Bulwark 2",
       "Rally 2",
       "Mid-range",
     ]);

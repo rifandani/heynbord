@@ -186,7 +186,7 @@ const creatures: readonly CreatureCardDefinition[] = [
     attack: 1,
     hp: 6,
     damageType: "holy",
-    keywords: { midRange: true, bulwark: 1, rally: 2, unique: true },
+    keywords: { midRange: true, bulwark: 2, rally: 2, unique: true },
   },
   // The Human Specialist (ADR-0048): a Warrior that holds the line and rallies it.
   {
@@ -342,10 +342,10 @@ const creatures: readonly CreatureCardDefinition[] = [
     race: "orc",
     baseRank: "rare",
     countdown: 4,
-    attack: 4,
+    attack: 3,
     hp: 4,
     damageType: "fire",
-    keywords: { longRange: true },
+    keywords: { longRange: true, heroic: { rare: 2, epic: 3, legendary: 4 } },
   },
   {
     kind: "creature",

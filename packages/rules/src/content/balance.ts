@@ -121,13 +121,17 @@ const summonPoints = (summon: TokenId | undefined, rank: RankId): number =>
 /**
  * `power = Attack × 2 + HP + Keyword points`, plus Damage Type points. Attack
  * and HP are at the Base Rank, as the Keyword points are (ADR-0020). The Speed
- * and Range Keywords are Keyword points (ADR-0029).
+ * and Range Keywords are Keyword points (ADR-0029). `rank` measures a copy at
+ * another Rank, which the pairwise check of ADR-0055 uses.
  */
-export const creaturePower = (card: CreatureCardDefinition): number =>
-  scaleForRank(card.attack, card.baseRank) * 2 +
-  scaleForRank(card.hp, card.baseRank) +
-  keywordPoints(card.keywords, card.baseRank) +
-  summonPoints(card.keywords.summon, card.baseRank) +
+export const creaturePower = (
+  card: CreatureCardDefinition,
+  rank: RankId = card.baseRank
+): number =>
+  scaleForRank(card.attack, rank) * 2 +
+  scaleForRank(card.hp, rank) +
+  keywordPoints(card.keywords, rank) +
+  summonPoints(card.keywords.summon, rank) +
   DAMAGE_TYPE_POINTS[card.damageType];
 
 /**
@@ -138,15 +142,33 @@ export const creaturePower = (card: CreatureCardDefinition): number =>
 export const POWER_BUDGET_SLOPE = 3;
 
 /**
- * `budget = 19 + s × (Countdown − 3)` (GDD 13, ADR-0021). It was 21: the 2
- * points of Speed 1 left it when the Base Speed became free (ADR-0029).
+ * The bonus of the Power Budget for each Base Rank (ADR-0055). A higher Base
+ * Rank starts at a higher Rank, so its printed line is lower. The bonus makes
+ * a copy at the same Rank at least as strong as a copy of a Base Rank Common
+ * card of the same Countdown. Common keeps ×1.0. This is the first fit. The
+ * script `scripts/fit-base-rank-budget.ts` prints the smallest table that
+ * passes the pairwise check; the full rebalance to it is deferred (ADR-0055).
  */
-export const powerBudget = (countdown: number): number =>
-  19 + POWER_BUDGET_SLOPE * (countdown - 3);
+export const BASE_RANK_BUDGET_BONUS: Record<RankId, number> = {
+  common: 1,
+  uncommon: 1.1,
+  rare: 1.4,
+  epic: 1.5,
+  legendary: 1.7,
+};
+
+/**
+ * `budget = (19 + s × (Countdown − 3)) × baseRankBonus` (GDD 13, ADR-0021,
+ * ADR-0055). It was 21: the 2 points of Speed 1 left it when the Base Speed
+ * became free (ADR-0029).
+ */
+export const powerBudget = (countdown: number, baseRank: RankId): number =>
+  (19 + POWER_BUDGET_SLOPE * (countdown - 3)) *
+  BASE_RANK_BUDGET_BONUS[baseRank];
 
 /** The difference from the budget in basis points. A card must stay within ±1000 (±10%). */
 export const budgetDeviation = (card: CreatureCardDefinition): number => {
-  const budget = powerBudget(card.countdown);
+  const budget = powerBudget(card.countdown, card.baseRank);
   return Math.trunc(((creaturePower(card) - budget) * 10_000) / budget);
 };
 
@@ -407,11 +429,14 @@ const termPoints = (parts: SkillPowerTerms): number =>
 /**
  * The Power Points of a Skill Card at its Base Rank (ADR-0031), with the same
  * Power Budget as a Creature Card. Crit does not count: it comes from the
- * Hero, not from the Card.
+ * Hero, not from the Card. `rank` measures a copy at another Rank, which the
+ * pairwise check of ADR-0055 uses.
  */
-export const skillPower = (card: SkillCardDefinition): number =>
-  termPoints(skillPowerTerms(card.effect, card.baseRank)) *
-  recallMultiplier(card.baseRank);
+export const skillPower = (
+  card: SkillCardDefinition,
+  rank: RankId = card.baseRank
+): number =>
+  termPoints(skillPowerTerms(card.effect, rank)) * recallMultiplier(rank);
 
 /**
  * The main amount of an effect: the value that the nearest-step rule changes.
@@ -559,7 +584,7 @@ export const skillBudgetCheck = (
   card: SkillCardDefinition
 ): SkillBudgetCheck => {
   const power = skillPower(card);
-  const budget = powerBudget(card.countdown);
+  const budget = powerBudget(card.countdown, card.baseRank);
   const steps = stepPowers(card);
   const miss = Math.abs(power - budget);
   return {

@@ -15,7 +15,7 @@ The provisional set is budget-valid and simulation-ready. It is not balance-appr
 - **Creature Cards and Tokens** use the prompts of 5.2. They make one export: the card art. The silhouette must be clear at 128 px tall.
 - **Skill Cards** use the prompts of 5.2.1. They show the effect with a partial figure that has no Race. They have no Unit.
 - **Provisional power.** A Summon or a Last Breath that summons uses 50% of the Token power at the Base Rank of its Card. All provisional Cards must stay within 10% of their Countdown budget.
-- **Power Budget `19 + 3 × (Countdown − 3)`** (the same as `10 + 3 × Countdown`). The base was 21 before [ADR-0029](../adr/0029-keywords-set-speed-and-range-and-there-are-no-roles.md): the Base Speed 2 is now free. The Human, Orc, Goblin, Feral, Elf and Undead values are the fit of `packages/rules/scripts/fit-budget.ts` to this budget ([ADR-0021](../adr/0021-countdown-is-a-real-cost.md), [08 — Archetypes, 3.1](./08-archetypes.md#31-balance-changes)). The Undead values use `--hp-per-attack 2`: the fit selects 1 Attack for each 2 HP at the Base Rank, not the shape of the old line. The old Undead shapes (for example 4/3 and 5/3) lost almost all Matchups ([08 — Archetypes, 3.1](./08-archetypes.md#31-balance-changes)). A Token has no budget of its own. Only the cards that summon it have a budget.
+- **Power Budget `(19 + 3 × (Countdown − 3)) × baseRankBonus`** (the same as `(10 + 3 × Countdown) × baseRankBonus`). The base was 21 before [ADR-0029](../adr/0029-keywords-set-speed-and-range-and-there-are-no-roles.md): the Base Speed 2 is now free. The Base Rank bonus is Common ×1.0, Uncommon ×1.1, Rare ×1.4, Epic ×1.5 and Legendary ×1.7 ([ADR-0055](../adr/0055-a-higher-base-rank-gives-a-power-budget-bonus.md)). The Human, Orc, Goblin, Feral, Elf and Undead values are the fit of `packages/rules/scripts/fit-budget.ts` to this budget ([ADR-0021](../adr/0021-countdown-is-a-real-cost.md), [08 — Archetypes, 3.1](./08-archetypes.md#31-balance-changes)). The Undead values use `--hp-per-attack 2`: the fit selects 1 Attack for each 2 HP at the Base Rank, not the shape of the old line. The old Undead shapes (for example 4/3 and 5/3) lost almost all Matchups ([08 — Archetypes, 3.1](./08-archetypes.md#31-balance-changes)). A Token has no budget of its own. Only the cards that summon it have a budget. The full rebalance to the fitted table is deferred, so the cards that keep their old line are written exceptions in the content test ([ADR-0055](../adr/0055-a-higher-base-rank-gives-a-power-budget-bonus.md)).
 - **Common values and Power Points.** The Attack and HP on each line are Common values. The Power on each line measures Attack and HP at the Base Rank of the card, with the Rank scale of GDD 5.3 ([ADR-0020](../adr/0020-the-power-budget-measures-a-card-at-its-base-rank.md)). Thus an Uncommon, Rare or Epic card has lower Common Attack and HP than a Common card of the same power.
 
 ### 1.1 Settings
@@ -274,11 +274,11 @@ Purpose: a premium Wall that damages the nearest enemy Unit ahead when it leaves
 
 ### 2.15 Marshal Elian Voss (draft)
 
-`human.marshalElianVoss` · Epic · Countdown 6 · Attack 1 · HP 6 · Holy · Mid-range · Bulwark 1 · Rally 2 · Unique
+`human.marshalElianVoss` · Epic · Countdown 6 · Attack 1 · HP 6 · Holy · Mid-range · Bulwark 2 · Rally 2 · Unique
 
 > Hold the line. I have six more reasons.
 
-Purpose: the named Human Epic and Rally capstone. Power 27, budget 28, deviation -3.6%.
+Purpose: the named Human Epic and Rally capstone. Power 29, budget 28, deviation +3.6%.
 
 | Field | Brief |
 | --- | --- |
@@ -519,18 +519,18 @@ Purpose: a low-Countdown rush enabler. Power 15, budget 16, deviation -6.3%.
 
 ### 3.12 Ashspit Hunter
 
-`orc.ashspitHunter` · Rare · Countdown 4 · Attack 4 · HP 4 · Fire · Long-range
+`orc.ashspitHunter` · Rare · Countdown 4 · Attack 3 · HP 4 · Fire · Long-range · Heroic 2 at Rare, 3 at Epic, 4 at Legendary
 
 > He measures range by how far the eyebrows burn.
 
-Purpose: a ranged Fire threat. Power 23, budget 22, deviation +4.5%.
+Purpose: a scaling ranged Fire threat. Power 23, budget 30.8, deviation −25.3%. Heroic 2 gives the card a different role from Ember Shaman: after each attack on a Unit, it gets +2 Attack, and it can grow behind the front line. The Rare Base Rank budget is ×1.4 ([ADR-0055](../adr/0055-a-higher-base-rank-gives-a-power-budget-bonus.md)); the full rebalance is deferred, so this line is a written exception in the content test.
 
 | Field | Brief |
 | --- | --- |
 | Subject | A lean orc man with one singed eyebrow. |
 | Pose | He braces a long fire tube. |
 | Props | Iron fire tube, brass trim, ember basket and leather coat. |
-| Gameplay cues | The long weapon shows Long-range; its trail shows Fire. |
+| Gameplay cues | The long weapon shows Long-range; its trail shows Fire; he grows bolder with each hit (Heroic). |
 | Silhouette hook | Horizontal tube and ember basket. |
 | Humor note | His remaining eyebrow shows concern. |
 | Setting | A ledge above a canyon. |

@@ -1078,7 +1078,7 @@ const pointsOf = (skillId: string) => {
     return "—";
   }
   const budget = skillBudgetCheck(card);
-  return `${budget.power.toFixed(1)} / ${budget.budget}${budget.nearestStep ? "" : " off step"}`;
+  return `${budget.power.toFixed(1)} / ${budget.budget.toFixed(1)}${budget.nearestStep ? "" : " off step"}`;
 };
 
 const signedPoints = (value: number) => (value > 0 ? `+${value}` : `${value}`);
