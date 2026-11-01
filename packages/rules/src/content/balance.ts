@@ -145,15 +145,19 @@ export const POWER_BUDGET_SLOPE = 3;
  * The bonus of the Power Budget for each Base Rank (ADR-0055). A higher Base
  * Rank starts at a higher Rank, so its printed line is lower. The bonus makes
  * a copy at the same Rank at least as strong as a copy of a Base Rank Common
- * card of the same Countdown. Common keeps ×1.0. This is the first fit. The
- * script `scripts/fit-base-rank-budget.ts` prints the smallest table that
- * passes the pairwise check; the full rebalance to it is deferred (ADR-0055).
+ * card of the same Countdown. Common keeps ×1.0.
+ *
+ * `scripts/fit-base-rank-budget.ts` prints the smallest table that passes the
+ * pairwise check: Uncommon ×1.25, Rare ×1.4463 and Epic ×1.6529. The fit for
+ * Legendary is lower, because no Common card has Countdown 5 or 6; the table
+ * keeps the first-fit ×1.7 so that the bonus never falls as the Base Rank
+ * rises.
  */
 export const BASE_RANK_BUDGET_BONUS: Record<RankId, number> = {
   common: 1,
-  uncommon: 1.1,
-  rare: 1.4,
-  epic: 1.5,
+  uncommon: 1.25,
+  rare: 1.4463,
+  epic: 1.6529,
   legendary: 1.7,
 };
 

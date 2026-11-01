@@ -262,7 +262,7 @@ const pairwiseViolations = (): readonly PairwiseViolation[] => {
 };
 
 /**
- * The cards that are outside the first-fit Base Rank budget or the pairwise
+ * The cards that are outside the fitted Base Rank budget or the pairwise
  * rule (ADR-0055). The rebalance is deferred: the simulation gate wins, so
  * these cards keep their old printed line and are written exceptions in ADR
  * 0055 under "The written exceptions". A card leaves the list when a tuning
@@ -733,15 +733,15 @@ describe("card content (CRD-01, technical design 3.5)", () => {
   it("gives each higher Base Rank a written Power Budget bonus (ADR-0055)", () => {
     expect(BASE_RANK_BUDGET_BONUS).toEqual({
       common: 1,
-      uncommon: 1.1,
-      rare: 1.4,
-      epic: 1.5,
+      uncommon: 1.25,
+      rare: 1.4463,
+      epic: 1.6529,
       legendary: 1.7,
     });
     expect(powerBudget(3, "common")).toBe(19);
-    expect(powerBudget(3, "uncommon")).toBeCloseTo(20.9);
-    expect(powerBudget(3, "rare")).toBeCloseTo(26.6);
-    expect(powerBudget(3, "epic")).toBeCloseTo(28.5);
+    expect(powerBudget(3, "uncommon")).toBeCloseTo(23.75);
+    expect(powerBudget(3, "rare")).toBeCloseTo(27.4797);
+    expect(powerBudget(3, "epic")).toBeCloseTo(31.4051);
     expect(powerBudget(3, "legendary")).toBeCloseTo(32.3);
   });
 
@@ -1080,8 +1080,8 @@ describe("card content (CRD-01, technical design 3.5)", () => {
     expect(power("elf.lethielFirstGardener")).toBe(23);
     expect(
       card.kind === "creature" && powerBudget(card.countdown, card.baseRank)
-    ).toBe(37.5);
-    expect(card.kind === "creature" && budgetDeviation(card)).toBe(-3866);
+    ).toBeCloseTo(41.3225);
+    expect(card.kind === "creature" && budgetDeviation(card)).toBe(-4434);
     expect(POWER_BUDGET_EXCEPTIONS.has(card.id)).toBe(true);
   });
 

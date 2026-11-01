@@ -138,6 +138,9 @@ console.table([
     bonus: Number(bonus.toFixed(4)),
   })),
 ]);
+console.log(
+  "ADR-0055 uses ×1.7 for Legendary: the fit is below Epic, and the bonus must not fall as the Base Rank rises."
+);
 
 const noFit = creatures.filter(
   (card) =>

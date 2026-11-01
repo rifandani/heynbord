@@ -10,14 +10,14 @@ The Power Budget is:
 budget = (19 + 3 × (Countdown − 3)) × baseRankBonus
 ```
 
-The first fit is:
+The table is:
 
 | Base Rank | Bonus |
 | --- | --- |
 | Common | ×1.0 |
-| Uncommon | ×1.1 |
-| Rare | ×1.4 |
-| Epic | ×1.5 |
+| Uncommon | ×1.25 |
+| Rare | ×1.4463 |
+| Epic | ×1.6529 |
 | Legendary | ×1.7 |
 
 `powerBudget(countdown, baseRank)` returns the budget with the bonus. A Common Base Rank card keeps the old budget. `creaturePower` and `skillPower` still measure a Card at its Base Rank, and they take an optional Rank so that a copy can be measured at another Rank.
@@ -40,13 +40,13 @@ The content test checks the rule and names the card ID, the Rank and the referen
 | Epic | ×1.6529 |
 | Legendary | ×1.5636 |
 
-The Legendary cards have no Base Rank Common card of their Countdown, so the pairwise reference is the Power Budget of the copy Rank. The script fits ×1.5636 for Legendary. The first fit ×1.7 is above it, so a Legendary card can pass the pairwise rule; the current lines are still written exceptions. The first fit is lower than the fitted table for Uncommon, Rare and Epic. That is on purpose: the full rebalance to the fitted table is a separate, large change. The script fits the Creature Cards. The Skill Cards use the same table and the content test, and a Skill Card with no main amount cannot move to a higher amount: it stays a written exception.
+The Legendary cards have no Base Rank Common card of their Countdown, so the pairwise reference is the Power Budget of the copy Rank. The script fits ×1.5636 for Legendary. The fit is below Epic, so the table keeps the first-fit ×1.7 for Legendary and the bonus never falls as the Base Rank rises. A Legendary card still passes the pairwise rule at ×1.7. The first fit is lower than the fitted table for Uncommon, Rare and Epic. That is on purpose: the fitted table is the smallest table that lets every Creature Card meet the ±10% band and the pairwise rule with a legal Attack and HP line. The script fits the Creature Cards. The Skill Cards use the same table and the content test.
 
 ## The deferred rebalance
 
-The full rebalance to the first-fit table changes the printed line of every Uncommon, Rare, Epic and Legendary card. It also changes the Stage, Dungeon and Floor enemies and the Main Matchups. It is not in this change. The simulation gate wins over the content test (GDD 13), so the cards that keep their old line are written exceptions in `POWER_BUDGET_EXCEPTIONS` in `packages/rules/src/content/content.unit.test.ts`. A card leaves the list when a tuning pass brings it to the new budget and the pairwise rule.
+The full rebalance to the fitted table was tried. It changes the printed line of every Uncommon, Rare, Epic and Legendary card, and it changes the Stage, Dungeon and Floor enemies and the Main Matchups. The 15 Main pairs leave 45% to 55%, and hundreds of campaign rows leave their target: a single boss card such as Warchief Grukka in Stage 2-10 is enough to make the row unwinnable. The simulation gate wins over the content test (GDD 13), so the cards keep their old line and are written exceptions in `POWER_BUDGET_EXCEPTIONS` in `packages/rules/src/content/content.unit.test.ts`. A card leaves the list when a tuning pass brings it to the new budget, the pairwise rule and the simulation gate.
 
-The Main Matchups, the Stages, the Dungeons, the Floors and the economy simulation pass with the old lines. The full rebalance is a follow-up issue.
+The Main Matchups, the Stages, the Dungeons, the Floors and the economy simulation pass with the old lines. The full rebalance needs a new set of Main Archetypes and campaign Decks, and it is a follow-up issue.
 
 ### The written exceptions
 
@@ -74,96 +74,96 @@ The 100 written exceptions are:
 
 **Uncommon (42)**
 
-- `human.dawnCleric` — band −13.9%; pairwise uncommon/rare/epic/legendary
-- `human.riverKnight` — band −17.4%; pairwise uncommon/rare/epic/legendary
-- `human.gateWarden` — pairwise uncommon/rare/epic/legendary
-- `human.bridgePikeman` — pairwise uncommon/rare/epic
-- `human.bannerChaplain` — pairwise uncommon/rare/epic/legendary
-- `orc.howlingCharger` — pairwise uncommon/rare/epic/legendary
-- `orc.skyreaver` — pairwise uncommon/rare/epic/legendary
-- `orc.packStalker` — band −14.8%; pairwise uncommon/rare/epic/legendary
-- `orc.cinderhornBreaker` — pairwise uncommon/rare/epic/legendary
-- `orc.warhowlerDrummer` — band −14.8%; pairwise uncommon/rare/epic/legendary
-- `goblin.sidestepShiv` — pairwise uncommon/rare/epic/legendary
-- `goblin.junkBarricade` — pairwise uncommon/rare/epic/legendary
-- `goblin.bombLobber` — band −13.9%; pairwise uncommon/rare/epic/legendary
-- `goblin.greaseTrapper` — pairwise uncommon/rare/epic/legendary
-- `goblin.rocketBarrelRider` — pairwise uncommon/rare/epic/legendary
-- `feral.boulderTortoise` — pairwise uncommon/rare/epic/legendary
-- `feral.tailsweepBasilisk` — band −13.9%; pairwise uncommon/rare/epic/legendary
-- `feral.caveTroll` — band −13.9%; pairwise uncommon/rare/epic/legendary
-- `feral.cragRhino` — pairwise uncommon/rare/epic/legendary
-- `feral.frostElkMatriarch` — pairwise uncommon/rare/epic/legendary
-- `elf.gladeTurnblade` — band −13.9%; pairwise uncommon/rare/epic/legendary
-- `elf.canopySkirmisher` — band −13.9%; pairwise uncommon/rare/epic/legendary
-- `elf.thornlineArcher` — pairwise uncommon/rare/epic/legendary
-- `elf.dewkeeper` — band −13.9%; pairwise uncommon/rare/epic/legendary
-- `elf.brambleNest` — pairwise uncommon/rare/epic/legendary
-- `undead.backwatchBailiff` — band −14.8%; pairwise uncommon/rare/epic/legendary
-- `undead.chatteringCohort` — pairwise uncommon/rare/epic/legendary
-- `undead.paleGalloper` — band −14.8%; pairwise uncommon/rare/epic/legendary
-- `undead.rimeEyeReaper` — pairwise uncommon/rare/epic/legendary
-- `undead.ossuaryPiper` — pairwise uncommon/rare/epic/legendary
-- `warrior.warDrums` — cap −27.3%; off step; pairwise uncommon/rare/epic
-- `warrior.cleave` — off step; pairwise uncommon/rare/epic/legendary
-- `warrior.groundSlam` — cap −29.2%; off step; pairwise uncommon/rare
+- `human.dawnCleric` — band −24.2%; pairwise uncommon/rare/epic/legendary
+- `human.riverKnight` — band −27.3%; pairwise uncommon/rare/epic/legendary
+- `human.gateWarden` — band −20.0%; pairwise uncommon/rare/epic/legendary
+- `human.bridgePikeman` — band −20.0%; pairwise uncommon/rare/epic
+- `human.bannerChaplain` — band −20.0%; pairwise uncommon/rare/epic/legendary
+- `orc.howlingCharger` — band −20.0%; pairwise uncommon/rare/epic/legendary
+- `orc.skyreaver` — band −15.8%; pairwise uncommon/rare/epic/legendary
+- `orc.packStalker` — band −25.0%; pairwise uncommon/rare/epic/legendary
+- `orc.cinderhornBreaker` — band −20.0%; pairwise uncommon/rare/epic/legendary
+- `orc.warhowlerDrummer` — band −25.0%; pairwise uncommon/rare/epic/legendary
+- `goblin.sidestepShiv` — band −20.0%; pairwise uncommon/rare/epic/legendary
+- `goblin.junkBarricade` — band −15.0%; pairwise uncommon/rare/epic/legendary
+- `goblin.bombLobber` — band −24.2%; pairwise uncommon/rare/epic/legendary
+- `goblin.greaseTrapper` — band −15.8%; pairwise uncommon/rare/epic/legendary
+- `goblin.rocketBarrelRider` — band −20.0%; pairwise uncommon/rare/epic/legendary
+- `feral.boulderTortoise` — band −15.8%; pairwise uncommon/rare/epic/legendary
+- `feral.tailsweepBasilisk` — band −24.2%; pairwise uncommon/rare/epic/legendary
+- `feral.caveTroll` — band −24.2%; pairwise uncommon/rare/epic/legendary
+- `feral.cragRhino` — band −20.0%; pairwise uncommon/rare/epic/legendary
+- `feral.frostElkMatriarch` — band −15.8%; pairwise uncommon/rare/epic/legendary
+- `elf.gladeTurnblade` — band −24.2%; pairwise uncommon/rare/epic/legendary
+- `elf.canopySkirmisher` — band −24.2%; pairwise uncommon/rare/epic/legendary
+- `elf.thornlineArcher` — band −20.0%; pairwise uncommon/rare/epic/legendary
+- `elf.dewkeeper` — band −24.2%; pairwise uncommon/rare/epic/legendary
+- `elf.brambleNest` — band −15.8%; pairwise uncommon/rare/epic/legendary
+- `undead.backwatchBailiff` — band −25.0%; pairwise uncommon/rare/epic/legendary
+- `undead.chatteringCohort` — band −15.0%; pairwise uncommon/rare/epic/legendary
+- `undead.paleGalloper` — band −25.0%; pairwise uncommon/rare/epic/legendary
+- `undead.rimeEyeReaper` — band −15.0%; pairwise uncommon/rare/epic/legendary
+- `undead.ossuaryPiper` — band −15.0%; pairwise uncommon/rare/epic/legendary
+- `warrior.warDrums` — cap −36.0%; off step; pairwise uncommon/rare/epic
+- `warrior.cleave` — cap −28.4%; off step; pairwise uncommon/rare/epic/legendary
+- `warrior.groundSlam` — cap −37.7%; off step; pairwise uncommon/rare
 - `ranger.longShot` — off step; pairwise uncommon/rare/epic
-- `ranger.barbedArrow` — off step; pairwise uncommon/rare/epic/legendary
-- `ranger.skybreaker` — off step; pairwise uncommon/rare/epic
-- `mage.flameWave` — cap −28.9%; off step; pairwise uncommon/rare/epic/legendary
-- `mage.frostWave` — pairwise uncommon
-- `mage.arcLightning` — off step; pairwise uncommon/rare/epic/legendary
-- `priest.sanctuary` — off step; pairwise uncommon/rare/epic/legendary
+- `ranger.barbedArrow` — cap −29.3%; off step; pairwise uncommon/rare/epic/legendary
+- `ranger.skybreaker` — cap −32.2%; off step; pairwise uncommon/rare/epic
+- `mage.flameWave` — cap −37.5%; off step; pairwise uncommon/rare/epic/legendary
+- `mage.frostWave` — off step; pairwise uncommon
+- `mage.arcLightning` — cap −33.9%; off step; pairwise uncommon/rare/epic/legendary
+- `priest.sanctuary` — cap −31.8%; off step; pairwise uncommon/rare/epic/legendary
 - `priest.penance` — pairwise uncommon/rare/epic/legendary
-- `priest.prayerOfHealing` — cap −36.8%; off step; pairwise uncommon/rare/epic/legendary
+- `priest.prayerOfHealing` — cap −44.4%; off step; pairwise uncommon/rare/epic/legendary
 
 **Rare (26)**
 
-- `human.kingsCourier` — band −35.1%; pairwise rare/epic/legendary
-- `human.paviseArbalist` — band −25.3%; pairwise rare/epic/legendary
-- `human.dawnReliquary` — band −28.6%; pairwise rare/epic/legendary
-- `orc.ashspitHunter` — band −25.3%; pairwise rare/epic/legendary
-- `orc.mesaPitFighter` — band −35.1%; pairwise rare/epic/legendary
-- `orc.pyreaxeRavager` — band −25.7%; pairwise rare/epic/legendary
-- `goblin.mineSapper` — band −31.8%; pairwise rare/epic/legendary
-- `goblin.spyglassSniper` — band −25.3%; pairwise rare/epic/legendary
-- `goblin.junkWalker` — band −31.8%; pairwise rare/epic/legendary
-- `feral.avalancheYeti` — band −28.6%; pairwise rare/epic/legendary
-- `feral.woollyMammoth` — band −31.4%; pairwise rare/epic/legendary
-- `feral.rimebreathDrake` — band −31.4%; pairwise rare/epic/legendary
-- `elf.amberwingDart` — band −28.6%; pairwise rare/epic/legendary
-- `elf.elderreedDartmaster` — band −25.3%; pairwise rare/epic/legendary
-- `elf.seedwindShepherd` — band −35.1%; pairwise rare/epic/legendary
-- `undead.coffinLancer` — band −33.0%; pairwise rare/epic/legendary
-- `undead.winterMaw` — band −24.8%; pairwise rare/epic/legendary
-- `undead.lanternWidow` — band −34.2%; pairwise rare/epic/legendary
-- `warrior.callToArms` — cap −38.3%; off step; pairwise rare/epic/legendary
-- `warrior.exposeWeakness` — cap −40.2%; off step; pairwise rare/epic/legendary
-- `ranger.venomArrow` — cap −39.3%; off step; pairwise rare/epic/legendary
-- `ranger.huntersFocus` — cap −46.1%; off step; pairwise rare/epic/legendary
-- `mage.wildfire` — cap −34.4%; off step; pairwise rare/epic/legendary
-- `mage.thunderstorm` — cap −30.9%; off step; pairwise rare/epic/legendary
-- `priest.cleanse` — cap −45.9%; off step; pairwise rare/epic/legendary
-- `priest.unbrokenVow` — cap −46.4%; pairwise rare/epic/legendary
+- `human.kingsCourier` — band −37.1%; pairwise rare/epic/legendary
+- `human.paviseArbalist` — band −27.7%; pairwise rare/epic/legendary
+- `human.dawnReliquary` — band −30.9%; pairwise rare/epic/legendary
+- `orc.ashspitHunter` — band −27.7%; pairwise rare/epic/legendary
+- `orc.mesaPitFighter` — band −37.1%; pairwise rare/epic/legendary
+- `orc.pyreaxeRavager` — band −28.1%; pairwise rare/epic/legendary
+- `goblin.mineSapper` — band −34.0%; pairwise rare/epic/legendary
+- `goblin.spyglassSniper` — band −27.7%; pairwise rare/epic/legendary
+- `goblin.junkWalker` — band −34.0%; pairwise rare/epic/legendary
+- `feral.avalancheYeti` — band −30.9%; pairwise rare/epic/legendary
+- `feral.woollyMammoth` — band −33.6%; pairwise rare/epic/legendary
+- `feral.rimebreathDrake` — band −33.6%; pairwise rare/epic/legendary
+- `elf.amberwingDart` — band −30.9%; pairwise rare/epic/legendary
+- `elf.elderreedDartmaster` — band −27.7%; pairwise rare/epic/legendary
+- `elf.seedwindShepherd` — band −37.1%; pairwise rare/epic/legendary
+- `undead.coffinLancer` — band −35.2%; pairwise rare/epic/legendary
+- `undead.winterMaw` — band −27.2%; pairwise rare/epic/legendary
+- `undead.lanternWidow` — band −36.3%; pairwise rare/epic/legendary
+- `warrior.callToArms` — cap −40.3%; off step; pairwise rare/epic/legendary
+- `warrior.exposeWeakness` — cap −42.1%; off step; pairwise rare/epic/legendary
+- `ranger.venomArrow` — cap −41.2%; off step; pairwise rare/epic/legendary
+- `ranger.huntersFocus` — cap −47.8%; off step; pairwise rare/epic/legendary
+- `mage.wildfire` — cap −36.5%; off step; pairwise rare/epic/legendary
+- `mage.thunderstorm` — cap −33.1%; off step; pairwise rare/epic/legendary
+- `priest.cleanse` — cap −47.6%; off step; pairwise rare/epic/legendary
+- `priest.unbrokenVow` — cap −48.1%; pairwise rare/epic/legendary
 
 **Epic (16)**
 
-- `human.ironBulwark` — band −35.7%; pairwise epic/legendary
-- `human.marshalElianVoss` — band −30.9%; pairwise epic/legendary
-- `orc.warchiefGrukka` — band −30.9%; pairwise epic/legendary
-- `orc.warbandStandardBearer` — band −30.9%; pairwise epic/legendary
-- `goblin.grandGearjammer` — band −33.3%; pairwise epic/legendary
-- `goblin.bossSnikkit` — band −33.3%; pairwise epic/legendary
-- `feral.mountainColossus` — band −35.7%; pairwise epic/legendary
-- `feral.oldFrostmaw` — band −30.9%; pairwise epic/legendary
-- `elf.canopyVinewarden` — band −38.7%; pairwise epic/legendary
-- `elf.lethielFirstGardener` — band −38.7%; pairwise epic/legendary
-- `undead.sirOdoLastTaxman` — band −33.3%; pairwise epic/legendary
-- `undead.boneRampart` — band −29.8%; pairwise epic/legendary
-- `warrior.onslaught` — cap −31.7%; pairwise epic/legendary
-- `ranger.rainOfArrows` — cap −42.4%; off step; pairwise epic/legendary
-- `mage.blizzard` — cap −40.7%; off step; pairwise epic/legendary
-- `priest.aegisOfDawn` — cap −54.3%; off step; pairwise epic/legendary
+- `human.ironBulwark` — band −41.7%; pairwise epic/legendary
+- `human.marshalElianVoss` — band −37.3%; pairwise epic/legendary
+- `orc.warchiefGrukka` — band −37.3%; pairwise epic/legendary
+- `orc.warbandStandardBearer` — band −37.3%; pairwise epic/legendary
+- `goblin.grandGearjammer` — band −39.5%; pairwise epic/legendary
+- `goblin.bossSnikkit` — band −39.5%; pairwise epic/legendary
+- `feral.mountainColossus` — band −41.7%; pairwise epic/legendary
+- `feral.oldFrostmaw` — band −37.3%; pairwise epic/legendary
+- `elf.canopyVinewarden` — band −44.3%; pairwise epic/legendary
+- `elf.lethielFirstGardener` — band −44.3%; pairwise epic/legendary
+- `undead.sirOdoLastTaxman` — band −39.5%; pairwise epic/legendary
+- `undead.boneRampart` — band −36.3%; pairwise epic/legendary
+- `warrior.onslaught` — cap −38.0%; pairwise epic/legendary
+- `ranger.rainOfArrows` — cap −47.7%; off step; pairwise epic/legendary
+- `mage.blizzard` — cap −46.2%; off step; pairwise epic/legendary
+- `priest.aegisOfDawn` — cap −58.5%; off step; pairwise epic/legendary
 
 **Legendary (6)**
 
