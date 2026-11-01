@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+
 import { Predicate, Schema } from "effect";
 import { describe, expect, it } from "vitest";
 
@@ -262,9 +264,10 @@ const pairwiseViolations = (): readonly PairwiseViolation[] => {
 /**
  * The cards that are outside the first-fit Base Rank budget or the pairwise
  * rule (ADR-0055). The rebalance is deferred: the simulation gate wins, so
- * these cards keep their old printed line and are written exceptions. A card
- * leaves the list when a tuning pass brings it to the new budget and the
- * pairwise rule.
+ * these cards keep their old printed line and are written exceptions in ADR
+ * 0055 under "The written exceptions". A card leaves the list when a tuning
+ * pass brings it to the new budget and the pairwise rule. This set is the
+ * source of truth: the test below fails if a listed card starts to pass.
  */
 const POWER_BUDGET_EXCEPTIONS = new Set([
   "elf.amberwingDart",
@@ -682,6 +685,24 @@ describe("card content (CRD-01, technical design 3.5)", () => {
       const pairFail = violations.some((violation) => violation.cardId === id);
       expect(bandFail || skillFail || pairFail, id).toBe(true);
     }
+  });
+
+  it("writes each Power Budget exception in ADR 0055 (ADR-0055)", () => {
+    const adr = readFileSync(
+      new URL(
+        "../../../../docs/adr/0055-a-higher-base-rank-gives-a-power-budget-bonus.md",
+        import.meta.url
+      ),
+      "utf-8"
+    );
+    const section = adr.split("### The written exceptions")[1] ?? "";
+    const written = new Set(
+      section
+        .split("## Considered Options")[0]
+        ?.match(/`[a-z]+\.[A-Za-z0-9]+`/gu)
+        ?.map((id) => id.slice(1, -1))
+    );
+    expect(written).toEqual(POWER_BUDGET_EXCEPTIONS);
   });
 
   it("measures a Skill Card at its Base Rank, with each effect and no Crit (ADR-0031)", () => {

@@ -1,7 +1,9 @@
 /**
- * Fits the smallest Base Rank bonus table that passes the pairwise rule
- * (ADR-0055). It prints the table and the cards that have no fit within the
- * ±10% band. It does not change `balance.ts` or `cards.ts`.
+ * Fits the smallest Base Rank bonus table for the Creature Cards that passes
+ * the pairwise rule (ADR-0055). The Skill Cards use the same table and the
+ * content test; a Skill Card with no main amount stays a written exception.
+ * It prints the table and the cards that have no fit within the ±10% band. It
+ * does not change `balance.ts` or `cards.ts`.
  *
  * Usage: `bun scripts/fit-base-rank-budget.ts`.
  *
@@ -12,13 +14,18 @@
  * that stays within ±10% of the new budget, and it keeps the line if every
  * Rank passes.
  */
-import { creaturePower } from "../src/content/balance";
+import { creaturePower, powerBudget } from "../src/content/balance";
 import { CARDS } from "../src/content/cards";
-import { RANKS } from "../src/content/ranks";
+import { isRankAtLeast, RANKS } from "../src/content/ranks";
 import type { CreatureCardDefinition, RankId } from "../src/content/schema";
 
+/** The Attack and HP limits of the card schema. */
+const MAX_ATTACK = 12;
+const MAX_HP = 30;
+
 /** The budget before the Base Rank bonus (ADR-0021). */
-const baseBudget = (countdown: number): number => 19 + 3 * (countdown - 3);
+const baseBudget = (countdown: number): number =>
+  powerBudget(countdown, "common");
 
 const creatures = CARDS.filter(
   (card): card is CreatureCardDefinition => card.kind === "creature"
@@ -53,70 +60,68 @@ for (const countdown of new Set(creatures.map((card) => card.countdown))) {
   }
 }
 
-/** The highest power of a copy of `card` at each Rank, within the band. */
-const maxPowerAtRank = (
-  card: CreatureCardDefinition,
-  bonus: number
-): Record<string, number> | null => {
-  const target = baseBudget(card.countdown) * bonus;
-  const maxAttack = card.attack === 0 ? 0 : 40;
-  const minAttack = card.attack === 0 ? 0 : 1;
-  const max: Record<string, number> = {};
+/** True when the line passes the pairwise rule at every playable Rank. */
+const passesPairwise = (line: CreatureCardDefinition): boolean => {
   for (const rank of RANKS) {
-    max[rank] = Number.NEGATIVE_INFINITY;
-  }
-  let any = false;
-  for (let attack = minAttack; attack <= maxAttack; attack += 1) {
-    for (let hp = 1; hp <= 40; hp += 1) {
-      const line = { ...card, attack, hp };
-      const power = creaturePower(line, card.baseRank);
-      if (Math.abs(power - target) > target * 0.1 + 1e-9) {
-        continue;
-      }
-      any = true;
-      for (const rank of RANKS) {
-        if (RANKS.indexOf(rank) < RANKS.indexOf(card.baseRank)) {
-          continue;
-        }
-        max[rank] = Math.max(max[rank] ?? 0, creaturePower(line, rank));
-      }
-    }
-  }
-  return any ? max : null;
-};
-
-/** True when some stat line of `card` passes the pairwise rule at `bonus`. */
-const fits = (card: CreatureCardDefinition, bonus: number): boolean => {
-  const max = maxPowerAtRank(card, bonus);
-  if (max === null) {
-    return false;
-  }
-  for (const rank of RANKS) {
-    if (RANKS.indexOf(rank) < RANKS.indexOf(card.baseRank)) {
+    if (!isRankAtLeast(rank, line.baseRank)) {
       continue;
     }
-    const ref = references.get(`${card.countdown}|${rank}`);
-    const minimum = ref?.power ?? baseBudget(card.countdown) * bonus;
-    if ((max[rank] ?? 0) < minimum - 1e-9) {
+    const ref = references.get(`${line.countdown}|${rank}`);
+    const minimum = ref?.power ?? powerBudget(line.countdown, rank);
+    if (creaturePower(line, rank) < minimum - 1e-9) {
       return false;
     }
   }
   return true;
 };
 
-const smallestBonus = (baseRank: RankId): number => {
-  const cards = creatures.filter((card) => card.baseRank === baseRank);
-  let low = 1;
-  let high = 4;
-  for (let step = 0; step < 60; step += 1) {
-    const middle = (low + high) / 2;
-    if (cards.some((card) => !fits(card, middle))) {
-      low = middle;
-    } else {
-      high = middle;
+/** True when some stat line of `card` is within the band at `bonus` and passes the pairwise rule. */
+const fitsAt = (card: CreatureCardDefinition, bonus: number): boolean => {
+  const target = baseBudget(card.countdown) * bonus;
+  const maxAttack = card.attack === 0 ? 0 : MAX_ATTACK;
+  const minAttack = card.attack === 0 ? 0 : 1;
+  for (let attack = minAttack; attack <= maxAttack; attack += 1) {
+    for (let hp = 1; hp <= MAX_HP; hp += 1) {
+      const line = { ...card, attack, hp };
+      const power = creaturePower(line, card.baseRank);
+      if (Math.abs(power - target) > target * 0.1 + 1e-9) {
+        continue;
+      }
+      if (passesPairwise(line)) {
+        return true;
+      }
     }
   }
-  return high;
+  return false;
+};
+
+/**
+ * The smallest bonus where some legal stat line of `card` is within the
+ * ±10% band and passes the pairwise rule. The band gives one interval for each
+ * line: `power / (1.1 × budget)` to `power / (0.9 × budget)`.
+ */
+const smallestBonusFor = (card: CreatureCardDefinition): number => {
+  const budget = baseBudget(card.countdown);
+  const maxAttack = card.attack === 0 ? 0 : MAX_ATTACK;
+  const minAttack = card.attack === 0 ? 0 : 1;
+  let min = Number.POSITIVE_INFINITY;
+  for (let attack = minAttack; attack <= maxAttack; attack += 1) {
+    for (let hp = 1; hp <= MAX_HP; hp += 1) {
+      const line = { ...card, attack, hp };
+      if (!passesPairwise(line)) {
+        continue;
+      }
+      const power = creaturePower(line, card.baseRank);
+      min = Math.min(min, power / (1.1 * budget));
+    }
+  }
+  return min;
+};
+
+const smallestBonus = (baseRank: RankId): number => {
+  const cards = creatures.filter((card) => card.baseRank === baseRank);
+  // A smaller bonus fails the card with the highest lower bound.
+  return Math.max(...cards.map(smallestBonusFor));
 };
 
 const table = Object.fromEntries(
@@ -133,3 +138,14 @@ console.table([
     bonus: Number(bonus.toFixed(4)),
   })),
 ]);
+
+const noFit = creatures.filter(
+  (card) =>
+    card.baseRank !== "common" && !fitsAt(card, table[card.baseRank] ?? 1)
+);
+if (noFit.length > 0) {
+  console.log("No fit within the ±10% band and the pairwise rule:");
+  for (const card of noFit) {
+    console.log(`- ${card.id}`);
+  }
+}
