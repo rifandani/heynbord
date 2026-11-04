@@ -80,7 +80,7 @@ test.describe("Achievements", () => {
 /** The Heynstone balance on the Balance Plate, from its accessible name "Heynstones: N". */
 const heynstones = async (page: Page): Promise<number> => {
   const name = await page
-    .getByTestId("balance-heynstones")
+    .getByRole("button", { name: /^Heynstones:/u })
     .getAttribute("aria-label");
   return Number(name?.replaceAll(/\D/gu, "") ?? Number.NaN);
 };
@@ -244,4 +244,67 @@ test.describe("Objectives dialog", () => {
     await expect(entry).toHaveAttribute("data-entry", "achievement");
     await expect(entry).toContainText("Claim all");
   });
+});
+
+test("a phone landscape Claim flies into the visible balance in the dialog", async ({
+  page,
+}, testInfo) => {
+  await page.setViewportSize({ width: 844, height: 390 });
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await winHearthvale(page);
+  await page.getByTestId("town-shortcut-objectives").press("Enter");
+  const dialog = page.getByTestId("objectives-dialog");
+  const plate = dialog.getByTestId("town-balances");
+  await expect(plate).toBeVisible();
+  const target = plate.getByTestId("balance-heynstones").locator("svg");
+  const visible = await target.evaluate((element) => {
+    const box = element.getBoundingClientRect();
+    const hit = document.elementFromPoint(
+      box.x + box.width / 2,
+      box.y + box.height / 2
+    );
+    return element.contains(hit);
+  });
+  expect(visible).toBe(true);
+
+  await dialog
+    .locator('[data-achievement="campaign.hearthvale"]')
+    .getByTestId("achievement-claim")
+    .click();
+  const flight = dialog.getByTestId("reward-flight");
+  await expect(flight).toHaveCount(1);
+  await expect(flight).toHaveAttribute("data-kind", "heynstones");
+  // Hold the actual CSS flight at its destination, before its cleanup timer.
+  await flight.evaluate((element) => {
+    for (const animation of element.getAnimations({ subtree: true })) {
+      animation.pause();
+      animation.currentTime = 620;
+    }
+  });
+  const icon = await flight.locator("svg").boundingBox();
+  const balance = await target.boundingBox();
+  expect(icon).not.toBeNull();
+  expect(balance).not.toBeNull();
+  expect(
+    Math.abs(
+      (icon?.x ?? 0) +
+        (icon?.width ?? 0) / 2 -
+        (balance?.x ?? 0) -
+        (balance?.width ?? 0) / 2
+    )
+  ).toBeLessThan(2);
+  expect(
+    Math.abs(
+      (icon?.y ?? 0) +
+        (icon?.height ?? 0) / 2 -
+        (balance?.y ?? 0) -
+        (balance?.height ?? 0) / 2
+    )
+  ).toBeLessThan(2);
+  await page.screenshot({
+    path: testInfo.outputPath("phone-reward-flight.png"),
+  });
+  await expect(dialog.getByTestId("balance-heynstones")).toHaveAccessibleName(
+    "Heynstones: 15"
+  );
 });

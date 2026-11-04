@@ -39,6 +39,22 @@ const boxOf = (element: Element | null): Box | null => {
   return { x: left, y: top, width, height };
 };
 
+/** The visible destination, after a Claim has changed its balance text. */
+const balanceBox = (kind: RewardBalance): Box | null =>
+  boxOf(
+    document.querySelector(
+      `[data-testid="objectives-dialog"] [data-testid="balance-${kind}"] svg`
+    )
+  );
+
+/** Keep the starting point, and follow a balance whose number changed width. */
+export const retargetRewardFlight = (
+  flight: RewardFlightPath
+): RewardFlightPath => ({
+  ...flight,
+  to: balanceBox(flight.kind) ?? flight.to,
+});
+
 /**
  * The path of a reward from `from` (its reward chip, or a Claim button) to
  * its icon on the Balance Plate. `null` when one of them is not on
@@ -51,9 +67,7 @@ export const measureRewardFlight = (
   delay = 0
 ): RewardFlightPath | null => {
   const start = boxOf(from);
-  const end = boxOf(
-    document.querySelector(`[data-testid="balance-${kind}"] svg`)
-  );
+  const end = balanceBox(kind);
   return start && end ? { serial, kind, from: start, to: end, delay } : null;
 };
 

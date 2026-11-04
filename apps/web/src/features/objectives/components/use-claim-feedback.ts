@@ -7,6 +7,7 @@ import type { RewardFlightPath } from "@/features/objectives/components/reward-f
 import {
   measureRewardFlight,
   REWARD_FLY_MS,
+  retargetRewardFlight,
 } from "@/features/objectives/components/reward-flight";
 import type { RewardBalance } from "@/features/objectives/objectives";
 
@@ -49,7 +50,11 @@ export const useClaimFeedback = () => {
       );
       return path ? [path] : [];
     });
-    setFlights((current) => [...current, ...next]);
+    // The Profile write can widen a balance number. Read its destination
+    // after React commits it, while keeping the starting point of the Claim.
+    schedule(() => {
+      setFlights((current) => [...current, ...next.map(retargetRewardFlight)]);
+    }, 0);
     schedule(() => playSound("claim", 0), REWARD_FLY_MS);
   };
 

@@ -30,6 +30,8 @@ import {
   objectivesOpenAtom,
   objectivesViewAtom,
 } from "@/features/objectives/objectives.atoms";
+import { BalancePlate } from "@/features/town/components/balance-plate";
+import { balancesAtom } from "@/features/town/town.atoms";
 
 /**
  * One tab of the dialog: its name and its gold count. A locked tab has a Lock
@@ -95,6 +97,7 @@ const ObjectivesTabButton = ({
 const ObjectivesBody = ({ close }: { readonly close: () => void }) => {
   const { tr } = useGameText();
   const view = useAtomValue(objectivesViewAtom);
+  const balances = useAtomValue(balancesAtom);
   const [selected, setSelected] = useState<Key>(() => defaultTab(view));
   const { flights, said, onClaimed, onLanded } = useClaimFeedback();
   return (
@@ -104,13 +107,14 @@ const ObjectivesBody = ({ close }: { readonly close: () => void }) => {
       disabledKeys={view.dailyLocked ? ["daily"] : []}
       className="flex size-full min-h-0 flex-col"
     >
-      <header className="flex h-12 shrink-0 items-center justify-between gap-3 px-4 [@media(max-height:500px)]:h-8 [@media(max-height:500px)]:px-2">
+      <header className="flex h-12 shrink-0 items-center justify-between gap-3 px-4 [@media(max-height:500px)]:h-10 [@media(max-height:500px)]:px-2">
         <Heading
           slot="title"
           className="font-display text-cream text-2xl font-black [@media(max-height:500px)]:text-base"
         >
           {tr("objectives.title")}
         </Heading>
+        <BalancePlate balances={balances} className="static ml-auto shrink-0" />
         <GameButton
           intent="wood"
           size="icon"

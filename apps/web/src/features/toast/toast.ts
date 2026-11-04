@@ -30,7 +30,7 @@ export const toasterProps = {
       "color-mix(in oklab, var(--color-success-subtle-fg) 8%, var(--color-overlay) 92%)",
     "--success-border":
       "color-mix(in oklab, var(--success-subtle-fg) 20%, transparent)",
-    "--success-text": "var(--color-success-subtle-fg)",
+    "--success-text": "var(--color-overlay-fg)",
     "--warning-bg":
       "color-mix(in oklab, var(--color-warning-subtle-fg) 8%, var(--color-overlay) 92%)",
     "--warning-border":

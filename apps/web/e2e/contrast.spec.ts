@@ -136,6 +136,8 @@ for (const locale of ["en-us", "id-id"] as const) {
         };
         try {
           await page.goto("/");
+          // The SSR document is visible before its controls are hydrated.
+          await page.waitForLoadState("networkidle");
           await audit("home");
           await page.getByTestId("play-link").hover();
           await audit("home-hover");
@@ -197,6 +199,9 @@ for (const locale of ["en-us", "id-id"] as const) {
           await page.getByTestId("town-shortcut-objectives").press("Enter");
           await expect(page.getByTestId("objectives-dialog")).toBeVisible();
           await audit("objectives");
+          await page.getByTestId("objectives-tab-daily").press("Enter");
+          await expect(page.getByTestId("objectives-daily")).toBeVisible();
+          await audit("objectives-daily");
           await page.keyboard.press("Escape");
           for (const screen of [
             "campaign",
@@ -210,6 +215,15 @@ for (const locale of ["en-us", "id-id"] as const) {
           ] as const) {
             await page.getByTestId(`town-shortcut-${screen}`).press("Enter");
             await expect(page.getByTestId(screen)).toBeVisible();
+            if (screen === "campaign") {
+              // Unlocking Heynspire also unlocks the unseen Region 5 scenes.
+              // Dismiss them through their controls before opening a Stage.
+              const skip = page.getByTestId("story-skip");
+              await expect(skip).toBeVisible();
+              while (await skip.isVisible()) {
+                await skip.press("Enter");
+              }
+            }
             await audit(screen);
             if (screen === "packs") {
               await page.getByTestId("drop-rates-button").press("Enter");
