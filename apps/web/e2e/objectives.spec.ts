@@ -79,8 +79,12 @@ test.describe("Achievements", () => {
 
 /** The Heynstone balance on the Balance Plate, from its accessible name "Heynstones: N". */
 const heynstones = async (page: Page): Promise<number> => {
-  const name = await page
-    .getByRole("button", { name: /^Heynstones:/u })
+  const dialog = page.getByTestId("objectives-dialog");
+  const surface = (await dialog.isVisible())
+    ? dialog
+    : page.getByTestId("town");
+  const name = await surface
+    .getByTestId("balance-heynstones")
     .getAttribute("aria-label");
   return Number(name?.replaceAll(/\D/gu, "") ?? Number.NaN);
 };

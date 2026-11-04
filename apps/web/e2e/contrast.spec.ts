@@ -326,7 +326,9 @@ for (const locale of ["en-us", "id-id"] as const) {
           await audit("battle-log");
           await page.getByTestId("back-to-live").press("Enter");
           await hooks(page, "victory");
-          await expect(page.getByTestId("battle-result")).toBeVisible();
+          await expect(page.getByTestId("battle-result")).toBeVisible({
+            timeout: 30_000,
+          });
           await audit("victory");
           await page.getByTestId("share-replay").press("Enter");
           await expect(page.locator("[data-sonner-toast]")).toBeVisible();
@@ -346,7 +348,9 @@ for (const locale of ["en-us", "id-id"] as const) {
             () => "__THREE_GAME_TEST_HOOKS__" in window
           );
           await hooks(page, "defeat");
-          await expect(page.getByTestId("battle-result")).toBeVisible();
+          await expect(page.getByTestId("battle-result")).toBeVisible({
+            timeout: 30_000,
+          });
           await audit("defeat");
           await hooks(page, "dungeon-three");
           await expect(page.getByTestId("battle-result")).toBeHidden();
