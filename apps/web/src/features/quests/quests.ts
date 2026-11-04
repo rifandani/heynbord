@@ -154,27 +154,6 @@ export const questFocusAfter = (
 };
 
 /**
- * The most Daily Quests that get one toast each, as for the Achievements.
- * More at one time get one toast with their count.
- */
-export const NAMED_QUEST_NOTICES = 3;
-
-/** One toast for Daily Quests that became Completed outside a Battle. */
-export type QuestToast =
-  | { readonly kind: "one"; readonly id: string }
-  | { readonly kind: "many"; readonly count: number };
-
-/**
- * The toasts of the Daily Quests that became Completed (24 — Quests 3):
- * "Daily Quest completed: {name}" for each, or one toast with the count when
- * they are more than `NAMED_QUEST_NOTICES`.
- */
-export const questToasts = (ids: readonly string[]): readonly QuestToast[] =>
-  ids.length > NAMED_QUEST_NOTICES
-    ? [{ kind: "many", count: ids.length }]
-    : ids.map((id) => ({ kind: "one", id }));
-
-/**
  * The progress that one Battle added to a Daily Quest, for the Battle result
  * (24 — Quests 3): the Daily Quest after the Battle and its progress before.
  */

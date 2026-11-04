@@ -15,6 +15,7 @@ import {
 import { absurd } from "effect";
 
 import type { TextRef } from "@/features/battle/card-text";
+import type { RewardBalance } from "@/features/objectives/objectives";
 
 /**
  * The IDs of `after` that are not in `before`, in list order (Achievements
@@ -181,4 +182,24 @@ export const rewardText = (
       return absurd(reward);
     }
   }
+};
+
+/**
+ * The balance that a reward goes into, for its flight to the Balance Plate.
+ * `null` for a Cosmetic: it has no balance.
+ */
+const rewardBalance = (reward: AchievementReward): RewardBalance | null =>
+  reward.kind === "cosmetic" ? null : reward.kind;
+
+/**
+ * The balances of a Claim all, one time each, in Balance Plate order (Coin,
+ * Essence, Heynstones): Claim all sends one flight for each.
+ */
+export const rewardBalances = (
+  rewards: readonly AchievementReward[]
+): readonly RewardBalance[] => {
+  const kinds = new Set(rewards.map(rewardBalance));
+  return (["coin", "essence", "heynstones"] as const).filter((kind) =>
+    kinds.has(kind)
+  );
 };

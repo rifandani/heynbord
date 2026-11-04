@@ -7,7 +7,7 @@ import { UNLOCK_LEVELS } from "../content/unlocks";
 import { migrateProfile, PROFILE_MIGRATIONS } from "./migrate";
 import type { ProfileMigration } from "./migrate";
 import { newProfile } from "./new-profile";
-import { refreshQuests } from "./quests";
+import { noQuests, refreshQuests } from "./quests";
 import { PROFILE_SCHEMA_VERSION } from "./schema";
 
 const failure = (result: ReturnType<typeof migrateProfile>) =>
@@ -67,6 +67,34 @@ describe("migrateProfile", () => {
       Date.UTC(2026, 10, 3)
     ).profile;
     expect(refreshed.quests.daily).toHaveLength(5);
+  });
+
+  it("clears the draft Quest state of a version 16 save, and keeps its Quest seed", () => {
+    const profile = newProfile(3);
+    const draft = {
+      ...profile,
+      schemaVersion: 16,
+      quests: {
+        seed: 77,
+        lastReset: 20_395,
+        daily: [
+          { templateId: "daily.win", param: null, progress: 1, claimed: false },
+        ],
+        bounties: [{ templateId: "bounty.kills", param: null, progress: 12 }],
+        bountiesLeft: 4,
+        story: { "story.r1.q1": "offered" },
+      },
+    };
+    expect(Result.getOrThrow(migrateProfile(draft)).quests).toEqual(
+      noQuests(77)
+    );
+  });
+
+  it("keeps the Quest state of a version 16 save with Activity", () => {
+    const profile = newProfile(3);
+    const quests = { ...profile.quests, lastDailyReset: 20_395, activity: 40 };
+    const v16 = { ...profile, schemaVersion: 16, quests };
+    expect(Result.getOrThrow(migrateProfile(v16)).quests).toEqual(quests);
   });
 
   it("preserves current viewing records and pending scenes on load", () => {

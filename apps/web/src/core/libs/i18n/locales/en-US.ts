@@ -886,7 +886,6 @@ export default {
   quests: {
     notice: {
       one: "Daily Quest completed: {name}",
-      many: "{count} Daily Quests completed",
     },
     result: {
       label: "Daily Quest progress of this Battle",

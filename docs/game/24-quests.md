@@ -99,7 +99,7 @@ The final `{n}` values come with the tuning. The IDs of the last 5 templates are
 - **Lock.** Below level 3, the Daily Quests tab has a Lock Plate and cannot be selected.
 - **Default tab.** The dialog opens on the first tab with a reward to claim. If neither tab has one, it opens on Daily Quests. Below level 3, it opens on Achievements.
 - **Badge.** The Objectives badge counts the Completed Daily Quests, the Completed Achievements and the reached checkpoints that are not claimed. It does not show at 0. Each tab shows its own gold count.
-- **Notice.** When a Daily Quest becomes Completed, a toast shows "Daily Quest completed: {name}". After a Battle, the Battle result shows the Daily Quest progress of that Battle, under the rewards. A reached checkpoint gets no toast.
+- **Notice.** After a Battle, the Battle result shows the Daily Quest progress of that Battle, under the rewards, also "Daily Quest completed". A Daily Quest that becomes Completed with no Battle result (an Abandon) gets a toast with "Daily Quest completed: {name}", as an Achievement does ([15 — Achievements 4](./15-achievements.md#4-achievements-tab)). A reached checkpoint gets no toast.
 - **Hint.** The Quests Hint shows at level 3 and points at the Objectives shortcut.
 
 ## 4. Economy sim
@@ -108,7 +108,7 @@ The economy sim plays no Battle ([Economy 7.1](./07-economy.md#71-economy-simula
 
 - Each goal template has a Battle count, for example "Win 3 Battles..." counts as 3 wins. Deck rules always pass, because the game offers only goals that the Collection permits (section 1.5). A goal that is not a count of wins uses a high guess of the amount of one Battle: 3 Skill Cards, 20 damage, 6 enemy Units killed and 4 Keyword activations. A high guess gives more Quest income, so it is safe.
 - At each session of the play calendar (1 hour of play, then 1 day away), the sim does a Daily reset and does the 5 Daily Quests when it has enough wins in that session. It claims them at once.
-- The sim does a Weekly reset each 7 sessions, and it claims each reached checkpoint at once.
+- The sim does a Weekly reset each 7 sessions, and it claims each reached checkpoint at once. For this, it counts sessions as days from a Monday, because a session cycle of the play calendar has 25 hours.
 - This is the maximum income. A real Player does less. Thus a pass of the targets with it is safe, as for the Seaport.
 - The sim report shows the share of Daily Quests and checkpoints in the Coin and the Essence at Floor 50. `sim:check` fails when they give more than 10% of the Coin or 15% of the Essence of the median Player of any Play Style.
 

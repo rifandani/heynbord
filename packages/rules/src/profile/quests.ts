@@ -130,6 +130,14 @@ export type QuestProfile = Pick<
   "xp" | "collection" | "coin" | "essence" | "quests"
 >;
 
+/** The goal pool of a refresh. The templates are a part of `QUEST_TEMPLATES`. */
+export interface QuestContent {
+  readonly templates: readonly QuestTemplate[];
+}
+
+/** The goal pool of the game (24 — Quests 2). */
+const GAME_QUEST_CONTENT: QuestContent = { templates: QUEST_TEMPLATES };
+
 /** The Quest state of a new Player: nothing offered yet, with the Quest seed. */
 export const noQuests = (seed: number): QuestsState => ({
   seed: seedState(seed),
@@ -263,10 +271,11 @@ const paramsFor = (
  * Collection.
  */
 const choicesFor = (
-  profile: Pick<Profile, "xp" | "collection">
+  profile: Pick<Profile, "xp" | "collection">,
+  content: QuestContent
 ): readonly QuestChoice[] => {
   const level = playerLevelForXp(profile.xp);
-  return QUEST_TEMPLATES.flatMap((template) => {
+  return content.templates.flatMap((template) => {
     if (!isUnlocked(level, template.unlock)) {
       return [];
     }
@@ -295,10 +304,11 @@ const cursorFor = (seed: number, day: number): RandomCursor => ({
  */
 const dailyQuestsFor = (
   profile: QuestProfile,
-  day: number
+  day: number,
+  content: QuestContent
 ): readonly DailyQuest[] => {
   const cursor = cursorFor(profile.quests.seed, day);
-  return shuffle(cursor, choicesFor(profile))
+  return shuffle(cursor, choicesFor(profile, content))
     .slice(0, DAILY_QUESTS)
     .map(({ template, params }) => ({
       templateId: template.id,
@@ -425,11 +435,12 @@ const claimedView = (quest: QuestView): QuestView => ({
  * Then 5 new Daily Quests come. The unlock itself gives the first Daily
  * Quests. Before the unlock, in the same day, and when `now` is before the
  * last reset (the clock moved back), it gives back the same Profile object.
- * It throws when `now` is not a whole number of milliseconds.
+ * `content` is the goal pool. It throws when `now` is not a whole number of milliseconds.
  */
 export const refreshQuests = <P extends QuestProfile>(
   profile: P,
-  now: number
+  now: number,
+  content: QuestContent = GAME_QUEST_CONTENT
 ): QuestClaims<P> => {
   if (!Number.isSafeInteger(now)) {
     throw new RangeError(`A Quest time is whole milliseconds, not ${now}`);
@@ -452,7 +463,7 @@ export const refreshQuests = <P extends QuestProfile>(
   return {
     profile: withQuests(weekly.profile, {
       lastDailyReset: day,
-      daily: dailyQuestsFor(weekly.profile, day),
+      daily: dailyQuestsFor(weekly.profile, day, content),
       lastWeeklyReset: week,
       activity: newWeek ? 0 : weekly.profile.quests.activity,
       claimedCheckpoints: newWeek
@@ -476,15 +487,6 @@ export interface QuestBattle extends FeatBattle {
   readonly outcome: QuestOutcome;
 }
 
-/** The content that a place reads. */
-interface QuestContent {
-  readonly stages: readonly StageDefinition[];
-  readonly dungeons: readonly DungeonDefinition[];
-}
-
-/** The content of the game: a QA Stage or a QA Dungeon adds no progress. */
-const GAME_CONTENT: QuestContent = { stages: STAGES, dungeons: DUNGEONS };
-
 /** A Battle of a Stage, a Dungeon or a Floor of the content. */
 interface PlacedBattle extends QuestBattle {
   readonly stage: StageDefinition | undefined;
@@ -492,22 +494,17 @@ interface PlacedBattle extends QuestBattle {
 }
 
 /** The Battle with its Stage or its Dungeon, or `null` for a place that is not in the content. */
-const placed = (
-  battle: QuestBattle,
-  content: QuestContent
-): PlacedBattle | null => {
+const placed = (battle: QuestBattle): PlacedBattle | null => {
   const { place } = battle;
   switch (place.kind) {
     case "stage": {
-      const stage = content.stages.find((each) => each.id === place.stageId);
+      const stage = STAGES.find((each) => each.id === place.stageId);
       return stage === undefined
         ? null
         : { ...battle, stage, dungeon: undefined };
     }
     case "dungeon": {
-      const dungeon = content.dungeons.find(
-        (each) => each.id === place.dungeonId
-      );
+      const dungeon = DUNGEONS.find((each) => each.id === place.dungeonId);
       return dungeon === undefined
         ? null
         : { ...battle, stage: undefined, dungeon };
@@ -634,15 +631,14 @@ const withBattle = (quest: DailyQuest, battle: PlacedBattle): DailyQuest => {
  * the Player plays shows, also with Auto-play, and with a repeat win. It never
  * calls it for a Sweep, a Replay or a Battle that the dev panel changed. It
  * adds nothing for the Tutorial (`isTutorial`), so give it the Profile before
- * the result of the Battle, and nothing for a place that is not in `content`.
+ * the result of the Battle, and nothing for a place that is not in the content of the game.
  * When no Daily Quest changes, it gives back the same Profile object.
  */
 export const recordQuestBattle = <
   P extends QuestProfile & Pick<Profile, "stageResults">,
 >(
   profile: P,
-  battle: QuestBattle,
-  content: QuestContent = GAME_CONTENT
+  battle: QuestBattle
 ): QuestChange<P> => {
   const tutorial =
     battle.place.kind === "stage" &&
@@ -650,7 +646,7 @@ export const recordQuestBattle = <
       battle.place.stageId,
       profile.stageResults[TUTORIAL_STAGE_ID] !== undefined
     );
-  const played = tutorial ? null : placed(battle, content);
+  const played = tutorial ? null : placed(battle);
   if (played === null) {
     return { profile, quests: [] };
   }

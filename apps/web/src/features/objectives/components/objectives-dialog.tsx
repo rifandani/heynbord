@@ -22,6 +22,8 @@ import { useGameText } from "@/features/battle/use-game-text";
 import { DECK_COLORS, DECK_CSS } from "@/features/deck/tokens";
 import { AchievementsTab } from "@/features/objectives/components/achievements-tab";
 import { DailyQuestsTab } from "@/features/objectives/components/daily-quests-tab";
+import { RewardFlight } from "@/features/objectives/components/reward-flight";
+import { useClaimFeedback } from "@/features/objectives/components/use-claim-feedback";
 import type { ObjectivesTab } from "@/features/objectives/objectives";
 import { defaultTab, OBJECTIVES_TABS } from "@/features/objectives/objectives";
 import {
@@ -94,7 +96,7 @@ const ObjectivesBody = ({ close }: { readonly close: () => void }) => {
   const { tr } = useGameText();
   const view = useAtomValue(objectivesViewAtom);
   const [selected, setSelected] = useState<Key>(() => defaultTab(view));
-  const [said, setSaid] = useState("");
+  const { flights, said, onClaimed, onLanded } = useClaimFeedback();
   return (
     <Tabs
       selectedKey={selected}
@@ -139,16 +141,19 @@ const ObjectivesBody = ({ close }: { readonly close: () => void }) => {
           className="size-full outline-none"
           data-testid="objectives-daily"
         >
-          <DailyQuestsTab onSaid={setSaid} />
+          <DailyQuestsTab onClaimed={onClaimed} />
         </TabPanel>
         <TabPanel
           id="achievements"
           className="size-full outline-none"
           data-testid="objectives-achievements"
         >
-          <AchievementsTab onSaid={setSaid} />
+          <AchievementsTab onClaimed={onClaimed} />
         </TabPanel>
       </div>
+      {flights.map((flight) => (
+        <RewardFlight key={flight.serial} flight={flight} onDone={onLanded} />
+      ))}
       <p className="sr-only" aria-live="polite" data-testid="objectives-said">
         {said}
       </p>

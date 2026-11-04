@@ -217,6 +217,21 @@ export const PROFILE_MIGRATIONS = {
       isNumber(profile.rewardRandomState) ? profile.rewardRandomState : 0
     ),
   }),
+  /**
+   * Version 17 clears the draft Quest state. Before the Objectives dialog, a
+   * version 16 save could have Bounties and Story Quests. No release had them,
+   * so they give no reward. The Quest seed stays, and the first `refreshQuests`
+   * offers the Daily Quests. A save with Activity does not change.
+   */
+  16: (profile) => {
+    const quests = isJsonObject(profile.quests) ? profile.quests : {};
+    return isNumber(quests.activity)
+      ? profile
+      : {
+          ...profile,
+          quests: noQuests(isNumber(quests.seed) ? quests.seed : 0),
+        };
+  },
 } satisfies Readonly<Record<number, ProfileMigration>>;
 
 const isVersion = Schema.is(Schema.Int);

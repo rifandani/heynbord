@@ -9,13 +9,14 @@ import type { AchievementGroup } from "@/features/achievements/achievements";
 import {
   claimFocusAfter,
   openingCategory,
+  rewardBalances,
   rewardText,
 } from "@/features/achievements/achievements";
 import { AchievementRow } from "@/features/achievements/components/achievement-row";
 import { useAchievements } from "@/features/achievements/use-achievements";
-import { playSound, unlockAudio } from "@/features/battle/battle-audio";
 import { useGameText } from "@/features/battle/use-game-text";
 import { ClaimAllBar } from "@/features/objectives/components/claim-all-bar";
+import type { OnClaimed } from "@/features/objectives/components/use-claim-feedback";
 import { useClaimFocus } from "@/features/objectives/components/use-claim-focus";
 import { objectivesViewAtom } from "@/features/objectives/objectives.atoms";
 import { useCoinFormat } from "@/features/packs/use-coin-format";
@@ -79,9 +80,9 @@ const CategoryTab = ({ group }: { readonly group: AchievementGroup }) => {
  * row above the list, so the dialog has one column.
  */
 export const AchievementsTab = ({
-  onSaid,
+  onClaimed,
 }: {
-  readonly onSaid: (said: string) => void;
+  readonly onClaimed: OnClaimed;
 }) => {
   const { tr, text } = useGameText();
   const coin = useCoinFormat();
@@ -92,24 +93,22 @@ export const AchievementsTab = ({
   const [selected, setSelected] = useState<Key>(() => openingCategory(groups));
   const [stamps, setStamps] = useState<Readonly<Record<string, number>>>({});
 
-  const claimed = (said: string) => {
-    unlockAudio();
-    playSound("claim", 0);
-    onSaid(said);
-  };
-
   const claim = (id: string) => {
     const rows =
       groups.find((group) =>
         group.rows.some((row) => row.achievement.id === id)
       )?.rows ?? [];
+    const from = document.querySelector(`[data-reward-of="${id}"]`);
     const [first] = achievements.claim(id);
     if (first === undefined) {
       return;
     }
     focusAfterClaim(claimFocusAfter(rows, id));
     setStamps((current) => ({ ...current, [id]: 0 }));
-    claimed(
+    // A Cosmetic has no balance, so it does not fly.
+    onClaimed(
+      from,
+      rewardBalances([first.reward]),
       tr("achievements.tab.said.one", {
         name: tr(`achievements.${id}.name`),
         reward: text(rewardText(first.reward, "claimed", coin.words)),
@@ -118,6 +117,7 @@ export const AchievementsTab = ({
   };
 
   const claimAll = () => {
+    const from = claimAllButton.current;
     const done = achievements.claimAll();
     if (done.length === 0) {
       return;
@@ -136,7 +136,11 @@ export const AchievementsTab = ({
         stamped.map((item, index) => [item.id, index * STAMP_STAGGER_MS])
       ),
     }));
-    claimed(tr("achievements.tab.said.many", { count: done.length }));
+    onClaimed(
+      from,
+      rewardBalances(done.map((item) => item.reward)),
+      tr("achievements.tab.said.many", { count: done.length })
+    );
   };
 
   return (

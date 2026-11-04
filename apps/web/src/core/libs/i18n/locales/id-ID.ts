@@ -908,7 +908,6 @@ export default {
   quests: {
     notice: {
       one: "Misi Harian selesai: {name}",
-      many: "{count} Misi Harian selesai",
     },
     result: {
       label: "Kemajuan Misi Harian dari Pertempuran ini",

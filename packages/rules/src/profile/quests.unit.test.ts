@@ -456,6 +456,19 @@ describe("refreshQuests: the goal selection (24 — Quests 1.5)", () => {
     );
   });
 
+  it("selects only from the goal pool of `content`", () => {
+    const templates = QUEST_TEMPLATES.filter(
+      (template) => template.slot === null && template.unlock === "quests"
+    );
+    const { quests } = refreshQuests(atLevel(UNLOCK_LEVELS.quests), NOW, {
+      templates,
+    }).profile;
+    expect(quests.daily).toHaveLength(5);
+    expect(templatesOf(quests.daily).toSorted()).toEqual(
+      templates.map((template) => template.id).toSorted()
+    );
+  });
+
   it("gives the Starter Collection 5 Daily Quests at level 3 for each seed and day", () => {
     const start: Profile = {
       ...atLevel(UNLOCK_LEVELS.quests),

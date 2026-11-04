@@ -360,6 +360,7 @@ export type {
   QuestBattle,
   QuestChange,
   QuestClaims,
+  QuestContent,
   QuestOutcome,
   QuestProfile,
   QuestState,

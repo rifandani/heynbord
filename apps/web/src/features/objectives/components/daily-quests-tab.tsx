@@ -6,7 +6,6 @@ import { useState } from "react";
 
 import { DAMAGE_COLORS } from "@/core/components/game/tokens";
 import { ACHIEVEMENTS_CHIP_SHADOW } from "@/features/achievements/tokens";
-import { playSound, unlockAudio } from "@/features/battle/battle-audio";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { useGameText } from "@/features/battle/use-game-text";
 import { ActivityBar } from "@/features/objectives/components/activity-bar";
@@ -16,7 +15,9 @@ import {
   ClaimToken,
   RowProgress,
 } from "@/features/objectives/components/claim-parts";
+import type { OnClaimed } from "@/features/objectives/components/use-claim-feedback";
 import { useClaimFocus } from "@/features/objectives/components/use-claim-focus";
+import { QUEST_BALANCES } from "@/features/objectives/objectives";
 import { objectivesViewAtom } from "@/features/objectives/objectives.atoms";
 import { useCoinFormat } from "@/features/packs/use-coin-format";
 import { questFocusAfter } from "@/features/quests/quests";
@@ -29,13 +30,20 @@ import { CoinAmount } from "@/features/town/components/balance-plate";
 const STAMP_STAGGER_MS = 60;
 
 /** The Coin, the Essence and the Activity of a Daily Quest, on one chip. */
-const RewardChip = ({ reward }: { readonly reward: DailyQuestReward }) => {
+const RewardChip = ({
+  id,
+  reward,
+}: {
+  readonly id: string;
+  readonly reward: DailyQuestReward;
+}) => {
   const { tr } = useGameText();
   const coin = useCoinFormat();
   return (
     <span
       className="border-gold-trim/50 bg-night-plate/90 text-cream flex h-8 shrink-0 items-center gap-2 rounded-full border px-2.5 text-[14px] leading-none font-black tabular-nums [@media(max-height:500px)]:h-6 [@media(max-height:500px)]:gap-1.5 [@media(max-height:500px)]:px-2 [@media(max-height:500px)]:text-xs"
       style={{ boxShadow: ACHIEVEMENTS_CHIP_SHADOW }}
+      data-reward-of={id}
     >
       <span aria-hidden className="contents">
         <CoinAmount
@@ -118,7 +126,7 @@ const QuestRowView = ({
           {text(row.goal)}
         </p>
       </div>
-      <RewardChip reward={quest.reward} />
+      <RewardChip id={quest.id} reward={quest.reward} />
       {state === "inProgress" ? (
         <RowProgress
           current={quest.progress.current}
@@ -148,9 +156,9 @@ const QuestRowView = ({
  * only sends the Claims.
  */
 export const DailyQuestsTab = ({
-  onSaid,
+  onClaimed,
 }: {
-  readonly onSaid: (said: string) => void;
+  readonly onClaimed: OnClaimed;
 }) => {
   const { tr, text } = useGameText();
   const { rows, bar, counts } = useAtomValue(objectivesViewAtom);
@@ -158,30 +166,31 @@ export const DailyQuestsTab = ({
   const { list, claimAllButton, focusAfterClaim } = useClaimFocus();
   const [stamps, setStamps] = useState<Readonly<Record<string, number>>>({});
 
-  const claimed = (said: string) => {
-    unlockAudio();
-    playSound("claim", 0);
-    onSaid(said);
-  };
-
   const claim = (row: QuestRow) => {
+    const from = document.querySelector(`[data-reward-of="${row.quest.id}"]`);
     if (quests.claim(row.quest.index) === 0) {
       return;
     }
     focusAfterClaim(questFocusAfter(rows, row.quest.index));
     setStamps((current) => ({ ...current, [row.quest.id]: 0 }));
-    claimed(tr("quests.tab.said.one", { name: text(row.name) }));
+    onClaimed(
+      from,
+      QUEST_BALANCES,
+      tr("quests.tab.said.one", { name: text(row.name) })
+    );
   };
 
   const claimCheckpoints = () => {
+    const from = document.querySelector('[data-testid="activity-claim"]');
     const count = quests.claimCheckpoints();
     if (count > 0) {
       focusAfterClaim(null);
-      claimed(tr("quests.tab.said.many", { count }));
+      onClaimed(from, QUEST_BALANCES, tr("quests.tab.said.many", { count }));
     }
   };
 
   const claimAll = () => {
+    const from = claimAllButton.current;
     const completed = rows.filter((row) => row.quest.state === "completed");
     const count = quests.claimAll();
     if (count === 0) {
@@ -194,7 +203,7 @@ export const DailyQuestsTab = ({
         completed.map((row, index) => [row.quest.id, index * STAMP_STAGGER_MS])
       ),
     }));
-    claimed(tr("quests.tab.said.many", { count }));
+    onClaimed(from, QUEST_BALANCES, tr("quests.tab.said.many", { count }));
   };
 
   return (

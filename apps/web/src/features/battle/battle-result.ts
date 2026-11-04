@@ -22,16 +22,6 @@ const savedCompleted = (
   return state.status === "ready" ? state.profile.completedAchievements : [];
 };
 
-/** Adds Daily Quests that became Completed: a toast shows them after the Battle. */
-const noteQuests = (
-  registry: AtomRegistry.AtomRegistry,
-  ids: readonly string[]
-): void => {
-  if (ids.length > 0) {
-    registry.set(newQuestsAtom, [...registry.get(newQuestsAtom), ...ids]);
-  }
-};
-
 /**
  * Saves the result of a finished Battle into the Profile one time: the
  * rewards of a win or a loss, and the Achievements that its Profile write
@@ -59,12 +49,6 @@ export const recordBattle = (
     newAchievementsAtom,
     registry.get(newAchievementsAtom).filter((id) => !shown.has(id))
   );
-  noteQuests(
-    registry,
-    recorded.shown.quests.flatMap(({ quest }) =>
-      quest.state === "completed" ? [quest.id] : []
-    )
-  );
   return true;
 };
 
@@ -84,8 +68,10 @@ export const recordAbandonedBattle = (
     return;
   }
   registry.set(profileAtom, change.profile);
-  noteQuests(
-    registry,
-    change.quests.map((quest) => quest.id)
-  );
+  if (change.quests.length > 0) {
+    registry.set(newQuestsAtom, [
+      ...registry.get(newQuestsAtom),
+      ...change.quests.map((quest) => quest.id),
+    ]);
+  }
 };

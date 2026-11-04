@@ -17,6 +17,7 @@ import {
   NAMED_NOTICES,
   newlyCompleted,
   openingCategory,
+  rewardBalances,
   rewardText,
 } from "@/features/achievements/achievements";
 import { objectivesBadgeAtom } from "@/features/objectives/objectives.atoms";
@@ -235,7 +236,7 @@ describe("rewardText", () => {
 });
 
 describe("Claim all", () => {
-  it("claims the Completed rows of all categories", () => {
+  it("claims the Completed rows of all categories, and sends one flight for each balance", () => {
     const player = profile({
       completedAchievements: [
         "campaign.hearthvale",
@@ -256,6 +257,9 @@ describe("Claim all", () => {
     const groups = achievementGroups(change?.profile ?? player);
     expect(groups.every((group) => group.claimable === 0)).toBe(true);
     expect(change?.profile.heynstones).toBe(player.heynstones + 15 + 15);
+    expect(
+      rewardBalances(change?.achievements.map((item) => item.reward) ?? [])
+    ).toEqual(["coin", "essence", "heynstones"]);
   });
 
   it("is off when no Achievement is Completed", () => {

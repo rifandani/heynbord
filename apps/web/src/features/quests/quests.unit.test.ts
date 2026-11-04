@@ -8,12 +8,10 @@ import {
 import { describe, expect, it } from "vitest";
 
 import {
-  NAMED_QUEST_NOTICES,
   questFocusAfter,
   questLines,
   questName,
   questRows,
-  questToasts,
 } from "@/features/quests/quests";
 
 /** A Profile at level 3 with the Tutorial won and these Daily Quests. */
@@ -138,6 +136,14 @@ describe("questRows (24 — Quests 3)", () => {
   });
 });
 
+describe("questName", () => {
+  it("names a Daily Quest for its toast", () => {
+    expect(questName("daily.kills")).toEqual({
+      key: "quests.templates.daily.kills.name",
+    });
+  });
+});
+
 describe("questFocusAfter", () => {
   const rows = questRows(
     withDaily([
@@ -163,22 +169,6 @@ describe("questFocusAfter", () => {
 
   it("gives null when no other row has a Claim", () => {
     expect(questFocusAfter(rows.slice(2), 2)).toBeNull();
-  });
-});
-
-describe("questToasts", () => {
-  const ids = ["daily.win", "daily.kills", "daily.keyword", "daily.skillCards"];
-
-  it("gives one toast for each Daily Quest, up to the named limit, then one toast with the count", () => {
-    expect(questToasts(ids.slice(0, NAMED_QUEST_NOTICES))).toHaveLength(3);
-    expect(questToasts(ids)).toEqual([{ kind: "many", count: 4 }]);
-    expect(questToasts([])).toEqual([]);
-  });
-
-  it("names the Daily Quest of a toast", () => {
-    expect(questName("daily.kills")).toEqual({
-      key: "quests.templates.daily.kills.name",
-    });
   });
 });
 

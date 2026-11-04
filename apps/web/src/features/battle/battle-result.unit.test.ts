@@ -111,8 +111,8 @@ describe("recordAbandonedBattle (24 — Quests 1.3)", () => {
   });
 });
 
-describe("recordBattle: the Daily Quest toast (24 — Quests 3)", () => {
-  it("notes a Daily Quest that the result completed, and not one that stays In progress", () => {
+describe("recordBattle and the Daily Quest toast (24 — Quests 3)", () => {
+  it("gives no toast for a Daily Quest that the Battle result shows", () => {
     const fresh = newProfile(7);
     const registry = readyRegistry({
       ...fresh,
@@ -131,6 +131,17 @@ describe("recordBattle: the Daily Quest toast (24 — Quests 3)", () => {
       },
     });
     recordBattle(registry, finished());
-    expect(registry.get(newQuestsAtom)).toEqual(["daily.win"]);
+    expect(registry.get(battleRewardsAtom)?.quests).toEqual([
+      expect.objectContaining({
+        quest: expect.objectContaining({
+          id: "daily.win",
+          state: "completed",
+        }),
+      }),
+      expect.objectContaining({
+        quest: expect.objectContaining({ id: "daily.winMore" }),
+      }),
+    ]);
+    expect(registry.get(newQuestsAtom)).toEqual([]);
   });
 });

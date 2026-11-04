@@ -21,6 +21,7 @@ import { UNLOCK_LEVELS } from "../content/unlocks";
 import { EXTRACT_ESSENCE, FUSE_ESSENCE } from "../content/workshop";
 import { dungeonCardPool } from "../profile/dungeon-result";
 import { discoveredCards } from "../profile/packs";
+import { questDay, questWeek } from "../profile/quests";
 import { AT_BERTH } from "../profile/seaport";
 import { findStage, stageCardPool } from "../profile/stage-result";
 import {
@@ -49,6 +50,7 @@ import {
   PLAY_STYLES,
   QUEST_SHARE_CAP,
   questBattles,
+  questSessionTime,
   simulateEconomy,
   simulateEconomyRun,
   spend,
@@ -1215,20 +1217,29 @@ describe("Daily Quests in the economy sim (24 — Quests 4)", () => {
     );
   });
 
-  it("does a Weekly reset each 7 sessions, and the Activity goes to 0", () => {
-    const player = idlePlayer(DAY_0);
-    const week = player.quests.lastWeeklyReset ?? 0;
+  it("does a Daily reset at each session and a Weekly reset each 7 sessions", () => {
+    const weeks = Array.from({ length: 15 }, (_, session) =>
+      questWeek(questSessionTime(session))
+    );
+    const days = Array.from({ length: 15 }, (_, session) =>
+      questDay(questSessionTime(session))
+    );
+    const first = weeks[0] ?? 0;
+    expect(weeks).toEqual([
+      ...Array.from({ length: 7 }, () => first),
+      ...Array.from({ length: 7 }, () => first + 1),
+      first + 2,
+    ]);
+    expect(new Set(days).size).toBe(15);
+  });
+
+  it("sets the Activity to 0 at the Weekly reset", () => {
+    const player = idlePlayer(questSessionTime(0));
     player.quests = { ...player.quests, activity: 60 };
-    // The play calendar starts on a Thursday: day 4 is the first Monday.
-    updateQuests(player, 3 * DAY_1, false);
+    updateQuests(player, questSessionTime(6), false);
     expect(player.quests.activity).toBe(60);
-    updateQuests(player, 4 * DAY_1, false);
+    updateQuests(player, questSessionTime(7), false);
     expect(player.quests.activity).toBe(0);
-    expect(player.quests.lastWeeklyReset).toBe(week + 1);
-    updateQuests(player, 10 * DAY_1, false);
-    expect(player.quests.lastWeeklyReset).toBe(week + 1);
-    updateQuests(player, 11 * DAY_1, false);
-    expect(player.quests.lastWeeklyReset).toBe(week + 2);
   });
 
   it("claims each checkpoint at once", () => {

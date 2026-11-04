@@ -106,7 +106,12 @@ import {
 } from "../profile/dungeon-result";
 import { NO_TALLIES } from "../profile/new-profile";
 import { addCopies, discoveredCards } from "../profile/packs";
-import { claimAllQuests, noQuests, refreshQuests } from "../profile/quests";
+import {
+  claimAllQuests,
+  DAY_MS,
+  noQuests,
+  refreshQuests,
+} from "../profile/quests";
 import type { QuestClaims } from "../profile/quests";
 import type { DailyQuest, QuestsState, SeaportState } from "../profile/schema";
 import {
@@ -1561,9 +1566,21 @@ const claimedIncome = ({
     NO_INCOME
   );
 
+/** Day 4 of the epoch is a Monday: the first session of the Quest calendar. */
+const FIRST_MONDAY = 4;
+
+/**
+ * The time of a session on the Quest calendar (24 — Quests 4): one day for
+ * each session from a Monday, so each session has a Daily reset and each 7
+ * sessions have a Weekly reset. The play calendar has 25 hours for each
+ * session, so it does not give these resets.
+ */
+export const questSessionTime = (session: number): number =>
+  (FIRST_MONDAY + session) * DAY_MS;
+
 /**
  * The Daily Quests after a Battle or at the start of a session (24 — Quests
- * 4), with the rules of the game at `now` on the play calendar. A win adds the
+ * 4), with the rules of the game at `now` on the Quest calendar. A win adds the
  * progress of the count model to each active Daily Quest. Then the Player does
  * the resets of a new day or week, and claims each Completed Daily Quest and
  * each reached checkpoint at once. A loss adds nothing: the count model counts
@@ -1833,6 +1850,8 @@ export const simulateEconomyRun = (options: EconomyRunOptions): EconomyRun => {
   const quests = options.quests ?? seaport;
   /** The time of the play calendar, in milliseconds from the first Battle. */
   let now = 0;
+  /** The sessions before this one, for the Quest calendar. */
+  let session = 0;
 
   /** Rolls a chance. A chance of 1 or more never uses a random value. */
   const rolls = (chance: number): boolean =>
@@ -1995,7 +2014,8 @@ export const simulateEconomyRun = (options: EconomyRunOptions): EconomyRun => {
     now += HOURS_AWAY * HOUR_MS;
     const collected = seaport && collectExpeditionAt(player, now);
     if (quests) {
-      updateQuests(player, now, false);
+      session += 1;
+      updateQuests(player, questSessionTime(session), false);
     }
     if (collected || quests) {
       spend(player, options.playStyle);
@@ -2028,7 +2048,7 @@ export const simulateEconomyRun = (options: EconomyRunOptions): EconomyRun => {
       campaignSweep(player, stages);
     }
     if (quests) {
-      updateQuests(player, now, won);
+      updateQuests(player, questSessionTime(session), won);
     }
     spend(player, options.playStyle);
     claimAchievements(player);
