@@ -340,7 +340,6 @@ export default {
       barracks: "Hero",
       cave: "Dungeons",
       heynspire: "Heynspire",
-      hall: "Achievements",
       seaport: "Seaport",
     },
     shortcuts: {
@@ -353,7 +352,7 @@ export default {
       workshop: "Workshop",
       packs: "Packs",
       hero: "Hero",
-      achievements: "Achievements",
+      objectives: "Objectives",
       bazaar: "Bazaar",
       handbook: "Handbook",
     },
@@ -712,8 +711,7 @@ export default {
       label: "Achievements that this result completed",
       completed: "Achievement completed",
     },
-    screen: {
-      label: "Achievements",
+    tab: {
       categories: {
         label: "Achievement categories",
         campaign: "Campaign",
@@ -721,19 +719,11 @@ export default {
         progress: "Progress",
         feats: "Feats",
       },
-      count: "{done} / {total}",
       countLabel: "{done} of {total} done",
       toClaim: "{count} to claim",
-      progress: "Progress",
       notDone: "Not done",
-      progressLabel: "{current} of {target}",
       reward: "Reward: {reward}",
-      claim: "Claim",
       claimLabel: "Claim {name}: {reward}",
-      claimed: "Claimed",
-      claimAll: "Claim all",
-      claimAllLabel: "Claim all: {count} rewards",
-      noneToClaim: "No reward to claim",
       rewards: {
         heynstones: "{amount} Heynstones",
         essence: "{amount} Essence",
@@ -874,6 +864,131 @@ export default {
       untouchedVault: {
         name: "Flawless Vault",
         goal: "Win Dungeon 3 with your Hero at full HP",
+      },
+    },
+  },
+  objectives: {
+    title: "Objectives",
+    close: "Close",
+    tabs: {
+      daily: "Daily Quests",
+      achievements: "Achievements",
+    },
+    progress: "Progress",
+    progressLabel: "{current} of {target}",
+    count: "{current} / {target}",
+    claim: "Claim",
+    claimed: "Claimed",
+    claimAll: "Claim all",
+    claimAllLabel: "Claim all: {count} rewards",
+    noneToClaim: "No reward to claim",
+  },
+  quests: {
+    notice: {
+      one: "Daily Quest completed: {name}",
+      many: "{count} Daily Quests completed",
+    },
+    result: {
+      label: "Daily Quest progress of this Battle",
+      completed: "Daily Quest completed",
+      progress: "Daily Quest progress",
+      count: "{current} / {target}",
+      line: "{name}: {current} of {target}",
+    },
+    tab: {
+      activity: "Activity",
+      dailyReset: "New in {hours} h {minutes} min",
+      weeklyResetDays: "Week ends in {days} d {hours} h",
+      weeklyResetHours: "Week ends in {hours} h {minutes} min",
+      reward: "Reward: {coin}, {essence} Essence, {activity} Activity",
+      claimLabel: "Claim {name}",
+      claimCheckpointsLabel: "Claim {count} Activity checkpoints",
+      checkpointName: "{activity} Activity",
+      checkpointLabel:
+        "{activity} Activity, {state}. Reward: {coin}, {essence} Essence",
+      checkpointStates: {
+        notReached: "not reached",
+        reached: "reached",
+        claimed: "claimed",
+      },
+      said: {
+        one: "Claimed {name}.",
+        many: "Claimed {count} rewards.",
+      },
+    },
+    keywordNames: {
+      charge: "Charge",
+      entangle: "Entangle",
+      firstStrike: "First Strike",
+      heroic: "Heroic",
+      lastBreath: "Last Breath",
+      pivot: "Pivot",
+      poison: "Poison",
+      rebirth: "Rebirth",
+      rally: "Rally",
+      regenerate: "Regenerate",
+      hobble: "Hobble",
+      bleed: "Bleed",
+      knockback: "Knockback",
+      retaliate: "Retaliate",
+      sabotage: "Sabotage",
+      swarm: "Swarm",
+      trample: "Trample",
+      bolt: "Bolt",
+      ironGuard: "Iron Guard",
+      soulHarvest: "Soul Harvest",
+      herosBane: "Hero's Bane",
+      spawnbane: "Spawnbane",
+      vampirism: "Vampirism",
+      summon: "Summon",
+      wallbreaker: "Wallbreaker",
+      quickStudy: "Quick Study",
+      piercing: "Piercing",
+      heal: "Heal",
+      dispel: "Dispel",
+    },
+    templates: {
+      daily: {
+        win: {
+          name: "Daily Victories",
+          goal: "Win {count} Battles.",
+        },
+        raceWins: {
+          name: "Kindred Call",
+          goal: "Win {count} Battles with a {race} Creature Card in the Deck.",
+        },
+        skillCards: {
+          name: "Skill Drill",
+          goal: "Play {count} Skill Cards.",
+        },
+        damageType: {
+          name: "Elemental Drill",
+          goal: "Your Units and Skill Cards deal {count} {damageType} damage.",
+        },
+        bossOrDungeon: {
+          name: "Boss Hunt",
+          goal: "Win {count} Boss Stage or Dungeon.",
+        },
+        winMore: {
+          name: "Wanted: Victories",
+          goal: "Win {count} Battles.",
+        },
+        raceDeck: {
+          name: "Warband",
+          goal: "Win {count} Battles with {creatures} or more {race} Creature Cards in the Deck.",
+        },
+        kills: {
+          name: "Culling",
+          goal: "Kill {count} enemy Units.",
+        },
+        keyword: {
+          name: "Drill Master",
+          goal: "Units with {keyword} activate it {count} times.",
+        },
+        dungeon: {
+          name: "Delver",
+          goal: "Win {count} Dungeon.",
+        },
       },
     },
   },
@@ -1067,9 +1182,11 @@ export default {
     heynspire:
       "Heynspire is open. Climb its 50 Floors one at a time. Each Floor gives its reward one time.",
     achievements:
-      "You completed an Achievement. Open Achievements to claim its reward.",
+      "You completed an Achievement. Open Objectives to claim its reward.",
     seaport:
       "The Seaport sends ships on Expeditions. Dispatch a ship before you leave, and collect Coin, XP, Essence and Forge Stones when it is back.",
+    quests:
+      "Daily Quests are open. Complete 5 new goals each day for Coin, Essence and Activity. Open Objectives to see them.",
   },
   handbook: {
     title: "Handbook",
@@ -1208,6 +1325,7 @@ export default {
       workshop: "Workshop: Combine and Extract.",
       gear: "Gear on your Hero.",
       craft: "Workshop: Craft and Fuse.",
+      quests: "Daily Quests in Objectives.",
       seaport: "Seaport: Expeditions.",
       dungeon1: "Dungeon 1.",
       dungeon2: "Dungeon 2.",
@@ -1287,6 +1405,7 @@ export default {
       dungeon: "Dungeon",
       heynspire: "Heynspire",
       achievement: "Achievement",
+      quest: "Daily Quest",
     },
     entries: {
       board:
@@ -1401,11 +1520,15 @@ export default {
       heynspire:
         "Heynspire is the tall tower of the Town. It opens with the first win of Stage {stage}. The tower in the Town and the Heynspire shortcut open it.\n\nHeynspire has {floors} Floors. You fight only the Current Floor: the lowest Floor that you did not win. A Floor Battle has {lanes} Lanes and 1 enemy Hero, whose Front is all the Lanes.\n\nEach {every}th Floor is a Boss Floor: a Boss of the Campaign comes back with a new Deck. A Boss Floor has no Boss Rules.\n\nEach Floor gives its reward one time, when you win it. You cannot play a won Floor again, and you cannot Sweep it. A win also gives Campaign Sweep Tickets: {tickets}. A loss gives a part of the Coin and the XP, for the HP that you took from the enemy Hero.",
       achievement:
-        "An Achievement is a goal with a reward. The Hall of banners in the Town and the Achievements shortcut open the Achievements screen. It lists all {count} Achievements in 4 groups: Campaign, Dungeons and Heynspire, Progress, and Feats.\n\nAn Achievement is In progress, then Completed, then Claimed. The first time that you meet its goal, it becomes Completed, and it stays Completed. Then press Claim on the Achievements screen to get its reward. Claim all claims all Completed Achievements at one time. The badge on the Achievements shortcut shows the number of rewards to claim.\n\nA Feat is an Achievement that one won Battle completes: a Stage, a Dungeon or a Floor that you play. A Sweep, a Replay, Auto-play and the Tutorial never complete a Feat. A loss never completes a Feat.\n\nMost rewards are Heynstones. Some are Coin or Essence. {cosmetics} hard Achievements give an earn-only Cosmetic. Cosmetics come in a later update: the game keeps your Cosmetic until then.\n\nNo Achievement can be missed. You can always complete each Achievement later.",
+        "An Achievement is a goal with a reward. The Objectives shortcut opens the Objectives dialog. Its Achievements tab lists all {count} Achievements in 4 groups: Campaign, Dungeons and Heynspire, Progress, and Feats.\n\nAn Achievement is In progress, then Completed, then Claimed. The first time that you meet its goal, it becomes Completed, and it stays Completed. Then press Claim on the Achievements tab to get its reward. Claim all claims all Completed Achievements at one time. The badge on the Objectives shortcut shows the number of rewards to claim.\n\nA Feat is an Achievement that one won Battle completes: a Stage, a Dungeon or a Floor that you play. A Sweep, a Replay, Auto-play and the Tutorial never complete a Feat. A loss never completes a Feat.\n\nMost rewards are Heynstones. Some are Coin or Essence. {cosmetics} hard Achievements give an earn-only Cosmetic. Cosmetics come in a later update: the game keeps your Cosmetic until then.\n\nNo Achievement can be missed. You can always complete each Achievement later.",
+      quest:
+        'A Daily Quest is a goal with a reward that the game gives you for one day. The Objectives shortcut opens the Objectives dialog. Daily Quests open at Player level {level}.\n\n{daily} new Daily Quests come each day, at 00:00 UTC. A Daily Quest expires at the next reset. When you forget to claim a Completed Daily Quest, the game claims it for you at the reset.\n\nA Battle that you play adds progress, also with Auto-play and a repeat win. A Sweep, a Replay and the Tutorial add no progress. A loss and an Abandon add progress only to a goal that does not say "win".\n\nA Daily Quest gives Coin, Essence and {activity} Activity. Activity adds up over the week and goes to 0 on Monday at 00:00 UTC. The Activity bar has 5 checkpoints, each with a reward. The game claims a reached checkpoint for you at the reset. The badge on the Objectives shortcut shows the number of rewards to claim.',
     },
     aliases: {
+      quest:
+        "mission, missions, daily, dailies, daily quest, activity, weekly, task, tasks, quest log, journal, objectives",
       achievement:
-        "trophy, trophies, quest, quests, badge, badges, challenge, milestone, feat, feats",
+        "trophy, trophies, badge, badges, challenge, milestone, feat, feats",
       heynspire: "tower, spire, endless tower, climb, abyss",
       board: "battlefield, field, map, grid, arena",
       lane: "row, path, track",

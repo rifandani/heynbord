@@ -10,7 +10,7 @@ Status: **approved** (2026-10-16). The names are drafts. The data is `ACHIEVEMEN
 
 - An Achievement is **In progress**, then **Completed**, then **Claimed**.
 - The game records an Achievement as Completed the first time that the Player meets its goal. A Completed Achievement stays Completed, also when the Profile changes later. For example, an Extract after "Discover 68 cards" does not undo it.
-- The Player claims the reward on the Achievements screen. Then the reward goes into the Profile. A Star chest works the same way.
+- The Player claims the reward in the Achievements tab of the Objectives dialog. Then the reward goes into the Profile. A Star chest works the same way.
 - Each Achievement can be Completed and Claimed one time only.
 
 ### 1.2 Kinds of goal
@@ -151,13 +151,15 @@ With the 250 Heynstones of the 10th Floors, the v1 supply is 1,250 Heynstones. T
 - **The totals match.** The Heynstone ledger (`HEYNSTONE_SOURCES` in `packages/rules/src/content/heynstones.ts`) takes the count and the Heynstones of the Achievements from `ACHIEVEMENTS`. A test checks that the list gives 1,000 Heynstones, the value of Economy 2.5 and 2.6.
 - **The economy sim.** After each Battle and the spending, a simulated Player records the Profile goals and the Tally goals that it meets, and claims each Completed Achievement at once (`claimAchievements` in `packages/rules/src/simulation/economy.ts`). It gets the Coin and the Essence. In practice, only the first Craft (50 Essence) changes the results, because the sim does not open the 30-Star chests ([Economy 7.1](./07-economy.md#71-economy-simulation)). The sim plays no Battle, so it completes no Feat, and its results are still a floor. The Heynstones of the Achievements are in the Heynstone ledger, not in the sim.
 
-## 4. Achievements screen
+## 4. Achievements tab
 
-- **Town.** The Hall of banners (Town Concepts 2.9) becomes a selectable Building with a label. The Achievements shortcut on the Town Bar opens. There is no level lock.
-- **Layout.** The screen lists the categories of section 2 in that order. Each row shows the name, the goal, the reward and one of these:
+The Achievements are in the second tab of the Objectives dialog ([24 — Quests 3](./24-quests.md#3-objectives-dialog)). There is no Achievements screen, and the Hall of banners (Town Concepts 2.9) is decoration. There is no level lock.
+
+- **Layout.** A slim column of 4 category tabs is at the left, in the order of section 2, and the list of the selected category is at the right. Each category tab shows the name, the done count and a gold count of rewards to claim. The tab opens on the first category with a reward to claim, else on Campaign.
+- Each row shows the name, the goal, the reward and one of these:
   - In progress: a progress bar with the count (for example "41 / 65"). A Feat shows no bar, only "Not done".
   - Completed: a **Claim** button.
   - Claimed: a check mark.
-- A **Claim all** button claims all Completed Achievements. It is off when no Achievement is Completed.
-- **Notice.** When an Achievement becomes Completed outside a Battle, a toast shows "Achievement completed: {name}". A Feat shows on the Battle result, under the rewards. The Achievements shortcut shows a badge with the number of Completed Achievements that are not Claimed.
-- **Hint.** The Achievements Hint shows at the first Completed Achievement and points at the shortcut.
+- A **Claim all** button claims all Completed Achievements of the 4 categories. It is off when no Achievement is Completed.
+- **Notice.** When an Achievement becomes Completed outside a Battle, a toast shows "Achievement completed: {name}". A Feat shows on the Battle result, under the rewards. The Objectives badge counts the Completed Achievements that are not Claimed.
+- **Hint.** The Achievements Hint shows at the first Completed Achievement and points at the Objectives shortcut.

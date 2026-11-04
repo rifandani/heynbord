@@ -22,7 +22,7 @@ All documents use ASD-STE100 Simplified Technical English.
 | 12 | [Region Concepts](./12-region-concepts.md) | The art brief and the positions for each Region Map of the Campaign. `bun campaign:prompts` makes the image prompts. | Art director |
 | 13 | [Battlefield Concepts](./13-battlefield-concepts.md) | The art brief and the positions for each Battle Painting. `bun campaign:prompts` makes the image prompts. | Art director |
 | 14 | [Campaign Stages](./14-campaign-stages.md) | The design of each Stage: place, enemy, new thing, enemy Deck, first-win card and win-rate target. | Game designer |
-| 15 | [Achievements](./15-achievements.md) | The rules for Achievements, Feats and Tallies, the list of Achievements with their rewards, and the Achievements screen. | Game designer |
+| 15 | [Achievements](./15-achievements.md) | The rules for Achievements, Feats and Tallies, the list of Achievements with their rewards, and the Achievements tab. | Game designer |
 | 16 | [Cosmetic Concepts](./16-cosmetic-concepts.md) | The art brief and the image prompts for the Card Backs. `bun card-back:prompts` makes the prompts. | Art director |
 | 17 | [Hero Portrait Concepts](./17-hero-portrait-concepts.md) | The art brief and the image prompts for the Hero portraits. `bun hero-portrait:prompts` makes the prompts. | Art director |
 | 18 | [Board Skin Concepts](./18-board-skin-concepts.md) | The art brief and the image prompts for the Square sheets of the Board skins. `bun board-skin:prompts` makes the prompts. | Art director |
@@ -31,6 +31,7 @@ All documents use ASD-STE100 Simplified Technical English.
 | 21 | [Hero Models](./21-hero-models.md) | The 22 accepted decisions for eight 3D Hero appearances, visible Gear, animations, previews, Replay appearance and release checks. | Lead engineer |
 | 22 | [Performance Records](./22-performance.md) | The dated measurements of the game: frame rate, First Load, bundle size and the pass or fail of each requirement. | Lead engineer |
 | 23 | [Region Story Scenes](./23-region-story-scenes.md) | The agreed MOD-07 trial, its [Hearthvale](./scenes/hearthvale-storyboard.md), [Red Mesas](./scenes/red-mesas-storyboard.md), [Glowcap Hollows](./scenes/glowcap-hollows-storyboard.md), [Thornwood](./scenes/thornwood-storyboard.md) and [Hollow Marches](./scenes/hollow-marches-storyboard.md) storyboards and its fframes production prompt. | Game designer and art director |
+| 24 | [Quests](./24-quests.md) | The rules for Daily Quests and Activity, the goal pool, the Objectives dialog and the Quest model of the economy sim. | Game designer |
 
 One person (the solo developer) has all the roles. The roles show which point of view each document has.
 

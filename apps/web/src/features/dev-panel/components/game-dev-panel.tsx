@@ -3,16 +3,21 @@ import {
   CARDS,
   coinDenominations,
   currentFloor,
+  DAY_MS,
   FORGE_STONE_TIERS,
   GEAR_SLOTS,
   HEYNSPIRE_FLOORS,
   heynspireBossStage,
   isHeynspireOpen,
   MAX_GEAR_LEVEL,
+  nextWeeklyReset,
+  noQuests,
   PLAYER_LEVEL_XP,
+  questDay,
+  refreshQuests,
   STAGES,
 } from "@workspace/rules";
-import type { HeroRef, Side, StageDefinition } from "@workspace/rules";
+import type { HeroRef, Profile, Side, StageDefinition } from "@workspace/rules";
 import { cn } from "cn";
 import { useContext, useState } from "react";
 import {
@@ -47,7 +52,9 @@ import { stageResultsAtom } from "@/features/campaign/campaign.atoms";
 import type { StageResults } from "@/features/campaign/region-map";
 import { collectionAtom } from "@/features/deck/deck.atoms";
 import {
+  addActivity,
   canSetStars,
+  completeQuests,
   finishVoyage,
   lastWonStage,
   nextStage,
@@ -284,6 +291,84 @@ const SeaportBlock = () => {
         </p>
         <Button size="xs" isDisabled={voyage === null} onPress={finish}>
           Finish voyage
+        </Button>
+      </div>
+    </section>
+  );
+};
+
+/**
+ * Does the Daily reset of the day after the last one. It moves the reset day
+ * of the Profile one day after the device day, so the real next reset comes
+ * one day later.
+ */
+const skipToNextReset = (profile: Profile): Profile =>
+  refreshQuests(
+    profile,
+    ((profile.quests.lastDailyReset ?? questDay(Date.now())) + 1) * DAY_MS
+  ).profile;
+
+/** Does the Weekly reset: the next Monday 00:00 UTC after the last reset. */
+const skipToNextWeek = (profile: Profile): Profile =>
+  refreshQuests(
+    profile,
+    nextWeeklyReset(
+      ((profile.quests.lastDailyReset ?? questDay(Date.now())) + 1) * DAY_MS
+    )
+  ).profile;
+
+const clearedQuests = (profile: Profile): Profile =>
+  refreshQuests(
+    { ...profile, quests: noQuests(profile.quests.seed) },
+    Date.now()
+  ).profile;
+
+const completedQuests = (profile: Profile): Profile => ({
+  ...profile,
+  quests: completeQuests(profile.quests),
+});
+
+const withMoreActivity = (profile: Profile): Profile => ({
+  ...profile,
+  quests: addActivity(profile.quests, 100),
+});
+
+/**
+ * The Daily Quests and the Activity (24 — Quests): their state, and buttons
+ * that complete each active Daily Quest, add Activity, do the next reset, or
+ * clear all. Unlike the other values of the panel, this changes the saved
+ * Profile, as play does.
+ */
+const QuestsBlock = () => {
+  const registry = useContext(RegistryContext);
+  const { quests } = useAtomValue(profileAtom);
+  const write = (change: (profile: Profile) => Profile) => {
+    registry.set(profileAtom, change(registry.get(profileAtom)));
+  };
+
+  return (
+    <section aria-labelledby="dev-quests" className="grid content-start gap-3">
+      <Heading id="dev-quests">Daily Quests</Heading>
+      <p className="text-muted-fg">
+        {quests.daily.length} Daily · {quests.activity} Activity · reset day{" "}
+        {quests.lastDailyReset ?? "none"} · week{" "}
+        {quests.lastWeeklyReset ?? "none"}
+      </p>
+      <div className="flex flex-wrap gap-2">
+        <Button size="xs" onPress={() => write(completedQuests)}>
+          Complete all
+        </Button>
+        <Button size="xs" onPress={() => write(withMoreActivity)}>
+          +100 Activity
+        </Button>
+        <Button size="xs" onPress={() => write(skipToNextReset)}>
+          Next Daily reset
+        </Button>
+        <Button size="xs" onPress={() => write(skipToNextWeek)}>
+          Next Weekly reset
+        </Button>
+        <Button size="xs" intent="outline" onPress={() => write(clearedQuests)}>
+          Clear
         </Button>
       </div>
     </section>
@@ -659,9 +744,9 @@ const CampaignBlock = () => {
  * The Game Dev Panel: a TanStack Devtools tab that unlocks all cards, sets the
  * Player level, the Gear, the balances, the 2 types of Sweep Ticket, the Forge
  * Stones and the won Heynspire Floors, wins Campaign Stages one by one, hits
- * the Heroes of the Battle on the screen, and finishes the Seaport voyage.
- * Its values show over the Profile and are not saved into it, except the
- * finished voyage.
+ * the Heroes of the Battle on the screen, finishes the Seaport voyage, and
+ * changes the Daily Quests and the Activity. Its values show over the Profile
+ * and are not saved into it, except the finished voyage and the Quest state.
  * Development only.
  */
 export const GameDevPanel = () => {
@@ -684,6 +769,7 @@ export const GameDevPanel = () => {
           <ForgeStonesBlock />
           <HeynspireBlock />
           <SeaportBlock />
+          <QuestsBlock />
         </div>
         <CampaignBlock />
         <footer className="border-border flex flex-wrap items-center gap-3 border-t pt-3 lg:col-span-full">

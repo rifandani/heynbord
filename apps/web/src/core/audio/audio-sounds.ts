@@ -225,8 +225,8 @@ export const makeSounds = (
       tone(2730, 0.22, { type: "sine", gain: 0.05 });
       tone(1568, 0.45, { type: "sine", delay: 0.09, gain: 0.1 });
     },
-    // The Achievements screen: a claimed reward gets to its balance. Two bright
-    // bell notes that go up, as a coin in a full purse.
+    // The Objectives dialog: a Claim adds a reward. Two bright bell notes that
+    // go up, as a coin in a full purse.
     claim: () => {
       tone(1319, 0.22, { type: "triangle", gain: 0.1 });
       tone(1976, 0.34, { type: "sine", delay: 0.07, gain: 0.08 });

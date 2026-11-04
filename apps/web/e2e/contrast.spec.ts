@@ -194,6 +194,10 @@ for (const locale of ["en-us", "id-id"] as const) {
           await audit("settings-muted");
           await page.getByTestId("settings-close").press("Enter");
           await hooks(page, "unlock");
+          await page.getByTestId("town-shortcut-objectives").press("Enter");
+          await expect(page.getByTestId("objectives-dialog")).toBeVisible();
+          await audit("objectives");
+          await page.keyboard.press("Escape");
           for (const screen of [
             "campaign",
             "packs",
@@ -201,7 +205,6 @@ for (const locale of ["en-us", "id-id"] as const) {
             "hero",
             "dungeons",
             "heynspire",
-            "achievements",
             "bazaar",
             "seaport",
           ] as const) {

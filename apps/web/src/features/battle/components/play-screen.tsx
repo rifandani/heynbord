@@ -4,6 +4,8 @@ import {
   useAtomSet,
   useAtomValue,
 } from "@effect/atom-react";
+import { absurd } from "effect";
+import type { ReactNode } from "react";
 import {
   lazy,
   Suspense,
@@ -40,8 +42,11 @@ import {
   usePacksHints,
   useTownHints,
 } from "@/features/hint/use-hints";
+import { objectivesOpenAtom } from "@/features/objectives/objectives.atoms";
 import { profileReadyAtom } from "@/features/profile/profile.atoms";
 import { useProfileStore } from "@/features/profile/use-profile-store";
+import { useQuestNotices } from "@/features/quests/use-quest-notices";
+import { useQuestRefresh } from "@/features/quests/use-quest-refresh";
 import { useReplayLink } from "@/features/replay/use-replay-link";
 import { useSettings } from "@/features/settings/use-settings";
 import { TownBar } from "@/features/town/components/town-bar";
@@ -57,11 +62,6 @@ import { useTownPad } from "@/features/town/use-town-pad";
  * Every screen except the Town loads in its own chunk on first open. The Town,
  * the Town Bar and the Settings dialog stay in the first bundle (issue 139).
  */
-const AchievementsScreen = lazy(async () => {
-  const module =
-    await import("@/features/achievements/components/achievements-screen");
-  return { default: module.AchievementsScreen };
-});
 const BazaarScreen = lazy(async () => {
   const module = await import("@/features/bazaar/components/bazaar-screen");
   return { default: module.BazaarScreen };
@@ -99,6 +99,12 @@ const BattleStage = lazy(async () => {
   const module = await import("@/features/battle/components/battle-stage");
   return { default: module.BattleStage };
 });
+const ObjectivesDialog = lazy(async () => {
+  const module =
+    await import("@/features/objectives/components/objectives-dialog");
+  return { default: module.ObjectivesDialog };
+});
+
 const HandbookDialog = lazy(async () => {
   const module = await import("@/features/handbook/components/handbook-dialog");
   return { default: module.HandbookDialog };
@@ -112,7 +118,6 @@ const SCREEN_MUSIC: Partial<Record<GameScreen, MusicFeature>> = {
   bazaar: "bazaar",
   seaport: "seaport",
   hero: "hero",
-  achievements: "achievements",
 };
 
 /** The backdrop while a screen chunk loads. The Town Bar stays on top. */
@@ -237,10 +242,60 @@ const useBattleMusic = (
   }, [battle.session?.watching, result, resultKey]);
 };
 
+/** The screen other than the Town that `screen` names, in its own chunk. */
+const OtherScreen = ({
+  screen,
+  battle,
+  campaign,
+}: {
+  readonly screen: GameScreen;
+  readonly battle: ReturnType<typeof useBattle>;
+  readonly campaign: ReturnType<typeof useCampaignRegion>;
+}): ReactNode => {
+  switch (screen) {
+    case "campaign": {
+      return (
+        <CampaignScreen
+          region={campaign.region}
+          onRegion={(region) => campaign.setRegion(region)}
+          onStart={(next) => battle.start(next)}
+        />
+      );
+    }
+    case "dungeons": {
+      return <DungeonsScreen onStart={(next) => battle.start(next)} />;
+    }
+    case "heynspire": {
+      return <HeynspireScreen onStart={(next) => battle.start(next)} />;
+    }
+    case "packs": {
+      return <PacksScreen />;
+    }
+    case "workshop": {
+      return <WorkshopScreen />;
+    }
+    case "hero": {
+      return <HeroScreen />;
+    }
+    case "bazaar": {
+      return <BazaarScreen />;
+    }
+    case "seaport": {
+      return <SeaportScreen />;
+    }
+    case "town": {
+      return null;
+    }
+    default: {
+      return absurd(screen);
+    }
+  }
+};
+
 /**
  * The game in one route (web ADR-0005): the Town, the Campaign (the Region
  * Map), then the Battle, Heynspire, the Dungeons, the Packs, the Workshop,
- * the Hero screen, the Achievements screen, the Bazaar and the Seaport. The Town Bar shows on each screen except the Battle.
+ * the Hero screen, the Bazaar and the Seaport. The Town Bar shows on each screen except the Battle.
  * A Battle goes back to the screen that started it: the Campaign, Heynspire
  * or the Dungeons.
  */
@@ -258,10 +313,13 @@ export const PlayScreen = () => {
   // A dialog that the Player opened stays in the page, so it can close on its
   // spine. Its chunk loads at the first open.
   const handbookShown = useEverOpened(handbook.isOpen);
+  const objectivesShown = useEverOpened(useAtomValue(objectivesOpenAtom));
 
   useProfileStore();
   useSettings();
   useAchievementNotices();
+  useQuestNotices();
+  useQuestRefresh(ready && !battle.session, screen);
   // A Replay Link opens Watching a Replay in place of the screen (web ADR-0011).
   useReplayLink({ show: battle.watch, leave: battle.leave });
   useEscToTown(screen !== "town" && !battle.session, () => setScreen("town"));
@@ -322,25 +380,11 @@ export const PlayScreen = () => {
             <TownScreen leaving={leaving} onOpen={handleOpen} />
           ) : (
             <Suspense fallback={<ScreenLoading />}>
-              {screen === "campaign" ? (
-                <CampaignScreen
-                  region={campaign.region}
-                  onRegion={(region) => campaign.setRegion(region)}
-                  onStart={(next) => battle.start(next)}
-                />
-              ) : null}
-              {screen === "dungeons" ? (
-                <DungeonsScreen onStart={(next) => battle.start(next)} />
-              ) : null}
-              {screen === "heynspire" ? (
-                <HeynspireScreen onStart={(next) => battle.start(next)} />
-              ) : null}
-              {screen === "packs" ? <PacksScreen /> : null}
-              {screen === "workshop" ? <WorkshopScreen /> : null}
-              {screen === "hero" ? <HeroScreen /> : null}
-              {screen === "achievements" ? <AchievementsScreen /> : null}
-              {screen === "bazaar" ? <BazaarScreen /> : null}
-              {screen === "seaport" ? <SeaportScreen /> : null}
+              <OtherScreen
+                screen={screen}
+                battle={battle}
+                campaign={campaign}
+              />
             </Suspense>
           )}
           <TownBar screen={screen} onOpen={handleOpen} />
@@ -350,6 +394,11 @@ export const PlayScreen = () => {
       {handbookShown ? (
         <Suspense fallback={null}>
           <HandbookDialog inBattle={battle.session !== null} />
+        </Suspense>
+      ) : null}
+      {objectivesShown ? (
+        <Suspense fallback={null}>
+          <ObjectivesDialog />
         </Suspense>
       ) : null}
       <PortraitGuard />

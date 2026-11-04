@@ -7,6 +7,8 @@ import type {
   FloorResultInput,
   FloorRewards,
   Profile,
+  QuestChange,
+  QuestOutcome,
   StageDefinition,
   StageResultInput,
   StageRewards,
@@ -20,6 +22,7 @@ import {
   enemyHeroDamage,
   isHeynspireOpen,
   recordFeats,
+  recordQuestBattle,
   STAGES,
   starsFor,
 } from "@workspace/rules";
@@ -28,6 +31,8 @@ import type {
   BattleOptions,
   BattleSession,
 } from "@/features/battle/battle-session";
+import { questLines } from "@/features/quests/quests";
+import type { QuestLine } from "@/features/quests/quests";
 
 /**
  * The rewards of a Stage result (Economy 2.1), of a Dungeon result (Economy
@@ -48,6 +53,11 @@ export interface ShownRewards {
    * its rewards met (Achievements 1.2). They show under the rewards.
    */
   readonly achievements: readonly string[];
+  /**
+   * The Daily Quests that the Battle added progress to, in screen order (24 —
+   * Quests 3). They show under the rewards.
+   */
+  readonly quests: readonly QuestLine[];
 }
 
 /** The rewards of a result before the Profile write: the write gives the Achievements. */
@@ -165,6 +175,43 @@ const withFeats = <P extends Profile>(profile: P, session: BattleSession): P =>
     ? recordFeats(profile, featBattleOf(session)).profile
     : profile;
 
+/**
+ * True when the Daily Quests count the Battle (24 — Quests 1.3): a Battle that the
+ * Player plays, also with Auto-play. The Tutorial and a Battle that the dev
+ * panel changed do not count. A Replay has no result, and a Sweep has no
+ * Battle.
+ */
+const countsForQuests = (session: BattleSession): boolean =>
+  session.tutorial === null && !session.watching && !session.devChanged;
+
+/**
+ * Adds the progress of the Battle to the Daily Quests (24 — Quests 1.3). It
+ * reads the Profile before the result, as
+ * `recordQuestBattle` asks.
+ */
+const withQuests = <P extends Profile>(
+  profile: P,
+  session: BattleSession,
+  outcome: QuestOutcome
+): QuestChange<P> =>
+  countsForQuests(session)
+    ? recordQuestBattle(profile, { ...featBattleOf(session), outcome })
+    : { profile, quests: [] };
+
+/**
+ * The Daily Quest progress of an Abandon (24 — Quests 1.3): the events up to the
+ * Abandon add progress to the goals that say "play". `null` when the Battle
+ * has a result (to leave it then is not an Abandon), or when the Daily Quests
+ * do not count it. The Profile store saves the change.
+ */
+export const recordAbandon = <P extends Profile>(
+  profile: P,
+  session: BattleSession
+): QuestChange<P> | null =>
+  session.rules.result === null && countsForQuests(session)
+    ? withQuests(profile, session, "abandoned")
+    : null;
+
 /** The result of a finished Battle, applied to the Profile. */
 const applyResult = <P extends Profile>(
   profile: P,
@@ -194,9 +241,9 @@ const applyResult = <P extends Profile>(
 /**
  * Applies the result of a finished Battle to the Profile one time: a Stage
  * (Economy 2.1), a Dungeon (Economy 2.4) or a Heynspire Floor (Economy 2.3),
- * with the Feats of a won Battle (Achievements 1.3) in the same Profile
- * write. `recorded` is the result that shows now: when it is of the same
- * Battle, the rewards are already in the Profile, so this gives `null`. It
+ * with the Feats of a won Battle (Achievements 1.3) and the Daily Quest
+ * progress of the Battle (24 — Quests 1.3) in the same Profile write.
+ * `recorded` is the result that shows now: when it is of the same Battle, the rewards are already in the Profile, so this gives `null`. It
  * also gives `null` when the Battle has no result (`stageResultOf`,
  * `dungeonResultOf`, `floorResultOf`). An Abandon has no result. A Replay
  * that the Player watches is not the Player's Battle, so it gives `null` too
@@ -212,12 +259,13 @@ export const recordBattleResult = <P extends Profile>(
   if (session.watching || recorded?.options === session.options) {
     return null;
   }
-  const applied = applyResult(
-    withFeats(profile, session),
+  const featured = withFeats(profile, session);
+  const quested = withQuests(
+    featured,
     session,
-    stages,
-    dungeons
-  );
+    session.rules.result?.winner === "player" ? "won" : "lost"
+  ).profile;
+  const applied = applyResult(quested, session, stages, dungeons);
   if (applied === null) {
     return null;
   }
@@ -227,6 +275,7 @@ export const recordBattleResult = <P extends Profile>(
       options: session.options,
       rewards: applied.rewards,
       xp: applied.profile.xp,
+      quests: questLines(featured, quested),
     },
   };
 };

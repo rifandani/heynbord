@@ -14,6 +14,8 @@ import {
   CAMPAIGN_REGIONS,
   CAMPAIGN_SWEEP_TICKETS_PER_WIN,
   countdownLimit,
+  DAILY_QUEST_ACTIVITY,
+  DAILY_QUESTS,
   DUNGEON_LANES,
   DUNGEON_SWEEP_TICKETS_PER_WIN,
   EXPEDITION_CARGOES,
@@ -136,6 +138,7 @@ const PROGRESS_ENTRIES = [
   "dungeon",
   "heynspire",
   "achievement",
+  "quest",
 ] as const;
 
 const DAMAGE_TYPES: readonly DamageType[] = [
@@ -356,6 +359,10 @@ export const PLAYER_LEVEL_UNLOCK_TABLE: readonly {
 }[] = [
   { level: 2, rule: { key: "handbook.playerUnlock.packs" } },
   { level: 3, rule: { key: "handbook.playerUnlock.workshop" } },
+  {
+    level: UNLOCK_LEVELS.quests,
+    rule: { key: "handbook.playerUnlock.quests" },
+  },
   { level: 5, rule: { key: "handbook.playerUnlock.gear" } },
   { level: 6, rule: { key: "handbook.playerUnlock.craft" } },
   {
@@ -595,6 +602,11 @@ const TEXT_ARGS: Partial<Record<EntryId, TextRef["args"]>> = {
     ...FUSE_ESSENCE,
   },
   gear: { level: UNLOCK_LEVELS.gear, max: MAX_GEAR_LEVEL },
+  quest: {
+    level: UNLOCK_LEVELS.quests,
+    daily: DAILY_QUESTS,
+    activity: DAILY_QUEST_ACTIVITY,
+  },
   seaport: {
     level: UNLOCK_LEVELS.seaport,
     count: EXPEDITION_CARGOES.length,
@@ -672,6 +684,8 @@ const ICONS: Partial<Record<EntryId, EntryIcon>> = {
   heynspire: glyph("tower"),
   // The glyph of the Achievements on the Battle result.
   achievement: glyph("banner"),
+  // The glyph of the Daily Quests on the Battle result.
+  quest: glyph("scroll"),
   rankGems: { kind: "rank", rank: "rare" },
 };
 
@@ -822,6 +836,7 @@ const SEE_ALSO: Partial<Record<EntryId, readonly EntryId[]>> = {
   dungeon: ["front", "defeated", "side", "sweep", "playerLevel"],
   heynspire: ["hero", "front", "sweep", "gear", "playerLevel"],
   achievement: ["stars", "dungeon", "heynspire", "coin"],
+  quest: ["achievement", "coin", "playerLevel"],
 };
 
 const withLinks = (entry: Entry): Entry => ({
@@ -976,6 +991,7 @@ export const ALIASED_ENTRIES: ReadonlySet<EntryId> = new Set<EntryId>([
   "dungeon",
   "heynspire",
   "achievement",
+  "quest",
 ]);
 
 /**

@@ -8,9 +8,9 @@ Pillar 1 ("Fair to the player") controls all decisions in this document.
 
 | Resource | Type | How the player gets it | What it is for |
 | --- | --- | --- | --- |
-| **Coin** | Soft currency | Battles, Star chests, Heynspire, Achievements, Seaport Expeditions | Packs, Combine, Gear upgrades, Deck slots |
+| **Coin** | Soft currency | Battles, Star chests, Heynspire, Achievements, Seaport Expeditions, Daily Quests, Activity checkpoints | Packs, Combine, Gear upgrades, Deck slots |
 | **Heynstones** | Rare currency | 10th Heynspire Floors, Achievements (one time each) | Cosmetics and Conveniences in the Bazaar |
-| **Essence** | Craft resource | Extract, Heynspire Boss Floors, Achievements, Seaport Expeditions | Craft and Fuse |
+| **Essence** | Craft resource | Extract, Heynspire Boss Floors, Achievements, Seaport Expeditions, Daily Quests, Activity checkpoints | Craft and Fuse |
 | **XP** | Progress | Battles, Seaport Expeditions | Player level |
 | **Stars** | Progress | Stage wins | Star chests |
 | **Forge Stones** | Gear resource, 5 tiers | Stage wins, 10-Star chests, Sweeps, Dungeons, Heynspire, the Forge Stone Cargo of the Seaport | Gear upgrades |
@@ -31,7 +31,7 @@ The game shows only the denominations that are not zero. Each one has an icon an
 | 520 | 5s 20c |
 | 15,400 | 1g 54s |
 
-- No resource has a time limit or a daily cap.
+- A Daily Quest expires at the Daily reset, 00:00 UTC (section 2.9, [ADR-0056](../adr/0056-daily-quests-expire-at-a-0000-utc-reset.md)). No other source has a time limit.
 - There is no Energy. The player can do as many Battles as they want.
 
 ### 1.2 Player levels
@@ -238,7 +238,7 @@ The cells of the first table are the full voyage: `rate × (100% + bonus) × hou
 - **The clock is the device clock.** The rules stay pure: the web sends `now` with each Command, so the same Profile and the same `now` always give the same reward, and a page load never rolls a reward again. When `now` is before `startedAt` (the clock moved back), the reward is 0 and the ship stays.
 - **The rates are a supplement.** The Seaport is never the best source of a resource: at Floor 50, it gives the median Player 10% of its Coin and 2% of its XP (see "In the sim" below). The economy sim checks each rate with the targets of section 4. A longer voyage pays a little more for each hour, so patience pays without a punishment for a short time away.
 - **The durations open by level.** With all durations open at level 8, a 48-hour Coin voyage gave 1,656 Coin for each day of the play calendar, and the Collector opened 28 Packs by the end of Region 2 (target 15 to 25, section 4). The Seaport income grows with the Player, as the other sources do.
-- **Pillar 1.** No Energy, no daily cap and no punishment for time away.
+- **Pillar 1.** No Energy. The Seaport has no daily cap and no punishment for time away.
 - **What stays out.** No Heynstones ([ADR-0008](../adr/0008-heynstones-buy-only-cosmetics-and-conveniences.md), [ADR-0042](../adr/0042-star-chests-give-no-heynstones.md)). No exchange of one resource for another (ADR-0008). No Seaport levels and no VIP: no Building has levels. No scale with the Power of the Deck.
 - **In the sim.** The economy sim sends the ship with its play calendar: 1 hour of play each day, then 1 day away (7.1). The median Player needs all the resources, so it takes each open Cargo in turn, on the longest open duration. Thus `sim:check` judges the targets of section 4 with the Seaport income. At Heynspire Floor 50, the Seaport gives the median Player about 10,000 Coin (10% of its Coin), 430 XP (2%), 650 Essence (12% Collector, 31% Upgrader, 23% Balanced) and 1 Epic Forge Stone (9%). The Seaport stays a supplement: Battles give the rest.
 - Coin is in Copper (section 1.1). The names of the Cargoes are in the Message Catalogs, so a rename changes no rule. Epic is the Forge Stone tier of the 48-hour voyage: it opens at level 24, where Gear levels 16 to 20 need Epic Forge Stones, 6 levels before Dungeon 3.
@@ -246,6 +246,22 @@ The cells of the first table are the full voyage: `rate × (100% + bonus) × hou
 - **Cargoes (2026-10-18).** The 4 fixed Expeditions (the Coastal Run, the Trade Route, the Long Voyage and the Grand Expedition, each with more reward lines) became 4 Cargoes × 4 durations, so that the Player selects what it needs. An XP Cargo gives only XP, so its rate is 3 for each hour: the XP for each day of the median Player is the same as before (2% of its XP at Floor 50), and 8% to 9% of the Players get to level 30 before Floor 50. The Coin and the Epic Forge Stones of the Seaport are less than before, because the median Player now sends each Cargo in turn (section 4).
 
 The data is `EXPEDITION_CARGOES`, `EXPEDITION_DURATIONS` and `expeditionReward` in `packages/rules/src/content/expeditions.ts`, and the actions are `startExpedition`, `activeExpedition` and `collectExpedition` in `packages/rules/src/profile/seaport.ts`. Keep the code and these tables the same.
+
+### 2.9 Quests
+
+The rules are in [24 — Quests](./24-quests.md). The economy sim sets the values (section 7.1).
+
+| Kind | Reward | Limit |
+| --- | --- | --- |
+| **Daily Quest** (5 each day) | 15 Copper, 2 Essence and 20 Activity | Together with Activity checkpoints: at most 10% of the Coin and 15% of the Essence of the median Player at Heynspire Floor 50 |
+| **Activity checkpoint** (5 each week, at 100 to 500 Activity) | 100: 15 Copper and 2 Essence. 200: 20 and 3. 300: 25 and 3. 400: 30 and 4. 500: 60 and 6 | See Daily Quest |
+
+- No Daily Quest or checkpoint gives Heynstones (section 2.6, [ADR-0008](../adr/0008-heynstones-buy-only-cosmetics-and-conveniences.md)), XP ([ADR-0047](../adr/0047-a-stage-repeat-win-gives-no-xp.md)), cards, Forge Stones or Tickets.
+- All Daily Quests give the same reward, so the luck of the goal selection gives no advantage.
+- A Daily Quest expires at the Daily reset, and Activity goes to 0 at the Weekly reset ([ADR-0056](../adr/0056-daily-quests-expire-at-a-0000-utc-reset.md)). The game claims a Completed Daily Quest and a reached checkpoint at the reset, so an earned reward is never lost.
+- Daily Quests and checkpoints are a supplement, as the Seaport is. The cap above keeps them small. The Coin values must stay low because of the Pacing targets of section 4, not because of the cap: a Daily Quest gives the same Coin in Region 1 as at Floor 50, and early Stage Coin is small. With more Quest Coin, the Collector opens more than 25 Packs before Region 2 ends.
+
+The data is `DAILY_QUEST_REWARD` and `ACTIVITY_CHECKPOINTS` in `packages/rules/src/content/quests.ts`. Keep the code and this table the same.
 
 ## 3. Sinks
 
@@ -536,6 +552,7 @@ Trading between players is a risk for Pillar 1. People can sell cards for real m
 - **Campaign Sweeps.** A Stage win (first or repeat) and a Floor win give 2 Campaign Sweep Tickets. After each Battle, the Player uses all its Campaign Sweep Tickets at once on the 3-Star Stage that gives the most Coin for a repeat win. On a tie, it takes a Boss Stage first, then the highest Region. Each Ticket gives one repeat-win reward of that Stage. A Sweep gives no Tickets and changes no Stars. When no Stage has 3 Stars, the Player keeps its Tickets.
 - **Dungeon Sweeps.** A Dungeon win gives 1 Dungeon Sweep Ticket. After each Dungeon win, the Player uses all its Dungeon Sweep Tickets on that Dungeon. Each Ticket gives one repeat-win reward of the Dungeon: the Coin, the XP, the Forge Stone chance and the card chance.
 - **Seaport.** All Play Styles use the Seaport (section 2.8), because it costs nothing. The Player has one ship and follows the rules of the game (`activeExpedition`, `startExpedition`). At the end of each session of the play calendar, when the ship is at the berth, the Player Dispatches it (`nextExpedition`): the median Player needs all the resources, so it takes each open Cargo in turn (Coin, XP, Essence, Forge Stones), on the longest duration that its level opens. With the bonus of a long voyage, that duration gives the most for each day of the calendar (`expeditionPerDay`): 360 Coin for each day at 6 hours, 756 at 12 hours, 1,584 at 24 hours and 1,656 at 48 hours (3,312 Coin each 2 days). At the start of the next session, the Player Collects the Expedition when the ship is back. A ship that is not back sails on, so a 48-hour voyage takes 2 days and the Forge Stone Cargo always gives its Epic Forge Stone. The reward stops at the duration, so a late Collect loses nothing. The reward comes from `expeditionReward`, and its XP stops at level 30, as the XP of a Battle. The Player spends the Seaport income at once, and claims the Achievements.
+- **Daily Quests.** All Play Styles do Daily Quests from level 3. The sim uses a count model ([24 — Quests 4](./24-quests.md#4-economy-sim)) with the Quest rules of the game (`refreshQuests`, `claimAllQuests`): each goal template has a Battle count (`questBattles`), and Deck rules always pass. Each win adds progress to the active Daily Quests, so a Daily Quest is complete after its Battle count of wins. A loss and a Sweep add nothing. Each session of the play calendar is a new day, so the Player does a Daily reset at the start of each session, and each 7 sessions are a new week, so the Player does a Weekly reset. The Player claims each Completed Daily Quest and each reached Activity checkpoint at once. This is the maximum income, so a pass of the targets with it is safe. The report shows the income of Daily Quests and checkpoints and its share of the Coin and the Essence at each checkpoint of the report. The First-try run does no Daily Quests. They give no XP, so they do not change the First-try Path.
 - **The First-try run sends no ship**, as it uses no Sweep. Thus the First-try Path of section 1.2 and the Expected Gear (ADR-0033) come only from Battles.
 - After the last Stage, the Player climbs Heynspire. When a Floor fails 3 times in a row, the Player does Dungeon wins until the next Player level, and then tries the Floor again. At level 30 there is no next level, so this Dungeon detour ends after 3 Dungeon Battles. A Floor loss gives 10% of the Coin and 25% of the XP of its first win (GDD 7.1). After Floor 50, the Player does Dungeon wins until level 30. The Player plays the highest Dungeon that gives XP and that its level unlocks.
 - The Player uses each action only from its unlock level (GDD 7.1): Packs at level 2, Combine and Extract at level 3, Gear at level 5, and Craft and Fuse at level 6.
@@ -577,6 +594,7 @@ Trading between players is a risk for Pillar 1. People can sell cards for real m
 
 - It judges the **median** of the Players. The Player level targets use the level of the First-try run. "First Combine done" uses the share of the Players with a Combine done (100%). "At most 10% of the Players get to level 30 before they win Floor 50" uses the share of all Players. The check does not judge percentiles.
 - A miss of a gated target fails the check. The check gives one line for each miss: the checkpoint, the target, the Play Style, the value and the target. The report shows "MISS" after the target.
+- **Quest cap** (section 2.9, gated). The check also fails when Daily Quests and Activity checkpoints give more than 10% of the Coin or more than 15% of the Essence of the median Player at Floor 50, for any Play Style (`judgeQuestShare`). It judges the median of the share of each Player.
 - A miss of a draft target shows "review" after the target and does not fail the check. Section 4 gives the draft targets.
 - A target that does not apply to a Play Style (`notFor`) is not judged.
 - During playtests, the game writes a local log of rewards and spending. The player can export the log and send it to the developer. The game never sends data automatically in v1.

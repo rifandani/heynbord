@@ -341,7 +341,6 @@ export default {
       barracks: "Pahlawan",
       cave: "Dungeon",
       heynspire: "Heynspire",
-      hall: "Pencapaian",
       seaport: "Pelabuhan",
     },
     shortcuts: {
@@ -354,7 +353,7 @@ export default {
       workshop: "Bengkel",
       packs: "Paket",
       hero: "Pahlawan",
-      achievements: "Pencapaian",
+      objectives: "Sasaran",
       bazaar: "Bazar",
       handbook: "Buku Panduan",
     },
@@ -713,8 +712,7 @@ export default {
       label: "Pencapaian yang diselesaikan oleh hasil ini",
       completed: "Pencapaian selesai",
     },
-    screen: {
-      label: "Pencapaian",
+    tab: {
       categories: {
         label: "Kategori Pencapaian",
         campaign: "Kampanye",
@@ -722,19 +720,11 @@ export default {
         progress: "Kemajuan",
         feats: "Aksi Hebat",
       },
-      count: "{done} / {total}",
       countLabel: "{done} dari {total} selesai",
       toClaim: "{count} bisa diklaim",
-      progress: "Kemajuan",
       notDone: "Belum selesai",
-      progressLabel: "{current} dari {target}",
       reward: "Hadiah: {reward}",
-      claim: "Klaim",
       claimLabel: "Klaim {name}: {reward}",
-      claimed: "Diklaim",
-      claimAll: "Klaim semua",
-      claimAllLabel: "Klaim semua: {count} hadiah",
-      noneToClaim: "Tidak ada hadiah untuk diklaim",
       rewards: {
         heynstones: "{amount} Heynstone",
         essence: "{amount} Esensi",
@@ -896,6 +886,131 @@ export default {
       untouchedVault: {
         name: "Brankas Sempurna",
         goal: "Menangkan Dungeon 3 dengan HP Pahlawanmu penuh",
+      },
+    },
+  },
+  objectives: {
+    title: "Sasaran",
+    close: "Tutup",
+    tabs: {
+      daily: "Misi Harian",
+      achievements: "Pencapaian",
+    },
+    progress: "Kemajuan",
+    progressLabel: "{current} dari {target}",
+    count: "{current} / {target}",
+    claim: "Klaim",
+    claimed: "Diklaim",
+    claimAll: "Klaim semua",
+    claimAllLabel: "Klaim semua: {count} hadiah",
+    noneToClaim: "Tidak ada hadiah untuk diklaim",
+  },
+  quests: {
+    notice: {
+      one: "Misi Harian selesai: {name}",
+      many: "{count} Misi Harian selesai",
+    },
+    result: {
+      label: "Kemajuan Misi Harian dari Pertempuran ini",
+      completed: "Misi Harian selesai",
+      progress: "Kemajuan Misi Harian",
+      count: "{current} / {target}",
+      line: "{name}: {current} dari {target}",
+    },
+    tab: {
+      activity: "Aktivitas",
+      dailyReset: "Baru dalam {hours} j {minutes} mnt",
+      weeklyResetDays: "Minggu berakhir dalam {days} h {hours} j",
+      weeklyResetHours: "Minggu berakhir dalam {hours} j {minutes} mnt",
+      reward: "Hadiah: {coin}, {essence} Esensi, {activity} Aktivitas",
+      claimLabel: "Klaim {name}",
+      claimCheckpointsLabel: "Klaim {count} tanda Aktivitas",
+      checkpointName: "{activity} Aktivitas",
+      checkpointLabel:
+        "{activity} Aktivitas, {state}. Hadiah: {coin}, {essence} Esensi",
+      checkpointStates: {
+        notReached: "belum tercapai",
+        reached: "tercapai",
+        claimed: "diklaim",
+      },
+      said: {
+        one: "{name} diklaim.",
+        many: "{count} hadiah diklaim.",
+      },
+    },
+    keywordNames: {
+      charge: "Terjang",
+      entangle: "Jerat",
+      firstStrike: "Serang Duluan",
+      heroic: "Heroik",
+      lastBreath: "Nafas Terakhir",
+      pivot: "Berbalik",
+      poison: "Racun",
+      rebirth: "Bangkit",
+      rally: "Semangat",
+      regenerate: "Regenerasi",
+      hobble: "Pincang",
+      bleed: "Pendarahan",
+      knockback: "Hentakan",
+      retaliate: "Balas",
+      sabotage: "Sabotase",
+      swarm: "Gerombolan",
+      trample: "Gilas",
+      bolt: "Sambaran",
+      ironGuard: "Kawal Besi",
+      soulHarvest: "Panen Jiwa",
+      herosBane: "Bencana Pahlawan",
+      spawnbane: "Bencana Panggilan",
+      vampirism: "Vampirisme",
+      summon: "Panggil",
+      wallbreaker: "Pemecah Tembok",
+      quickStudy: "Pelajaran Cepat",
+      piercing: "Tembus",
+      heal: "Pulihkan",
+      dispel: "Singkirkan",
+    },
+    templates: {
+      daily: {
+        win: {
+          name: "Kemenangan Harian",
+          goal: "Menangkan {count} Pertempuran.",
+        },
+        raceWins: {
+          name: "Panggilan Kerabat",
+          goal: "Menangkan {count} Pertempuran dengan Kartu Makhluk {race} di Dek.",
+        },
+        skillCards: {
+          name: "Latihan Skill",
+          goal: "Mainkan {count} Kartu Skill.",
+        },
+        damageType: {
+          name: "Latihan Elemen",
+          goal: "Unit dan Kartu Skill-mu memberi {count} kerusakan {damageType}.",
+        },
+        bossOrDungeon: {
+          name: "Perburuan Bos",
+          goal: "Menangkan {count} Tahap Bos atau Dungeon.",
+        },
+        winMore: {
+          name: "Dicari: Kemenangan",
+          goal: "Menangkan {count} Pertempuran.",
+        },
+        raceDeck: {
+          name: "Pasukan Perang",
+          goal: "Menangkan {count} Pertempuran dengan {creatures} atau lebih Kartu Makhluk {race} di Dek.",
+        },
+        kills: {
+          name: "Pembersihan",
+          goal: "Kalahkan {count} Unit musuh.",
+        },
+        keyword: {
+          name: "Ahli Latihan",
+          goal: "Unit dengan {keyword} mengaktifkannya {count} kali.",
+        },
+        dungeon: {
+          name: "Penjelajah Gua",
+          goal: "Menangkan {count} Dungeon.",
+        },
       },
     },
   },
@@ -1091,9 +1206,11 @@ export default {
     heynspire:
       "Heynspire sudah terbuka. Daki 50 Lantainya satu per satu. Tiap Lantai memberi hadiahnya satu kali.",
     achievements:
-      "Kamu menyelesaikan satu Pencapaian. Buka Pencapaian untuk mengklaim hadiahnya.",
+      "Kamu menyelesaikan satu Pencapaian. Buka Sasaran untuk mengklaim hadiahnya.",
     seaport:
       "Pelabuhan mengirim kapal untuk Ekspedisi. Berangkatkan kapal sebelum kamu pergi, lalu ambil Koin, XP, Esensi, dan Batu Tempa saat kapal kembali.",
+    quests:
+      "Misi Harian sudah terbuka. Selesaikan 5 tujuan baru tiap hari untuk Koin, Esensi, dan Aktivitas. Buka Sasaran untuk melihatnya.",
   },
   handbook: {
     title: "Buku Panduan",
@@ -1231,6 +1348,7 @@ export default {
       workshop: "Bengkel: Gabung dan Ekstrak.",
       gear: "Perlengkapan di Pahlawanmu.",
       craft: "Bengkel: Buat dan Lebur.",
+      quests: "Misi Harian di Sasaran.",
       seaport: "Pelabuhan: Ekspedisi.",
       dungeon1: "Dungeon 1.",
       dungeon2: "Dungeon 2.",
@@ -1312,6 +1430,7 @@ export default {
       dungeon: "Dungeon",
       heynspire: "Heynspire",
       achievement: "Pencapaian",
+      quest: "Misi Harian",
     },
     entries: {
       board:
@@ -1426,11 +1545,15 @@ export default {
       heynspire:
         "Heynspire adalah menara tinggi di Kota. Heynspire terbuka setelah kemenangan pertama di Tahap {stage}. Menara di Kota dan pintasan Heynspire membukanya.\n\nHeynspire punya {floors} Lantai. Kamu hanya melawan Lantai Saat Ini: Lantai terendah yang belum kamu menangkan. Pertempuran Lantai punya {lanes} Jalur dan 1 Pahlawan musuh, dengan Lini di semua Jalur.\n\nTiap Lantai ke-{every} adalah Lantai Bos: satu Bos Kampanye kembali dengan Dek baru. Lantai Bos tidak punya Aturan Bos.\n\nTiap Lantai memberi hadiahnya satu kali, saat kamu memenangkannya. Kamu tidak bisa memainkan Lantai yang sudah menang lagi, dan tidak bisa melakukan Sweep di sana. Kemenangan juga memberi {tickets} Tiket Sweep Kampanye. Kekalahan memberi sebagian Koin dan XP, sesuai HP yang kamu ambil dari Pahlawan musuh.",
       achievement:
-        "Pencapaian adalah tujuan dengan hadiah. Balai panji di Kota dan pintasan Pencapaian membuka layar Pencapaian. Layar itu menampilkan semua {count} Pencapaian dalam 4 kelompok: Kampanye, Dungeon dan Heynspire, Kemajuan, serta Aksi Hebat.\n\nPencapaian mula-mula Sedang berjalan, lalu Selesai, lalu Diklaim. Saat kamu memenuhi tujuannya pertama kali, Pencapaian itu menjadi Selesai, dan tetap Selesai. Lalu tekan Klaim di layar Pencapaian untuk mendapat hadiahnya. Klaim semua mengklaim semua Pencapaian yang Selesai sekaligus. Lencana di pintasan Pencapaian menunjukkan jumlah hadiah yang bisa diklaim.\n\nAksi Hebat adalah Pencapaian yang diselesaikan oleh satu Pertempuran yang kamu menangkan: Tahap, Dungeon, atau Lantai yang kamu mainkan. Sweep, Replay, Auto-play, dan Tutorial tidak pernah menyelesaikan Aksi Hebat. Kekalahan juga tidak.\n\nSebagian besar hadiah adalah Heynstone. Sebagian lain adalah Koin atau Esensi. {cosmetics} Pencapaian sulit memberi Kosmetik khusus hadiah. Kosmetik hadir di pembaruan nanti: game menyimpan Kosmetikmu sampai saat itu.\n\nTidak ada Pencapaian yang bisa terlewat. Kamu selalu bisa menyelesaikan tiap Pencapaian nanti.",
+        "Pencapaian adalah tujuan dengan hadiah. Pintasan Sasaran membuka dialog Sasaran. Tab Pencapaian menampilkan semua {count} Pencapaian dalam 4 kelompok: Kampanye, Dungeon dan Heynspire, Kemajuan, serta Aksi Hebat.\n\nPencapaian mula-mula Sedang berjalan, lalu Selesai, lalu Diklaim. Saat kamu memenuhi tujuannya pertama kali, Pencapaian itu menjadi Selesai, dan tetap Selesai. Lalu tekan Klaim di tab Pencapaian untuk mendapat hadiahnya. Klaim semua mengklaim semua Pencapaian yang Selesai sekaligus. Lencana di pintasan Sasaran menunjukkan jumlah hadiah yang bisa diklaim.\n\nAksi Hebat adalah Pencapaian yang diselesaikan oleh satu Pertempuran yang kamu menangkan: Tahap, Dungeon, atau Lantai yang kamu mainkan. Sweep, Replay, Auto-play, dan Tutorial tidak pernah menyelesaikan Aksi Hebat. Kekalahan juga tidak.\n\nSebagian besar hadiah adalah Heynstone. Sebagian lain adalah Koin atau Esensi. {cosmetics} Pencapaian sulit memberi Kosmetik khusus hadiah. Kosmetik hadir di pembaruan nanti: game menyimpan Kosmetikmu sampai saat itu.\n\nTidak ada Pencapaian yang bisa terlewat. Kamu selalu bisa menyelesaikan tiap Pencapaian nanti.",
+      quest:
+        'Misi Harian adalah tujuan dengan hadiah yang game berikan untuk satu hari. Pintasan Sasaran membuka dialog Sasaran. Misi Harian terbuka mulai level Pemain {level}.\n\n{daily} Misi Harian baru datang tiap hari, pukul 00.00 UTC. Misi Harian kedaluwarsa saat reset berikutnya. Jika kamu lupa mengklaim Misi Harian yang Selesai, game mengklaimnya untukmu saat reset.\n\nPertempuran yang kamu mainkan menambah kemajuan, juga dengan Auto-play dan kemenangan ulang. Sweep, Replay, dan Tutorial tidak menambah kemajuan. Kekalahan dan Abandon hanya menambah kemajuan pada tujuan tanpa kata "menangkan".\n\nMisi Harian memberi Koin, Esensi, dan {activity} Aktivitas. Aktivitas bertambah selama seminggu dan menjadi 0 pada hari Senin pukul 00.00 UTC. Bilah Aktivitas punya 5 tanda, masing-masing dengan hadiah. Game mengklaim tanda yang tercapai untukmu saat reset. Lencana di pintasan Sasaran menunjukkan jumlah hadiah yang bisa diklaim.',
     },
     aliases: {
+      quest:
+        "misi, misi harian, aktivitas, mingguan, tugas, quest, quests, daily, mission, sasaran, objectives",
       achievement:
-        "trofi, piala, misi, lencana, tantangan, prestasi, achievement, trophy, quest, feat",
+        "trofi, piala, lencana, tantangan, prestasi, achievement, trophy, feat",
       heynspire: "menara, tower, spire, endless tower, panjat",
       board: "medan, arena, peta, battlefield, map",
       lane: "baris, lorong, row, path",

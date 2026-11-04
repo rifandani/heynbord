@@ -155,18 +155,6 @@
       "loop": true
     },
     {
-      "id": "achievements",
-      "file": "achievements.mp3",
-      "title": "Medieval: Rejoicing (Loop)",
-      "artist": "RandomMind",
-      "sourcePage": "https://opengameart.org/content/medieval-rejoicing",
-      "sourceFile": "https://opengameart.org/sites/default/files/Loop_Rejoicing.wav",
-      "sourceFormat": "wav",
-      "localFormat": "mp3",
-      "license": "CC0 1.0",
-      "loop": true
-    },
-    {
       "id": "victory",
       "file": "victory.ogg",
       "title": "Victory Fanfare",

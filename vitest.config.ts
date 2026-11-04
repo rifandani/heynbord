@@ -111,6 +111,7 @@ export default defineConfig({
         "apps/web/src/features/battle/scene/unit-anchors.ts",
         "apps/web/src/features/dungeons/dungeons.atoms.ts",
         "apps/web/src/features/heynspire/heynspire.atoms.ts",
+        "apps/web/src/features/quests/quests.atoms.ts",
       ],
     },
   },

@@ -21,6 +21,7 @@ import {
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import {
   ResultAchievements,
+  ResultQuests,
   ResultCard,
   ResultCoin,
   ResultEssence,
@@ -307,6 +308,7 @@ const ResultDialog = ({
         ) : null}
         {shown ? <ResultRewards shown={shown} /> : null}
         {shown ? <ResultAchievements ids={shown.achievements} /> : null}
+        {shown ? <ResultQuests lines={shown.quests} /> : null}
         <div className="mt-4 grid grid-cols-2 gap-2 [@media(max-height:500px)]:mt-2 [@media(max-height:500px)]:grid-cols-[1fr_1fr_auto]">
           {floor ? (
             <FloorResultButtons

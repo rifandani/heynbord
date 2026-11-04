@@ -164,7 +164,7 @@ const isOnlyRace = (deck: readonly DeckEntry[], race: RaceId): boolean => {
 };
 
 /** The Side of each Unit that the events summon, Tokens too, by Unit ID. */
-const unitOwners = (
+export const unitOwners = (
   events: readonly BattleEvent[]
 ): ReadonlyMap<number, Side> => {
   const owners = new Map<number, Side>();

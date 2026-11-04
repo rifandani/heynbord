@@ -4,9 +4,9 @@ import type { Page } from "./_base";
 /**
  * The record of Achievements and their notices (Achievements 1.2 and 4,
  * issue #102): the Battle result shows the Achievements that its result
- * completed, and the toast does not show them again. The Achievements screen
- * (issue #103): the Hall of banners opens it, a Claim adds the reward, and
- * the badge of the shortcut counts the rewards to claim.
+ * completed, and the toast does not show them again. The Objectives dialog
+ * (issue #190): the Objectives shortcut opens it, a Claim adds the reward, and
+ * the Objectives badge counts the rewards to claim.
  */
 
 /** The part of `window` that the test hooks (test-hooks.ts) add. */
@@ -102,20 +102,23 @@ const winHearthvale = async (page: Page) => {
   await expect(page.getByTestId("town")).toBeVisible();
 };
 
-test.describe("Achievements screen", () => {
-  test("a Profile with Stage 1-10 won opens the screen from the Hall of banners and claims Hearthvale Freed", async ({
+test.describe("Objectives dialog", () => {
+  test("a Profile with Stage 1-10 won opens the dialog from the Town Bar and claims Hearthvale Freed", async ({
     page,
   }) => {
     await winHearthvale(page);
-    const shortcut = page.getByTestId("town-shortcut-achievements");
-    await expect(shortcut).toHaveAccessibleName("Achievements, 1 to claim");
-    await expect(shortcut.getByTestId("achievements-badge")).toHaveText("1");
+    const shortcut = page.getByTestId("town-shortcut-objectives");
+    await expect(shortcut).toHaveAccessibleName(/^Objectives, 1 to claim/u);
+    await expect(shortcut.getByTestId("objectives-badge")).toHaveText("1");
     const before = await heynstones(page);
 
-    await page.getByTestId("building-hall").click();
-    const screen = page.getByTestId("achievements");
+    await shortcut.press("Enter");
+    const screen = page.getByTestId("objectives-dialog");
     await expect(screen).toBeVisible();
-    // The screen opens on the category with the reward to claim.
+    // The dialog opens on the tab and the category with the reward to claim.
+    await expect(
+      page.getByRole("tab", { name: /^Achievements/u, selected: true })
+    ).toBeVisible();
     await expect(
       page.getByRole("tab", { name: /^Campaign/u, selected: true })
     ).toBeVisible();
@@ -130,9 +133,11 @@ test.describe("Achievements screen", () => {
     await expect(row).toHaveAttribute("data-state", "claimed");
     await expect(row.getByTestId("achievement-claimed")).toHaveText("Claimed");
     await expect.poll(() => heynstones(page)).toBe(before + 15);
-    await expect(shortcut.getByTestId("achievements-badge")).toHaveCount(0);
-    await expect(shortcut).toHaveAccessibleName("Achievements");
     await expect(page.getByTestId("achievements-claim-all")).toBeDisabled();
+    await page.keyboard.press("Escape");
+    await expect(screen).toBeHidden();
+    await expect(shortcut.getByTestId("objectives-badge")).toHaveCount(0);
+    await expect(shortcut).toHaveAccessibleName("Objectives");
 
     // The Claim is in the Profile: a reload keeps it.
     await page.evaluate(async () => {
@@ -141,23 +146,31 @@ test.describe("Achievements screen", () => {
     });
     await page.reload();
     await expect(page.getByTestId("town")).toBeVisible({ timeout: 30_000 });
-    await page.getByTestId("town-shortcut-achievements").click();
+    await page.getByTestId("town-shortcut-objectives").press("Enter");
     await expect(
       page.locator('[data-achievement="campaign.hearthvale"]')
     ).toHaveAttribute("data-state", "claimed");
     await expect.poll(() => heynstones(page)).toBe(before + 15);
   });
 
-  test("lists all categories, opens at any level, and Esc goes back to the Town", async ({
+  test("lists all categories at level 1 with a locked Daily Quests tab, and Esc closes it over the Town", async ({
     page,
   }) => {
     await page.goto("/play");
     await expect(page.getByTestId("town")).toBeVisible({ timeout: 30_000 });
-    const hall = page.getByTestId("building-hall");
-    await expect(hall).not.toHaveAttribute("data-locked");
-    await hall.click();
-    await expect(page.getByTestId("achievements")).toBeVisible();
-    await expect(page.getByRole("tab")).toHaveText([
+    await page.getByTestId("town-shortcut-objectives").press("Enter");
+    await expect(page.getByTestId("objectives-dialog")).toBeVisible();
+    // Below level 3, the Daily Quests tab has a Lock Plate.
+    await expect(page.getByTestId("objectives-tab-daily")).toHaveAttribute(
+      "data-locked",
+      "true"
+    );
+    await expect(page.getByTestId("objectives-lock-plate")).toHaveText(
+      "Level 3"
+    );
+    await expect(
+      page.getByTestId("objectives-achievements").getByRole("tab")
+    ).toHaveText([
       /Campaign/u,
       /Dungeons and Heynspire/u,
       /Progress/u,
@@ -172,7 +185,34 @@ test.describe("Achievements screen", () => {
     );
     await expect(feat.getByTestId("achievement-progress")).toHaveCount(0);
     await page.keyboard.press("Escape");
+    await expect(page.getByTestId("objectives-dialog")).toBeHidden();
     await expect(page.getByTestId("town")).toBeVisible();
+  });
+
+  test("Daily Quests open at level 3 with the Activity bar", async ({
+    page,
+  }) => {
+    await page.goto("/play");
+    await expect(page.getByTestId("town")).toBeVisible({ timeout: 30_000 });
+    await page.waitForFunction(() => "__THREE_GAME_TEST_HOOKS__" in window);
+    await page.evaluate(() => {
+      // SAFETY: the dev and QA builds install the test hooks on `window`.
+      (window as HookWindow).__THREE_GAME_TEST_HOOKS__?.setXp(3000);
+    });
+    await page.getByTestId("town-shortcut-objectives").press("Enter");
+    const dialog = page.getByTestId("objectives-dialog");
+    await expect(
+      page.getByRole("tab", { name: /^Daily Quests/u, selected: true })
+    ).toBeVisible();
+    await expect(dialog.getByTestId("quest-row")).toHaveCount(5);
+    await expect(dialog.getByTestId("activity-count")).toHaveText("0 / 500");
+    await expect(dialog.getByTestId("activity-claim")).toBeDisabled();
+    await expect(dialog.getByTestId("quests-claim-all")).toBeDisabled();
+    await expect(dialog.getByTestId("daily-reset")).toContainText("New in");
+    await dialog.getByTestId("activity-checkpoint-500").focus();
+    await expect(page.getByTestId("activity-tooltip-500")).toContainText(
+      "500 Activity"
+    );
   });
 
   test("the Achievements Hint points at the shortcut and opens the Handbook Entry", async ({
@@ -180,20 +220,19 @@ test.describe("Achievements screen", () => {
   }) => {
     await winHearthvale(page);
     const hint = page.getByTestId("hint");
-    // One Hint shows at a time. The win also gives a card that is in no Deck,
-    // so the Deck builder Hint can come first: close it, and the Achievements
-    // Hint shows next in the Town.
+    // One Hint shows at a time. The win opens other Town Hints too: close
+    // them, and the Achievements Hint shows next in the Town.
     await expect(hint).toBeVisible();
-    if ((await hint.getAttribute("data-hint")) === "deckBuilder") {
-      await hint.getByTestId("hint-close").click();
-      await expect(hint).toHaveAttribute("data-hint", "achievements", {
-        timeout: 10_000,
-      });
-    }
-    await expect(hint).toHaveAttribute("data-hint", "achievements");
-    await expect(hint).toContainText("Open Achievements to claim its reward.");
+    await expect(async () => {
+      const shown = await hint.getAttribute("data-hint");
+      if (shown !== "achievements") {
+        await hint.getByTestId("hint-close").click();
+      }
+      expect(shown).toBe("achievements");
+    }).toPass({ timeout: 15_000 });
+    await expect(hint).toContainText("Open Objectives to claim its reward.");
     const shortcut = await page
-      .getByTestId("town-shortcut-achievements")
+      .getByTestId("town-shortcut-objectives")
       .boundingBox();
     const banner = await hint.boundingBox();
     // The Hint stands above the shortcut, at the bottom of the screen.

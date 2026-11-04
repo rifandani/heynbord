@@ -4,6 +4,7 @@ import { STAGES } from "../content/stages";
 import { CAMPAIGN_REGIONS } from "../content/star-chests";
 import { owedCosmetics } from "./cosmetics";
 import { ImportError } from "./import-error";
+import { noQuests } from "./quests";
 import { isRegionUnlocked } from "./regions";
 import { Profile, PROFILE_SCHEMA_VERSION } from "./schema";
 import { AT_BERTH } from "./seaport";
@@ -203,6 +204,18 @@ export const PROFILE_MIGRATIONS = {
     seenStoryScenes: isJsonObject(profile.stageResults)
       ? legacyStoryScenes(profile.stageResults)
       : [],
+  }),
+  /**
+   * Version 16 adds the Daily Quests and the Activity (24 — Quests). An old
+   * save has none: the first `refreshQuests` after the load offers its Daily
+   * Quests from level 3. The Quest seed is its reward random state at the
+   * migration, so it stays the same after.
+   */
+  15: (profile) => ({
+    ...profile,
+    quests: noQuests(
+      isNumber(profile.rewardRandomState) ? profile.rewardRandomState : 0
+    ),
   }),
 } satisfies Readonly<Record<number, ProfileMigration>>;
 

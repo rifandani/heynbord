@@ -2,9 +2,12 @@ import type { Schema } from "effect";
 import { Result } from "effect";
 import { describe, expect, it } from "vitest";
 
+import { PLAYER_LEVEL_XP } from "../content/player-levels";
+import { UNLOCK_LEVELS } from "../content/unlocks";
 import { migrateProfile, PROFILE_MIGRATIONS } from "./migrate";
 import type { ProfileMigration } from "./migrate";
 import { newProfile } from "./new-profile";
+import { refreshQuests } from "./quests";
 import { PROFILE_SCHEMA_VERSION } from "./schema";
 
 const failure = (result: ReturnType<typeof migrateProfile>) =>
@@ -43,6 +46,27 @@ describe("migrateProfile", () => {
     ]);
     expect(migrated.stageResults).toEqual({ "1-10": 1, "2-10": 2, "3-1": 1 });
     expect(migrated.coin).toBe(old.coin);
+  });
+
+  it("adds an empty Quest state for version 15, with a stable Quest seed", () => {
+    const { quests: _, ...old } = newProfile(3);
+    const v15 = { ...old, schemaVersion: 15 };
+    const migrated = Result.getOrThrow(migrateProfile(v15));
+    expect(migrated.quests).toEqual({
+      seed: old.rewardRandomState,
+      lastDailyReset: null,
+      daily: [],
+      lastWeeklyReset: null,
+      activity: 0,
+      claimedCheckpoints: [],
+    });
+    expect(Result.getOrThrow(migrateProfile(v15))).toEqual(migrated);
+    // The first refresh offers the Daily Quests from level 3.
+    const refreshed = refreshQuests(
+      { ...migrated, xp: PLAYER_LEVEL_XP[UNLOCK_LEVELS.quests - 1] ?? 0 },
+      Date.UTC(2026, 10, 3)
+    ).profile;
+    expect(refreshed.quests.daily).toHaveLength(5);
   });
 
   it("preserves current viewing records and pending scenes on load", () => {

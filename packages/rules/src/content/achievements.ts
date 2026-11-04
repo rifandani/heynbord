@@ -1,6 +1,6 @@
 import type { RankId } from "./schema";
 
-/** The groups of the Achievements screen, in screen order (Achievements 2). */
+/** The groups of the Achievements tab, in screen order (Achievements 2). */
 export type AchievementCategory =
   | "campaign"
   | "dungeonsAndHeynspire"

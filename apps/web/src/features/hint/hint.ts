@@ -28,6 +28,7 @@ export const HINTS = [
   "heynspire",
   "achievements",
   "seaport",
+  "quests",
 ] as const;
 
 export type HintId = (typeof HINTS)[number];
@@ -71,6 +72,7 @@ export const HINT_TARGET: Readonly<Record<HintId, HintTarget>> = {
   heynspire: toEntry("heynspire"),
   achievements: toEntry("achievement"),
   seaport: toEntry("seaport"),
+  quests: toEntry("quest"),
 };
 
 /**
@@ -85,9 +87,9 @@ export const HINT_TARGET: Readonly<Record<HintId, HintTarget>> = {
  * shortcut when the screen crops the cave, the Dungeon Sweep Hint near
  * the label of the Sweep row of the Dungeons screen, the Heynspire Hint
  * near the tower in the Town, the Achievements Hint near the
- * Achievements shortcut of the Town Bar, and the Seaport Hint near the
+ * Objectives shortcut of the Town Bar, and the Seaport Hint near the
  * Seaport quay in the Town, or near the Seaport shortcut when the screen
- * crops the quay.
+ * crops the quay, and the Quests Hint near the Objectives shortcut.
  */
 export type HintPlace =
   | "hand"
@@ -101,7 +103,7 @@ export type HintPlace =
   | "cave"
   | "dungeonSweepRow"
   | "tower"
-  | "achievementsShortcut"
+  | "objectivesShortcut"
   | "quay";
 
 export const HINT_PLACE: Readonly<Record<HintId, HintPlace>> = {
@@ -118,8 +120,9 @@ export const HINT_PLACE: Readonly<Record<HintId, HintPlace>> = {
   dungeons: "cave",
   dungeonSweep: "dungeonSweepRow",
   heynspire: "tower",
-  achievements: "achievementsShortcut",
+  achievements: "objectivesShortcut",
   seaport: "quay",
+  quests: "objectivesShortcut",
 };
 
 /** A Hint closes by itself after this time, if the Player does not tap it. */

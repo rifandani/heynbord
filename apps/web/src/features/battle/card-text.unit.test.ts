@@ -2,6 +2,8 @@ import {
   ACHIEVEMENTS,
   CARDS,
   DUNGEONS,
+  KEYWORD_ACTIVATES,
+  QUEST_TEMPLATES,
   RANKS,
   STAGES,
   STARTER_DECKS,
@@ -117,6 +119,15 @@ const dataKeys = (): string[] => {
   for (const achievement of ACHIEVEMENTS) {
     keys.add(`achievements.${achievement.id}.name`);
     keys.add(`achievements.${achievement.id}.goal`);
+  }
+  for (const template of QUEST_TEMPLATES) {
+    keys.add(`quests.templates.${template.id}.name`);
+    keys.add(`quests.templates.${template.id}.goal`);
+  }
+  for (const [keyword, activates] of Object.entries(KEYWORD_ACTIVATES)) {
+    if (activates) {
+      keys.add(`quests.keywordNames.${keyword}`);
+    }
   }
   for (const deck of STARTER_DECKS) {
     keys.add(`decks.${deck.id}.name`);

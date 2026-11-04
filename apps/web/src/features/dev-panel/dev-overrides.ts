@@ -2,11 +2,13 @@ import type {
   Collection,
   ForgeStoneTier,
   GearLevels,
+  QuestsState,
   SeaportState,
   StageDefinition,
 } from "@workspace/rules";
 import {
   CARDS,
+  getQuestTemplate,
   expeditionDurationMs,
   ForgeStones,
   HEYNSPIRE_FLOORS,
@@ -123,6 +125,25 @@ export const finishVoyage = (
   seaport.cargo === null
     ? seaport
     : { ...seaport, startedAt: now - expeditionDurationMs(seaport) };
+
+/**
+ * The Quest state with each active Daily Quest at its count (24 — Quests), so
+ * that the panel can test a Claim. A claimed Daily Quest stays.
+ */
+export const completeQuests = (quests: QuestsState): QuestsState => ({
+  ...quests,
+  daily: quests.daily.map((quest) =>
+    quest.claimed
+      ? quest
+      : { ...quest, progress: getQuestTemplate(quest.templateId).count }
+  ),
+});
+
+/** The Quest state with `amount` more Activity (24 — Quests 1.2). */
+export const addActivity = (
+  quests: QuestsState,
+  amount: number
+): QuestsState => ({ ...quests, activity: quests.activity + amount });
 
 /**
  * The Profile overlay of stored overrides (`profile.ts`). "Unlock all cards"

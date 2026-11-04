@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 
 import { exportProfile, importProfile } from "./export";
 import { newProfile } from "./new-profile";
+import { noQuests } from "./quests";
 import { PROFILE_SCHEMA_VERSION } from "./schema";
 import type { Profile } from "./schema";
 
@@ -20,6 +21,28 @@ const played: Profile = {
   seenHints: ["stagePanel"],
   seenStoryScenes: ["region-1-opening", "region-1-ending"],
   seaport: { cargo: "xp", hours: 12, startedAt: 1_792_314_000_000 },
+  quests: {
+    seed: 77,
+    lastDailyReset: 20_395,
+    daily: [
+      { templateId: "daily.win", param: null, progress: 3, claimed: true },
+      {
+        templateId: "daily.raceWins",
+        param: "elf",
+        progress: 1,
+        claimed: false,
+      },
+      {
+        templateId: "daily.skillCards",
+        param: null,
+        progress: 0,
+        claimed: false,
+      },
+    ],
+    lastWeeklyReset: 2914,
+    activity: 120,
+    claimedCheckpoints: [100],
+  },
 };
 
 const reason = (text: string) => {
@@ -90,6 +113,8 @@ describe("exportProfile and importProfile", () => {
       ...played,
       seaport: { cargo: null, hours: null, startedAt: null },
       seenStoryScenes: ["region-1-opening", "region-5-boss", "region-5-ending"],
+      // A file before version 16 has no Quest state: it gets an empty one.
+      quests: noQuests(played.rewardRandomState),
     });
   });
 });

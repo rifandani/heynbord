@@ -8,6 +8,7 @@ import {
 import { AtomRegistry } from "effect/reactivity";
 import { describe, expect, it } from "vitest";
 
+import { anyAchievementCompletedAtom } from "@/features/achievements/achievement-counts.atoms";
 import type { AchievementRow } from "@/features/achievements/achievements";
 import {
   achievementGroups,
@@ -16,13 +17,9 @@ import {
   NAMED_NOTICES,
   newlyCompleted,
   openingCategory,
-  rewardBalances,
   rewardText,
 } from "@/features/achievements/achievements";
-import {
-  anyAchievementCompletedAtom,
-  claimableCountAtom,
-} from "@/features/achievements/achievements-screen.atoms";
+import { objectivesBadgeAtom } from "@/features/objectives/objectives.atoms";
 import {
   profileAtom,
   profileStateAtom,
@@ -195,7 +192,7 @@ describe("rewardText", () => {
         coinWords
       )
     ).toEqual({
-      key: "achievements.screen.rewards.heynstones",
+      key: "achievements.tab.rewards.heynstones",
       args: { amount: 15 },
     });
     expect(
@@ -205,7 +202,7 @@ describe("rewardText", () => {
         coinWords
       )
     ).toEqual({
-      key: "achievements.screen.rewards.essence",
+      key: "achievements.tab.rewards.essence",
       args: { amount: 50 },
     });
   });
@@ -218,7 +215,7 @@ describe("rewardText", () => {
         coinWords
       )
     ).toEqual({
-      key: "achievements.screen.rewards.coin",
+      key: "achievements.tab.rewards.coin",
       args: { coin: "500 Copper" },
     });
   });
@@ -226,19 +223,19 @@ describe("rewardText", () => {
   it("says an earn-only Cosmetic, and after its Claim that it comes in a later update", () => {
     const { reward } = getAchievement("campaign.allStars");
     expect(rewardText(reward, "inProgress", coinWords)).toEqual({
-      key: "achievements.screen.rewards.cosmetic",
+      key: "achievements.tab.rewards.cosmetic",
     });
     expect(rewardText(reward, "completed", coinWords)).toEqual({
-      key: "achievements.screen.rewards.cosmetic",
+      key: "achievements.tab.rewards.cosmetic",
     });
     expect(rewardText(reward, "claimed", coinWords)).toEqual({
-      key: "achievements.screen.rewards.cosmeticLater",
+      key: "achievements.tab.rewards.cosmeticLater",
     });
   });
 });
 
 describe("Claim all", () => {
-  it("claims the Completed rows of all categories, and sends one flight for each balance", () => {
+  it("claims the Completed rows of all categories", () => {
     const player = profile({
       completedAchievements: [
         "campaign.hearthvale",
@@ -259,9 +256,6 @@ describe("Claim all", () => {
     const groups = achievementGroups(change?.profile ?? player);
     expect(groups.every((group) => group.claimable === 0)).toBe(true);
     expect(change?.profile.heynstones).toBe(player.heynstones + 15 + 15);
-    expect(
-      rewardBalances(change?.achievements.map((item) => item.reward) ?? [])
-    ).toEqual(["coin", "essence", "heynstones"]);
   });
 
   it("is off when no Achievement is Completed", () => {
@@ -276,17 +270,17 @@ const loaded = (player: Profile) => {
   return registry;
 };
 
-describe("the Achievements badge", () => {
+describe("the Objectives badge with Achievements", () => {
   it("counts the Completed Achievements that are not Claimed", () => {
     const registry = loaded(fresh);
-    expect(registry.get(claimableCountAtom)).toBe(0);
+    expect(registry.get(objectivesBadgeAtom)).toBe(0);
     expect(registry.get(anyAchievementCompletedAtom)).toBe(false);
     registry.set(profileAtom, {
       ...registry.get(profileAtom),
       completedAchievements: ["campaign.hearthvale", "feat.rout"],
       claimedAchievements: ["feat.rout"],
     });
-    expect(registry.get(claimableCountAtom)).toBe(1);
+    expect(registry.get(objectivesBadgeAtom)).toBe(1);
     expect(registry.get(anyAchievementCompletedAtom)).toBe(true);
   });
 
@@ -296,11 +290,11 @@ describe("the Achievements badge", () => {
         completedAchievements: ["campaign.hearthvale", "campaign.redMesas"],
       })
     );
-    expect(registry.get(claimableCountAtom)).toBe(2);
+    expect(registry.get(objectivesBadgeAtom)).toBe(2);
     registry.set(profileAtom, {
       ...registry.get(profileAtom),
       claimedAchievements: ["campaign.hearthvale"],
     });
-    expect(registry.get(claimableCountAtom)).toBe(1);
+    expect(registry.get(objectivesBadgeAtom)).toBe(1);
   });
 });

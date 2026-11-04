@@ -13,7 +13,7 @@ describe("musicUrl", () => {
   });
 
   it("names a file for every track and sting", () => {
-    expect(Object.values(TRACK_FILES)).toHaveLength(15);
+    expect(Object.values(TRACK_FILES)).toHaveLength(14);
     expect(STING_FILES).toEqual({
       defeat: "defeat.ogg",
       victory: "victory.ogg",

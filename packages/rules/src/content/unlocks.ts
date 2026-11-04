@@ -8,6 +8,7 @@ export const UNLOCK_LEVELS = {
   packs: 2,
   combine: 3,
   extract: 3,
+  quests: 3,
   gear: 5,
   craft: 6,
   fuse: 6,

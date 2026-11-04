@@ -15,7 +15,6 @@ import { Button, DialogTrigger, TooltipTrigger } from "react-aria-components";
 import { GameTooltip } from "@/core/components/game/game-tooltip";
 import { goldFace } from "@/core/components/game/surfaces";
 import { useEverOpened } from "@/core/hooks/use-ever-opened";
-import { claimableCountAtom } from "@/features/achievements/achievements-screen.atoms";
 import { playSound, unlockAudio } from "@/features/battle/battle-audio";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { useGameText } from "@/features/battle/use-game-text";
@@ -24,6 +23,8 @@ import { useHandbook } from "@/features/handbook/use-handbook";
 import type { HintId } from "@/features/hint/hint";
 import { HINT_PLACE } from "@/features/hint/hint";
 import { shownHintAtom } from "@/features/hint/hint.atoms";
+import { objectivesBadgeAtom } from "@/features/objectives/objectives.atoms";
+import { useObjectivesDialog } from "@/features/objectives/use-objectives-dialog";
 import { useShipBack } from "@/features/seaport/use-seaport";
 import { SettingsDialog } from "@/features/town/components/settings-dialog";
 import { useTownLockText } from "@/features/town/components/town-lock";
@@ -438,13 +439,20 @@ const Shortcut = ({
   const locked = isLocked(shortcut, progress);
   const lock = townLock(shortcut, progress);
   const lockText = useLockText(locked, lock);
-  const claimable = useAtomValue(claimableCountAtom);
+  const objectivesBadge = useAtomValue(objectivesBadgeAtom);
+  const objectives = useObjectivesDialog();
   const shipBack = useShipBack();
   let count = 0;
-  if (shortcut.id === "achievements") {
-    count = claimable;
+  if (shortcut.id === "objectives") {
+    count = objectivesBadge;
   } else if (shortcut.id === "seaport" && !locked && shipBack) {
     count = 1;
+  }
+  let dialogLifted = dialogOpen;
+  if (dialog === "handbook") {
+    dialogLifted = handbook.isOpen;
+  } else if (dialog === "objectives") {
+    dialogLifted = objectives.isOpen;
   }
   const accessibleName = useShortcutName(
     shortcut.id,
@@ -479,6 +487,9 @@ const Shortcut = ({
     } else if (dialog === "handbook") {
       setOpen(false);
       handbook.open();
+    } else if (dialog === "objectives") {
+      setOpen(false);
+      objectives.open();
     } else if (dialog) {
       setOpen(false);
       setDialogOpen(true);
@@ -521,7 +532,7 @@ const Shortcut = ({
             name={name}
             locked={locked}
             current={current}
-            lifted={dialog === "handbook" ? handbook.isOpen : dialogOpen}
+            lifted={dialogLifted}
             count={count}
             badgeTestId={`${shortcut.id}-badge`}
             labelTestId={`town-shortcut-name-${shortcut.id}`}
@@ -612,7 +623,8 @@ export const TownBar = ({
   const [savedCollapsed, setSavedCollapsed] = useAtom(townBarCollapsedAtom);
   const [dismissedHint, setDismissedHint] = useState<HintId | null>(null);
   const shownHint = useAtomValue(shownHintAtom);
-  const claimable = useAtomValue(claimableCountAtom);
+  // The pull carries the rewards to claim of the Objectives dialog.
+  const claimable = useAtomValue(objectivesBadgeAtom);
   const progress = useAtomValue(townProgressAtom);
   const shipBack = useShipBack();
   const pull = useRef<HTMLButtonElement>(null);
@@ -627,7 +639,7 @@ export const TownBar = ({
   const hintPlace = shownHint === null ? null : HINT_PLACE[shownHint];
   const hintWantsBar =
     hintPlace === "deckShortcut" ||
-    hintPlace === "achievementsShortcut" ||
+    hintPlace === "objectivesShortcut" ||
     hintPlace === "cave" ||
     hintPlace === "quay";
   const effectiveCollapsed =
@@ -693,7 +705,7 @@ export const TownBar = ({
   const attention = [
     claimable > 0
       ? tr("town.shortcutBadge", {
-          name: tr("town.shortcuts.achievements"),
+          name: tr("town.shortcuts.objectives"),
           count: claimable,
         })
       : null,
