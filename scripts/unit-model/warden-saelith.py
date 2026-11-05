@@ -22,11 +22,15 @@ sys.path.insert(0, os.path.join(REPO, "scripts", "unit-model"))
 
 import importlib  # noqa: E402
 
+import body_plans  # noqa: E402
 import unit_model_kit as kit  # noqa: E402
 
 importlib.reload(kit)
+importlib.reload(body_plans.biped_medium)
 
 from unit_model_kit import X, Y, Z, Clip, Part, clamp01, hex_color, lerp, turn  # noqa: E402
+
+plan = body_plans.BODY_PLANS["biped-medium"]
 
 # --- Palette (the card painting) ----------------------------------------------
 
@@ -49,24 +53,14 @@ STEEL = hex_color("#c9ccc8")
 
 # --- Proportions ---------------------------------------------------------------
 
-HIP_Z = 0.47
-WAIST_Z = 0.55
-CHEST_Z = 0.64
-SHOULDER_Z = 0.725
-NECK_Z = 0.75
+# She differs from the Body Plan in the arm angle and the shoulder bones.
+TABLE = plan.Proportions(arm_angle=25, shoulder_root_x=0.02)
+WAIST_Z = TABLE.waist_z
 HEAD_C = Vector((0, -0.004, 0.875))
-
-# The arms hang in an A-pose, 25 degrees from the body.
-ARM_DIR = Vector((math.sin(math.radians(25)), 0, -math.cos(math.radians(25))))
 
 
 def arm_points(sign):
-    shoulder = Vector((0.1 * sign, 0, SHOULDER_Z))
-    direction = Vector((ARM_DIR.x * sign, 0, ARM_DIR.z))
-    elbow = shoulder + direction * 0.15
-    wrist = elbow + direction * 0.14
-    tip = wrist + direction * 0.055
-    return shoulder, elbow, wrist, tip, direction
+    return tuple(Vector(point) for point in plan.arm_points(TABLE, sign))
 
 
 SL, EL, WL, TL, DL = arm_points(1)
@@ -82,30 +76,14 @@ BRACE = BOW_SAG - (1 - 0.8) * BOW_RECURVE
 STRING_P = GRIP_L + Vector((0, BRACE, 0))
 ARROW_LENGTH = 0.32
 
-BONES = [
-    ("root", (0, 0, 0), (0, 0, 0.12), None),
-    ("hips", (0, 0, HIP_Z), (0, 0, WAIST_Z), "root"),
-    ("spine", (0, 0, WAIST_Z), (0, 0, CHEST_Z), "hips"),
-    ("chest", (0, 0, CHEST_Z), (0, 0, NECK_Z), "spine"),
-    ("neck", (0, 0, NECK_Z), (0, 0, 0.79), "chest"),
-    ("head", (0, 0, 0.79), (0, 0, 0.97), "neck"),
+TRUNK_BONES = [
     ("braid1", (0, 0.075, 0.88), (0, 0.105, 0.75), "head"),
     ("braid2", (0, 0.105, 0.75), (0, 0.115, 0.61), "braid1"),
     ("braid3", (0, 0.115, 0.61), (0, 0.112, 0.45), "braid2"),
     ("tail1", (0, 0.07, 0.5), (0, 0.11, 0.32), "hips"),
     ("tail2", (0, 0.11, 0.32), (0, 0.15, 0.12), "tail1"),
 ]
-for side, sign, (s, e, w, t, _) in (("L", 1, arm_points(1)), ("R", -1, arm_points(-1))):
-    BONES += [
-        (f"shoulder.{side}", (0.02 * sign, 0, SHOULDER_Z), tuple(s), "chest"),
-        (f"upperarm.{side}", tuple(s), tuple(e), f"shoulder.{side}"),
-        (f"forearm.{side}", tuple(e), tuple(w), f"upperarm.{side}"),
-        (f"hand.{side}", tuple(w), tuple(t), f"forearm.{side}"),
-        (f"thigh.{side}", (0.05 * sign, 0, HIP_Z), (0.052 * sign, 0, 0.27), "hips"),
-        (f"shin.{side}", (0.052 * sign, 0, 0.27), (0.052 * sign, 0, 0.05), f"thigh.{side}"),
-        (f"foot.{side}", (0.052 * sign, 0, 0.05), (0.052 * sign, -0.08, 0.02), f"shin.{side}"),
-    ]
-BONES += [
+PROP_BONES = [
     ("bow", tuple(GRIP_L), tuple(GRIP_L + Vector((0, 0, 0.1))), "hand.L"),
     ("string", tuple(STRING_P), tuple(STRING_P + Vector((0, 0, 0.05))), "bow"),
     # At rest the arrow hangs along the right hand. The attack aims it at the bow.
@@ -328,9 +306,7 @@ def limb_parts():
         kit.sphere(hand.bm, w + d * 0.025, (0.017, 0.015, 0.024), 8, 6)
         parts.append(hand)
 
-        hip = Vector((0.05 * sign, 0, HIP_Z))
-        knee = Vector((0.052 * sign, 0, 0.27))
-        ankle = Vector((0.052 * sign, 0, 0.05))
+        hip, knee, ankle = (Vector(point) for point in plan.leg_points(TABLE, sign))
         thigh = Part(f"thigh.{side}", LEGGINGS, f"thigh.{side}")
         kit.cone(thigh.bm, hip + Vector((0, 0, 0.02)), knee, 0.041, 0.032, 8)
         parts.append(thigh)
@@ -343,7 +319,7 @@ def limb_parts():
         parts.append(boot)
 
         foot = Part(f"foot.{side}", BOOT, f"foot.{side}")
-        kit.box(foot.bm, (0.052 * sign, -0.03, 0.025), (0.056, 0.11, 0.05))
+        kit.box(foot.bm, (ankle.x, -0.03, 0.025), (0.056, 0.11, 0.05))
         parts.append(foot)
     return parts
 
@@ -387,9 +363,10 @@ def bow_parts():
 
 def build_figure():
     kit.reset_scene()
-    rig = kit.build_armature("WardenSaelith", BONES)
+    rig, _ = plan.build_rig("WardenSaelith", TABLE, TRUNK_BONES, PROP_BONES)
     parts = head_parts() + body_parts() + limb_parts() + bow_parts()
     objects = [kit.part_object(part) for part in parts]
+    plan.check_skin(parts, rig)
     mesh = kit.join_parts(objects, "WardenSaelithMesh")
     kit.skin(mesh, rig)
     return rig, mesh
@@ -397,27 +374,11 @@ def build_figure():
 
 # --- Controls --------------------------------------------------------------------
 
-# The pole angle that bends each elbow toward its pole target.
-POLE_ANGLE = -90
-
-
 def add_controls(rig):
-    """IK for the arms, and the constraints of the bow, the string and the arrow."""
-    empties = {
-        "ik_hand.L": kit.add_empty("ik_hand.L", WL),
-        "ik_hand.R": kit.add_empty("ik_hand.R", WR),
-        "pole.L": kit.add_empty("pole.L", (0.25, -0.15, 0.7)),
-        "pole.R": kit.add_empty("pole.R", (-0.05, 0.45, 0.85)),
-        "bow_aim": kit.add_empty("bow_aim"),
-    }
+    """The arm IK of the Body Plan, and the constraints of the bow, the string and the arrow."""
+    empties = plan.add_arm_ik(rig, TABLE)
+    empties["bow_aim"] = kit.add_empty("bow_aim")
     bones = rig.pose.bones
-    for side in ("L", "R"):
-        ik = bones[f"forearm.{side}"].constraints.new("IK")
-        ik.name = "IK"
-        ik.target = empties[f"ik_hand.{side}"]
-        ik.pole_target = empties[f"pole.{side}"]
-        ik.pole_angle = math.radians(POLE_ANGLE)
-        ik.chain_count = 2
     aim = bones["bow"].constraints.new("COPY_ROTATION")
     aim.name = "Aim"
     aim.target = empties["bow_aim"]
@@ -438,6 +399,9 @@ def add_controls(rig):
 
 
 def build_clips(rig):
+    def slot(name):
+        return Clip(*plan.CLIP_SLOTS[name])
+
     def t(bone, *rotations):
         return turn(rig, bone, *rotations)
 
@@ -671,21 +635,21 @@ def build_clips(rig):
         )
 
     clips = []
-    idle = Clip("idle", 48, loop=True)
+    idle = slot("idle")
     for frame, breath, sway in ((0, 0, 0), (12, 0.5, 1), (24, 1, 0), (36, 0.5, -1), (48, 0, 0)):
         idle.key(frame, stand(breath, sway))
     clips.append(idle)
 
-    low = Clip("lowHp", 48, loop=True)
+    low = slot("lowHp")
     for frame, breath in ((0, 0), (24, 1), (48, 0)):
         low.key(frame, slump(breath))
     clips.append(low)
 
-    walk = Clip("walk", 24, loop=True)
+    walk = slot("walk")
     walk.key(0, step(1)).key(6, passing("R")).key(12, step(-1)).key(18, passing("L")).key(24, step(1))
     clips.append(walk)
 
-    attack = Clip("attack", 30)
+    attack = slot("attack")
     nocked = (0.03, -0.3, 0.78)
     drawn = (0.035, -0.06, 0.8)
     loose = (0.04, 0.0, 0.82)
@@ -698,7 +662,7 @@ def build_clips(rig):
     attack.key(30, stand())
     clips.append(attack)
 
-    cast = Clip("cast", 24)
+    cast = slot("cast")
     call = pose(
         stand(),
         hips_at_loc=at("hips", (0, 0, 0.006)),
@@ -712,22 +676,22 @@ def build_clips(rig):
     cast.key(0, stand()).key(6, call).key(10, pose(call, hips_at_loc=at("hips", (0, 0, 0.014)))).key(16, call).key(24, stand())
     clips.append(cast)
 
-    hurt = Clip("hurt", 16)
+    hurt = slot("hurt")
     hurt.key(0, stand()).key(3, recoil(stand())).key(8, recoil(stand(), 0.4)).key(16, stand())
     clips.append(hurt)
 
-    death = Clip("death", 36)
+    death = slot("death")
     death.key(0, stand()).key(5, recoil(stand())).key(12, stagger(stand()))
     death.key(26, fallen(stand())).key(30, fallen(stand(), 6)).key(36, fallen(stand()))
     clips.append(death)
 
     # Rebirth: the Unit falls (45% of the event, `REBORN_FALL`), then gets up.
-    rebirth = Clip("rebirth", 48)
+    rebirth = slot("rebirth")
     rebirth.key(0, stand()).key(4, recoil(stand())).key(20, fallen(stand())).key(22, fallen(stand(), 3))
     rebirth.key(32, crouch(stand())).key(41, heroic(stand())).key(48, stand())
     clips.append(rebirth)
 
-    summon = Clip("summon", 24)
+    summon = slot("summon")
     summon.key(0, crouch(stand())).key(10, pose(crouch(stand()), hips_at_loc=at("hips", (0, 0, -0.06))))
     summon.key(17, heroic(stand())).key(24, stand())
     clips.append(summon)

@@ -2,7 +2,13 @@
 
 import unittest
 
-from unit_regions import REGIONS, part_region, region_id
+from unit_regions import REGIONS, part_region, region_id, region_name
+
+
+class RegionName(unittest.TestCase):
+    def test_an_id_gives_its_name(self):
+        self.assertEqual(region_name(1), "head")
+        self.assertEqual(region_name(region_id("effect")), "effect")
 
 
 class PartRegion(unittest.TestCase):

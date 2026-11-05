@@ -266,7 +266,8 @@ class Part:
     One piece of the figure. `color` is an RGB tuple or a function
     (face, center) -> RGB. `weights` is a bone name or a function
     (co) -> {bone: weight}. `region` is a name from `regions.json`, or None to
-    get it from `part_region` when the part is made. `self.region` keeps its id.
+    get it from `part_region` when the part is made. `self.region` keeps its id,
+    and `self.bones` keeps the names of the bones that it uses.
     """
 
     def __init__(self, name, color, weights, smooth=True, shade=0.18, region=None):
@@ -332,6 +333,7 @@ def part_object(part):
             group.add([vertex.index], weight / total, "REPLACE")
             bones[bone] += weight / total
 
+    part.bones = set(bones)
     if part.region is None:
         main_bone = bones.most_common(1)[0][0]
         center_x = sum(v.co.x for v in mesh.vertices) / len(mesh.vertices)

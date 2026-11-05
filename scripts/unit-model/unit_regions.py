@@ -65,6 +65,12 @@ def region_id(region):
     return REGIONS.index(region) + 1
 
 
+
+def region_name(region):
+    """The name of a region id. It is the reverse of `region_id`."""
+    return REGIONS[region - 1]
+
+
 def _name_tokens(name):
     """The tokens of "cloth.F", "leaf-vest" or "sashEnd", with no case change."""
     spaced = re.sub(r"(?<=[a-z])(?=[A-Z])", ".", name)
