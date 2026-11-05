@@ -10,7 +10,9 @@
  * line moves by the fewest Power Points that fit the ±10% band and the
  * pairwise rule.
  */
-import { writeFile } from "node:fs/promises";
+import { mkdtemp, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import path from "node:path";
 
 import {
   BASE_RANK_BUDGET_BONUS,
@@ -172,8 +174,11 @@ for (const card of CARDS) {
 }
 
 if (process.argv.includes("--json")) {
+  // mkdtemp creates a 0700 directory with an unpredictable name.
+  const dir = await mkdtemp(path.join(tmpdir(), "heynbord-card-lines-"));
+  const output = path.join(dir, "card-lines.json");
   await writeFile(
-    "/tmp/heynbord-card-lines.json",
+    output,
     JSON.stringify(
       Object.fromEntries(
         changes.map(({ card, line }) => [
@@ -185,5 +190,5 @@ if (process.argv.includes("--json")) {
       2
     )
   );
-  console.log("Wrote /tmp/heynbord-card-lines.json");
+  console.log(`Wrote ${output}`);
 }

@@ -9,7 +9,9 @@
  * amount to the budget and to the power of the strongest Common copy at each
  * playable Rank. A card with no main amount stays a written exception.
  */
-import { writeFile } from "node:fs/promises";
+import { mkdtemp, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import path from "node:path";
 
 import {
   powerBudget,
@@ -264,8 +266,11 @@ for (const card of fitted.values()) {
 }
 
 if (process.argv.includes("--json")) {
+  // mkdtemp creates a 0700 directory with an unpredictable name.
+  const dir = await mkdtemp(path.join(tmpdir(), "heynbord-skill-lines-"));
+  const output = path.join(dir, "skill-lines.json");
   await writeFile(
-    "/tmp/heynbord-skill-lines.json",
+    output,
     JSON.stringify(
       Object.fromEntries(
         [...fitted.values()].map((card) => [card.id, mainAmountOf(card)])
@@ -274,5 +279,5 @@ if (process.argv.includes("--json")) {
       2
     )
   );
-  console.log("Wrote /tmp/heynbord-skill-lines.json");
+  console.log(`Wrote ${output}`);
 }
