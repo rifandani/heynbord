@@ -1,0 +1,46 @@
+[
+  {
+    "name": "desktop",
+    "player": {
+      "x": 608,
+      "y": 8,
+      "width": 224,
+      "height": 44
+    },
+    "enemy": {
+      "x": 608,
+      "y": 8,
+      "width": 224,
+      "height": 44
+    },
+    "layout": {
+      "width": 220,
+      "scrollWidth": 220,
+      "text": "Enemy TurnTurn 5",
+      "bodyOverflow": false
+    },
+    "errors": []
+  },
+  {
+    "name": "mobile",
+    "player": {
+      "x": 310,
+      "y": 8,
+      "width": 224,
+      "height": 44
+    },
+    "enemy": {
+      "x": 310,
+      "y": 8,
+      "width": 224,
+      "height": 44
+    },
+    "layout": {
+      "width": 220,
+      "scrollWidth": 220,
+      "text": "Enemy TurnTurn 5",
+      "bodyOverflow": false
+    },
+    "errors": []
+  }
+]

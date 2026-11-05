@@ -1,0 +1,68 @@
+[
+  {
+    "name": "desktop",
+    "player": {
+      "x": 600,
+      "y": 8,
+      "width": 240,
+      "height": 44
+    },
+    "enemy": {
+      "x": 600,
+      "y": 8,
+      "width": 240,
+      "height": 44
+    },
+    "layout": {
+      "width": 236,
+      "scrollWidth": 236,
+      "text": "Enemy TurnTurn 55Turn",
+      "bodyOverflow": false
+    },
+    "errors": []
+  },
+  {
+    "name": "mobile",
+    "player": {
+      "x": 302,
+      "y": 8,
+      "width": 240,
+      "height": 44
+    },
+    "enemy": {
+      "x": 302,
+      "y": 8,
+      "width": 240,
+      "height": 44
+    },
+    "layout": {
+      "width": 236,
+      "scrollWidth": 236,
+      "text": "Enemy TurnTurn 55Turn",
+      "bodyOverflow": false
+    },
+    "errors": []
+  },
+  {
+    "name": "mobile-id",
+    "player": {
+      "x": 302,
+      "y": 8,
+      "width": 240,
+      "height": 44
+    },
+    "enemy": {
+      "x": 302,
+      "y": 8,
+      "width": 240,
+      "height": 44
+    },
+    "layout": {
+      "width": 236,
+      "scrollWidth": 236,
+      "text": "Giliran MusuhGiliran 55Giliran",
+      "bodyOverflow": false
+    },
+    "errors": []
+  }
+]
