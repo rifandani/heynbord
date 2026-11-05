@@ -58,6 +58,7 @@
     "fx:sheet": "bun scripts/fx-atlas/contact-sheet.ts",
     "fx:pack": "bun scripts/pack-fx-atlas.ts",
     "unit-model:pack": "bun scripts/pack-unit-model.ts",
+    "unit-model:spec:check": "python3 scripts/unit-model/unit_spec.py",
     "hero-model:pack": "bun scripts/pack-hero-model.ts",
     "creature:prompts": "bun scripts/creature-art/write-prompts.ts",
     "skill:prompts": "bun scripts/skill-art/write-prompts.ts",

@@ -1,0 +1,161 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Unit Spec",
+  "description": "Unit Model build data. Parts use the names in the pilot scripts.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "bodyPlan",
+    "height",
+    "palette",
+    "parts",
+    "props",
+    "clips",
+    "details"
+  ],
+  "properties": {
+    "id": { "$ref": "#/$defs/id" },
+    "bodyPlan": {
+      "type": "string",
+      "enum": ["biped-medium", "quadruped", "structure"]
+    },
+    "height": {
+      "description": "Rest-pose height in scene units, including props. Blender Z becomes glTF Y.",
+      "type": "number",
+      "exclusiveMinimum": 0
+    },
+    "palette": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" },
+      "additionalProperties": {
+        "type": "string",
+        "pattern": "^#[0-9a-fA-F]{6}$"
+      }
+    },
+    "parts": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/part" }
+    },
+    "props": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "hand", "cameraSide"],
+        "properties": {
+          "id": { "$ref": "#/$defs/part" },
+          "hand": { "type": "string", "enum": ["left", "right", "none"] },
+          "cameraSide": { "type": "boolean" }
+        }
+      }
+    },
+    "clips": {
+      "description": "The five required clips match BASE_UNIT_CLIPS. Other slots are optional.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["idle", "walk", "attack", "hurt", "death"],
+      "properties": {
+        "idle": { "$ref": "#/$defs/clip" },
+        "lowHp": { "$ref": "#/$defs/clip" },
+        "walk": { "$ref": "#/$defs/clip" },
+        "attack": { "$ref": "#/$defs/clip" },
+        "cast": { "$ref": "#/$defs/clip" },
+        "hurt": { "$ref": "#/$defs/clip" },
+        "death": { "$ref": "#/$defs/clip" },
+        "rebirth": { "$ref": "#/$defs/clip" },
+        "summon": { "$ref": "#/$defs/clip" }
+      }
+    },
+    "details": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    }
+  },
+  "$defs": {
+    "id": { "type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$" },
+    "part": {
+      "type": "string",
+      "enum": [
+        "head",
+        "eyes",
+        "hair",
+        "braid",
+        "tiara",
+        "neck",
+        "chest",
+        "collar",
+        "corset",
+        "belt",
+        "hips",
+        "quiver",
+        "skirt",
+        "pauldron.L",
+        "pauldron.R",
+        "sleeve.L",
+        "sleeve.R",
+        "cuff.L",
+        "cuff.R",
+        "bracer.L",
+        "bracer.R",
+        "hand.L",
+        "hand.R",
+        "thigh.L",
+        "thigh.R",
+        "boot.L",
+        "boot.R",
+        "foot.L",
+        "foot.R",
+        "bow",
+        "string",
+        "arrow",
+        "body",
+        "plates",
+        "fur",
+        "tail",
+        "tail.tuft",
+        "horns",
+        "shield",
+        "ear.L",
+        "ear.R",
+        "upper.FL",
+        "upper.FR",
+        "upper.BL",
+        "upper.BR",
+        "lower.FL",
+        "lower.FR",
+        "lower.BL",
+        "lower.BR",
+        "foot.FL",
+        "foot.FR",
+        "foot.BL",
+        "foot.BR",
+        "platform",
+        "shield.0",
+        "shield.1",
+        "shield.2",
+        "shield.3",
+        "shield.4",
+        "stakes",
+        "chains",
+        "skel.A",
+        "skel.B",
+        "skel.A.head",
+        "skel.B.head",
+        "skel.A.arm",
+        "skel.B.arm",
+        "banner",
+        "banner.flag",
+        "sign"
+      ]
+    },
+    "clip": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": { "override": { "$ref": "#/$defs/id" } }
+    }
+  }
+}

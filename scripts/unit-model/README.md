@@ -1,5 +1,28 @@
 # Unit Model packing
 
+## Unit Specs
+
+The three pilot specs are in `specs/`: Warden Saelith, Crag Rhino and Bone Rampart. Check them with Python 3.11 or later. Blender and Python packages are not required.
+
+```sh
+rtk bun unit-model:spec:check
+rtk proxy python3 -m unittest discover -s scripts/unit-model -p 'test_*.py'
+# This fixture must exit with code 1 and report spec.clips.attack: required.
+rtk bun unit-model:spec:check scripts/unit-model/fixtures/missing-clip.json
+```
+
+The default command checks every `specs/*.json` file and exits with code 0 when all pass. Pass one or more file paths to check selected specs. Each error includes its file and field path.
+
+`unit-spec.schema.json` defines the fields, Body Plan names, part names, colors and clip slots. `unit_spec.py` checks those schema rules and the prop references. `load_spec(path)` returns a `UnitSpec` typed dictionary and raises `ValueError` on invalid data. Use it before building geometry. The loader also rejects duplicate JSON members.
+
+The initial Body Plan names are `biped-medium`, `quadruped` and `structure`. These names classify the pilots; their shared builders will follow in later issues. The part names match the existing scripts, including suffixes such as `.L`, `.FR` and `.0`. A prop ID must name a listed part. `hand` is `left`, `right` or `none` for a mounted prop. The left side is Blender +X. `cameraSide` identifies a prop on the right side that the player Unit camera sees.
+
+The five required clips match `BASE_UNIT_CLIPS` in `apps/web/src/features/battle/scene/unit-clips.ts`: `idle`, `walk`, `attack`, `hurt` and `death`. The optional clips are `lowHp`, `cast`, `rebirth` and `summon`. Each pilot lists only the clips that its script builds. An empty clip object uses the Body Plan slot. An `override` names the unit's specific action for the future Clip Library.
+
+The palettes and parts come from the three build scripts. Warden Saelith includes the inline belt and arrow colors. Bone Rampart's hammer is part of `skel.A.arm`. Heights include props in the rest pose: 0.985 for Warden Saelith, 0.7280354 for Crag Rhino and 1.13 for Bone Rampart. These values agree with the bounds in `source-contracts.json`. The specs record the current models; the build scripts and Source Contracts do not change.
+
+## Packing
+
 Keep Blender exports in `apps/web/art/units/raw`. Publish only the packed files.
 
 ```sh

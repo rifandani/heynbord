@@ -1,0 +1,87 @@
+{
+  "id": "bone-rampart",
+  "bodyPlan": "structure",
+  "height": 1.13,
+  "palette": {
+    "wood": "#7a6247",
+    "wood_dark": "#4f3d2b",
+    "wood_light": "#9a8063",
+    "iron": "#4b4a48",
+    "gold": "#d2a548",
+    "bone": "#e3d9c0",
+    "bone_dark": "#a99c7c",
+    "socket": "#1c1f22",
+    "glow": "#9fe8ff",
+    "teal": "#4d6e6b",
+    "teal_dark": "#334a48",
+    "mud": "#4a3d30",
+    "sign": "#d8ccb0",
+    "ink": "#3a3028",
+    "rust": "#7a5a3c"
+  },
+  "parts": [
+    "shield.0",
+    "shield.1",
+    "shield.2",
+    "shield.3",
+    "shield.4",
+    "platform",
+    "stakes",
+    "chains",
+    "skel.A",
+    "skel.A.head",
+    "skel.B",
+    "skel.B.head",
+    "skel.A.arm",
+    "skel.B.arm",
+    "banner",
+    "banner.flag",
+    "sign"
+  ],
+  "props": [
+    {
+      "id": "skel.A.arm",
+      "hand": "left",
+      "cameraSide": false
+    },
+    {
+      "id": "banner",
+      "hand": "right",
+      "cameraSide": true
+    },
+    {
+      "id": "sign",
+      "hand": "none",
+      "cameraSide": true
+    }
+  ],
+  "clips": {
+    "idle": {},
+    "lowHp": {},
+    "walk": {
+      "override": "wall-heave"
+    },
+    "attack": {
+      "override": "hammer-smash"
+    },
+    "hurt": {},
+    "death": {
+      "override": "wall-collapse"
+    },
+    "rebirth": {
+      "override": "wall-rebuild"
+    },
+    "summon": {}
+  },
+  "details": [
+    "five coffin-shaped shields stand on an arc",
+    "gold fleurs on the outer shields and a large skull on the middle shield",
+    "chains and sharp stakes hold the shields",
+    "each shield has a bone at its foot",
+    "skeleton A holds a bone-handled iron hammer in skel.A.arm",
+    "skeleton B holds a teal banner on the camera side",
+    "teal swallowtail flag with a gold fleur",
+    "arrow sign at the side with writing on both faces",
+    "rebirth stands the shields up one by one"
+  ]
+}
