@@ -43,9 +43,9 @@ export interface FloorTemplate {
    * change in the number of copies with the extra Rank step, so that one
    * template can be tuned without a global curve change (ADR-0040).
    */
-  readonly strength?: {
-    readonly heroHpOffset?: number;
-    readonly extraStepCopiesOffset?: number;
+  readonly strength: {
+    readonly heroHpOffset: number;
+    readonly extraStepCopiesOffset: number;
   };
 }
 
@@ -754,15 +754,15 @@ export const floorStrength = (floor: number): FloorStrength => {
         heroHp: NORMAL_FLOOR_STRENGTH.heroHp + HERO_HP_PER_TIER * tier,
       };
   const deckSize = deckSizeLimits(level).max;
-  const offsets = floorTemplate(floor).strength ?? {};
+  const offsets = floorTemplate(floor).strength;
   return {
     ...strength,
-    heroHp: strength.heroHp + (offsets.heroHpOffset ?? 0),
+    heroHp: strength.heroHp + offsets.heroHpOffset,
     extraStepCopies: Math.max(
       0,
       Math.min(
         deckSize,
-        strength.extraStepCopies + (offsets.extraStepCopiesOffset ?? 0)
+        strength.extraStepCopies + offsets.extraStepCopiesOffset
       )
     ),
     deckSize,
