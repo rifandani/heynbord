@@ -170,10 +170,13 @@ describe("castSquares of the Mage cards of #65", () => {
     expect(castSquares(cast("mage.blizzard", "enemy", corner), 3)).toEqual([
       { lane: 0, position: 6 },
       { lane: 0, position: 5 },
+      { lane: 0, position: 4 },
       { lane: 1, position: 6 },
       { lane: 1, position: 5 },
+      { lane: 1, position: 4 },
       { lane: 2, position: 6 },
       { lane: 2, position: 5 },
+      { lane: 2, position: 4 },
     ]);
   });
 

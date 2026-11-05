@@ -77,7 +77,7 @@ describe("chooseCommand: Mage Hold Rules of #65 (GDD 9)", () => {
   });
 
   it("keeps Arc Lightning until it hits 2 or more Units, or the hit kills", () => {
-    expect(mageChoice("mage.arcLightning", "uncommon", [[1, 5, 6]])).toEqual(
+    expect(mageChoice("mage.arcLightning", "uncommon", [[1, 5, 7]])).toEqual(
       Command.EndTurn()
     );
     expect(
@@ -131,7 +131,7 @@ describe("chooseCommand: Mage Hold Rules of #65 (GDD 9)", () => {
       const size =
         cardId === "mage.wildfire"
           ? { lanes: 2, columns: 2 }
-          : { lanes: 3, columns: 2 };
+          : { lanes: 3, columns: 3 };
       const squares = areaSquares(
         "enemy",
         choice.target.lane,

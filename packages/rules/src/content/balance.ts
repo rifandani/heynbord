@@ -195,7 +195,7 @@ export const SKILL_RATES = {
   unitHeal: 1.8,
   laneHeal: 1.2,
   unitWard: 1.8,
-  laneWard: 2.4,
+  laneWard: 2.45,
   poison: 1.9,
   exposed: 6.7,
   laneAttack: 4.1,
@@ -203,10 +203,10 @@ export const SKILL_RATES = {
   laneBulwark: 10.2,
   countdown: 6.4,
   grounded: 0,
-  byAttack: 11.5,
-  steadfast: 12,
+  byAttack: 17.2,
+  steadfast: 24.5,
   cleanse: 0,
-  extraAction: 16.4,
+  extraAction: 24.5,
 };
 export type SkillRate = keyof typeof SKILL_RATES;
 

@@ -121,10 +121,10 @@ const feats = (profile: {
 }) => profile.completedAchievements.filter((id) => id.startsWith("feat."));
 
 describe("recordBattleResult with Feats (Achievements 1.3)", () => {
-  // The QA win of seed 1 Routs the enemy Side. The Tutorial is won, so the
+  // The QA win of seed 3 Routs the enemy Side. The Tutorial is won, so the
   // Battle is a repeat win of Stage 1-1.
   const tutorialWon = { ...newProfile(7), stageResults: { "1-1": 1 } };
-  const auto = buildQaState("victory", 1);
+  const auto = buildQaState("victory", 3);
   if (!auto) {
     throw new Error("No victory Battle");
   }

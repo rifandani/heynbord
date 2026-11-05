@@ -70,7 +70,7 @@ describe("createBattle (GDD 4.2)", () => {
       skillCrit: 450,
       unitBlock: 300,
     });
-    expect(heroOf(state, "enemy").hp).toBe(6);
+    expect(heroOf(state, "enemy").hp).toBe(10);
   });
 
   it("puts the Stage's start Units on the Board", () => {
@@ -364,15 +364,15 @@ describe("Start Phase (GDD 4.3)", () => {
       recalled = true;
       expect(heroOf(played.state, "player").hand.at(-1)).toMatchObject({
         cardId: "warrior.warDrums",
-        countdown: 2,
+        countdown: 3,
       });
       // At Rare, War Drums lowered 2 of the 3 Halberdiers to 4. The enemy Turn, then the player Start Phase.
       const enemyTurn = run(played.state, endTurn).state;
       const { state: next } = run(enemyTurn, endTurn);
-      expect(countdownsOf(next).toSorted()).toEqual([1, 3, 3, 5]);
+      expect(countdownsOf(next).toSorted()).toEqual([2, 3, 3, 5]);
       expect(heroOf(next, "player").hand.at(-1)).toMatchObject({
         cardId: "warrior.warDrums",
-        countdown: 1,
+        countdown: 2,
       });
     }
     expect(recalled).toBe(true);

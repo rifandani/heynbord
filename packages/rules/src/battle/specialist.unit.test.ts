@@ -267,11 +267,11 @@ describe("Specialist Keywords (ADR-0048)", () => {
         throw new Error("Ysolde left the Board");
       }
       expect(grown.soulHarvestBonus).toBe(1);
-      expect(grown.maxHp).toBe(5);
-      expect(grown.hp).toBe(5);
-      expect(attackOf(after, grown)).toBe(3);
+      expect(grown.maxHp).toBe(10);
+      expect(grown.hp).toBe(10);
+      expect(attackOf(after, grown)).toBe(5);
       expect(eventsOfType(events, "SoulHarvestGained")).toEqual([
-        expect.objectContaining({ unitId: ysolde.id, soulHarvest: 1, hp: 5 }),
+        expect.objectContaining({ unitId: ysolde.id, soulHarvest: 1, hp: 10 }),
       ]);
     });
 

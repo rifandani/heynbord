@@ -85,6 +85,7 @@ export const FLOOR_TEMPLATES: readonly FloorTemplate[] = [
     id: "spireWardenHolt",
     race: "human",
     classId: "warrior",
+    strength: { heroHpOffset: -26, extraStepCopiesOffset: -4 },
     deck: [
       ...cards(1, "warrior.shoulderCharge"),
       ...cards(2, "human.riverKnight"),
@@ -118,6 +119,7 @@ export const FLOOR_TEMPLATES: readonly FloorTemplate[] = [
     id: "emberchiefRazka",
     race: "orc",
     classId: "mage",
+    strength: { heroHpOffset: -28, extraStepCopiesOffset: -2 },
     deck: [
       ...cards(1, "orc.scrapRaider"),
       ...cards(1, "orc.warhowlerDrummer"),
@@ -152,6 +154,7 @@ export const FLOOR_TEMPLATES: readonly FloorTemplate[] = [
     id: "trapmasterKrink",
     race: "goblin",
     classId: "ranger",
+    strength: { heroHpOffset: -12, extraStepCopiesOffset: -8 },
     deck: [
       ...cards(3, "goblin.ankleSnatcher"),
       ...cards(1, "goblin.sidestepShiv"),
@@ -186,6 +189,7 @@ export const FLOOR_TEMPLATES: readonly FloorTemplate[] = [
     id: "groveSisterMyrra",
     race: "elf",
     classId: "priest",
+    strength: { heroHpOffset: -36, extraStepCopiesOffset: 2 },
     deck: [
       ...cards(2, "elf.brambleDuelist"),
       ...cards(1, "elf.fernwingCourier"),
@@ -220,8 +224,9 @@ export const FLOOR_TEMPLATES: readonly FloorTemplate[] = [
     id: "houndmasterBrokk",
     race: "feral",
     classId: "ranger",
+    strength: { heroHpOffset: 0, extraStepCopiesOffset: 7 },
     deck: [
-      ...cards(1, "ranger.longShot"),
+      ...cards(1, "ranger.barbedArrow"),
       ...cards(2, "feral.bristlebackBoar"),
       ...cards(1, "feral.caveTroll"),
       ...cards(1, "feral.cragRhino"),
@@ -256,6 +261,7 @@ export const FLOOR_TEMPLATES: readonly FloorTemplate[] = [
     id: "bonecaptainRusk",
     race: "undead",
     classId: "warrior",
+    strength: { heroHpOffset: -8, extraStepCopiesOffset: -2 },
     deck: [
       ...cards(1, "undead.rattleknife"),
       ...cards(1, "undead.winterMaw"),
@@ -292,6 +298,7 @@ export const FLOOR_TEMPLATES: readonly FloorTemplate[] = [
     id: "lightbearerAnselm",
     race: "human",
     classId: "priest",
+    strength: { heroHpOffset: -32, extraStepCopiesOffset: 2 },
     deck: [
       ...cards(1, "elf.seedwindShepherd"),
       ...cards(1, "elf.brambleNest"),
@@ -330,6 +337,7 @@ export const FLOOR_TEMPLATES: readonly FloorTemplate[] = [
     id: "warbossGnash",
     race: "orc",
     classId: "warrior",
+    strength: { heroHpOffset: 14, extraStepCopiesOffset: -10 },
     deck: [
       ...cards(1, "orc.scrapRaider"),
       ...cards(1, "goblin.scrapPlateGuard"),
@@ -367,6 +375,7 @@ export const FLOOR_TEMPLATES: readonly FloorTemplate[] = [
     id: "rimecallerIsolde",
     race: "undead",
     classId: "mage",
+    strength: { heroHpOffset: -21, extraStepCopiesOffset: -14 },
     deck: [
       ...cards(1, "mage.frostBolt"),
       ...cards(1, "undead.rimeEyeReaper"),
@@ -415,6 +424,7 @@ export const BOSS_FLOOR_TEMPLATES: readonly BossFloorTemplate[] = [
     stageId: "1-10",
     race: "human",
     classId: "warrior",
+    strength: { heroHpOffset: -4, extraStepCopiesOffset: 4 },
     startUnits: [
       { cardId: "human.shieldbearer", rank: "epic", lane: 1, position: 10 },
     ],
@@ -455,6 +465,7 @@ export const BOSS_FLOOR_TEMPLATES: readonly BossFloorTemplate[] = [
     stageId: "2-10",
     race: "goblin",
     classId: "ranger",
+    strength: { heroHpOffset: -38, extraStepCopiesOffset: -14 },
     startUnits: [
       {
         cardId: "orc.warchiefGrukka",
@@ -501,7 +512,7 @@ export const BOSS_FLOOR_TEMPLATES: readonly BossFloorTemplate[] = [
       ...cards(2, "ranger.harryingShot"),
       ...cards(1, "goblin.sidestepShiv"),
       ...cards(1, "goblin.greaseTrapper"),
-      ...cards(1, "ranger.longShot"),
+      ...cards(1, "ranger.barbedArrow"),
     ],
   },
   // Floor 30: the Elf lady of the Glowcap Hollows.
@@ -510,6 +521,7 @@ export const BOSS_FLOOR_TEMPLATES: readonly BossFloorTemplate[] = [
     stageId: "3-10",
     race: "elf",
     classId: "priest",
+    strength: { heroHpOffset: -36, extraStepCopiesOffset: -10 },
     startUnits: [
       {
         cardId: "elf.canopyVinewarden",
@@ -517,27 +529,26 @@ export const BOSS_FLOOR_TEMPLATES: readonly BossFloorTemplate[] = [
         lane: 1,
         position: 10,
       },
-      { cardId: "elf.brambleNest", rank: "uncommon", lane: 1, position: 9 },
     ],
     deck: [
       ...cards(1, "goblin.fuseRunner"),
-      ...cards(1, "elf.elderreedDartmaster"),
+      ...cards(1, "elf.acornTender"),
       ...cards(1, "goblin.ankleSnatcher"),
-      ...cards(1, "elf.amberwingDart"),
+      ...cards(1, "elf.fernwingCourier"),
       ...cards(3, "elf.brambleDuelist"),
       ...cards(1, "elf.mosspitcherLookout"),
       ...cards(1, "goblin.junkSlinger"),
-      ...cards(1, "priest.cleanse"),
+      ...cards(1, "priest.mend"),
       ...cards(2, "priest.radiantStrike"),
       ...cards(1, "elf.acornTender"),
       ...cards(1, "elf.dewkeeper"),
-      ...cards(1, "goblin.junkWalker"),
+      ...cards(1, "goblin.ankleSnatcher"),
       ...cards(1, "goblin.bombLobber"),
       ...cards(1, "elf.gladeTurnblade"),
       ...cards(1, "priest.unbrokenVow"),
       ...cards(1, "elf.dewkeeper"),
       ...cards(1, "elf.mosspitcherLookout"),
-      ...cards(1, "elf.seedwindShepherd"),
+      ...cards(1, "elf.rootboundGuard"),
       ...cards(1, "elf.brambleNest"),
       ...cards(1, "elf.gladeTurnblade"),
       ...cards(1, "elf.brambleNest"),
@@ -555,6 +566,7 @@ export const BOSS_FLOOR_TEMPLATES: readonly BossFloorTemplate[] = [
     stageId: "4-10",
     race: "feral",
     classId: "warrior",
+    strength: { heroHpOffset: -40, extraStepCopiesOffset: -4 },
     startUnits: [
       {
         cardId: "feral.mountainColossus",
@@ -598,6 +610,7 @@ export const BOSS_FLOOR_TEMPLATES: readonly BossFloorTemplate[] = [
     stageId: "5-10",
     race: "undead",
     classId: "mage",
+    strength: { heroHpOffset: -40, extraStepCopiesOffset: -10 },
     startUnits: [
       { cardId: "undead.boneRampart", rank: "epic", lane: 1, position: 9 },
       { cardId: "undead.hushbow", rank: "common", lane: 1, position: 10 },
@@ -671,8 +684,8 @@ const BOSS_FLOOR_STRENGTH: readonly TierStrength[] = [
   { rankSteps: 0, extraStepCopies: 13, heroHp: 64, gear: NO_GEAR },
   // Floor 20: Boss Snikkit.
   { rankSteps: 0, extraStepCopies: 15, heroHp: 62, gear: NO_GEAR },
-  // Floor 30: Lady Glimmerbough. Her Epic Canopy Vinewarden behind a Bramble
-  // Nest is her power, so she has less HP.
+  // Floor 30: Lady Glimmerbough. Her Canopy Vinewarden is her power, so she
+  // has less HP.
   { rankSteps: 0, extraStepCopies: 10, heroHp: 41, gear: NO_GEAR },
   // Floor 40: the Old Bramble. The Colossus in Lane 3 is strong against a
   // slow Deck, so the Rank steps alone give a gap of 30 points between the

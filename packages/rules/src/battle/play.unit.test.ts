@@ -236,7 +236,7 @@ describe("Skill Cards (GDD 4.8)", () => {
       state,
       play(0, Target.Square({ lane: 0, position: 6 }))
     );
-    expect(unitById(next, target.id)).toMatchObject({ hp: 3, frozen: true });
+    expect(unitById(next, target.id)).toMatchObject({ hp: 1, frozen: true });
   });
 
   it("deals area damage from the target Square toward the enemy Hero", () => {
@@ -261,8 +261,8 @@ describe("Skill Cards (GDD 4.8)", () => {
       state,
       play(0, Target.Square({ lane: 0, position: 6 }))
     );
-    expect(unitById(next, first.id)?.hp).toBe(3);
-    expect(unitById(next, second.id)?.hp).toBe(3);
+    expect(unitById(next, first.id)?.hp).toBe(2);
+    expect(unitById(next, second.id)?.hp).toBe(2);
     expect(unitById(next, outside.id)?.hp).toBe(6);
   });
 
@@ -292,12 +292,12 @@ describe("Skill Cards (GDD 4.8)", () => {
       Target.Lane({ lane: 1 }),
     ]);
     const { state: next } = run(state, play(0, Target.Lane({ lane: 1 })));
-    // Uncommon: 2 × 1.2 = 2.4, rounded to 2.
+    // Uncommon: 3 × 1.2 = 3.6, rounded to 3.
     expect([
       unitById(next, a.id)?.hp,
       unitById(next, b.id)?.hp,
       unitById(next, other.id)?.hp,
-    ]).toEqual([4, 4, 6]);
+    ]).toEqual([3, 3, 6]);
   });
 
   it("gives friendly Units in a Lane Bulwark for a number of enemy Turns", () => {
@@ -414,7 +414,7 @@ describe("Skill Cards (GDD 4.8)", () => {
       outcomes.add(recall?.success ?? false);
       if (recall?.success) {
         expect(heroOf(next, "player").hand).toEqual([
-          expect.objectContaining({ cardId: "warrior.warDrums", countdown: 2 }),
+          expect.objectContaining({ cardId: "warrior.warDrums", countdown: 3 }),
         ]);
         expect(heroOf(next, "player").graveyard).toEqual([]);
       } else {
@@ -460,12 +460,12 @@ describe("Ranger Skill Cards (GDD 5.5)", () => {
         state,
         play(0, Target.Hero({ side: "enemy", hero: 0 }))
       );
-      // Rare: 12 × 1.45 = 17.4, rounded to 17. A Hero has no Bulwark and no Block.
-      expect(heroOf(next, "enemy").hp).toBe(13);
+      // Rare: 18. A Hero has no Bulwark and no Block.
+      expect(heroOf(next, "enemy").hp).toBe(12);
       expect(eventsOfType(events, "DamageDealt")).toEqual([
         expect.objectContaining({
           target: { _tag: "Hero", side: "enemy", hero: 0 },
-          amount: 17,
+          amount: 18,
           source: "skill",
           blocked: false,
         }),
@@ -482,7 +482,7 @@ describe("Ranger Skill Cards (GDD 5.5)", () => {
         state,
         play(0, Target.Hero({ side: "player", hero: 0 }))
       );
-      expect(heroOf(next, "player").hp).toBe(18);
+      expect(heroOf(next, "player").hp).toBe(16);
     });
 
     it("has no target when the enemy Hero is Defeated", () => {
@@ -498,8 +498,8 @@ describe("Ranger Skill Cards (GDD 5.5)", () => {
         state,
         play(0, Target.Hero({ side: "enemy", hero: 0 }))
       );
-      // 12 damage, ×2 for the Crit.
-      expect(heroOf(next, "enemy").hp).toBe(6);
+      // 14 damage, ×2 for the Crit.
+      expect(heroOf(next, "enemy").hp).toBe(2);
       expect(eventsOfType(events, "DamageDealt")[0]?.crit).toBe(true);
     });
 
@@ -777,11 +777,11 @@ describe("Priest Skill Cards (GDD 5.5)", () => {
         bonusBulwarkTurns: 2,
       });
       const { state: next, events } = run(state, play(0, square(0, 6)));
-      // Uncommon: 3 × 1.2 = 3.6, rounded to 4.
-      expect(unitById(next, target.id)?.hp).toBe(2);
+      // Uncommon: 5.
+      expect(unitById(next, target.id)?.hp).toBe(1);
       expect(eventsOfType(events, "DamageDealt")).toEqual([
         expect.objectContaining({
-          amount: 4,
+          amount: 5,
           damageType: "holy",
           source: "skill",
           absorbed: 0,
@@ -794,12 +794,12 @@ describe("Priest Skill Cards (GDD 5.5)", () => {
       giveHand(state, "player", [["priest.smite", 0]]);
       const target = enemyAt(state, 6, { ward: 2 });
       const { state: next, events } = run(state, play(0, square(0, 6)));
-      expect(unitById(next, target.id)).toMatchObject({ hp: 5, ward: 0 });
+      expect(unitById(next, target.id)).toMatchObject({ hp: 4, ward: 0 });
       expect(eventsOfType(events, "DamageDealt")[0]).toMatchObject({
-        amount: 1,
+        amount: 2,
         absorbed: 2,
         ward: 0,
-        hp: 5,
+        hp: 4,
       });
     });
 
@@ -816,21 +816,21 @@ describe("Priest Skill Cards (GDD 5.5)", () => {
     it("does not end the Rebirth of a Unit that survives", () => {
       const state = emptyBattle();
       giveHand(state, "player", [["priest.smite", 0]]);
-      const target = enemyAt(state, 6, { hp: 4, rebirth: true });
+      const target = enemyAt(state, 6, { hp: 5, rebirth: true });
       const { state: next } = run(state, play(0, square(0, 6)));
       expect(unitById(next, target.id)).toMatchObject({ hp: 1, rebirth: true });
     });
   });
 
   describe("Sanctuary", () => {
-    it("gives Ward 9 at its Base Rank Uncommon, with a StatusApplied event", () => {
+    it("gives Ward 13 at its Base Rank Uncommon, with a StatusApplied event", () => {
       const state = emptyBattle();
       giveHand(state, "player", [["priest.sanctuary", 0, "uncommon"]]);
       const unit = friendAt(state, 2);
       const { state: next, events } = run(state, play(0, square(0, 2)));
-      expect(unitById(next, unit.id)?.ward).toBe(9);
+      expect(unitById(next, unit.id)?.ward).toBe(13);
       expect(eventsOfType(events, "StatusApplied")).toEqual([
-        expect.objectContaining({ unitId: unit.id, status: "ward", count: 9 }),
+        expect.objectContaining({ unitId: unit.id, status: "ward", count: 13 }),
       ]);
     });
 
@@ -840,18 +840,18 @@ describe("Priest Skill Cards (GDD 5.5)", () => {
         ["priest.sanctuary", 0, "uncommon"],
         ["priest.sanctuary", 0, "rare"],
       ]);
-      const strong = friendAt(state, 2, { ward: 9 });
+      const strong = friendAt(state, 2, { ward: 13 });
       const weak = friendAt(state, 3, { ward: 2 });
       preventRout(state);
       const first = run(state, play(0, square(0, 2)));
-      expect(unitById(first.state, strong.id)?.ward).toBe(9);
+      expect(unitById(first.state, strong.id)?.ward).toBe(13);
       expect(eventsOfType(first.events, "StatusApplied")).toEqual([]);
       expect(eventsOfType(first.events, "RecallRolled")).toHaveLength(1);
       const second = run(first.state, play(0, square(0, 3)));
-      // The Ward table gives Rare the exact value 11.
-      expect(unitById(second.state, weak.id)?.ward).toBe(11);
+      // The Ward table gives Rare the exact value 16.
+      expect(unitById(second.state, weak.id)?.ward).toBe(16);
       expect(eventsOfType(second.events, "StatusApplied")).toEqual([
-        expect.objectContaining({ unitId: weak.id, status: "ward", count: 11 }),
+        expect.objectContaining({ unitId: weak.id, status: "ward", count: 16 }),
       ]);
     });
   });
@@ -869,18 +869,18 @@ describe("Priest Skill Cards (GDD 5.5)", () => {
       const first = run(state, play(0, square(0, 6)));
       expect(unitById(first.state, frozen.id)).toMatchObject({
         hp: 6,
-        ward: 2,
+        ward: 0,
         frozen: true,
       });
       expect(eventsOfType(first.events, "DamageDealt")[0]).toMatchObject({
         amount: 0,
-        absorbed: 3,
-        ward: 2,
+        absorbed: 5,
+        ward: 0,
       });
       const second = run(first.state, play(0, square(0, 9)));
       expect(unitById(second.state, burned.id)).toMatchObject({
         hp: 6,
-        ward: 2,
+        ward: 1,
         burn: 2,
       });
     });
@@ -935,10 +935,10 @@ describe("the Common and Uncommon Skill Cards of #57 (GDD 5.5)", () => {
         ["warrior.shoulderCharge", 0],
         ["warrior.shoulderCharge", 0],
       ]);
-      const target = enemyAt(state, 6);
+      const target = enemyAt(state, 6, { hp: 10, maxHp: 10 });
       const bulwarked = enemyAt(state, 6, {
         lane: 1,
-        bonusBulwark: 3,
+        bonusBulwark: 7,
         bonusBulwarkTurns: 2,
       });
       const first = run(state, play(0, square(0, 6)));
@@ -964,7 +964,7 @@ describe("the Common and Uncommon Skill Cards of #57 (GDD 5.5)", () => {
       const other = friendAt(state, 2, { lane: 1, attack: 0 });
       preventRout(state);
       ({ state } = run(state, play(0, square(0, 6))));
-      expect(unitById(state, target.id)?.hp).toBe(4);
+      expect(unitById(state, target.id)?.hp).toBe(3);
       expect(unitById(state, friend.id)).toMatchObject({
         bonusBulwark: 1,
         bonusBulwarkTurns: 1,
@@ -1048,7 +1048,7 @@ describe("the Common and Uncommon Skill Cards of #57 (GDD 5.5)", () => {
   });
 
   describe("Barbed Arrow", () => {
-    it("deals damage, and a Unit that survives becomes Bleeding 3, only at damage above 0", () => {
+    it("deals damage, and a Unit that survives becomes Bleeding 1, only at damage above 0", () => {
       const state = emptyBattle({ lanes: 2 });
       giveHand(state, "player", [
         ["ranger.barbedArrow", 0, "uncommon"],
@@ -1057,14 +1057,14 @@ describe("the Common and Uncommon Skill Cards of #57 (GDD 5.5)", () => {
       const target = enemyAt(state, 6, { hp: 20, maxHp: 20 });
       const bulwarked = enemyAt(state, 6, {
         lane: 1,
-        bonusBulwark: 6,
+        bonusBulwark: 10,
         bonusBulwarkTurns: 2,
       });
       const first = run(state, play(0, square(0, 6)));
-      // Uncommon: 5 × 1.2 = 6.
+      // Uncommon: 8 × 1.2 = 9.6, rounded to 10.
       expect(unitById(first.state, target.id)).toMatchObject({
-        hp: 14,
-        bleeding: 3,
+        hp: 10,
+        bleeding: 1,
       });
       const second = run(first.state, play(0, square(1, 6)));
       expect(unitById(second.state, bulwarked.id)?.bleeding).toBe(0);
@@ -1085,9 +1085,9 @@ describe("the Common and Uncommon Skill Cards of #57 (GDD 5.5)", () => {
       });
       const ground = enemyAt(state, 6, { lane: 1, hp: 20, maxHp: 20 });
       const first = run(state, play(0, square(0, 6)));
-      // Rare: 9.
+      // Rare: 13.
       expect(unitById(first.state, bird.id)).toMatchObject({
-        hp: 11,
+        hp: 7,
         grounded: 2,
       });
       expect(eventsOfType(first.events, "StatusApplied")).toEqual([
@@ -1100,7 +1100,7 @@ describe("the Common and Uncommon Skill Cards of #57 (GDD 5.5)", () => {
       // A ground Unit gets only the damage.
       const second = run(first.state, play(0, square(1, 6)));
       expect(unitById(second.state, ground.id)).toMatchObject({
-        hp: 13,
+        hp: 10,
         grounded: 0,
       });
       expect(eventsOfType(second.events, "StatusApplied")).toEqual([]);
@@ -1168,7 +1168,7 @@ describe("the Common and Uncommon Skill Cards of #57 (GDD 5.5)", () => {
       const bleeding = friendAt(state, 3, { hp: 1, bleeding: 2 });
       const other = friendAt(state, 2, { lane: 1, hp: 1 });
       const { state: next, events } = run(state, play(0, square(0, 6)));
-      expect(unitById(next, target.id)?.hp).toBe(4);
+      expect(unitById(next, target.id)?.hp).toBe(3);
       expect(unitById(next, hurt.id)?.hp).toBe(3);
       expect(unitById(next, bleeding.id)?.hp).toBe(2);
       expect(unitById(next, other.id)?.hp).toBe(1);
@@ -1233,9 +1233,9 @@ describe("the Common and Uncommon Skill Cards of #57 (GDD 5.5)", () => {
         Target.Lane({ lane: 1 }),
       ]);
       const { state: next } = run(state, play(0, Target.Lane({ lane: 0 })));
-      // Rare: 13, and half of it for the Bleeding Unit.
-      expect(unitById(next, a.id)?.hp).toBe(14);
-      expect(unitById(next, b.id)?.hp).toBe(7);
+      // Rare: 24, and half of it for the Bleeding Unit.
+      expect(unitById(next, a.id)?.hp).toBe(20);
+      expect(unitById(next, b.id)?.hp).toBe(13);
       expect(unitById(next, other.id)?.hp).toBe(1);
       expect(unitById(next, enemy.id)?.hp).toBe(1);
     });
@@ -1276,21 +1276,21 @@ describe("the Rare and Epic Ranger Skill Cards of #59 (GDD 5.5)", () => {
         poisoned: 2,
       });
       const first = run(state, play(0, square(0, 6)));
-      // Rare: 4 Physical damage. The Rare stacks are 5.
+      // Rare: 4 Physical damage. The Rare stacks are 12.
       expect(unitById(first.state, target.id)).toMatchObject({
         hp: 2,
-        poisoned: 5,
+        poisoned: 12,
       });
       expect(eventsOfType(first.events, "StatusApplied")).toEqual([
         expect.objectContaining({
           unitId: target.id,
           status: "poison",
-          count: 5,
+          count: 12,
         }),
       ]);
       const second = run(first.state, play(0, square(1, 6)));
-      // Legendary: 7 stacks on the old 2.
-      expect(unitById(second.state, poisoned.id)?.poisoned).toBe(9);
+      // Legendary: 17 stacks on the old 2.
+      expect(unitById(second.state, poisoned.id)?.poisoned).toBe(19);
     });
 
     it("gives the stacks also at 0 damage, and when a Ward absorbs the full hit", () => {
@@ -1306,13 +1306,13 @@ describe("the Rare and Epic Ranger Skill Cards of #59 (GDD 5.5)", () => {
       });
       const warded = enemyAt(state, 6, { lane: 1, ward: 5 });
       preventRout(state);
-      // Epic: 5 damage and 6 stacks.
+      // Epic: 5 damage and 14 stacks.
       const first = run(state, play(0, square(0, 6)));
-      expect(unitById(first.state, wall.id)?.poisoned).toBe(6);
+      expect(unitById(first.state, wall.id)?.poisoned).toBe(14);
       const second = run(first.state, play(0, square(1, 6)));
       expect(unitById(second.state, warded.id)).toMatchObject({
         hp: 6,
-        poisoned: 6,
+        poisoned: 14,
       });
     });
 
@@ -1356,20 +1356,20 @@ describe("the Rare and Epic Ranger Skill Cards of #59 (GDD 5.5)", () => {
       ]);
       const first = run(state, play(0, square(0, 2)));
       expect(eventsOfType(first.events, "AttackGained")).toEqual([
-        expect.objectContaining({ unitId: rare.id, attack: 4, turns: 2 }),
+        expect.objectContaining({ unitId: rare.id, attack: 8, turns: 2 }),
       ]);
       expect(eventsOfType(first.events, "RangeGained")).toEqual([
         expect.objectContaining({ unitId: rare.id, range: 1, turns: 2 }),
       ]);
       expect(unitById(first.state, rare.id)).toMatchObject({
-        bonusAttack: 4,
+        bonusAttack: 8,
         bonusAttackTurns: 2,
         bonusRange: 1,
         bonusRangeTurns: 2,
       });
       const second = run(first.state, play(0, square(1, 2)));
       expect(unitById(second.state, legendary.id)).toMatchObject({
-        bonusAttack: 6,
+        bonusAttack: 12,
         bonusRange: 1,
       });
       const third = run(second.state, play(0, square(0, 4)));
@@ -1393,12 +1393,12 @@ describe("the Rare and Epic Ranger Skill Cards of #59 (GDD 5.5)", () => {
       preventRout(state);
       const played = run(state, play(0, square(0, 2)));
       const firstTurn = run(played.state, Command.EndTurn());
-      // Crossbow Guard Attack 4 + 4, at a distance of 4 Squares.
+      // Crossbow Guard Attack 4 + 8, at a distance of 4 Squares.
       expect(attackOn(firstTurn.events, enemy.id)).toMatchObject({
         unitId: shooter.id,
         ranged: true,
       });
-      expect(unitById(firstTurn.state, enemy.id)?.hp).toBe(22);
+      expect(unitById(firstTurn.state, enemy.id)?.hp).toBe(18);
       const enemyTurn = run(firstTurn.state, Command.EndTurn());
       expect(unitById(enemyTurn.state, shooter.id)?.bonusRange).toBe(1);
       const secondTurn = run(enemyTurn.state, Command.EndTurn());
@@ -1471,14 +1471,14 @@ describe("the Rare and Epic Ranger Skill Cards of #59 (GDD 5.5)", () => {
       preventRout(state);
       const played = run(state, play(0, Target.Lane({ lane: 0 })));
       expect(unitById(played.state, unit.id)).toMatchObject({
-        bonusAttack: 4,
+        bonusAttack: 7,
         bonusAttackTurns: 2,
         bonusRange: 1,
         bonusRangeTurns: 1,
       });
       const { state: next } = run(played.state, Command.EndTurn());
       expect(unitById(next, unit.id)).toMatchObject({
-        bonusAttack: 4,
+        bonusAttack: 7,
         bonusAttackTurns: 1,
         bonusRange: 0,
         bonusRangeTurns: 0,
@@ -1503,7 +1503,7 @@ describe("the Rare and Epic Ranger Skill Cards of #59 (GDD 5.5)", () => {
     it("deals damage to each enemy Unit in the Lane, and each Unit that survives with damage above 0 becomes Entangled", () => {
       const state = emptyBattle({ lanes: 2 });
       giveHand(state, "player", [["ranger.rainOfArrows", 0, "epic"]]);
-      const front = enemyAt(state, 6);
+      const front = enemyAt(state, 6, { hp: 12, maxHp: 12 });
       const killed = enemyAt(state, 7, { hp: 2 });
       const bulwarked = enemyAt(state, 8, {
         bonusBulwark: 2,
@@ -1516,14 +1516,14 @@ describe("the Rare and Epic Ranger Skill Cards of #59 (GDD 5.5)", () => {
         Target.Lane({ lane: 1 }),
       ]);
       const { state: next } = run(state, play(0, Target.Lane({ lane: 0 })));
-      // Epic: the exact Rank table gives 3 damage.
+      // Epic: the exact Rank table gives 6 damage.
       expect(unitById(next, front.id)).toMatchObject({
-        hp: 3,
+        hp: 6,
         entangled: true,
       });
       expect(unitById(next, killed.id)).toBeUndefined();
       expect(unitById(next, bulwarked.id)).toMatchObject({
-        hp: 5,
+        hp: 2,
         entangled: true,
       });
       expect(unitById(next, other.id)).toMatchObject({
@@ -1536,21 +1536,21 @@ describe("the Rare and Epic Ranger Skill Cards of #59 (GDD 5.5)", () => {
     it("does not stack a new Entangled", () => {
       const state = emptyBattle();
       giveHand(state, "player", [["ranger.rainOfArrows", 0, "epic"]]);
-      const target = enemyAt(state, 6, { entangled: true });
+      const target = enemyAt(state, 6, { hp: 12, maxHp: 12, entangled: true });
       const { state: next } = run(state, play(0, Target.Lane({ lane: 0 })));
       expect(unitById(next, target.id)).toMatchObject({
-        hp: 3,
+        hp: 6,
         entangled: true,
       });
     });
 
-    it("deals 5 damage at Legendary", () => {
+    it("deals 10 damage at Legendary", () => {
       const state = emptyBattle();
       giveHand(state, "player", [["ranger.rainOfArrows", 0, "legendary"]]);
-      const target = enemyAt(state, 6, { hp: 8, maxHp: 8 });
+      const target = enemyAt(state, 6, { hp: 16, maxHp: 16 });
       const { state: next } = run(state, play(0, Target.Lane({ lane: 0 })));
       expect(unitById(next, target.id)).toMatchObject({
-        hp: 3,
+        hp: 6,
         entangled: true,
       });
     });
@@ -1576,9 +1576,9 @@ describe("the Rare and Epic Priest Skill Cards of #61 (GDD 5.5)", () => {
       });
       expect(legalTargets(state, 0, 0)).toEqual([square(0, 2)]);
       const { state: next, events } = run(state, play(0, square(0, 2)));
-      // The Rare heal is 8, not 8 ÷ 2.
+      // The Rare heal is 15, not 15 ÷ 2.
       expect(unitById(next, unit.id)).toMatchObject({
-        hp: 9,
+        hp: 16,
         burn: 0,
         frozen: false,
         entangled: false,
@@ -1620,10 +1620,10 @@ describe("the Rare and Epic Priest Skill Cards of #61 (GDD 5.5)", () => {
       const legendary = friendAt(state, 3, { hp: 1, maxHp: 20 });
       preventRout(state);
       const first = run(state, play(0, square(0, 2)));
-      expect(unitById(first.state, epic.id)?.hp).toBe(10);
+      expect(unitById(first.state, epic.id)?.hp).toBe(18);
       expect(eventsOfType(first.events, "DebuffsRemoved")).toEqual([]);
       const second = run(first.state, play(0, square(0, 3)));
-      expect(unitById(second.state, legendary.id)?.hp).toBe(11);
+      expect(unitById(second.state, legendary.id)?.hp).toBe(20);
     });
 
     it("lets a Frozen Unit act in the Resolution Phase of the same Turn", () => {
@@ -1694,18 +1694,18 @@ describe("the Rare and Epic Priest Skill Cards of #61 (GDD 5.5)", () => {
       const third = run(second.state, play(0, square(2, 6)));
       expect(unitById(third.state, poisoned.id)).toMatchObject({
         hp: 1,
-        poisoned: 5,
+        poisoned: 12,
         steadfast: false,
       });
     });
   });
 
   describe("Aegis of Dawn", () => {
-    it("gives each friendly Unit in the Lane Ward 8 at Epic, keeps a higher Ward, and gives no enemy Unit a Ward", () => {
+    it("gives each friendly Unit in the Lane Ward 19 at Epic, keeps a higher Ward, and gives no enemy Unit a Ward", () => {
       const state = emptyBattle({ lanes: 2 });
       giveHand(state, "player", [["priest.aegisOfDawn", 0, "epic"]]);
       const a = friendAt(state, 2);
-      const strong = friendAt(state, 3, { ward: 9 });
+      const strong = friendAt(state, 3, { ward: 19 });
       const other = friendAt(state, 2, { lane: 1 });
       const enemy = enemyAt(state, 6);
       expect(legalTargets(state, 0, 0)).toEqual([
@@ -1716,29 +1716,29 @@ describe("the Rare and Epic Priest Skill Cards of #61 (GDD 5.5)", () => {
         state,
         play(0, Target.Lane({ lane: 0 }))
       );
-      expect(unitById(next, a.id)?.ward).toBe(8);
-      expect(unitById(next, strong.id)?.ward).toBe(9);
+      expect(unitById(next, a.id)?.ward).toBe(19);
+      expect(unitById(next, strong.id)?.ward).toBe(19);
       expect(unitById(next, other.id)?.ward).toBe(0);
       expect(unitById(next, enemy.id)?.ward).toBe(0);
       expect(eventsOfType(events, "StatusApplied")).toEqual([
-        expect.objectContaining({ unitId: a.id, status: "ward", count: 8 }),
+        expect.objectContaining({ unitId: a.id, status: "ward", count: 19 }),
       ]);
     });
 
-    it("gives Ward 10 at Legendary", () => {
+    it("gives Ward 23 at Legendary", () => {
       const state = emptyBattle();
       giveHand(state, "player", [["priest.aegisOfDawn", 0, "legendary"]]);
       const unit = friendAt(state, 2);
       const { state: next } = run(state, play(0, Target.Lane({ lane: 0 })));
-      expect(unitById(next, unit.id)?.ward).toBe(10);
+      expect(unitById(next, unit.id)?.ward).toBe(23);
     });
   });
 });
 
 describe("Ground Slam", () => {
   it.each([
-    ["rare", 3],
-    ["epic", 4],
+    ["rare", 4],
+    ["epic", 6],
   ] as const)(
     "deals the correct damage to each enemy Unit at %s",
     (rank, damage) => {
@@ -1762,7 +1762,7 @@ describe("Ground Slam", () => {
     }
   );
 
-  it("deals 5 Physical damage to each enemy Unit in the Lane at Legendary", () => {
+  it("deals 8 Physical damage to each enemy Unit in the Lane at Legendary", () => {
     const state = emptyBattle();
     giveHand(state, "player", [["warrior.groundSlam", 0, "legendary"]]);
     const target = enemyAt(state, 6, { hp: 20, maxHp: 20 });
@@ -1772,11 +1772,11 @@ describe("Ground Slam", () => {
       play(0, Target.Lane({ lane: 0 }))
     );
 
-    expect(unitById(next, target.id)?.hp).toBe(15);
+    expect(unitById(next, target.id)?.hp).toBe(12);
     expect(eventsOfType(events, "DamageDealt")).toContainEqual(
       expect.objectContaining({
         target: { _tag: "Unit", unitId: target.id },
-        amount: 5,
+        amount: 8,
         source: "skill",
       })
     );
@@ -1784,7 +1784,7 @@ describe("Ground Slam", () => {
 });
 
 describe("Cleave", () => {
-  it("deals 4 Physical damage to the target and the next Square at Uncommon", () => {
+  it("deals 6 Physical damage to the target and the next Square at Uncommon", () => {
     const state = emptyBattle();
     giveHand(state, "player", [["warrior.cleave", 0, "uncommon"]]);
     const first = enemyAt(state, 6, { hp: 20, maxHp: 20 });
@@ -1792,14 +1792,14 @@ describe("Cleave", () => {
 
     const { state: result, events } = run(state, play(0, square(0, 6)));
 
-    expect(unitById(result, first.id)?.hp).toBe(16);
-    expect(unitById(result, next.id)?.hp).toBe(16);
+    expect(unitById(result, first.id)?.hp).toBe(14);
+    expect(unitById(result, next.id)?.hp).toBe(14);
     expect(
       eventsOfType(events, "DamageDealt").map((event) => event.amount)
-    ).toEqual([4, 4]);
+    ).toEqual([6, 6]);
   });
 
-  it("deals 7 Physical damage to the target and the next Square at Legendary", () => {
+  it("deals 11 Physical damage to the target and the next Square at Legendary", () => {
     const state = emptyBattle();
     giveHand(state, "player", [["warrior.cleave", 0, "legendary"]]);
     const first = enemyAt(state, 6, { hp: 20, maxHp: 20 });
@@ -1807,17 +1807,17 @@ describe("Cleave", () => {
 
     const { state: result, events } = run(state, play(0, square(0, 6)));
 
-    expect(unitById(result, first.id)?.hp).toBe(13);
-    expect(unitById(result, next.id)?.hp).toBe(13);
+    expect(unitById(result, first.id)?.hp).toBe(9);
+    expect(unitById(result, next.id)?.hp).toBe(9);
     expect(
       eventsOfType(events, "DamageDealt").map((event) => event.amount)
-    ).toEqual([7, 7]);
+    ).toEqual([11, 11]);
   });
 });
 
 describe("the Rare and Epic Warrior Skill Cards of #63 (GDD 5.5)", () => {
   describe("Call to Arms", () => {
-    it("gives bonus Attack 4 to each friendly Unit in the Lane with Base Attack above 0, not to a Wall, another Lane or an enemy Unit", () => {
+    it("gives bonus Attack 7 to each friendly Unit in the Lane with Base Attack above 0, not to a Wall, another Lane or an enemy Unit", () => {
       const state = emptyBattle({ lanes: 2 });
       giveHand(state, "player", [["warrior.callToArms", 0, "rare"]]);
       const a = friendAt(state, 2);
@@ -1838,8 +1838,8 @@ describe("the Rare and Epic Warrior Skill Cards of #63 (GDD 5.5)", () => {
         play(0, Target.Lane({ lane: 0 }))
       );
       expect(eventsOfType(events, "AttackGained")).toEqual([
-        expect.objectContaining({ unitId: a.id, attack: 4, turns: 2 }),
-        expect.objectContaining({ unitId: b.id, attack: 4, turns: 2 }),
+        expect.objectContaining({ unitId: a.id, attack: 7, turns: 2 }),
+        expect.objectContaining({ unitId: b.id, attack: 7, turns: 2 }),
       ]);
       expect(unitById(next, wall.id)?.bonusAttack).toBe(0);
       expect(unitById(next, other.id)?.bonusAttack).toBe(0);
@@ -1855,7 +1855,7 @@ describe("the Rare and Epic Warrior Skill Cards of #63 (GDD 5.5)", () => {
       preventRout(state);
       const played = run(state, play(0, Target.Lane({ lane: 0 })));
       const firstTurn = run(played.state, Command.EndTurn());
-      // Halberdier Attack 4 + 4. The enemy Halberdier retaliates.
+      // Halberdier Attack 4 + 7. The enemy Halberdier retaliates.
       expect(
         eventsOfType(firstTurn.events, "DamageDealt").find(
           (event) =>
@@ -1863,14 +1863,14 @@ describe("the Rare and Epic Warrior Skill Cards of #63 (GDD 5.5)", () => {
             event.target._tag === "Unit" &&
             event.target.unitId === enemy.id
         )?.amount
-      ).toBe(8);
+      ).toBe(11);
       expect(unitById(firstTurn.state, unit.id)).toMatchObject({
-        bonusAttack: 4,
+        bonusAttack: 7,
         bonusAttackTurns: 1,
       });
       expect(eventsOfType(firstTurn.events, "AttackFaded")).toEqual([]);
       const enemyTurn = run(firstTurn.state, Command.EndTurn());
-      expect(unitById(enemyTurn.state, unit.id)?.bonusAttack).toBe(4);
+      expect(unitById(enemyTurn.state, unit.id)?.bonusAttack).toBe(7);
       const secondTurn = run(enemyTurn.state, Command.EndTurn());
       expect(unitById(secondTurn.state, unit.id)).toMatchObject({
         bonusAttack: 0,
@@ -1891,7 +1891,7 @@ describe("the Rare and Epic Warrior Skill Cards of #63 (GDD 5.5)", () => {
       );
       // A new bonus replaces the old one, also a higher one.
       expect(unitById(next, unit.id)).toMatchObject({
-        bonusAttack: 4,
+        bonusAttack: 7,
         bonusAttackTurns: 2,
       });
       expect(eventsOfType(events, "AttackGained")).toHaveLength(1);
@@ -1899,7 +1899,7 @@ describe("the Rare and Epic Warrior Skill Cards of #63 (GDD 5.5)", () => {
   });
 
   describe("Expose Weakness", () => {
-    it("makes an enemy Unit Exposed 2 at Rare, 3 at Epic and 4 at Legendary, and a new Exposed keeps the higher value", () => {
+    it("makes an enemy Unit Exposed 4 at Rare and Epic, and 8 at Legendary, and a new Exposed keeps the higher value", () => {
       const state = emptyBattle();
       giveHand(state, "player", [
         ["warrior.exposeWeakness", 0, "epic"],
@@ -1912,21 +1912,21 @@ describe("the Rare and Epic Warrior Skill Cards of #63 (GDD 5.5)", () => {
       expect(legalTargets(state, 0, 0)).toEqual([square(0, 6)]);
       const epic = run(state, play(0, square(0, 6)));
       expect(unitById(epic.state, enemy.id)).toMatchObject({
-        exposed: 3,
+        exposed: 4,
         exposedTurns: 2,
       });
       expect(eventsOfType(epic.events, "StatusApplied")).toEqual([
         expect.objectContaining({
           unitId: enemy.id,
           status: "exposed",
-          count: 3,
+          count: 4,
         }),
       ]);
       const rare = run(epic.state, play(0, square(0, 6)));
-      expect(unitById(rare.state, enemy.id)?.exposed).toBe(3);
+      expect(unitById(rare.state, enemy.id)?.exposed).toBe(4);
       expect(eventsOfType(rare.events, "StatusApplied")).toEqual([]);
       const legendary = run(rare.state, play(0, square(0, 6)));
-      expect(unitById(legendary.state, enemy.id)?.exposed).toBe(4);
+      expect(unitById(legendary.state, enemy.id)?.exposed).toBe(8);
     });
 
     it("adds N to each Physical Skill hit after Bulwark, and not to Holy or Frost damage", () => {
@@ -1942,13 +1942,13 @@ describe("the Rare and Epic Warrior Skill Cards of #63 (GDD 5.5)", () => {
       const frozen = enemyAt(state, 6, { lane: 2, ...bulwarked, hp: 20 });
       preventRout(state);
       const first = run(state, play(0, square(0, 6)));
-      // Spear Throw 5 − Bulwark 3 + Exposed 2.
-      expect(unitById(first.state, speared.id)?.hp).toBe(16);
-      // Smite 3 and Frost Bolt 3: no Bulwark and no Exposed (ADR-0030).
+      // Spear Throw 7 − Bulwark 3 + Exposed 2.
+      expect(unitById(first.state, speared.id)?.hp).toBe(14);
+      // Smite 4 and Frost Bolt 5: no Bulwark and no Exposed (ADR-0030).
       const second = run(first.state, play(0, square(1, 6)));
-      expect(unitById(second.state, smitten.id)?.hp).toBe(17);
+      expect(unitById(second.state, smitten.id)?.hp).toBe(16);
       const third = run(second.state, play(0, square(2, 6)));
-      expect(unitById(third.state, frozen.id)?.hp).toBe(17);
+      expect(unitById(third.state, frozen.id)?.hp).toBe(15);
     });
 
     it("comes before Crit and Block, so a Crit doubles it and a Block halves it", () => {
@@ -2017,8 +2017,8 @@ describe("the Rare and Epic Warrior Skill Cards of #63 (GDD 5.5)", () => {
         exposed: 2,
       });
       const hit = run(wallState, play(0, square(0, 6)));
-      // Spear Throw 6 at Uncommon − Bulwark 5 + Exposed 2.
-      expect(unitById(hit.state, wall.id)?.hp).toBe(11);
+      // Spear Throw 8 at Uncommon − Bulwark 5 + Exposed 2.
+      expect(unitById(hit.state, wall.id)?.hp).toBe(9);
     });
 
     it("does not add to Burn or Poison damage, and ends after 2 End Phases of its owner", () => {

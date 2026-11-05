@@ -340,16 +340,16 @@ describe("chooseCommand: Hold Rules (GDD 9)", () => {
   });
 
   it("keeps Spear Throw until it kills the target Unit", () => {
-    // Spear Throw deals 5 damage at Common.
-    expect(skillChoice("warrior.spearThrow", [[5, 6]])).toEqual(
+    // Spear Throw deals 7 damage at Common.
+    expect(skillChoice("warrior.spearThrow", [[5, 8]])).toEqual(
       Command.EndTurn()
     );
-    expect(skillChoice("warrior.spearThrow", [[5, 5]])).toEqual(playAt(5));
+    expect(skillChoice("warrior.spearThrow", [[5, 7]])).toEqual(playAt(5));
   });
 
   it("keeps Fireball until it kills a Unit or hits 2 Units", () => {
-    expect(skillChoice("mage.fireball", [[5, 4]])).toEqual(Command.EndTurn());
-    expect(skillChoice("mage.fireball", [[5, 3]])).toEqual(playAt(5));
+    expect(skillChoice("mage.fireball", [[5, 5]])).toEqual(Command.EndTurn());
+    expect(skillChoice("mage.fireball", [[5, 4]])).toEqual(playAt(5));
     expect(
       skillChoice("mage.fireball", [
         [5, 4],
@@ -485,7 +485,8 @@ describe("chooseCommand: damage that the AI's Hero will take (GDD 9)", () => {
           owner: "player",
           lane: 0,
           position: 9,
-          hp: 4,
+          hp: 8,
+          maxHp: 8,
         },
         (state) => {
           placeUnit(state, {
@@ -780,12 +781,12 @@ describe("chooseCommand: Priest Skill Cards (GDD 9)", () => {
     expect(
       priestChoice(
         "priest.sanctuary",
-        [{ position: 9 }, { position: 7, ward: 9 }],
+        [{ position: 9 }, { position: 7, ward: 13 }],
         enemy
       )
     ).toEqual(playAtSquare(0, 9));
     expect(
-      priestChoice("priest.sanctuary", [{ position: 9, ward: 9 }], enemy)
+      priestChoice("priest.sanctuary", [{ position: 9, ward: 13 }], enemy)
     ).toEqual(Command.EndTurn());
   });
 
@@ -812,8 +813,8 @@ describe("chooseCommand: Priest Skill Cards (GDD 9)", () => {
   });
 
   it("keeps Smite until it kills, with the Spear Throw Hold Rule, and Bulwark does not count", () => {
-    expect(skillChoice("priest.smite", [[5, 4]])).toEqual(Command.EndTurn());
-    expect(skillChoice("priest.smite", [[5, 3]])).toEqual(playAt(5));
+    expect(skillChoice("priest.smite", [[5, 5]])).toEqual(Command.EndTurn());
+    expect(skillChoice("priest.smite", [[5, 4]])).toEqual(playAt(5));
     const bulwarked = emptyBattle({ activeSide: "enemy" });
     giveHand(bulwarked, "enemy", [["priest.smite", 0]]);
     placeUnit(bulwarked, {
@@ -835,7 +836,7 @@ describe("chooseCommand: Priest Skill Cards (GDD 9)", () => {
       owner: "player",
       position: 5,
       hp: 2,
-      ward: 2,
+      ward: 3,
     });
     expect(chooseCommand(state)).toEqual(Command.EndTurn());
   });
@@ -878,10 +879,10 @@ const hurtFriend =
 describe("chooseCommand: the Skill Cards of #57 (GDD 9)", () => {
   it("keeps Shoulder Charge, Quick Shot, Barbed Arrow and Penance until the hit kills", () => {
     for (const [cardId, kill] of [
-      ["warrior.shoulderCharge", 3],
-      ["ranger.quickShot", 5],
-      // Uncommon: 5 × 1.2 = 6.
-      ["ranger.barbedArrow", 6],
+      ["warrior.shoulderCharge", 7],
+      ["ranger.quickShot", 6],
+      // Uncommon: 8 × 1.2 = 10.
+      ["ranger.barbedArrow", 10],
       // The Attack of the Scrap Raider.
       ["priest.penance", 3],
     ] as const) {
@@ -916,11 +917,11 @@ describe("chooseCommand: the Skill Cards of #57 (GDD 9)", () => {
   });
 
   it("keeps Cleave until it kills a Unit or hits 2 Units", () => {
-    expect(raidersChoice("warrior.cleave", [{ hp: 6 }])).toEqual(
+    expect(raidersChoice("warrior.cleave", [{ hp: 7 }])).toEqual(
       Command.EndTurn()
     );
     expect(
-      raidersChoice("warrior.cleave", [{ hp: 6 }, { position: 6, hp: 6 }])
+      raidersChoice("warrior.cleave", [{ hp: 7 }, { position: 6, hp: 7 }])
     ).toEqual(playAtSquare(0, 6));
   });
 
@@ -1067,11 +1068,11 @@ describe("chooseCommand: the Rare and Epic Ranger Skill Cards of #59 (GDD 9)", (
       handIndex: 0,
       target: Target.Lane({ lane: 0 }),
     });
-    expect(raidersChoice("ranger.rainOfArrows", [{}])).toEqual(
+    expect(raidersChoice("ranger.rainOfArrows", [{ hp: 7 }])).toEqual(
       Command.EndTurn()
     );
-    // Epic: 2 damage.
-    expect(raidersChoice("ranger.rainOfArrows", [{ hp: 2 }])).toEqual(lane);
+    // Epic: 6 damage.
+    expect(raidersChoice("ranger.rainOfArrows", [{ hp: 6 }])).toEqual(lane);
     expect(raidersChoice("ranger.rainOfArrows", [{}, { position: 6 }])).toEqual(
       lane
     );
@@ -1273,12 +1274,12 @@ describe("chooseCommand: the Rare and Epic Warrior Skill Cards of #63 (GDD 9)", 
   });
 
   it("counts Exposed in the kill estimate of a Physical hit", () => {
-    // Spear Throw 5 against a Scrap Raider with more HP: Exposed 2 makes it a kill.
-    expect(raidersChoice("warrior.spearThrow", [{ hp: 6 }])).toEqual(
+    // Spear Throw 7 against a Scrap Raider with more HP: Exposed 2 makes it a kill.
+    expect(raidersChoice("warrior.spearThrow", [{ hp: 8 }])).toEqual(
       Command.EndTurn()
     );
     expect(
-      raidersChoice("warrior.spearThrow", [{ hp: 6, exposed: 2 }])
+      raidersChoice("warrior.spearThrow", [{ hp: 8, exposed: 2 }])
     ).toEqual(playAtSquare(0, 5));
   });
 });

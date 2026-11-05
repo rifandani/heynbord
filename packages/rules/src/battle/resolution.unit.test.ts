@@ -698,7 +698,7 @@ describe("damage (GDD 4.7)", () => {
       position: 5,
     });
     const { state: next } = run(state, endTurn);
-    expect(unitById(next, shield.id)?.hp).toBe(7);
+    expect(unitById(next, shield.id)?.hp).toBe(6);
   });
 
   it("never deals less than 0 damage", () => {
@@ -714,7 +714,7 @@ describe("damage (GDD 4.7)", () => {
       position: 5,
     });
     const { state: next, events } = run(state, endTurn);
-    expect(unitById(next, wall.id)?.hp).toBe(6);
+    expect(unitById(next, wall.id)?.hp).toBe(14);
     expect(eventsOfType(events, "DamageDealt")[0]?.amount).toBe(0);
   });
 
@@ -1003,8 +1003,8 @@ describe("First Strike (GDD 4.7)", () => {
       cardId: "human.militiaRecruit",
       owner: "player",
       position: 4,
-      hp: 10,
-      maxHp: 10,
+      hp: 20,
+      maxHp: 20,
     });
     placeUnit(state, {
       cardId: "elf.canopyVinewarden",
@@ -1133,7 +1133,7 @@ describe("Pivot (GDD 4.5, 4.6)", () => {
     });
     const { state: next, events } = run(state, endTurn);
     expect(unitById(next, warden.id)?.position).toBe(5);
-    expect(unitById(next, passed.id)?.hp).toBe(5);
+    expect(unitById(next, passed.id)?.hp).toBe(4);
     expect(eventsOfType(events, "UnitAttacked")).toEqual([
       expect.objectContaining({
         unitId: warden.id,
@@ -1161,7 +1161,7 @@ describe("Pivot (GDD 4.5, 4.6)", () => {
     const targets = [enemyAt(0, 5), enemyAt(2, 5), enemyAt(1, 6)];
     const { state: next } = run(state, endTurn);
     expect(targets.map((unit) => unitById(next, unit.id)?.hp)).toEqual([
-      5, 8, 8,
+      4, 8, 8,
     ]);
   });
 
@@ -1179,7 +1179,7 @@ describe("Pivot (GDD 4.5, 4.6)", () => {
       attack: 0,
     });
     const { state: next } = run(state, endTurn);
-    expect(unitById(next, passed.id)?.hp).toBe(5);
+    expect(unitById(next, passed.id)?.hp).toBe(4);
     expect(heroOf(next, "enemy").hp).toBe(30);
   });
 
@@ -1196,7 +1196,7 @@ describe("Pivot (GDD 4.5, 4.6)", () => {
       position: 4,
     });
     const { state: next } = run(state, endTurn);
-    expect(unitById(next, warden.id)?.hp).toBe(4);
+    expect(unitById(next, warden.id)?.hp).toBe(7);
   });
 
   it("moves when no enemy Unit is behind it or next to it, and a Unit without Pivot ignores the Unit behind it", () => {

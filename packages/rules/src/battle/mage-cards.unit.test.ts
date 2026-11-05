@@ -263,10 +263,10 @@ describe("Arc Lightning (GDD 5.5)", () => {
   it("hits the target and the enemy Units in the same Column in the Lanes next to it", () => {
     const state = emptyBattle({ lanes: 3 });
     giveHand(state, "player", [["mage.arcLightning", 0, "uncommon"]]);
-    const target = unitAt(state, "enemy", 6, { lane: 1 });
-    const above = unitAt(state, "enemy", 6, { lane: 0 });
-    const below = unitAt(state, "enemy", 6, { lane: 2 });
-    const behind = unitAt(state, "enemy", 7, { lane: 1 });
+    const target = unitAt(state, "enemy", 6, { lane: 1, hp: 12, maxHp: 12 });
+    const above = unitAt(state, "enemy", 6, { lane: 0, hp: 12, maxHp: 12 });
+    const below = unitAt(state, "enemy", 6, { lane: 2, hp: 12, maxHp: 12 });
+    const behind = unitAt(state, "enemy", 7, { lane: 1, hp: 12, maxHp: 12 });
     const friend = unitAt(state, "player", 6, { lane: 0, position: 5 });
     preventRout(state);
     const { state: next, events } = run(state, play(0, square(1, 6)));
@@ -274,14 +274,14 @@ describe("Arc Lightning (GDD 5.5)", () => {
       event.target._tag === "Unit" ? event.target.unitId : -1
     );
     expect(hits).toEqual([target.id, above.id, below.id]);
-    // A Rank table: 3 at Uncommon.
+    // A Rank table: 6 at Uncommon.
     for (const unit of [target, above, below]) {
       expect(unitById(next, unit.id)).toMatchObject({
-        hp: 3,
+        hp: 6,
         paralyzed: true,
       });
     }
-    expect(unitById(next, behind.id)?.hp).toBe(6);
+    expect(unitById(next, behind.id)?.hp).toBe(12);
     expect(unitById(next, friend.id)?.hp).toBe(6);
   });
 
@@ -334,10 +334,10 @@ describe("Thunderstorm (GDD 5.5)", () => {
     expect(hit).toHaveLength(3);
     expect(new Set(hit).size).toBe(3);
     expect(enemies.map((unit) => unit.id)).toEqual(expect.arrayContaining(hit));
-    // A Rank table: 3 at Rare.
+    // A Rank table: 6 at Rare.
     expect(eventsOfType(events, "DamageDealt")).toEqual(
       hit.map(() =>
-        expect.objectContaining({ amount: 3, damageType: "lightning" })
+        expect.objectContaining({ amount: 6, damageType: "lightning" })
       )
     );
   });
@@ -373,7 +373,7 @@ describe("Thunderstorm (GDD 5.5)", () => {
 });
 
 describe("Field Effects (GDD 4.8): Wildfire and Blizzard", () => {
-  it("targets each corner Square of an area inside the Board: Wildfire 2 × 2, Blizzard 3 × 2", () => {
+  it("targets each corner Square of an area inside the Board: Wildfire 2 × 2, Blizzard 3 × 3", () => {
     const state = emptyBattle({ lanes: 3 });
     giveHand(state, "player", [
       ["mage.wildfire", 0, "rare"],
@@ -386,7 +386,7 @@ describe("Field Effects (GDD 4.8): Wildfire and Blizzard", () => {
     expect(wildfire).not.toContainEqual(square(2, 0));
     expect(wildfire).not.toContainEqual(square(0, 11));
     const blizzard = legalTargets(state, 0, 1);
-    expect(blizzard).toHaveLength(11);
+    expect(blizzard).toHaveLength(10);
     expect(
       blizzard.every((target) => target._tag === "Square" && target.lane === 0)
     ).toBe(true);
@@ -439,8 +439,8 @@ describe("Field Effects (GDD 4.8): Wildfire and Blizzard", () => {
           position: 6,
           lanes: 2,
           columns: 2,
-          // A Rank table: 2 at Rare.
-          amount: 2,
+          // A Rank table: 4 at Rare.
+          amount: 4,
           damageType: "fire",
           turns: 2,
         }),
@@ -521,7 +521,7 @@ describe("Field Effects (GDD 4.8): Wildfire and Blizzard", () => {
     const second = run(first.state, play(0, square(0, 5)));
     const ended = run(second.state, Command.EndTurn());
     expect(eventsOfType(ended.events, "FieldEffectStruck")).toHaveLength(2);
-    expect(unitById(ended.state, enemy.id)?.hp).toBe(20 - 2 - 2);
+    expect(unitById(ended.state, enemy.id)?.hp).toBe(20 - 4 - 4);
   });
 
   it("is normal Skill damage: Bulwark does not reduce Fire, and the caster's Trinket Crit applies", () => {
@@ -541,6 +541,6 @@ describe("Field Effects (GDD 4.8): Wildfire and Blizzard", () => {
       eventsOfType(ended.events, "DamageDealt").find(
         (event) => event.source === "field"
       )
-    ).toMatchObject({ amount: 4, crit: true });
+    ).toMatchObject({ amount: 8, crit: true });
   });
 });

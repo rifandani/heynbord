@@ -227,7 +227,7 @@ describe("cardText (CRD-08)", () => {
   it("builds Skill Card text from the effect template with Rank values", () => {
     const text = skill("mage.fireball", "legendary");
     expect(resolve(text.effect)).toBe(
-      "Deal 6 Fire damage to an enemy Unit and the next 1 Square behind it."
+      "Deal 5 Fire damage to an enemy Unit and the next 1 Square behind it."
     );
     expect(resolve(text.recall)).toBe("Recall 35%");
     expect(resolve(skill("warrior.shieldWall", "common").effect)).toBe(
@@ -237,16 +237,16 @@ describe("cardText (CRD-08)", () => {
       "The Countdown of 2 random cards in your Hand goes down by 2."
     );
     expect(resolve(skill("mage.flameWave", "uncommon").effect)).toBe(
-      "Deal 2 Fire damage to all enemy Units in a Lane."
+      "Deal 3 Fire damage to all enemy Units in a Lane."
     );
   });
 
   it.each([
-    ["common", 5],
-    ["uncommon", 6],
-    ["rare", 7],
-    ["epic", 8],
-    ["legendary", 9],
+    ["common", 7],
+    ["uncommon", 8],
+    ["rare", 10],
+    ["epic", 10],
+    ["legendary", 10],
   ] as const)("shows Spear Throw damage at %s", (rank, damage) => {
     expect(resolve(skill("warrior.spearThrow", rank).effect)).toBe(
       `Deal ${damage} Physical damage to an enemy Unit.`
@@ -260,19 +260,19 @@ describe("cardText (CRD-08)", () => {
         return text.kind === "skill" ? [resolve(text.effect)] : [];
       });
     expect(effects("ranger.pinningShot")).toEqual(
-      [6, 7, 9, 11, 13].map(
+      [6, 7, 8, 9, 9].map(
         (amount) =>
           `Deal ${amount} Physical damage to an enemy Unit. If it takes damage and survives, it becomes Entangled.`
       )
     );
     expect(effects("ranger.warningShot")).toEqual(
-      [8, 9, 10, 12, 14].map(
+      [8, 9, 10, 11, 14].map(
         (amount) =>
           `Deal ${amount} Physical damage to an enemy Unit. If it survives, push it 2 Squares back toward its Hero, also when it takes no damage.`
       )
     );
     expect(effects("ranger.longShot")).toEqual(
-      [12, 14, 17, 21, 25].map(
+      [14, 16, 18, 21, 25].map(
         (amount) => `Deal ${amount} damage to the enemy Hero.`
       )
     );
@@ -288,17 +288,17 @@ describe("cardText (CRD-08)", () => {
         return text.kind === "skill" ? [resolve(text.effect)] : [];
       });
     expect(effects("priest.mend")).toEqual(
-      [8, 10, 12, 14, 16].map((heal) => `Heal ${heal} HP to a friendly Unit.`)
+      [9, 11, 12, 13, 13].map((heal) => `Heal ${heal} HP to a friendly Unit.`)
     );
     expect(effects("priest.smite")).toEqual(
-      [3, 4, 4, 5, 6].map(
+      [4, 5, 6, 6, 6].map(
         (amount) =>
           `Deal ${amount} Holy damage to an enemy Unit. If it dies, it does not come back with Rebirth.`
       )
     );
     // Sanctuary starts at Uncommon: its Common value repeats Uncommon.
     expect(effects("priest.sanctuary")).toEqual(
-      [9, 9, 11, 13, 15].map(
+      [13, 13, 16, 19, 22].map(
         (ward) =>
           `A friendly Unit gets Ward ${ward}: it absorbs the next ${ward} damage.`
       )
@@ -318,28 +318,28 @@ describe("cardText (CRD-08)", () => {
     const effect = (cardId: string, rank: RankId) =>
       resolve(skill(cardId, rank).effect);
     expect(effect("warrior.shoulderCharge", "common")).toBe(
-      "Deal 3 Physical damage to an enemy Unit. If it takes damage and survives, push it 1 Square back toward its Hero."
+      "Deal 7 Physical damage to an enemy Unit. If it takes damage and survives, push it 1 Square back toward its Hero."
     );
     expect(effect("warrior.shieldBash", "common")).toBe(
-      "Deal 2 Physical damage to an enemy Unit. Friendly Units in its Lane get Bulwark 1 for the next enemy Turn."
+      "Deal 3 Physical damage to an enemy Unit. Friendly Units in its Lane get Bulwark 1 for the next enemy Turn."
     );
     expect(effect("ranger.barbedArrow", "uncommon")).toBe(
-      "Deal 6 Physical damage to an enemy Unit. If it takes damage and survives, it becomes Bleeding 3."
+      "Deal 10 Physical damage to an enemy Unit. If it takes damage and survives, it becomes Bleeding 1."
     );
     expect(effect("priest.radiantStrike", "common")).toBe(
-      "Deal 2 Holy damage to an enemy Unit. Heal 2 HP to each friendly Unit in its Lane."
+      "Deal 3 Holy damage to an enemy Unit. Heal 2 HP to each friendly Unit in its Lane."
     );
     expect(effect("priest.penance", "legendary")).toBe(
       "Deal Holy damage to an enemy Unit, equal to the Attack of that Unit."
     );
     expect(effect("priest.prayerOfHealing", "rare")).toBe(
-      "Heal 13 HP to each friendly Unit in a Lane."
+      "Heal 24 HP to each friendly Unit in a Lane."
     );
     expect(effect("priest.blessingOfLight", "epic")).toBe(
-      "A friendly Unit gets Ward 7: it absorbs the next 7 damage."
+      "A friendly Unit gets Ward 12: it absorbs the next 12 damage."
     );
     expect(effect("mage.frostWave", "uncommon")).toBe(
-      "Deal 2 Frost damage to all enemy Units in a Lane."
+      "Deal 2 Frost damage to all enemy Units in a Lane. Each Unit that takes damage and survives becomes Entangled."
     );
     expect(resolve(skill("warrior.groundSlam", "uncommon").name)).toBe(
       "Ground Slam"
@@ -350,19 +350,19 @@ describe("cardText (CRD-08)", () => {
     const effect = (cardId: string, rank: RankId) =>
       resolve(skill(cardId, rank).effect);
     expect(effect("priest.cleanse", "rare")).toBe(
-      "Remove all Debuffs from a friendly Unit. Then heal 8 HP to it."
+      "Remove all Debuffs from a friendly Unit. Then heal 15 HP to it."
     );
     expect(effect("priest.cleanse", "legendary")).toBe(
-      "Remove all Debuffs from a friendly Unit. Then heal 10 HP to it."
+      "Remove all Debuffs from a friendly Unit. Then heal 19 HP to it."
     );
     expect(effect("priest.unbrokenVow", "rare")).toBe(
       "A friendly Unit gets Steadfast: when damage would bring it to 0 HP, it stays at 1 HP."
     );
     expect(effect("priest.aegisOfDawn", "epic")).toBe(
-      "Each friendly Unit in a Lane gets Ward 8: it absorbs the next 8 damage."
+      "Each friendly Unit in a Lane gets Ward 19: it absorbs the next 19 damage."
     );
     expect(effect("priest.aegisOfDawn", "legendary")).toBe(
-      "Each friendly Unit in a Lane gets Ward 10: it absorbs the next 10 damage."
+      "Each friendly Unit in a Lane gets Ward 23: it absorbs the next 23 damage."
     );
     expect(resolve(skill("priest.unbrokenVow", "rare").name)).toBe(
       "Unbroken Vow"
@@ -370,10 +370,10 @@ describe("cardText (CRD-08)", () => {
   });
 
   it.each([
-    ["uncommon", 2],
-    ["rare", 3],
-    ["epic", 4],
-    ["legendary", 5],
+    ["uncommon", 3],
+    ["rare", 4],
+    ["epic", 6],
+    ["legendary", 8],
   ] as const)("shows Ground Slam damage at %s", (rank, damage) => {
     expect(resolve(skill("warrior.groundSlam", rank).effect)).toBe(
       `Deal ${damage} Physical damage to all enemy Units in a Lane.`
@@ -381,10 +381,10 @@ describe("cardText (CRD-08)", () => {
   });
 
   it.each([
-    ["uncommon", 4],
-    ["rare", 5],
-    ["epic", 6],
-    ["legendary", 7],
+    ["uncommon", 6],
+    ["rare", 8],
+    ["epic", 9],
+    ["legendary", 11],
   ] as const)("shows Cleave damage at %s", (rank, damage) => {
     expect(resolve(skill("warrior.cleave", rank).effect)).toBe(
       `Deal ${damage} Physical damage to an enemy Unit and the next 1 Square behind it.`
@@ -395,13 +395,13 @@ describe("cardText (CRD-08)", () => {
     const effect = (cardId: string, rank: RankId) =>
       resolve(skill(cardId, rank).effect);
     expect(effect("warrior.callToArms", "rare")).toBe(
-      "Friendly Units in a Lane get +4 Attack until the end of your next Turn."
+      "Friendly Units in a Lane get +7 Attack until the end of your next Turn."
     );
     expect(effect("warrior.exposeWeakness", "rare")).toBe(
-      "An enemy Unit becomes Exposed 2: each Physical hit on it deals 2 more damage, after Bulwark, until the end of your next Turn."
+      "An enemy Unit becomes Exposed 4: each Physical hit on it deals 4 more damage, after Bulwark, until the end of your next Turn."
     );
     expect(effect("warrior.exposeWeakness", "legendary")).toBe(
-      "An enemy Unit becomes Exposed 4: each Physical hit on it deals 4 more damage, after Bulwark, until the end of your next Turn."
+      "An enemy Unit becomes Exposed 8: each Physical hit on it deals 8 more damage, after Bulwark, until the end of your next Turn."
     );
     expect(effect("warrior.onslaught", "epic")).toBe(
       "Each friendly Unit in a Lane takes one more action now: it moves and attacks, from the front Unit to the back Unit."
@@ -418,19 +418,19 @@ describe("cardText (CRD-08)", () => {
       "Deal 2 Lightning damage to an enemy Unit."
     );
     expect(effect("mage.arcLightning", "uncommon")).toBe(
-      "Deal 3 Lightning damage to an enemy Unit and to the enemy Units in the same Column in the Lanes next to it."
+      "Deal 6 Lightning damage to an enemy Unit and to the enemy Units in the same Column in the Lanes next to it."
     );
     expect(effect("mage.thunderstorm", "rare")).toBe(
-      "Deal 3 Lightning damage to 3 random different enemy Units."
+      "Deal 6 Lightning damage to 3 random different enemy Units."
     );
     expect(effect("mage.thunderstorm", "epic")).toBe(
-      "Deal 4 Lightning damage to 3 random different enemy Units."
+      "Deal 8 Lightning damage to 3 random different enemy Units."
     );
     expect(effect("mage.wildfire", "rare")).toBe(
-      "Select an area of 2 Lanes × 2 Columns. For 2 Turns, in each of your End Phases, each enemy Unit in the area takes 2 Fire damage."
+      "Select an area of 2 Lanes × 2 Columns. For 2 Turns, in each of your End Phases, each enemy Unit in the area takes 4 Fire damage."
     );
     expect(effect("mage.blizzard", "epic")).toBe(
-      "Select an area of 3 Lanes × 2 Columns. For 2 Turns, in each of your End Phases, each enemy Unit in the area takes 2 Frost damage."
+      "Select an area of 3 Lanes × 3 Columns. For 2 Turns, in each of your End Phases, each enemy Unit in the area takes 5 Frost damage."
     );
     expect(resolve(skill("mage.blizzard", "epic").name)).toBe("Blizzard");
   });
@@ -439,23 +439,23 @@ describe("cardText (CRD-08)", () => {
     const effect = (cardId: string, rank: RankId) =>
       resolve(skill(cardId, rank).effect);
     expect(effect("ranger.venomArrow", "rare")).toBe(
-      "Deal 4 Physical damage to an enemy Unit. If it survives, it gains 5 Poison stacks, also when it takes no damage."
+      "Deal 4 Physical damage to an enemy Unit. If it survives, it gains 12 Poison stacks, also when it takes no damage."
     );
     expect(effect("ranger.venomArrow", "legendary")).toBe(
-      "Deal 6 Physical damage to an enemy Unit. If it survives, it gains 7 Poison stacks, also when it takes no damage."
+      "Deal 6 Physical damage to an enemy Unit. If it survives, it gains 17 Poison stacks, also when it takes no damage."
     );
     // Base Rank Rare: Attack has exact Rank values, and Range is +1 at each Rank.
     expect(effect("ranger.huntersFocus", "rare")).toBe(
-      "A friendly Unit gets +4 Attack and +1 Range until the end of your next Turn. A Melee Unit attacks as a Ranged Unit."
+      "A friendly Unit gets +8 Attack and +1 Range until the end of your next Turn. A Melee Unit attacks as a Ranged Unit."
     );
     expect(effect("ranger.huntersFocus", "legendary")).toBe(
-      "A friendly Unit gets +6 Attack and +1 Range until the end of your next Turn. A Melee Unit attacks as a Ranged Unit."
+      "A friendly Unit gets +12 Attack and +1 Range until the end of your next Turn. A Melee Unit attacks as a Ranged Unit."
     );
     expect(effect("ranger.rainOfArrows", "epic")).toBe(
-      "Deal 3 Physical damage to all enemy Units in a Lane. Each Unit that takes damage and survives becomes Entangled."
+      "Deal 6 Physical damage to all enemy Units in a Lane. Each Unit that takes damage and survives becomes Entangled."
     );
     expect(effect("ranger.rainOfArrows", "legendary")).toBe(
-      "Deal 5 Physical damage to all enemy Units in a Lane. Each Unit that takes damage and survives becomes Entangled."
+      "Deal 10 Physical damage to all enemy Units in a Lane. Each Unit that takes damage and survives becomes Entangled."
     );
     expect(resolve(skill("ranger.rainOfArrows", "epic").name)).toBe(
       "Rain of Arrows"
@@ -467,7 +467,7 @@ describe("cardText (CRD-08)", () => {
     ["uncommon", 5, 4],
     ["rare", 6, 4],
     ["epic", 7, 5],
-    ["legendary", 8, 6],
+    ["legendary", 8, 4],
   ] as const)(
     "shows Harrying Shot damage at %s",
     (rank, unitDamage, heroDamage) => {
