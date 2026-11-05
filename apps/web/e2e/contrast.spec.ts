@@ -288,6 +288,10 @@ for (const locale of ["en-us", "id-id"] as const) {
           await expect(page.locator("[data-battle-canvas] canvas")).toBeVisible(
             { timeout: 30_000 }
           );
+          // The loading cover stays until the scene is ready.
+          await expect(page.getByTestId("battle-loading")).toBeHidden({
+            timeout: 20_000,
+          });
           await audit("battle");
           const endTurn = page.getByTestId("end-turn");
           await endTurn.hover();
@@ -339,6 +343,9 @@ for (const locale of ["en-us", "id-id"] as const) {
           await page.goto(link);
           await expect(page.getByTestId("replay-badge")).toBeVisible({
             timeout: 30_000,
+          });
+          await expect(page.getByTestId("battle-loading")).toBeHidden({
+            timeout: 20_000,
           });
           await page.getByTestId("log-play").press("Enter");
           await audit("watching-replay");

@@ -173,6 +173,8 @@ test.describe("Dungeons screen", () => {
   test("level 10: the cave opens Dungeon 1, a win gives its first-win rewards, and the Profile keeps the win", async ({
     page,
   }) => {
+    // The loading cover can take 15 seconds on a software renderer.
+    test.setTimeout(60_000);
     await openTown(page, LEVEL_10_XP);
     await page.getByTestId("building-cave").click();
     const screen = page.getByTestId("dungeons");
@@ -273,6 +275,10 @@ test.describe("Dungeons screen", () => {
       "2",
       { timeout: 30_000 }
     );
+    // The loading cover takes the pointer until the scene is ready.
+    await expect(page.getByTestId("battle-loading")).toBeHidden({
+      timeout: 20_000,
+    });
 
     await finishBattle(page, "player");
     const result = page.getByTestId("battle-result");
@@ -392,7 +398,7 @@ test.describe("Dungeons screen", () => {
     await openTown(page, LEVEL_10_XP);
     const hint = page.getByTestId("hint");
     // The level Hints show one after the other: Packs, Workshop, Craft,
-    // Seaport, then Dungeons.
+    // Seaport, Quests, then Dungeons.
     const closeHint = async (shown: string) => {
       await expect(hint).toHaveAttribute("data-hint", shown, {
         timeout: 10_000,
@@ -403,6 +409,7 @@ test.describe("Dungeons screen", () => {
     await closeHint("workshop");
     await closeHint("craft");
     await closeHint("seaport");
+    await closeHint("quests");
     await expect(hint).toHaveAttribute("data-hint", "dungeons");
     await expect(hint).toContainText("The Dungeon is open.");
     await page.getByTestId("hint-read-more").click();

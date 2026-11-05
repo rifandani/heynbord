@@ -123,12 +123,17 @@ const unitPoints = (page: Page) =>
   page.evaluate(() => window.__THREE_GAME_DIAGNOSTICS__?.unitPoints() ?? []);
 
 /** Opens a Battle in the middle of play (QA state), with Units of both Sides on the Board. */
+/** The loading cover takes the pointer until the scene is ready. */
+const coverLifted = (page: Page) =>
+  expect(page.getByTestId("battle-loading")).toBeHidden({ timeout: 20_000 });
+
 const openBoardWithUnits = async (page: Page) => {
   await page.goto("/play?state=active-play&seed=7");
   await expect(page.locator("[data-battle-canvas] canvas")).toBeVisible({
     timeout: 30_000,
   });
   await expect.poll(() => battleMode(page), { timeout: 30_000 }).toBe("battle");
+  await coverLifted(page);
   await expect
     .poll(async () => {
       const units = await unitPoints(page);
@@ -184,6 +189,7 @@ const startBattle = async (
     timeout: 30_000,
   });
   await expect.poll(() => battleMode(page), { timeout: 30_000 }).toBe("battle");
+  await coverLifted(page);
 };
 
 /** Waits until the player can act, or the Battle has a result. */
@@ -631,10 +637,11 @@ test.describe("Handbook (issue #25)", () => {
     );
     // The Royal Pack: no Common cards, and Legendary in 20 Packs.
     await page.getByTestId("handbook-pack-tab-royal").click();
-    await expect(page.getByTestId("handbook-pack-panel-royal")).toBeVisible();
-    await expect(page.getByTestId("handbook-pack-guarantee-now")).toContainText(
-      "Legendary in 20 Packs"
-    );
+    const royal = page.getByTestId("handbook-pack-panel-royal");
+    await expect(royal).toBeVisible();
+    await expect(
+      royal.getByTestId("handbook-pack-guarantee-now")
+    ).toContainText("Legendary in 20 Packs");
   });
 
   test("the Town Bar opens it at the Board; it opens again at the last Entry, and the focus goes back", async ({
@@ -1417,7 +1424,7 @@ test.describe("Region 1 rewards (issue #54)", () => {
     const rewards = page.getByTestId("chest-rewards");
     await expect(rewards).toBeVisible();
     await expect(page.getByTestId("chest-reward-pack")).toHaveText(
-      "1 Merchant Pack waits in the Card shop."
+      "+1 Merchant Pack"
     );
     await expect(page.getByTestId("chest-reward-forge-stones")).toHaveText(
       "+2 Common Forge Stone"

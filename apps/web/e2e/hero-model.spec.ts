@@ -65,6 +65,8 @@ test.describe("Hero Models", () => {
       await page.keyboard.press("Enter");
       await page.getByRole("button", { name: "Reset View" }).click();
       await expect(page.getByTestId("gear-rack")).toBeVisible();
+      // On a short screen the rack scrolls to its second row.
+      await page.getByTestId("gear-upgrade-banner").scrollIntoViewIfNeeded();
       await expect(page.getByTestId("gear-upgrade-banner")).toBeInViewport();
       const rackBox = await page.getByTestId("gear-rack").boundingBox();
       const buttonBox = await page

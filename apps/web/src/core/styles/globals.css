@@ -2357,9 +2357,10 @@ body:has([data-testid="battle-stage"]) [data-sonner-toaster] {
 /* The cream ring needs a dark edge on parchment and bright artwork. Together
    the two colors remain distinct on both light and dark surfaces (issue 133).
    Containers such as Tabs also set data-focus-visible for focus within them.
-   Draw the edge only on the focused element, not on those containers. */
+   Draw the edge only on the focused element, not on those containers. A radio
+   or a switch is a label around a hidden input, so the label gets the edge. */
 body:has([data-testid="town-bar"], [data-testid="battle-stage"])
-  :is([data-focus-visible]:focus, :focus-visible) {
+  :is([data-focus-visible]:is(:focus, label), :focus-visible) {
   outline: 2px solid var(--color-night-plate);
   outline-offset: 4px;
 }
