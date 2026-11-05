@@ -1996,7 +1996,7 @@ Identity: area damage. The palette is the Damage Type color.
 
 ### 10.1 Fireball
 
-`mage.fireball` · Mage · Common · Countdown 3 · An enemy Unit · Deal 3 Fire damage to an enemy Unit and the next Square behind it.
+`mage.fireball` · Mage · Common · Countdown 3 · An enemy Unit · Deal 3 Fire damage at Common, 4 at Uncommon, 5 at Rare, 6 at Epic and 7 at Legendary to an enemy Unit and the next Square behind it.
 
 > A warm welcome.
 
@@ -2010,7 +2010,7 @@ Identity: area damage. The palette is the Damage Type color.
 
 ### 10.2 Frost Bolt
 
-`mage.frostBolt` · Mage · Common · Countdown 2 · An enemy Unit · Deal 3 Frost damage to an enemy Unit.
+`mage.frostBolt` · Mage · Common · Countdown 2 · An enemy Unit · Deal 5 Frost damage at Common, 6 at Uncommon, 7 at Rare, 8 at Epic and 10 at Legendary to an enemy Unit.
 
 > Stay a while.
 
@@ -2038,7 +2038,7 @@ Identity: area damage. The palette is the Damage Type color.
 
 ### 10.4 Frost Shards
 
-`mage.frostShards` · Mage · Common · Countdown 2 · An enemy Unit · Deal 2 Frost damage to an enemy Unit and the next Square behind it.
+`mage.frostShards` · Mage · Common · Countdown 2 · An enemy Unit · Deal 2 Frost damage at Common, 3 at Uncommon, 4 at Rare, 5 at Epic and 6 at Legendary to an enemy Unit and the next Square behind it.
 
 > Small, sharp and very cold.
 
@@ -2066,7 +2066,7 @@ Identity: area damage. The palette is the Damage Type color.
 
 ### 10.6 Spark
 
-`mage.spark` · Mage · Common · Countdown 1 · An enemy Unit · Deal 2 Lightning damage to an enemy Unit. Lightning makes it Paralyzed: it does not attack in its next action.
+`mage.spark` · Mage · Common · Countdown 1 · An enemy Unit · Deal 2 Lightning damage at Common, 3 at Uncommon, 4 at Rare, 5 at Epic and 6 at Legendary to an enemy Unit. Lightning makes it Paralyzed: it does not attack in its next action.
 
 > Hold still. You have no choice.
 

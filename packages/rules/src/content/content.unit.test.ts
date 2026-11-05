@@ -213,18 +213,6 @@ const effectValues = (card: SkillCardDefinition, rank: RankId): number[] =>
   });
 
 /**
- * The Common to Uncommon steps with no effect change. The Common and Uncommon
- * values did not change with ADR-0057, because the sim checks are sensitive to
- * them. A separate issue fixes these steps.
- */
-const FLAT_FIRST_COMBINE: ReadonlySet<string> = new Set([
-  "mage.fireball:uncommon",
-  "mage.frostBolt:uncommon",
-  "mage.frostShards:uncommon",
-  "mage.spark:uncommon",
-]);
-
-/**
  * The cards above the maximum Rank Growth, because no smaller rising line of
  * whole numbers exists (ADR-0057).
  */
@@ -234,6 +222,7 @@ const NEAREST_STEP_CARDS: ReadonlySet<string> = new Set([
   "warrior.groundSlam",
   "warrior.exposeWeakness",
   "mage.flameWave",
+  "mage.frostShards",
   "mage.frostWave",
 ]);
 
@@ -315,12 +304,13 @@ const pairwiseViolations = (): readonly PairwiseViolation[] => {
 
 /**
  * The cards that are outside the fitted Base Rank budget or the pairwise
- * rule (ADR-0055). The full rebalance of issue #189 emptied this set, so a
- * card that leaves the budget or the pairwise rule now fails the test at
- * once. The set stays as the one place where a later tuning pass can write a
- * temporary exception.
+ * rule (ADR-0055). A card that leaves the budget or the pairwise rule fails
+ * the test at once, unless it is here with a written reason.
+ *
+ * `mage.fireball`: Common 3 is not its nearest step, because a higher line
+ * fails the pairwise rule for 6 other cards (ADR-0057).
  */
-const POWER_BUDGET_EXCEPTIONS = new Set<string>();
+const POWER_BUDGET_EXCEPTIONS: ReadonlySet<string> = new Set(["mage.fireball"]);
 
 describe("card content (CRD-01, technical design 3.5)", () => {
   it("passes the card schema and has unique IDs", () => {
@@ -369,7 +359,7 @@ describe("card content (CRD-01, technical design 3.5)", () => {
       target: "enemyUnit",
       effect: { type: "damageUnit", damageType: "lightning" },
     });
-    expect(skillAmounts("mage.spark")).toEqual([2, 2, 3, 5, 6]);
+    expect(skillAmounts("mage.spark")).toEqual([2, 3, 4, 5, 6]);
     expect(getCard("mage.arcLightning")).toMatchObject({
       target: "enemyUnit",
       effect: { type: "damageArc", damageType: "lightning" },
@@ -615,6 +605,12 @@ describe("card content (CRD-01, technical design 3.5)", () => {
     }
   });
 
+  it("gives Fireball, Frost Bolt and Frost Shards a rising first Combine (ADR-0057)", () => {
+    expect(skillAmounts("mage.fireball")).toEqual([3, 4, 5, 6, 7]);
+    expect(skillAmounts("mage.frostBolt")).toEqual([5, 6, 7, 8, 10]);
+    expect(skillAmounts("mage.frostShards")).toEqual([2, 3, 4, 5, 6]);
+  });
+
   it("changes the effect of each Skill Card with each Combine, and no value goes down (ADR-0057)", () => {
     for (const card of CARDS) {
       if (card.kind !== "skill") {
@@ -625,10 +621,7 @@ describe("card content (CRD-01, technical design 3.5)", () => {
         const lower = effectValues(card, ranks[index] ?? rank);
         const higher = effectValues(card, rank);
         const rises = higher.some((value, at) => value > (lower[at] ?? 0));
-        expect(
-          rises || FLAT_FIRST_COMBINE.has(`${card.id}:${rank}`),
-          `${card.id} at ${rank}`
-        ).toBe(true);
+        expect(rises, `${card.id} at ${rank}`).toBe(true);
         for (const [at, value] of higher.entries()) {
           expect(value, `${card.id} at ${rank}`).toBeGreaterThanOrEqual(
             lower[at] ?? 0

@@ -1432,7 +1432,7 @@ const skills: readonly SkillCardDefinition[] = [
     target: "enemyUnit",
     effect: {
       type: "damageArea",
-      amount: { common: 4, uncommon: 4, rare: 5, epic: 6, legendary: 7 },
+      amount: { common: 3, uncommon: 4, rare: 5, epic: 6, legendary: 7 },
       damageType: "fire",
       length: 2,
     },
@@ -1446,7 +1446,7 @@ const skills: readonly SkillCardDefinition[] = [
     target: "enemyUnit",
     effect: {
       type: "damageUnit",
-      amount: { common: 5, uncommon: 5, rare: 6, epic: 8, legendary: 10 },
+      amount: { common: 5, uncommon: 6, rare: 7, epic: 8, legendary: 10 },
       damageType: "frost",
     },
   },
@@ -1472,7 +1472,7 @@ const skills: readonly SkillCardDefinition[] = [
     target: "enemyUnit",
     effect: {
       type: "damageArea",
-      amount: { common: 2, uncommon: 2, rare: 3, epic: 4, legendary: 5 },
+      amount: { common: 2, uncommon: 3, rare: 4, epic: 5, legendary: 6 },
       damageType: "frost",
       length: 2,
     },
@@ -1499,7 +1499,7 @@ const skills: readonly SkillCardDefinition[] = [
     target: "enemyUnit",
     effect: {
       type: "damageUnit",
-      amount: { common: 2, uncommon: 2, rare: 3, epic: 5, legendary: 6 },
+      amount: { common: 2, uncommon: 3, rare: 4, epic: 5, legendary: 6 },
       damageType: "lightning",
     },
   },

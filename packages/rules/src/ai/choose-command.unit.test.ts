@@ -348,8 +348,9 @@ describe("chooseCommand: Hold Rules (GDD 9)", () => {
   });
 
   it("keeps Fireball until it kills a Unit or hits 2 Units", () => {
-    expect(skillChoice("mage.fireball", [[5, 5]])).toEqual(Command.EndTurn());
-    expect(skillChoice("mage.fireball", [[5, 4]])).toEqual(playAt(5));
+    // Fireball deals 3 damage at Common.
+    expect(skillChoice("mage.fireball", [[5, 4]])).toEqual(Command.EndTurn());
+    expect(skillChoice("mage.fireball", [[5, 3]])).toEqual(playAt(5));
     expect(
       skillChoice("mage.fireball", [
         [5, 4],
