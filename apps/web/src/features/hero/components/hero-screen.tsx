@@ -1,5 +1,4 @@
 import { useAtomValue } from "@effect/atom-react";
-import { useMediaQuery } from "@reactuses/core";
 import type { ForgeStoneTier, GearSlot } from "@workspace/rules";
 import { gearUpgradeForgeStone, MAX_GEAR_LEVEL } from "@workspace/rules";
 import { cn } from "cn";
@@ -44,12 +43,6 @@ const RACK_ORDER: readonly GearSlot[] = [
   "weapon",
   "armor",
 ];
-
-/**
- * At this height, the four full Gear plates fit beside the Hero Model. Under
- * it, the plates use their compact form so that no row is cut off.
- */
-const FULL_PLATE_HEIGHT = "(min-height: 880px)";
 
 const HeroModelPreview = lazy(
   () => import("@/features/hero/components/hero-model-preview")
@@ -334,7 +327,6 @@ export const HeroScreen = () => {
   const portrait = useAtomValue(activeHeroPortraitAtom);
   const gearLook = useAtomValue(activeGearLookAtom);
   const classId = useAtomValue(activeDeckClassAtom);
-  const fullPlates = useMediaQuery(FULL_PLATE_HEIGHT, false);
   const hero = useHero();
   const rackItems = RACK_ORDER.flatMap((slot) =>
     hero.items.filter((item) => item.slot === slot)
@@ -447,18 +439,19 @@ export const HeroScreen = () => {
               classId={classId}
             />
           </Suspense>
+          {/* Keep the full Gear layout at every size. Rows grow with their
+              content, and the rack scrolls when both rows do not fit. */}
           <ul
             ref={rack}
             tabIndex={-1}
             aria-label={tr("hero.gear")}
-            className="grid min-h-0 grid-cols-2 gap-3 overflow-y-auto outline-none [@media(max-height:500px)]:gap-2"
+            className="grid min-h-0 auto-rows-[minmax(min-content,1fr)] grid-cols-2 gap-3 overflow-y-auto outline-none [@media(max-height:500px)]:gap-2"
             data-testid="gear-rack"
           >
             {rackItems.map((item) => (
               <GearPlate
                 key={item.slot}
                 item={item}
-                compact={!fullPlates}
                 strike={strikes[item.slot] ?? null}
                 onUpgrade={() => upgrade(item.slot)}
               />

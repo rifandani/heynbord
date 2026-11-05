@@ -212,6 +212,7 @@ html[data-reduced-motion="true"] {
   --color-tutorial-glow: #7fe3ff;
   --color-hp-full: #4ade80;
   --color-hp-low: #ef4444;
+  --color-hp-crimson: #d60d2d;
   --color-heart-red: #ff6b6b;
 
   /* Scenes behind a painting that is still loading. */
@@ -522,6 +523,179 @@ html[data-reduced-motion="true"] {
     opacity: 0.55;
     transform: translateX(12px);
   }
+}
+
+/*
+ * The Battle loading cover. The two Hero plates slide in from their sides,
+ * the VS seal drops between them, and each Square of the Lane bar lights up
+ * as the Board loads. When the scene is ready, the blurred painting comes
+ * into focus and the cover fades, so the Board is the next thing in view.
+ */
+@keyframes cover-side {
+  from {
+    transform: translateX(var(--cover-from, -40%));
+    opacity: 0;
+    filter: blur(6px);
+  }
+  to {
+    transform: none;
+    opacity: 1;
+    filter: none;
+  }
+}
+
+@keyframes cover-seal {
+  0% {
+    transform: scale(0.3) rotate(-24deg);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.14) rotate(4deg);
+    opacity: 1;
+  }
+  100% {
+    transform: none;
+  }
+}
+
+/* The seal breathes while the Board loads. */
+@keyframes cover-seal-idle {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
+/* The star of the seal turns slowly and flares on each half turn. */
+@keyframes cover-glint {
+  0% {
+    transform: rotate(0deg) scale(0.9);
+    opacity: 0.75;
+  }
+  50% {
+    transform: rotate(180deg) scale(1.15);
+    opacity: 1;
+  }
+  100% {
+    transform: rotate(360deg) scale(0.9);
+    opacity: 0.75;
+  }
+}
+
+/* The seal flashes once when the Battle is ready. */
+@keyframes cover-ready {
+  0% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+  40% {
+    transform: scale(1.18);
+    filter: brightness(1.6);
+  }
+  100% {
+    transform: scale(1);
+    filter: brightness(1.1);
+  }
+}
+
+/* A Square of the Lane bar lights with a small hop. */
+@keyframes cover-square {
+  0% {
+    transform: translateY(0) scale(1);
+    filter: brightness(1);
+  }
+  45% {
+    transform: translateY(-4px) scale(1.12);
+    filter: brightness(1.7);
+  }
+  100% {
+    transform: none;
+    filter: brightness(1);
+  }
+}
+
+/* The next Square to light pulses softly. */
+@keyframes cover-next {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 0.9;
+  }
+}
+
+/* A new loading line comes up from under the bar. */
+@keyframes cover-line {
+  from {
+    transform: translateY(0.6em);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+.battle-cover {
+  --cover-exit-ms: 560ms;
+  --cover-hold-ms: 260ms;
+  background: var(--color-night-plate);
+  transition: opacity var(--cover-exit-ms) cubic-bezier(0.4, 0, 0.2, 1)
+    var(--cover-hold-ms);
+}
+
+/* The Battle Painting under the cover: blurred and dark while it waits. */
+.battle-cover-art {
+  background-position: center;
+  background-size: cover;
+  filter: blur(14px) brightness(0.42) saturate(0.85);
+  transform: scale(1.1);
+  transition:
+    filter var(--cover-exit-ms) cubic-bezier(0.16, 1, 0.3, 1)
+      var(--cover-hold-ms),
+    transform var(--cover-exit-ms) cubic-bezier(0.16, 1, 0.3, 1)
+      var(--cover-hold-ms);
+}
+
+/* Warm ember light at the middle, dark wood at the edges. */
+.battle-cover-shade {
+  background:
+    radial-gradient(
+      ellipse 60% 55% at 50% 46%,
+      color-mix(in srgb, var(--color-plate-ember) 55%, transparent),
+      transparent 70%
+    ),
+    radial-gradient(
+      ellipse at 50% 50%,
+      transparent 40%,
+      color-mix(in srgb, var(--color-night-plate) 92%, transparent) 100%
+    );
+}
+
+.battle-cover-body {
+  transition:
+    opacity calc(var(--cover-exit-ms) * 0.6) ease-out var(--cover-hold-ms),
+    transform var(--cover-exit-ms) cubic-bezier(0.16, 1, 0.3, 1)
+      var(--cover-hold-ms);
+}
+
+.battle-cover[data-state="leaving"] {
+  pointer-events: none;
+  opacity: 0;
+}
+
+.battle-cover[data-state="leaving"] .battle-cover-art {
+  filter: none;
+  transform: none;
+}
+
+.battle-cover[data-state="leaving"] .battle-cover-body {
+  opacity: 0;
+  transform: scale(1.06);
 }
 
 /* A Town Bar icon hops once when its screen becomes the current one. */
@@ -1055,6 +1229,187 @@ html[data-reduced-motion="true"] {
   }
 }
 
+/*
+ * The victory sequence (scene/victory.ts). When the Battle is won, the HUD
+ * steps away, so the Player can relax: the Top Bar goes up and the Hand Bar
+ * goes down. "Back to Live" from the Battle Log brings them back.
+ */
+[data-battle-hud] {
+  transition:
+    opacity 220ms cubic-bezier(0.16, 1, 0.3, 1),
+    translate 280ms cubic-bezier(0.16, 1, 0.3, 1),
+    visibility 0s;
+}
+
+[data-victory] [data-battle-hud] {
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 280ms cubic-bezier(0.4, 0, 1, 1),
+    translate 360ms cubic-bezier(0.4, 0, 1, 1),
+    visibility 0s linear 360ms;
+}
+
+[data-victory] [data-battle-hud] * {
+  pointer-events: none;
+}
+
+[data-victory] [data-battle-hud="top"] {
+  translate: 0 -18px;
+}
+
+[data-victory] [data-battle-hud="hand"] {
+  translate: 0 32px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-victory] [data-battle-hud] {
+    translate: none;
+  }
+}
+
+/*
+ * The defeat sequence (scene/defeat.ts). The HUD goes too, but slower and
+ * with no push: it drains away, as the tension goes out of the Hero.
+ */
+[data-defeat] [data-battle-hud] {
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 520ms cubic-bezier(0.4, 0, 0.6, 1),
+    translate 620ms cubic-bezier(0.4, 0, 0.6, 1),
+    visibility 0s linear 620ms;
+}
+
+[data-defeat] [data-battle-hud] * {
+  pointer-events: none;
+}
+
+[data-defeat] [data-battle-hud="top"] {
+  translate: 0 -10px;
+}
+
+[data-defeat] [data-battle-hud="hand"] {
+  translate: 0 18px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-defeat] [data-battle-hud] {
+    translate: none;
+  }
+}
+
+/*
+ * The lost result panel settles into place, slow and heavy: it comes down a
+ * little out of a soft blur, with no bounce, after the loss sinks in.
+ */
+@keyframes result-defeat-settle {
+  from {
+    opacity: 0;
+    translate: 0 -14px;
+    filter: blur(5px);
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+    filter: blur(0);
+  }
+}
+
+/* "Defeat" comes up out of the parchment like ink, a little after the panel. */
+@keyframes result-defeat-ink {
+  from {
+    opacity: 0;
+    translate: 0 4px;
+    filter: blur(3px);
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+    filter: blur(0);
+  }
+}
+
+/* The scrim of a won result comes in under the panel, and goes on exit. */
+@keyframes result-scrim-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes result-scrim-out {
+  to {
+    opacity: 0;
+  }
+}
+
+/*
+ * The won result panel rises into focus at the top of the raised sword: it
+ * comes up out of a soft blur, so the eye goes from the Hero to the panel.
+ */
+@keyframes result-victory-rise {
+  from {
+    opacity: 0;
+    translate: 0 22px;
+    scale: 0.965;
+    filter: blur(6px);
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+    scale: 1;
+    filter: blur(0);
+  }
+}
+
+/* "Victory" stamps onto the parchment, at the same moment. */
+@keyframes result-victory-stamp {
+  0% {
+    opacity: 0;
+    scale: 1.45;
+  }
+  55% {
+    opacity: 1;
+    scale: 0.96;
+  }
+  100% {
+    opacity: 1;
+    scale: 1;
+  }
+}
+
+/* The ring of light behind "Victory" when it stamps. */
+@keyframes result-title-burst {
+  0% {
+    opacity: 0;
+    scale: 0.35;
+  }
+  30% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    scale: 1.5;
+  }
+}
+
+/* The rules at the sides of the Battle name draw out from the name. */
+@keyframes result-rule-draw {
+  from {
+    opacity: 0;
+    scale: 0 1;
+  }
+}
+
+/* The result panel goes, faster than it came, before the next screen. */
+@keyframes result-exit {
+  to {
+    opacity: 0;
+    translate: 0 12px;
+    scale: 0.985;
+  }
+}
+
 /* An Open ×10 highlight card comes in. */
 @keyframes pack-deal {
   from {
@@ -1211,6 +1566,60 @@ html[data-reduced-motion="true"] {
 }
 
 /* The Card shop lights breathe a little, as a flame does. */
+/* The slow gold frame of the Active look on its Bazaar tile. */
+@keyframes bazaar-in-use {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* A look comes to rest on the Inspector stage. */
+@keyframes bazaar-look-in {
+  from {
+    opacity: 0.55;
+    transform: translateY(6px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* The sheen across the stage after a Buy. */
+@keyframes bazaar-sold {
+  from {
+    opacity: 0;
+    translate: -100% 0;
+  }
+  25% {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+    translate: 100% 0;
+  }
+}
+
+/* The Owned mark stamps down on the tile after a Buy. */
+@keyframes bazaar-stamp {
+  from {
+    opacity: 0;
+    scale: 1.7;
+  }
+  60% {
+    opacity: 1;
+    scale: 0.94;
+  }
+  to {
+    opacity: 1;
+    scale: 1;
+  }
+}
+
 @keyframes shop-lamp {
   0%,
   100% {
@@ -1301,15 +1710,49 @@ html[data-reduced-motion="true"] {
   }
 }
 
-/* One row of an Achievements list inks in, 18ms after the row above it. */
-@keyframes achievements-row-ink {
+/* One card of the Objectives dialog drops into its place, 15ms after the card
+   above it. */
+@keyframes objectives-card-drop {
   from {
     opacity: 0;
-    translate: 0 6px;
+    translate: 0 -10px;
   }
   to {
     opacity: 1;
     translate: 0 0;
+  }
+}
+
+/* A reached Activity chest breathes, and the golden light behind it follows. */
+@keyframes objectives-chest-pulse {
+  0%,
+  100% {
+    scale: 1.14;
+  }
+  50% {
+    scale: 1.26;
+  }
+}
+
+@keyframes objectives-chest-aura {
+  0%,
+  100% {
+    opacity: 0.6;
+    scale: 0.92;
+  }
+  50% {
+    opacity: 1;
+    scale: 1.14;
+  }
+}
+
+/* A light travels along the amber of the Activity gauge. */
+@keyframes objectives-gauge-flow {
+  from {
+    translate: -120% 0;
+  }
+  to {
+    translate: 320% 0;
   }
 }
 
@@ -1912,9 +2355,11 @@ body:has([data-testid="battle-stage"]) [data-sonner-toaster] {
 }
 
 /* The cream ring needs a dark edge on parchment and bright artwork. Together
-   the two colors remain distinct on both light and dark surfaces (issue 133). */
+   the two colors remain distinct on both light and dark surfaces (issue 133).
+   Containers such as Tabs also set data-focus-visible for focus within them.
+   Draw the edge only on the focused element, not on those containers. */
 body:has([data-testid="town-bar"], [data-testid="battle-stage"])
-  :is([data-focus-visible], :focus-visible) {
+  :is([data-focus-visible]:focus, :focus-visible) {
   outline: 2px solid var(--color-night-plate);
   outline-offset: 4px;
 }
@@ -1923,4 +2368,208 @@ body:has([data-testid="town-bar"], [data-testid="battle-stage"])
   box-shadow: 0 0 0 4px var(--color-focus-cream);
   outline: 2px solid var(--color-night-plate);
   outline-offset: 4px;
+}
+
+/* Hero and Boss HP: a weathered iron vessel with a moving crimson core. */
+.battle-health {
+  --hp-tip: 13px;
+  position: relative;
+  height: 26px;
+  min-width: 0;
+  filter: drop-shadow(0 2px 2px var(--color-night-plate));
+}
+
+.battle-health__frame,
+.battle-health__well {
+  clip-path: polygon(0 0, calc(100% - var(--hp-tip)) 0, 100% 100%, 0 100%);
+}
+
+.battle-health__frame {
+  position: absolute;
+  inset: 0;
+  padding: 3px;
+  background:
+    linear-gradient(
+      112deg,
+      transparent 18%,
+      var(--color-night-plate) 18.5%,
+      transparent 19.5%,
+      transparent 72%,
+      var(--color-pewter) 72.5%,
+      transparent 73.5%
+    ),
+    linear-gradient(
+      180deg,
+      var(--color-pewter),
+      var(--color-stone) 8%,
+      var(--color-night-plate) 17%,
+      var(--color-stone) 52%,
+      var(--color-night-plate) 76%,
+      var(--color-pewter) 91%,
+      var(--color-night-plate)
+    );
+}
+
+.battle-health__well {
+  --hp-tip: 11px;
+  position: absolute;
+  inset: 3px;
+  overflow: hidden;
+  background: var(--color-night-plate);
+  box-shadow: inset 0 2px 4px var(--color-enemy-deep);
+}
+
+.battle-health__trail,
+.battle-health__fill,
+.battle-health__light {
+  position: absolute;
+  inset: 0;
+}
+
+.battle-health__trail {
+  background: var(--color-gold);
+  transform: scaleX(var(--hp-level));
+  transform-origin: left;
+  transition: transform 600ms cubic-bezier(0.22, 1, 0.36, 1) 120ms;
+}
+
+.battle-health__fill {
+  overflow: hidden;
+  background: linear-gradient(
+    180deg,
+    var(--color-hp-low),
+    var(--color-hp-crimson) 20%,
+    var(--color-hp-crimson) 55%,
+    var(--color-enemy-deep)
+  );
+  clip-path: inset(0 calc((1 - var(--hp-level)) * 100%) 0 0);
+  transition: clip-path 300ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.battle-health__flow {
+  position: absolute;
+  inset: -50% -256px;
+  background: url("/battle/health-marble.png") repeat;
+  background-size: 256px 64px;
+  mix-blend-mode: soft-light;
+  opacity: 0.9;
+  animation: health-current 14s linear infinite;
+}
+
+.battle-health__light {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--color-heart-red) 70%, transparent),
+    transparent 30%,
+    var(--color-enemy-deep)
+  );
+  box-shadow:
+    inset 0 1px color-mix(in srgb, var(--color-heart-red) 80%, transparent),
+    inset 0 -2px 3px var(--color-enemy-deep);
+}
+
+.battle-health__value {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-right: 6px;
+  color: var(--color-gold-light);
+  font-size: 13px;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  text-shadow:
+    0 1px 2px var(--color-night-plate),
+    1px 0 1px var(--color-night-plate),
+    -1px 0 1px var(--color-night-plate);
+  white-space: nowrap;
+}
+
+.battle-health__maximum {
+  color: var(--color-cream);
+  font-size: 11px;
+}
+
+/* Markers use the well's coordinate space, so thresholds match the fill. */
+.battle-health__markers {
+  position: absolute;
+  inset: 3px;
+  pointer-events: none;
+}
+
+/* Enemy HP drains toward its portrait. Mirror the vessel, current and
+   threshold positions together, then turn the number back for reading. */
+.battle-health[data-side="enemy"] .battle-health__frame,
+.battle-health[data-side="enemy"] .battle-health__markers,
+.battle-health[data-side="enemy"] .battle-health__value {
+  transform: scaleX(-1);
+}
+
+.battle-health__markers > span {
+  mask-image: linear-gradient(
+    to bottom,
+    black 0 6px,
+    transparent 6px calc(100% - 6px),
+    black calc(100% - 6px)
+  );
+}
+
+.battle-health[data-low] .battle-health__light {
+  animation: health-heartbeat 1.6s ease-in-out infinite;
+}
+
+.battle-health .battle-health__flow,
+.battle-health .battle-health__light {
+  animation-play-state: paused;
+}
+
+.battle-health[data-running="true"]:not([data-empty]) .battle-health__flow,
+.battle-health[data-running="true"]:not([data-empty]) .battle-health__light {
+  animation-play-state: running;
+}
+
+@keyframes health-current {
+  to {
+    transform: translateX(256px);
+  }
+}
+
+@keyframes health-heartbeat {
+  0%,
+  45%,
+  100% {
+    opacity: 1;
+  }
+  15%,
+  30% {
+    opacity: 0.35;
+  }
+}
+
+@media (max-height: 500px) {
+  .battle-health {
+    height: 22px;
+  }
+  .battle-health__value {
+    font-size: 12px;
+  }
+  .battle-health__maximum {
+    font-size: 10px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .battle-health *,
+  .battle-health *::before,
+  .battle-health *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+html[data-reduced-motion="true"] .battle-health * {
+  animation: none !important;
+  transition: none !important;
 }

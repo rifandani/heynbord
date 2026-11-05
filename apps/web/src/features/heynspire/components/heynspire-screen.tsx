@@ -100,7 +100,7 @@ export const HeynspireScreen = ({
           stamped={wins.stamped}
           onSelect={setSelected}
           onEnterCurrent={() => {
-            // Fight, or Edit Decks while the Deck cannot fight.
+            // Fight, or Edit Deck while the Deck cannot fight.
             const fight = screen.current?.querySelector<HTMLElement>(
               "[data-testid='floor-fight']:not([disabled])"
             );

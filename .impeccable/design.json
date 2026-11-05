@@ -665,6 +665,11 @@
           "oklch(95% 0.090 151.7)"
         ]
       },
+      "hp-crimson": {
+        "role": "tertiary",
+        "displayName": "Hero and Boss HP Crimson",
+        "canonical": "#d60d2d"
+      },
       "hp-low": {
         "role": "tertiary",
         "displayName": "Hero HP Low",

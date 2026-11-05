@@ -78,6 +78,16 @@ React app on TanStack Start. The server renders and streams each page.
 
 **Source Contract**: The committed record of the bounds, the skeleton and the animation of a Raw Export. A Published Model must match its Source Contract. _Avoid_: manifest, checksum, metadata file
 
+**Body Plan**: The shared skeleton, proportions, IK and clip slots that a group of Unit Models uses. A Unit Model belongs to one Body Plan and changes only its own parts, palette and overrides. _Avoid_: rig family, archetype (a rules term), model type, base rig
+
+**Unit Spec**: The per-unit record that a Body Plan and the model kit read to build one Unit Model. It names the Body Plan, the height, the palette, the parts, the props and the clip overrides. _Avoid_: config, manifest, model data
+
+**Turnaround**: The approved four-view drawing of one Unit Model: front, three-quarter, side and back, with a detail sheet. It is the target for every side of the model. _Avoid_: reference sheet, model sheet, concept sheet
+
+**Review Scene**: The fixed camera, light and clip setup that captures a Unit Model for review. It shows the Unit Model as the player sees it. _Avoid_: preview, viewer, render scene
+
+**Review Gate**: A deterministic check that blocks a Unit Model from publication when it fails. Each Review Gate answers one question and leaves a JSON record. _Avoid_: check, test (test is code), gate (a Town word and a rules word)
+
 **Low HP**: The state of a Unit or Hero with HP at 1/3 of its Max HP or less. Its Unit Model or Hero Model shows a tired pose at rest; it is presentation only and does not change the Battle. _Avoid_: wounded (that word is avoided for Bleeding), badly damaged, critical, dying
 
 **Keyword Plate**: The small Night Plate with a Keyword name and its value that shows over a Unit in Live when that Keyword occurs, for example "Swarm 2". It shows each time a Keyword changes the Battle, for all Keywords that can occur. _Avoid_: keyword flash, keyword popup, keyword toast, activation
@@ -142,7 +152,7 @@ React app on TanStack Start. The server renders and streams each page.
 
 **Lock Plate**: The small plate with a lock that replaces the name label of a Building whose screen the Player has not unlocked. It shows the level that opens the screen, or, for the Heynspire tower, the ID of the Boss Stage to win first with a small crown. It has the same tooltip as the Town Bar shortcut: "Opens at level N", or "Win Marrow Castle (5-10) to open". _Avoid_: level badge, locked label
 
-**Town Bar**: The panel at the bottom of the Town and of each screen except the Battle. It has one shortcut for each screen that has a Building, the screens that do not exist yet too, a shortcut back to the Town, and shortcuts to the Objectives dialog and the Handbook. _Avoid_: menu bar, nav bar, footer, dock
+**Town Bar**: The panel at the bottom of the Town and of each screen except the Battle. It has one shortcut for each screen that has a Building, the screens that do not exist yet too, a shortcut back to the Town, and shortcuts to the Objectives dialog and the Handbook. The names that the Player sees are singular: Dungeon, Pack, Objective and Setting. _Avoid_: menu bar, nav bar, footer, dock
 
 **Stowed Town Bar**: The Town Bar when the Player puts it away. It has no wood and takes no room, so the screen fills the space. Only the brass pull stays, at the corner of the screen. _Avoid_: collapsed bar, hidden bar, minimized bar, rail
 
@@ -192,7 +202,7 @@ React app on TanStack Start. The server renders and streams each page.
 
 **Activity bar**: The bar at the top of the Daily Quests tab that shows the Activity of the week and its Activity checkpoints. _Avoid_: progress bar, quest bar, point bar
 
-**Claim**: The action that adds the reward of one Completed Achievement or Daily Quest to the Profile, on its row of the Objectives dialog. **Claim all** claims all rewards of the open tab: the Daily Quests tab also claims the reached Activity checkpoints. The rules term is the same for a Star chest. _Avoid_: collect (a Collect is for an Expedition of the Seaport), redeem, receive
+**Claim**: The action that adds the reward of one Completed Achievement or Daily Quest to the Profile, on its row of the Objectives dialog. **Claim all** claims all rewards of the open tab: the Daily Quests tab also claims the reached Activity checkpoints. A press on the icon of a reached Activity checkpoint claims it and each reached checkpoint below it. The rules term is the same for a Star chest. _Avoid_: collect (a Collect is for an Expedition of the Seaport), redeem, receive
 
 **Objectives badge**: The small gold count on the Objectives shortcut of the Town Bar: the number of rewards that the Player can claim in the Objectives dialog. It does not show at 0. _Avoid_: notification dot, red dot, alert
 
@@ -230,7 +240,9 @@ React app on TanStack Start. The server renders and streams each page.
 
 ### Bazaar screen
 
-**Bazaar screen**: The screen that the Market opens: the offers that the Player buys with Heynstones, one section for each Cosmetic family, behind the inside of the Market. A Card Back that the Player owns can be made the Active Cosmetic there. _Avoid_: shop screen, store screen, market screen
+**Bazaar screen**: The screen that the Market opens: the offers that the Player buys with Heynstones, one tab for each Cosmetic family, in front of the inside of the Market. A look that the Player owns can be made the Active Cosmetic there. _Avoid_: shop screen, store screen, market screen
+
+**Inspector**: The right column of the Bazaar screen. It shows the look of the selected tile large, its text, and the one Buy or Use. To show a look there does not make it the Active Cosmetic. _Avoid_: preview pane, detail panel, shelf
 
 **Item plate**: One offer on the Bazaar screen: the painted face of a Card Back or the glyph of its family, the name, and the price, "Owned" or "In use", with **Buy** or **Use**. _Avoid_: offer card, product tile, row
 

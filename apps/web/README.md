@@ -6,6 +6,7 @@
 - /improve-codebase-architecture to use /effect ecosystem in both FE and BE
 - refactor whole codebase to follow best practices for react and composition patterns from /vercel-composition-patterns and /vercel-react-best-practices
 - remove oxlint-disable, fallow-disable across codebase and actually fix it
+- fix error in browser logs and terminal logs
 
 ## Debugging
 
@@ -134,9 +135,11 @@ Priest:
 New features:
 
 1. /grill-with-docs work on new feature called "XXX" (recommend me better name, similar to what we already have). Split it into 3 Stage pattern: shape, engine, then UI. Orchestrate it with gh issues relationships, decide the sequence order and which can be done in parallel.
-2. cleanup all redundant game docs, etc
+2. cleanup all redundant game docs, adrs, rules, etc
 3. check if we already finish all "v1" related features from docs, check whats not done in game design and PRD, check all still (draft) things, check roadmap
 4. theres no difference between fernwing courier and canopy skirmisher units
+5. there should be a quest feature, aside from achievement feature
+6. gamedev tips how to animate X, dont go too much to implementation details, just give me the big overview how
 
 - search across codebase where the design and the code differ
 - search across codebase in a feature where we can add a "measurement" script or CI gate for something

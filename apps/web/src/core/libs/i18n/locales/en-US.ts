@@ -45,7 +45,7 @@ export default {
     boardLabel: "Battle Board",
     chooseStage: "Choose a Stage",
     chooseDeck: "Choose a Deck",
-    editDecks: "Edit Decks",
+    editDecks: "Edit Deck",
     deckLine: "{className} · {count} cards",
     start: "Start Battle",
     stageLabel: "Stage {id}",
@@ -78,6 +78,7 @@ export default {
     },
     heroHp: "Enemy Hero HP {hp}",
     turn: "Turn {number}",
+    turnLabel: "Turn",
     yourTurn: "Your Turn",
     enemyTurn: "Enemy Turn",
     endTurn: "End Turn",
@@ -118,7 +119,7 @@ export default {
     heynstonesEarnedLabel: "Heynstones earned: {amount}.",
     retry: "Play Again",
     backToCampaign: "Back to Campaign",
-    backToDungeons: "Back to Dungeons",
+    backToDungeons: "Back to Dungeon",
     abandon: {
       title: "Leave the Battle?",
       text: "This Battle records no result. You can play the Stage again at any time.",
@@ -133,9 +134,22 @@ export default {
     noWebgl:
       "This game needs WebGL 2. Your browser or device does not support it.",
     loading: "Loading the Board…",
-    modelProgress: "Unit Models: {done} of {total}",
     modelError: "The Battle could not load every Unit Model.",
     modelRetry: "Load again",
+    loadingCover: {
+      units: "Loading the Units",
+      board: "Setting up the Board",
+      ready: "Ready to Fight",
+      versus: "VS",
+      tip1: "Sweeping the Lanes.",
+      tip2: "Waking the Units. Some of them snore.",
+      tip3: "Polishing every helmet.",
+      tip4: "Counting the Countdowns twice.",
+      tip5: "The enemy Hero practices a brave face.",
+      tip6: "Shuffling the Decks. No peeking.",
+      tip7: "Telling the Goblins where the Battle is.",
+      tip8: "Pointing every sword the right way.",
+    },
     controlsGuide: {
       label: "Controls Guide",
       title: "Controls Guide",
@@ -334,11 +348,11 @@ export default {
     shipBack: "{name}, the ship is back",
     buildings: {
       townGate: "Campaign",
-      cardShop: "Packs",
+      cardShop: "Pack",
       bazaar: "Bazaar",
       workshop: "Workshop",
       barracks: "Hero",
-      cave: "Dungeons",
+      cave: "Dungeon",
       heynspire: "Heynspire",
       seaport: "Seaport",
     },
@@ -346,13 +360,13 @@ export default {
       town: "Town",
       campaign: "Campaign",
       heynspire: "Heynspire",
-      dungeons: "Dungeons",
+      dungeons: "Dungeon",
       seaport: "Seaport",
       deck: "Deck",
       workshop: "Workshop",
-      packs: "Packs",
+      packs: "Pack",
       hero: "Hero",
-      objectives: "Objectives",
+      objectives: "Objective",
       bazaar: "Bazaar",
       handbook: "Handbook",
     },
@@ -663,8 +677,8 @@ export default {
     },
   },
   settings: {
-    title: "Settings",
-    close: "Close Settings",
+    title: "Setting",
+    close: "Close Setting",
     language: "Language",
     sound: "Sound",
     volume: "Sound volume",
@@ -715,7 +729,8 @@ export default {
       categories: {
         label: "Achievement categories",
         campaign: "Campaign",
-        dungeonsAndHeynspire: "Dungeons and Heynspire",
+        dungeons: "Dungeon",
+        heynspire: "Heynspire",
         progress: "Progress",
         feats: "Feats",
       },
@@ -868,7 +883,7 @@ export default {
     },
   },
   objectives: {
-    title: "Objectives",
+    title: "Objective",
     close: "Close",
     tabs: {
       daily: "Daily Quests",
@@ -901,7 +916,11 @@ export default {
       weeklyResetHours: "Week ends in {hours} h {minutes} min",
       reward: "Reward: {coin}, {essence} Essence, {activity} Activity",
       claimLabel: "Claim {name}",
+      goTo: "Go to {place}",
+      goToLabel: "{name}: go to {place}",
       claimCheckpointsLabel: "Claim {count} Activity checkpoints",
+      claimCheckpointLabel:
+        "Claim {activity} Activity. Reward: {coin}, {essence} Essence",
       checkpointName: "{activity} Activity",
       checkpointLabel:
         "{activity} Activity, {state}. Reward: {coin}, {essence} Essence",
@@ -964,17 +983,9 @@ export default {
           name: "Elemental Drill",
           goal: "Your Units and Skill Cards deal {count} {damageType} damage.",
         },
-        bossOrDungeon: {
+        boss: {
           name: "Boss Hunt",
-          goal: "Win {count} Boss Stage or Dungeon.",
-        },
-        winMore: {
-          name: "Wanted: Victories",
-          goal: "Win {count} Battles.",
-        },
-        raceDeck: {
-          name: "Warband",
-          goal: "Win {count} Battles with {creatures} or more {race} Creature Cards in the Deck.",
+          goal: "Win {count} Boss Stage.",
         },
         kills: {
           name: "Culling",
@@ -1068,7 +1079,61 @@ export default {
       gearLook: "Gear look preview",
       boardSkin: "Board skin preview",
     },
-    previewLabel: "Preview {name}",
+    premium: "Premium",
+    needMore: "You need {amount} more Heynstones.",
+    familiesLabel: "Cosmetic families",
+    effect: {
+      cardBack:
+        "Shows on the back of all your cards. It changes only how the game looks.",
+      heroPortrait:
+        "Sets the person that your Hero shows: the face painting and the Hero Model. It changes only how the game looks.",
+      gearLook:
+        "Sets the look of all 4 Gear items. It changes no Gear level and no stat.",
+      boardSkin:
+        "Puts a Lane runner under each Lane of the Board. It changes only how the game looks.",
+    },
+    standardFlavor: {
+      cardBack: "Dark leather and gold tooling. It was here first.",
+      heroPortrait: "The face that started this story.",
+      gearLook: "Plain, honest Gear that every Hero knows.",
+      boardSkin:
+        "The Hearthvale meadow with no runner. The grass does not mind.",
+    },
+    flavor: {
+      tentStripes:
+        "Cut from a tent that the wind took. The wind did not ask for it back.",
+      goldFleur:
+        "Navy velvet and gold. It looks expensive, and it wants you to know.",
+      seaChart: "The chart shows every reef. It found most of them first-hand.",
+      lanternSails: "Lanterns on a night sea. Somebody is always late to port.",
+      goatBite: "The goat ate one corner. The Bazaar calls this a feature.",
+      duelMonster: "Plain, brown and honest. Many good duels start like this.",
+      duelMonsterV2: "Embers turn around a calm center. Keep your hands clear.",
+      vanguard:
+        "Cold blue orbits around a quiet center. It looks fast while it stands still.",
+      dawnGaze: "Up before the sun, and already far from home.",
+      verdantCrest: "Leaves, feathers and many years on the road.",
+      mesaShade:
+        "A wide brim and a sand veil. The desert sees very little of this face.",
+      saltWind: "The hair went grey. The sea takes the credit.",
+      lanternKeeper: "Keeps the lamps lit and the stories long.",
+      tentRings:
+        "Every ring marks a good trade. Ask, and you will hear about all of them.",
+      goldCrest: "Old wars, a silver beard and a very straight back.",
+      copperRim: "Hammered copper, oxblood leather and a little honest green.",
+      ironVine: "Wrought iron that grows on you.",
+      stagLeather:
+        "Boiled leather and brass rivets. It creaks only when you sneak.",
+      goldInlay: "Black steel with gold lines. It looks good in bad light.",
+      moonstone: "Pale silver and milky stones. It is quiet, even in a crowd.",
+      royalPlate: "White steel, gold and crimson. It is a lot to polish.",
+      meadowDawn: "Mossy stone and morning dew. Mind your boots.",
+      mesaDusk: "Red clay, still warm from the day.",
+      harborNight: "Old dock planks, iron nails and the smell of rope.",
+      hollowMoon: "Pale stone under a cold silver light. Nobody whistles here.",
+      spireNoon: "Tower stone in clean noon light, high above the clouds.",
+      deepCrystal: "Mine slate with amethyst veins. Please do not chip it.",
+    },
   },
   seaport: {
     label: "Seaport",
@@ -1177,15 +1242,15 @@ export default {
     dungeonSweep:
       "Use Dungeon Sweep Tickets to get the rewards of this Dungeon at once.",
     dungeons:
-      "The Dungeons are open. In a Dungeon, you fight all its Bosses in one Battle on 4 Lanes.",
+      "The Dungeon is open. In a Dungeon, you fight all its Bosses in one Battle on 4 Lanes.",
     heynspire:
       "Heynspire is open. Climb its 50 Floors one at a time. Each Floor gives its reward one time.",
     achievements:
-      "You completed an Achievement. Open Objectives to claim its reward.",
+      "You completed an Achievement. Open Objective to claim its reward.",
     seaport:
       "The Seaport sends ships on Expeditions. Dispatch a ship before you leave, and collect Coin, XP, Essence and Forge Stones when it is back.",
     quests:
-      "Daily Quests are open. Complete 5 new goals each day for Coin, Essence and Activity. Open Objectives to see them.",
+      "Daily Quests are open. Complete 5 new goals each day for Coin, Essence and Activity. Open Objective to see them.",
   },
   handbook: {
     title: "Handbook",
@@ -1272,7 +1337,7 @@ export default {
     coinUsesColumn: "Use",
     coinUse: {
       deckSlots: "Extra Deck Slots in the Deck builder.",
-      packs: "Packs in the Packs screen.",
+      packs: "Packs in the Pack screen.",
       combine: "Combine in the Workshop, from Player level {level}.",
       gear: "Gear upgrades on the Hero screen, from Player level {level}.",
     },
@@ -1320,11 +1385,11 @@ export default {
     playerUnlockLevelColumn: "Level",
     playerUnlockWhatColumn: "Unlock",
     playerUnlock: {
-      packs: "Packs in Town.",
+      packs: "Pack in Town.",
       workshop: "Workshop: Combine and Extract.",
       gear: "Gear on your Hero.",
       craft: "Workshop: Craft and Fuse.",
-      quests: "Daily Quests in Objectives.",
+      quests: "Daily Quests in Objective.",
       seaport: "Seaport: Expeditions.",
       dungeon1: "Dungeon 1.",
       dungeon2: "Dungeon 2.",
@@ -1504,24 +1569,24 @@ export default {
       stars:
         "When you win a Stage, you earn 1 to 3 Stars. A loss gives 0 Stars.\n\nEach Star adds a condition on the one before it. Half of your Hero HP means your Hero has at least 50% of its maximum HP when the Battle ends. The Star Turn is the Turn number that a 3-Star win must come before. Each Stage has its own Star Turn, and its Stage Panel shows it.\n\nThe Campaign keeps your best Stars for each Stage. The total Stars in a Region open its chests at 10, 20 and 30 Stars.",
       sweep:
-        "A Sweep gives the repeat-win rewards of a Stage or a Dungeon at once. No Battle occurs, and a Sweep always wins. One Sweep uses 1 to {max} Tickets, and each Ticket gives one repeat-win reward.\n\nCampaign Sweep: when your best Stars on a Stage are 3, its Stage Panel has a Sweep button. It uses Campaign Sweep Tickets. Each Ticket gives Coin and the chances of a card and of a Forge Stone of the Stage. It gives no XP.\n\nDungeon Sweep: when you won a Dungeon, the Dungeons screen has a Sweep button for it. It uses Dungeon Sweep Tickets. Each Ticket gives the Coin and the XP or Essence of the Dungeon, and the chances of a card and of Forge Stones.\n\nThe Class of your Active Deck sets the cards that a Sweep can give. A Sweep never changes your Stars or your Dungeon wins, and it gives no Tickets.\n\nCampaign Sweep Tickets: {campaignTickets} for each Stage win. Dungeon Sweep Tickets: {dungeonTickets} for each Dungeon win. A loss gives none. The 2 types of Ticket never change into each other, and you cannot buy them.",
+        "A Sweep gives the repeat-win rewards of a Stage or a Dungeon at once. No Battle occurs, and a Sweep always wins. One Sweep uses 1 to {max} Tickets, and each Ticket gives one repeat-win reward.\n\nCampaign Sweep: when your best Stars on a Stage are 3, its Stage Panel has a Sweep button. It uses Campaign Sweep Tickets. Each Ticket gives Coin and the chances of a card and of a Forge Stone of the Stage. It gives no XP.\n\nDungeon Sweep: when you won a Dungeon, the Dungeon screen has a Sweep button for it. It uses Dungeon Sweep Tickets. Each Ticket gives the Coin and the XP or Essence of the Dungeon, and the chances of a card and of Forge Stones.\n\nThe Class of your Active Deck sets the cards that a Sweep can give. A Sweep never changes your Stars or your Dungeon wins, and it gives no Tickets.\n\nCampaign Sweep Tickets: {campaignTickets} for each Stage win. Dungeon Sweep Tickets: {dungeonTickets} for each Dungeon win. A loss gives none. The 2 types of Ticket never change into each other, and you cannot buy them.",
       playerLevel:
         "Your Player level is account progress from 1 to {maxLevel}. XP from Battles fills the bar. You get XP from Battles, also from a loss. A loss gives XP and Coin only for the HP that you took from the enemy Heroes. A repeat win of a Stage and a Campaign Sweep give no XP.",
       coin: "Coin is one balance. The Town balance plate, top right, shows it as Gold, Silver and Copper. Only denominations that are not zero appear.\n\nUse the tables below for conversion and for what Coin pays for today.",
-      pack: "A Pack is {cards} random cards. You buy it with Coin on the Packs screen. The Card shop in the Town and the Packs shortcut open it.\n\nAt Player level 2, you get one Peddler Pack. A Pack from a reward waits on the Packs screen until you open it, for free. The Drop Rates button on the Packs screen shows all the numbers and rules.",
+      pack: "A Pack is {cards} random cards. You buy it with Coin on the Pack screen. The Card shop in the Town and the Pack shortcut open it.\n\nAt Player level 2, you get one Peddler Pack. A Pack from a reward waits on the Pack screen until you open it, for free. The Drop Rates button on the Pack screen shows all the numbers and rules.",
       workshop:
         "The Workshop makes your cards stronger. The Workshop in the Town and the Workshop shortcut open it, from Player level {combine}.\n\nThe Workshop has 4 stations: Combine, Craft, Fuse and Extract. Select a station at the top, then a card. The station marks the cards that it can act on now, and its filter can show only those cards. A spare copy is a copy that no saved Deck uses.\n\nCombine: 2 copies of a card in one Rank become 1 copy in the next Rank, for Coin. It never fails. A saved Deck that uses the old copies gets the new copy.\n\nExtract: 1 copy becomes Essence. You can Extract any copy, also the last one, and the card stays found. The Workshop asks first when a saved Deck uses the copy, or when the copy is Epic or Legendary.\n\nCraft: from Player level {craft}, Essence becomes 1 copy of a card that you found, in its Base Rank. Only a card with Base Rank Common, Uncommon or Rare can be Crafted: an Epic or a Legendary card has no Craft. A found card is a card that you owned one time or more. A card with 0 copies stays found, also after you Extract its last copy, so you can Craft it. You cannot Craft a card that you never owned. To get a new card, open Packs: a Merchant Pack and a Royal Pack select a card that you do not have yet, if the rolled Rank permits one. Or use Fuse.\n\nFuse: from Player level {fuse}, 2 to 4 copies and Essence become 1 copy of a card that you have not found yet. All the copies have the same Rank, and they are all Creature Cards or all Skill Cards. Common and Uncommon use 2 copies, Rare uses 3 and Epic uses 4. A Legendary copy cannot go in. The new card has a Base Rank that is the Rank of the copies, and it has the Race or the Class of one of the copies. Each copy gives its Race or Class one equal share of the chance: Human + Human + Elf gives Human 2 in 3 and Elf 1 in 3. A Race or Class with no card left to find has no share. The panel shows each chance and each card that can come. When you have found all the cards that the copies can give, you cannot Fuse them. The Essence cost: Common {common}, Uncommon {uncommon}, Rare {rare}, Epic {epic}. The Workshop asks first when a saved Deck uses a copy.",
       gear: "Your Hero has 4 Gear items: the Weapon, the Armor, the Trinket and the Banner. The Barracks in the Town and the Hero shortcut open the Hero screen, from Player level {level}.\n\nEach item has a level from 0 to {max}. One upgrade adds 1 level, for Coin and 1 Forge Stone. The level sets the tier of the Forge Stone: Common for levels 1 to 5, Uncommon for 6 to 10, Rare for 11 to 15, Epic for 16 to 20 and Legendary for 21 to 25. A Forge Stone of a different tier cannot replace it. An upgrade never fails, and a level never goes down.\n\nStage wins, Star chests, Sweeps, Dungeons and Heynspire give Forge Stones. You cannot buy them. The Hero screen shows the Forge Stones that you have.\n\nA Crit hit deals 2 times its damage. A Blocked hit deals half of its damage. In each Battle, your Hero and your Units use your Gear.",
       seaport:
         "The Seaport sends the ship of the Town on Expeditions. The Seaport quay in the Town and the Seaport shortcut open it, from Player level {level}.\n\nThe Seaport has 1 ship, so the ship goes on 1 Expedition at a time. Select a Cargo and a time away, then Dispatch the ship. Then you can close the game. There are {count} Cargoes, and each one gives only 1 type of reward: Coin, XP, Essence or Forge Stones. The time away goes from {shortest} hours to {longest} hours. A Cargo and a longer time away open at higher Player levels. The Manifest shows the full reward and the time when the ship is back.\n\nThe reward grows for each hour that the ship is away, and a longer voyage pays a little more for each hour. It stops at the time away that you selected, and the ship waits for you. You can Collect at any time. An early Collect gives the share of the time away, and the ship is at the berth again.\n\nThe Forge Stone Cargo gives its Forge Stones only after the full voyage: a longer voyage gives a higher tier. If you call the ship back early, you get no Forge Stone.\n\nYou never lose anything that you collected: there is no minimum time and no penalty when you are away for a long time. The Seaport uses the clock of your device. When the clock moves back, Collect stops until the clock is correct again.",
       dungeon:
-        "A Dungeon is a place outside the Campaign. The cave in the Town and the Dungeons shortcut open the Dungeons screen, from Player level {level}.\n\nIn a Dungeon, you fight all its Bosses in one Battle. The Board has {lanes} Lanes. Each Boss is an enemy Hero with its own Front, Hand and Deck. A Unit at the end of a Lane attacks the Boss of that Front.\n\nA Boss Rule activates one time, when the HP of its Boss goes to a set percent or lower. The HP bar of the Boss shows a notch at that percent.\n\nA Dungeon win gives no Stars. After a win, you can play the Dungeon again or Sweep it. Dungeon Sweep Tickets: {tickets} for each Dungeon win.",
+        "A Dungeon is a place outside the Campaign. The cave in the Town and the Dungeon shortcut open the Dungeon screen, from Player level {level}.\n\nIn a Dungeon, you fight all its Bosses in one Battle. The Board has {lanes} Lanes. Each Boss is an enemy Hero with its own Front, Hand and Deck. A Unit at the end of a Lane attacks the Boss of that Front.\n\nA Boss Rule activates one time, when the HP of its Boss goes to a set percent or lower. The HP bar of the Boss shows a notch at that percent.\n\nA Dungeon win gives no Stars. After a win, you can play the Dungeon again or Sweep it. Dungeon Sweep Tickets: {tickets} for each Dungeon win.",
       heynspire:
         "Heynspire is the tall tower of the Town. It opens with the first win of Stage {stage}. The tower in the Town and the Heynspire shortcut open it.\n\nHeynspire has {floors} Floors. You fight only the Current Floor: the lowest Floor that you did not win. A Floor Battle has {lanes} Lanes and 1 enemy Hero, whose Front is all the Lanes.\n\nEach {every}th Floor is a Boss Floor: a Boss of the Campaign comes back with a new Deck. A Boss Floor has no Boss Rules.\n\nEach Floor gives its reward one time, when you win it. You cannot play a won Floor again, and you cannot Sweep it. A win also gives Campaign Sweep Tickets: {tickets}. A loss gives a part of the Coin and the XP, for the HP that you took from the enemy Hero.",
       achievement:
-        "An Achievement is a goal with a reward. The Objectives shortcut opens the Objectives dialog. Its Achievements tab lists all {count} Achievements in 4 groups: Campaign, Dungeons and Heynspire, Progress, and Feats.\n\nAn Achievement is In progress, then Completed, then Claimed. The first time that you meet its goal, it becomes Completed, and it stays Completed. Then press Claim on the Achievements tab to get its reward. Claim all claims all Completed Achievements at one time. The badge on the Objectives shortcut shows the number of rewards to claim.\n\nA Feat is an Achievement that one won Battle completes: a Stage, a Dungeon or a Floor that you play. A Sweep, a Replay, Auto-play and the Tutorial never complete a Feat. A loss never completes a Feat.\n\nMost rewards are Heynstones. Some are Coin or Essence. {cosmetics} hard Achievements give an earn-only Cosmetic. Cosmetics come in a later update: the game keeps your Cosmetic until then.\n\nNo Achievement can be missed. You can always complete each Achievement later.",
+        "An Achievement is a goal with a reward. The Objective shortcut opens the Objective dialog. Its Achievements tab lists all {count} Achievements in 5 groups: Campaign, Dungeon, Heynspire, Progress, and Feats.\n\nAn Achievement is In progress, then Completed, then Claimed. The first time that you meet its goal, it becomes Completed, and it stays Completed. Then press Claim on the Achievements tab to get its reward. Claim all claims all Completed Achievements at one time. The badge on the Objective shortcut shows the number of rewards to claim.\n\nA Feat is an Achievement that one won Battle completes: a Stage, a Dungeon or a Floor that you play. A Sweep, a Replay, Auto-play and the Tutorial never complete a Feat. A loss never completes a Feat.\n\nMost rewards are Heynstones. Some are Coin or Essence. {cosmetics} hard Achievements give an earn-only Cosmetic. Cosmetics come in a later update: the game keeps your Cosmetic until then.\n\nNo Achievement can be missed. You can always complete each Achievement later.",
       quest:
-        'A Daily Quest is a goal with a reward that the game gives you for one day. The Objectives shortcut opens the Objectives dialog. Daily Quests open at Player level {level}.\n\n{daily} new Daily Quests come each day, at 00:00 UTC. A Daily Quest expires at the next reset. When you forget to claim a Completed Daily Quest, the game claims it for you at the reset.\n\nA Battle that you play adds progress, also with Auto-play and a repeat win. A Sweep, a Replay and the Tutorial add no progress. A loss and an Abandon add progress only to a goal that does not say "win".\n\nA Daily Quest gives Coin, Essence and {activity} Activity. Activity adds up over the week and goes to 0 on Monday at 00:00 UTC. The Activity bar has 5 checkpoints, each with a reward. The game claims a reached checkpoint for you at the reset. The badge on the Objectives shortcut shows the number of rewards to claim.',
+        'A Daily Quest is a goal with a reward that the game gives you for one day. The Objective shortcut opens the Objective dialog. Daily Quests open at Player level {level}.\n\n{daily} new Daily Quests come each day, at 00:00 UTC. A Daily Quest expires at the next reset. When you forget to claim a Completed Daily Quest, the game claims it for you at the reset.\n\nA Battle that you play adds progress, also with Auto-play and a repeat win. A Sweep, a Replay and the Tutorial add no progress. A loss and an Abandon add progress only to a goal that does not say "win".\n\nA Daily Quest gives Coin, Essence and {activity} Activity. Activity adds up over the week and goes to 0 on Monday at 00:00 UTC. The Activity bar has 5 checkpoints, each with a reward. The game claims a reached checkpoint for you at the reset. The badge on the Objective shortcut shows the number of rewards to claim.',
     },
     aliases: {
       quest:
@@ -1597,8 +1662,8 @@ export default {
     },
   },
   packs: {
-    label: "Packs",
-    title: "Packs",
+    label: "Pack",
+    title: "Pack",
     names: {
       peddler: "Peddler Pack",
       merchant: "Merchant Pack",
@@ -1711,7 +1776,7 @@ export default {
         uncommon:
           "A Peddler Pack and a Merchant Pack have at least 1 card of Uncommon or higher.",
         guarantee:
-          "Pack Guarantee: each Pack has a counter of the Packs in a row without a card of its Guarantee Rank or higher. If the count gets to 1 less than the number of Packs, the next Pack has such a card. Such a card sets the counter back to 0. The Packs screen shows how many Packs are left.",
+          "Pack Guarantee: each Pack has a counter of the Packs in a row without a card of its Guarantee Rank or higher. If the count gets to 1 less than the number of Packs, the next Pack has such a card. Such a card sets the counter back to 0. The Pack screen shows how many Packs are left.",
         ten: "Open ×10 buys 10 Packs of one kind for 10 × the price. Each Pack counts for the Pack Guarantee.",
         pool: "All cards: all Creature Cards, and only the Skill Cards of the Class of your active Deck. A Class Pack has only the Skill Cards of the Class that you select. A Race Pack has no Skill Cards.",
         versions:
@@ -1968,8 +2033,8 @@ export default {
     },
   },
   deckBuilder: {
-    title: "Decks",
-    close: "Close Decks",
+    title: "Deck",
+    close: "Close Deck",
     slots: "Deck slots",
     slotName: "Deck {number}",
     nameLabel: "Deck name",
@@ -2112,7 +2177,7 @@ export default {
   },
   // Draft names (PRD open question 1).
   dungeons: {
-    label: "Dungeons",
+    label: "Dungeon",
     shaft: {
       label: "The mine",
       stop: "Dungeon {number}: {name}, {state}",

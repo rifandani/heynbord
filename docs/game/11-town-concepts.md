@@ -34,7 +34,7 @@ The painting covers the screen and crops its edges (GDD 11.4). The positions are
 | Town Gate | x 720 to 1064, y 603 to 864 | The selectable box of the Town Gate: the two towers, the arch, the doors and the guards. The wall is not in the box. With its label, the box starts at y 557, and its light goes up to y 520, the tips of the tower roofs. |
 | Town Gate label | x 720 to 1064, y 557 to 603 | The game writes "Campaign" here, between the two tower roofs, at the middle of their height. |
 | Card shop | x 1010 to 1209, y 436 to 612 | The selectable box of the Card shop: the house with the purple roof, its awnings and its stalls. The box covers the right tower of the Town Gate at its lower left, so the game cuts that corner from the selectable area, and the pointer there selects the Town Gate. |
-| Card shop label | x 1010 to 1209, y 390 to 436 | The game writes "Packs" here, above the purple roof. |
+| Card shop label | x 1010 to 1209, y 390 to 436 | The game writes "Pack" here, above the purple roof. |
 | Market (Bazaar) | x 1210 to 1526, y 366 to 505 | The selectable box of the Market: the tents, the stalls and the fountain of the market square, above the Workshop and right of the Card shop. Its box is the part of the square in the safe area: a 4:3 screen crops the blue awning and the red tent at its right (to x 1645), so the box ends at x 1526, the right edge of the Workshop label. It stops at the top of the Workshop label (y 505), so that label keeps the pointer. |
 | Market label | x 1210 to 1526, y 320 to 366 | The game writes "Bazaar" here, above the tents, under the Balance Plate corner (y 180). |
 | Workshop | x 1318 to 1745, y 551 to 705 | The selectable box of the Workshop: the open forge with the blue roof, the tall chimney and the house at its right. With its label, the box starts at y 505, and its light goes up to y 480, the top of the chimney. Its `clip` follows the roofs, the chimney and the wall, so the plaza and the wall go to the painting. Only its left part (to x 1526) is in the safe area: a 4:3 screen crops the chimney and the house. |
@@ -42,7 +42,7 @@ The painting covers the screen and crops its edges (GDD 11.4). The positions are
 | Barracks | x 91 to 555, y 344 to 526 | The selectable box of the Barracks: the round tower, the long building with the blue roof, the training yard with the dummies and the fence. With its label, the box starts at y 298, and its light goes up to y 320. Its `clip` follows the roofs and the fence. Only its right part (from x 374) is in the safe area: a 4:3 screen crops the tower, the left wing and the label. |
 | Barracks label | x 124 to 303, y 298 to 344 | The game writes "Hero" here, over the left wing of the Barracks, right of the round tower. It is outside the safe area: a 4:3 screen crops it. GDD 11.4 permits it, because the Hero shortcut opens the screen on all screens. The name touches the top of the blue roof. |
 | Dungeons cave | x 1480 to 1900, y 746 to 864 | The selectable box of the cave: the first ruined pillar, the rock face and the cave arch, from under its label down to the ground line. The top of the rock mound stays in the painting. Its `clip` follows the pillar. It is outside the safe area, as the Barracks label is: a 4:3 screen crops all of it, and a 16:10 screen crops the arch. GDD 11.4 permits it, because the Dungeons shortcut opens the screen on all screens. |
-| Dungeons cave label | x 1500 to 1700, y 700 to 746 | The game writes "Dungeons" here, on the rock face at the left of the arch. A 16:10 screen shows it. It is under the lower edge of the Workshop, so it never takes the pointer from the Workshop. |
+| Dungeons cave label | x 1500 to 1700, y 700 to 746 | The game writes "Dungeon" here, on the rock face at the left of the arch. A 16:10 screen shows it. It is under the lower edge of the Workshop, so it never takes the pointer from the Workshop. |
 | Heynspire tower | x 540 to 760, y 184 to 244 | The selectable box of Heynspire: the hill under the castle. The hover light goes up to the flag at the top of the tower (x 500 to 800, y 0 to 250). |
 | Heynspire label | x 540 to 760, y 138 to 184 | The game writes "Heynspire" here, on the walls of the castle, at the top of the safe area. |
 | Seaport quay | x 1590 to 1900, y 242 to 426 | The box of the Seaport quay (2.10): the tall towers, the big ship, the two long piers, the small ship, the quay along the wall and the round tower with the blue roof. With its label, the box starts at y 196, and its light goes up to y 190, over the flag of the big ship. It is outside the safe area, as the Dungeons cave is: a 4:3 or a 16:10 screen crops almost all of it, and a 19.5:9 phone shows all of it. GDD 11.4 permits it, because the Seaport shortcut opens the screen on all screens. The Building sets its label, its hit box and its light inside this box. |
@@ -111,7 +111,7 @@ The tower opens the Heynspire screen ([GDD 8.2](./03-game-design.md#82-heynspire
 
 ### 2.3 Dungeons cave
 
-`Dungeons` · Selectable · Opens at player level 10
+`Dungeon` · Selectable · Opens at player level 10
 
 | Field | Brief |
 | --- | --- |
@@ -160,7 +160,7 @@ No screen · Decoration only
 
 ### 2.7 Card shop
 
-`Packs` · Selectable
+`Pack` · Selectable
 
 | Field | Brief |
 | --- | --- |
@@ -773,7 +773,7 @@ The Bazaar screen ([GDD 10](./03-game-design.md#10-achievements-cosmetics-and-th
 
 ### 16.2 Positions on the painting
 
-The boxes are in percent of the 1536 × 1024 image. The layout sketch of 16.4 shows them. On a 1366 × 768 laptop screen, the list of Cosmetics covers about x 24 to 76 and y 14 to 88. On a wider screen, more of the sides shows.
+The boxes are in percent of the 1536 × 1024 image. The layout sketch of 16.4 shows them. On a 1366 × 768 laptop screen, the shop panel covers about x 22 to 74.5 and y 9 to 90, and the fruit seller and the orc cook stay in full view at its sides. On a wider screen, the panel starts at x 27, so the goat shows too. The game puts the band behind the panel out of focus (DESIGN.md, Bazaar).
 
 | Area | Box (x, y) | Content |
 | --- | --- | --- |

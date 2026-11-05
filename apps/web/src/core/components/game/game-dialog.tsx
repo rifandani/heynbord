@@ -147,11 +147,12 @@ export const GameDialog = ({
         className
       )}
     >
-      {/* A pressed button goes down 1px. The bottom padding keeps it in the
-          scroll box, so no scrollbar comes and moves the buttons. */}
+      {/* A pressed button goes down 1px, and the battle focus outline sits 6px
+          past the button. The bottom padding keeps both in the scroll box, so
+          no scrollbar comes and moves the buttons. */}
       <Dialog
         role={role}
-        className="-mb-1 max-h-[calc(100dvh-3rem)] overflow-y-auto pb-1 outline-none"
+        className="-mb-2 max-h-[calc(100dvh-3rem)] overflow-y-auto pb-2 outline-none"
         data-testid={testId}
       >
         {({ close }) => (
@@ -211,7 +212,7 @@ export const GameSheet = ({
     >
       <Dialog
         role={role}
-        className="-mb-1 max-h-[calc(100dvh-1.5rem)] overflow-y-auto pb-1 outline-none"
+        className="-mb-2 max-h-[calc(100dvh-1.5rem)] overflow-y-auto pb-2 outline-none"
         data-testid={testId}
       >
         {({ close }) => (

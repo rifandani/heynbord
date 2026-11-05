@@ -112,7 +112,7 @@ test.describe("Heynspire", () => {
       "Win Floor 1 first."
     );
     await expect(panel.getByTestId("floor-fight")).toHaveCount(0);
-    // Enter on the Current storey selects it and goes to Fight; Edit Decks and Auto-fill make the Deck valid at level 20.
+    // Enter on the Current storey selects it and goes to Fight; Edit Deck and Auto-fill make the Deck valid at level 20.
     await press(page, "floor-1");
     await expect(panel.getByRole("heading")).toHaveText("Floor 1");
     await expect(panel.getByTestId("floor-enemy")).toContainText(

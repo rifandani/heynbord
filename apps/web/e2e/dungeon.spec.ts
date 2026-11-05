@@ -118,7 +118,7 @@ const openPanel = async (page: Page) => {
 
 /**
  * At level 10 a Deck needs 14 cards (15 at level 20), and the starter Decks
- * have 10: "Edit Decks" on the Dungeon Panel opens the Deck book, and
+ * have 10: "Edit Deck" on the Dungeon Panel opens the Deck book, and
  * Auto-fill makes the Active Deck valid. Then Fight is on.
  */
 const fillActiveDeck = async (page: Page, min = 14) => {
@@ -159,13 +159,13 @@ test.describe("Dungeons screen", () => {
     await openTown(page, LEVEL_9_XP);
     const cave = page.getByTestId("building-cave");
     await expect(cave).toHaveAttribute("data-locked", "true");
-    await expect(cave).toHaveAccessibleName("Dungeons, opens at level 10");
+    await expect(cave).toHaveAccessibleName("Dungeon, opens at level 10");
     await expect(cave.getByTestId("building-lock-plate")).toHaveText(
       "Level 10"
     );
     const shortcut = page.getByTestId("town-shortcut-dungeons");
     await expect(shortcut).toHaveAttribute("data-locked", "true");
-    await expect(shortcut).toHaveAccessibleName("Dungeons, opens at level 10");
+    await expect(shortcut).toHaveAccessibleName("Dungeon, opens at level 10");
     await shortcut.click();
     await expect(page.getByTestId("dungeons")).toHaveCount(0);
   });
@@ -404,7 +404,7 @@ test.describe("Dungeons screen", () => {
     await closeHint("craft");
     await closeHint("seaport");
     await expect(hint).toHaveAttribute("data-hint", "dungeons");
-    await expect(hint).toContainText("The Dungeons are open.");
+    await expect(hint).toContainText("The Dungeon is open.");
     await page.getByTestId("hint-read-more").click();
     const entry = page.getByTestId("handbook-entry");
     await expect(entry).toHaveAttribute("data-entry", "dungeon");

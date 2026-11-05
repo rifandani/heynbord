@@ -47,7 +47,6 @@ export const DUNGEON_CSS = {
   seal: "radial-gradient(circle at 35% 30%, var(--color-plate-ember), var(--color-night-plate) 70%)",
   sealBone:
     "radial-gradient(circle at 35% 30%, var(--color-parchment-lit), #e3cfa6 70%)",
-  panelLift: "0 24px 48px rgba(0,0,0,0.45)",
   bossLight:
     "radial-gradient(closest-side, rgba(255,226,168,0.85), rgba(255,176,74,0.4) 52%, transparent 78%)",
   footShade: "linear-gradient(180deg, transparent, rgba(14,10,8,0.5))",

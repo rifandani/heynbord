@@ -261,7 +261,7 @@ const StarsRow = ({ stop }: { readonly stop: TrailStage }) => {
 
 /**
  * The Deck choice: the Deck slots that have cards, with the active Deck
- * selected (GDD 11.5). "Edit Decks" opens the Deck builder. A Deck that is not
+ * selected (GDD 11.5). "Edit Deck" opens the Deck builder. A Deck that is not
  * valid cannot start a Battle, and its first reason shows (CRD-04).
  */
 export const useDeckChoice = () => {
@@ -577,7 +577,7 @@ export const StagePanel = ({
   }
   const shown = stop ?? last;
   const overlay = useRef<HTMLDivElement | null>(null);
-  // True from "Edit Decks" until the panel closes: the panel stays at the center.
+  // True from "Edit Deck" until the panel closes: the panel stays at the center.
   const atCenter = useRef(false);
   const { chosen, problem } = choice;
   const isOpen = stop !== null && !editing;
