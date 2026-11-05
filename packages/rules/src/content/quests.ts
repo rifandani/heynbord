@@ -8,14 +8,14 @@ import type { UnlockFeature } from "./unlocks";
 export type QuestBattleGoal =
   /** Win Battles. */
   | { readonly kind: "wins" }
-  /** Win Battles with `creatures` or more Creature Cards of the Race in the Deck. */
-  | { readonly kind: "raceWins"; readonly creatures: number }
+  /** Win Battles with a Creature Card of the Race in the Deck. */
+  | { readonly kind: "raceWins" }
   /** Play Skill Cards. */
   | { readonly kind: "skillCards" }
   /** Deal damage of the Damage Type with Units and Skill Cards. */
   | { readonly kind: "damage" }
-  /** Win a Boss Stage or a Dungeon. */
-  | { readonly kind: "bossOrDungeonWins" }
+  /** Win Boss Stages. */
+  | { readonly kind: "bossWins" }
   /** Kill enemy Units. */
   | { readonly kind: "kills" }
   /** Activate the Keyword with Units. */
@@ -99,8 +99,9 @@ export const ACTIVITY_CHECKPOINTS: readonly ActivityCheckpoint[] = [
 ];
 
 /**
- * The goal templates of Daily Quests (24 — Quests 2). Keep the code and the
- * table of `docs/game/24-quests.md` the same.
+ * The goal templates of Daily Quests (24 — Quests 2), in screen order: the win
+ * goals, then the goals of a Battle. Keep the code and the table of
+ * `docs/game/24-quests.md` the same.
  */
 export const QUEST_TEMPLATES: readonly QuestTemplate[] = [
   {
@@ -113,11 +114,27 @@ export const QUEST_TEMPLATES: readonly QuestTemplate[] = [
   },
   {
     id: "daily.raceWins",
-    goal: { kind: "raceWins", creatures: 1 },
+    goal: { kind: "raceWins" },
     slot: "race",
     count: 2,
     needsWin: true,
     unlock: "quests",
+  },
+  {
+    id: "daily.boss",
+    goal: { kind: "bossWins" },
+    slot: null,
+    count: 1,
+    needsWin: true,
+    unlock: "quests",
+  },
+  {
+    id: "daily.dungeon",
+    goal: { kind: "dungeonWins" },
+    slot: null,
+    count: 1,
+    needsWin: true,
+    unlock: "dungeon1",
   },
   {
     id: "daily.skillCards",
@@ -136,30 +153,6 @@ export const QUEST_TEMPLATES: readonly QuestTemplate[] = [
     unlock: "quests",
   },
   {
-    id: "daily.bossOrDungeon",
-    goal: { kind: "bossOrDungeonWins" },
-    slot: null,
-    count: 1,
-    needsWin: true,
-    unlock: "quests",
-  },
-  {
-    id: "daily.winMore",
-    goal: { kind: "wins" },
-    slot: null,
-    count: 5,
-    needsWin: true,
-    unlock: "quests",
-  },
-  {
-    id: "daily.raceDeck",
-    goal: { kind: "raceWins", creatures: 4 },
-    slot: "race",
-    count: 2,
-    needsWin: true,
-    unlock: "quests",
-  },
-  {
     id: "daily.kills",
     goal: { kind: "kills" },
     slot: null,
@@ -174,14 +167,6 @@ export const QUEST_TEMPLATES: readonly QuestTemplate[] = [
     count: 6,
     needsWin: false,
     unlock: "quests",
-  },
-  {
-    id: "daily.dungeon",
-    goal: { kind: "dungeonWins" },
-    slot: null,
-    count: 1,
-    needsWin: true,
-    unlock: "dungeon1",
   },
 ];
 

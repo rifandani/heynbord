@@ -24,12 +24,6 @@ export const OBJECTIVES_TABS: readonly ObjectivesTab[] = [
   "achievements",
 ];
 
-/** A balance on the Balance Plate that a reward goes into. */
-export type RewardBalance = "heynstones" | "coin" | "essence";
-
-/** The balances of a Daily Quest or a checkpoint: it gives no Heynstones. */
-export const QUEST_BALANCES: readonly RewardBalance[] = ["coin", "essence"];
-
 /** The Activity bar at the top of the Daily Quests tab (24 — Quests 3). */
 export interface ActivityBar {
   /** The Activity of the week. */
@@ -96,7 +90,7 @@ export const defaultTab = ({
     : "daily";
 
 /** The time to a reset, in whole days, hours and minutes, rounded up. */
-export interface Countdown {
+interface Countdown {
   readonly days: number;
   readonly hours: number;
   readonly minutes: number;

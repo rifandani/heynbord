@@ -55,7 +55,7 @@ describe("objectivesView (24 — Quests 3)", () => {
     );
     expect(view.counts).toEqual({ daily: 3, achievements: 1 });
     expect(view.rows).toHaveLength(2);
-    expect(view.groups).toHaveLength(4);
+    expect(view.groups).toHaveLength(5);
   });
 
   it("does not count a claimed Daily Quest or a claimed checkpoint", () => {

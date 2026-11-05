@@ -342,6 +342,7 @@ export {
   claimableCheckpointCount,
   claimableQuestCount,
   claimActivityCheckpoints,
+  claimActivityCheckpointsUpTo,
   claimAllQuests,
   claimQuest,
   dailyQuests,

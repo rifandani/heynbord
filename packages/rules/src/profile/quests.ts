@@ -10,7 +10,6 @@ import { absurd } from "effect";
 import type { BattleEvent } from "../battle/types";
 import type { Collection } from "../collection/deck-building";
 import { getCard } from "../content/cards";
-import { MAX_COPIES } from "../content/decks";
 import { DUNGEONS } from "../content/dungeons";
 import { HEYNSPIRE_FLOORS } from "../content/heynspire";
 import { KEYWORD_ACTIVATES } from "../content/keywords";
@@ -183,25 +182,16 @@ const copiesByCard = (collection: Collection): ReadonlyMap<string, number> => {
   return copies;
 };
 
-/**
- * The Races with `creatures` or more Creature Card copies that one Deck can
- * hold: `MAX_COPIES` of each card at most.
- */
-const racesFor = (
-  collection: Collection,
-  creatures: number
-): readonly RaceId[] => {
-  const perRace = new Map<RaceId, number>();
-  for (const [cardId, copies] of copiesByCard(collection)) {
+/** The Races of the Creature Cards that the Player owns. */
+const racesFor = (collection: Collection): readonly RaceId[] => {
+  const races = new Set<RaceId>();
+  for (const cardId of copiesByCard(collection).keys()) {
     const card = getCard(cardId);
     if (card.kind === "creature") {
-      perRace.set(
-        card.race,
-        (perRace.get(card.race) ?? 0) + Math.min(copies, MAX_COPIES)
-      );
+      races.add(card.race);
     }
   }
-  return RACES.filter((race) => (perRace.get(race) ?? 0) >= creatures);
+  return RACES.filter((race) => races.has(race));
 };
 
 /** The Damage Types of the Creature Cards and of the damage Skill Cards that the Player owns. */
@@ -248,10 +238,7 @@ const paramsFor = (
       return [null];
     }
     case "race": {
-      return racesFor(
-        collection,
-        template.goal.kind === "raceWins" ? template.goal.creatures : 1
-      );
+      return racesFor(collection);
     }
     case "damageType": {
       return damageTypesFor(collection);
@@ -299,8 +286,8 @@ const cursorFor = (seed: number, day: number): RandomCursor => ({
 });
 
 /**
- * The 5 Daily Quests of a Daily reset on `day`: each with a different
- * template, in a seeded random order (24 — Quests 1.5).
+ * The 5 Daily Quests of a Daily reset on `day`: a seeded random selection, each
+ * with a different template, in the order of the goal pool (24 — Quests 1.5).
  */
 const dailyQuestsFor = (
   profile: QuestProfile,
@@ -308,14 +295,22 @@ const dailyQuestsFor = (
   content: QuestContent
 ): readonly DailyQuest[] => {
   const cursor = cursorFor(profile.quests.seed, day);
-  return shuffle(cursor, choicesFor(profile, content))
-    .slice(0, DAILY_QUESTS)
-    .map(({ template, params }) => ({
-      templateId: template.id,
-      param: params[randomInt(cursor, params.length)] ?? null,
-      progress: 0,
-      claimed: false,
-    }));
+  const choices = choicesFor(profile, content);
+  const selected = new Set(shuffle(cursor, choices).slice(0, DAILY_QUESTS));
+  return choices.flatMap((choice) => {
+    if (!selected.has(choice)) {
+      return [];
+    }
+    const { template, params } = choice;
+    return [
+      {
+        templateId: template.id,
+        param: params[randomInt(cursor, params.length)] ?? null,
+        progress: 0,
+        claimed: false,
+      },
+    ];
+  });
 };
 
 const withQuests = <P extends QuestProfile>(
@@ -400,11 +395,17 @@ const rewardQuest = <P extends QuestProfile>(
   });
 };
 
-/** The Profile with the reward of each reached checkpoint, and each recorded as claimed. */
+/**
+ * The Profile with the reward of each reached checkpoint up to `upTo`, and each
+ * recorded as claimed.
+ */
 const claimReached = <P extends QuestProfile>(
-  profile: P
+  profile: P,
+  upTo: number = Number.POSITIVE_INFINITY
 ): CheckpointChange<P> => {
-  const checkpoints = reachedCheckpoints(profile);
+  const checkpoints = reachedCheckpoints(profile).filter(
+    ({ activity }) => activity <= upTo
+  );
   const rewarded = checkpoints.reduce(
     (next, { reward }) => addReward(next, reward),
     profile
@@ -523,14 +524,15 @@ const placed = (battle: QuestBattle): PlacedBattle | null => {
 };
 
 /**
- * The Creature Cards of the Race in the Deck at the start of the Battle
- * (Achievements 1.3): Skill Cards have no Race, and Tokens are not in a Deck.
+ * True when the Deck at the start of the Battle has a Creature Card of the
+ * Race (Achievements 1.3): Skill Cards have no Race, and Tokens are not in a
+ * Deck.
  */
-const raceCreatures = (deck: readonly DeckEntry[], race: string | null) =>
-  deck.filter((entry) => {
+const hasRaceCreature = (deck: readonly DeckEntry[], race: string | null) =>
+  deck.some((entry) => {
     const card = getCard(entry.cardId);
     return card.kind === "creature" && card.race === race;
-  }).length;
+  });
 
 /**
  * The enemy Units that died. A death with Rebirth sends `UnitReborn` in
@@ -562,7 +564,7 @@ const battleProgress = (
       return 1;
     }
     case "raceWins": {
-      return raceCreatures(battle.deck, param) >= goal.creatures ? 1 : 0;
+      return hasRaceCreature(battle.deck, param) ? 1 : 0;
     }
     case "skillCards": {
       return battle.events.filter(
@@ -584,10 +586,8 @@ const battleProgress = (
         0
       );
     }
-    case "bossOrDungeonWins": {
-      return battle.stage?.boss === true || battle.dungeon !== undefined
-        ? 1
-        : 0;
+    case "bossWins": {
+      return battle.stage?.boss === true ? 1 : 0;
     }
     case "kills": {
       return enemyDeaths(battle.events);
@@ -701,6 +701,19 @@ export const claimActivityCheckpoints = <P extends QuestProfile>(
   profile: P
 ): CheckpointChange<P> | null =>
   claimableCheckpointCount(profile) === 0 ? null : claimReached(profile);
+
+/**
+ * Claims one reached Activity checkpoint from its icon (24 — Quests 1.2), and
+ * each reached checkpoint below it that is not claimed. It claims no checkpoint
+ * above it. `null` when `activity` is not a reached checkpoint that is not claimed.
+ */
+export const claimActivityCheckpointsUpTo = <P extends QuestProfile>(
+  profile: P,
+  activity: number
+): CheckpointChange<P> | null =>
+  reachedCheckpoints(profile).some((each) => each.activity === activity)
+    ? claimReached(profile, activity)
+    : null;
 
 /**
  * Claim all of the Daily Quests tab (24 — Quests 3): the Completed Daily

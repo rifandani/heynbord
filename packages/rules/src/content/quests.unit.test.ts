@@ -14,9 +14,9 @@ const idsOf = (items: readonly { readonly id: string }[]) =>
   items.map((item) => item.id);
 
 describe("QUEST_TEMPLATES (24 — Quests 2)", () => {
-  it("has 10 templates with different fixed IDs", () => {
+  it("has 8 templates with different fixed IDs", () => {
     const ids = idsOf(QUEST_TEMPLATES);
-    expect(ids).toHaveLength(10);
+    expect(ids).toHaveLength(8);
     expect(new Set(ids).size).toBe(ids.length);
     for (const template of QUEST_TEMPLATES) {
       expect(template.id.startsWith("daily."), template.id).toBe(true);
@@ -30,7 +30,7 @@ describe("QUEST_TEMPLATES (24 — Quests 2)", () => {
     expect(QUEST_TEMPLATES.length).toBeGreaterThanOrEqual(DAILY_QUESTS);
   });
 
-  it("opens 9 templates at level 3, and the Dungeon template when Dungeons open", () => {
+  it("opens 7 templates at level 3, and the Dungeon template when Dungeons open", () => {
     expect(UNLOCK_LEVELS.quests).toBe(3);
     for (const template of QUEST_TEMPLATES) {
       expect(template.unlock, template.id).toBe(
@@ -44,11 +44,16 @@ describe("QUEST_TEMPLATES (24 — Quests 2)", () => {
     expect(idsOf(winGoals)).toEqual([
       "daily.win",
       "daily.raceWins",
-      "daily.bossOrDungeon",
-      "daily.winMore",
-      "daily.raceDeck",
+      "daily.boss",
       "daily.dungeon",
     ]);
+  });
+
+  it("gives each goal one template: no 2 templates have the same goal", () => {
+    const goals = QUEST_TEMPLATES.map((template) =>
+      JSON.stringify(template.goal)
+    );
+    expect(new Set(goals).size).toBe(goals.length);
   });
 
   it("throws for an unknown ID", () => {

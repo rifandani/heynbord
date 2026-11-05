@@ -11,13 +11,13 @@ import { describe, expect, it } from "vitest";
 import { anyAchievementCompletedAtom } from "@/features/achievements/achievement-counts.atoms";
 import type { AchievementRow } from "@/features/achievements/achievements";
 import {
+  achievementFrame,
   achievementGroups,
   achievementToasts,
   claimFocusAfter,
   NAMED_NOTICES,
   newlyCompleted,
   openingCategory,
-  rewardBalances,
   rewardText,
 } from "@/features/achievements/achievements";
 import { objectivesBadgeAtom } from "@/features/objectives/objectives.atoms";
@@ -25,6 +25,16 @@ import {
   profileAtom,
   profileStateAtom,
 } from "@/features/profile/profile.atoms";
+
+const frameOf = (id: string) => achievementFrame(getAchievement(id));
+
+describe("achievementFrame (Achievements 4)", () => {
+  it("gives a Cosmetic the gold frame, a Feat the silver frame, and others none", () => {
+    expect(frameOf("campaign.allStars")).toBe("gold");
+    expect(frameOf("feat.rout")).toBe("silver");
+    expect(frameOf("campaign.hearthvale")).toBe("plain");
+  });
+});
 
 const fresh = newProfile(7);
 const profile = (overrides: Partial<Profile> = {}): Profile => ({
@@ -72,15 +82,16 @@ describe("achievementToasts", () => {
 });
 
 describe("achievementGroups", () => {
-  it("lists the 4 categories in screen order, with all 40 rows in list order", () => {
+  it("lists the 5 categories in screen order, with all 40 rows in list order", () => {
     const groups = achievementGroups(fresh);
     expect(groups.map((group) => group.category)).toEqual([
       "campaign",
-      "dungeonsAndHeynspire",
+      "dungeons",
+      "heynspire",
       "progress",
       "feats",
     ]);
-    expect(groups.map((group) => group.rows.length)).toEqual([8, 5, 9, 18]);
+    expect(groups.map((group) => group.rows.length)).toEqual([8, 3, 2, 9, 18]);
     expect(
       groups.flatMap((group) => group.rows.map((row) => row.achievement.id))
     ).toEqual(ACHIEVEMENTS.map((achievement) => achievement.id));
@@ -133,7 +144,8 @@ describe("achievementGroups", () => {
       groups.map((group) => [group.category, group.done, group.claimable])
     ).toEqual([
       ["campaign", 2, 1],
-      ["dungeonsAndHeynspire", 0, 0],
+      ["dungeons", 0, 0],
+      ["heynspire", 0, 0],
       ["progress", 0, 0],
       ["feats", 1, 1],
     ]);
@@ -257,9 +269,6 @@ describe("Claim all", () => {
     const groups = achievementGroups(change?.profile ?? player);
     expect(groups.every((group) => group.claimable === 0)).toBe(true);
     expect(change?.profile.heynstones).toBe(player.heynstones + 15 + 15);
-    expect(
-      rewardBalances(change?.achievements.map((item) => item.reward) ?? [])
-    ).toEqual(["coin", "essence", "heynstones"]);
   });
 
   it("is off when no Achievement is Completed", () => {

@@ -1,10 +1,14 @@
 import type { DamageType, Profile, QuestView, RaceId } from "@workspace/rules";
-import { dailyQuests, getQuestTemplate } from "@workspace/rules";
+import { dailyQuests, getQuestTemplate, isUnlocked } from "@workspace/rules";
 import { absurd } from "effect";
 
 import type { TextRef } from "@/features/battle/card-text";
 import { DAMAGE_GLYPH, raceGlyph } from "@/features/battle/glyphs";
 import type { Glyph } from "@/features/battle/glyphs";
+import { playerLevel } from "@/features/profile/profile";
+
+/** The screen where the Player can do a Daily Quest (24 — Quests 3). */
+export type QuestDestination = "campaign" | "dungeons";
 
 /** One row of the Daily Quests tab (24 — Quests 3). */
 export interface QuestRow {
@@ -18,6 +22,8 @@ export interface QuestRow {
    * Damage Type shows with its icon, every time). `null` for the other goals.
    */
   readonly damageType: DamageType | null;
+  /** The screen that the Go to button of an In progress row opens. */
+  readonly destination: QuestDestination;
 }
 
 /**
@@ -61,11 +67,8 @@ const paramRef = (
  */
 const goalText = (quest: QuestView): TextRef => {
   const template = getQuestTemplate(quest.id);
-  const { goal, slot } = template;
+  const { slot } = template;
   const args = new Map<string, number | TextRef>([["count", template.count]]);
-  if (goal.kind === "raceWins") {
-    args.set("creatures", goal.creatures);
-  }
   if (slot !== null && quest.param !== null) {
     args.set(slot, paramRef(slot, quest.param));
   }
@@ -103,7 +106,7 @@ const goalGlyph = (quest: QuestView): Glyph => {
     case "damage": {
       return isDamageType(quest.param) ? DAMAGE_GLYPH[quest.param] : "sword";
     }
-    case "bossOrDungeonWins": {
+    case "bossWins": {
       return "crown";
     }
     case "kills": {
@@ -121,7 +124,19 @@ const goalGlyph = (quest: QuestView): Glyph => {
   }
 };
 
-const rowOf = (quest: QuestView): QuestRow => ({
+/**
+ * The screen of a goal: the Dungeons for a Dungeon goal, while they are open.
+ * All other goals count in any Battle, and the Campaign is always open.
+ */
+const destinationOf = (
+  quest: QuestView,
+  dungeonsOpen: boolean
+): QuestDestination =>
+  dungeonsOpen && getQuestTemplate(quest.id).goal.kind === "dungeonWins"
+    ? "dungeons"
+    : "campaign";
+
+const rowOf = (quest: QuestView, dungeonsOpen: boolean): QuestRow => ({
   quest,
   name: questName(quest.id),
   goal: goalText(quest),
@@ -131,11 +146,14 @@ const rowOf = (quest: QuestView): QuestRow => ({
     isDamageType(quest.param)
       ? quest.param
       : null,
+  destination: destinationOf(quest, dungeonsOpen),
 });
 
 /** The rows of the Daily Quests tab, from the Profile. */
-export const questRows = (profile: Profile): readonly QuestRow[] =>
-  dailyQuests(profile).map(rowOf);
+export const questRows = (profile: Profile): readonly QuestRow[] => {
+  const dungeonsOpen = isUnlocked(playerLevel(profile), "dungeon1");
+  return dailyQuests(profile).map((quest) => rowOf(quest, dungeonsOpen));
+};
 
 /**
  * Where the focus goes after the Claim of the row at `claimed` (24 — Quests

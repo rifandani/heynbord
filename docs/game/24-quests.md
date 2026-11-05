@@ -19,7 +19,7 @@ Status: **draft** (2026-11-04). The code follows this design (issue 190). The fi
 - The Activity adds up over the week and goes to 0 at the Weekly reset.
 - The week has **5 Activity checkpoints**, at 100, 200, 300, 400 and 500 Activity. The last one is the weekly goal.
 - A day can reach at most 1 checkpoint. A Player who does all Daily Quests reaches the last checkpoint on the fifth day, so a Player can miss 2 days of a week and still reach all 5.
-- The Player claims all reached checkpoints with one Claim button beside the Activity bar. At the Weekly reset, the game claims each reached checkpoint that the Player did not claim.
+- The Player claims all reached checkpoints with one Claim button beside the Activity bar. A press on the icon of a reached checkpoint claims it and each reached checkpoint below it, and no checkpoint above it. At the Weekly reset, the game claims each reached checkpoint that the Player did not claim.
 
 ### 1.3 Progress
 
@@ -42,12 +42,14 @@ Status: **draft** (2026-11-04). The code follows this design (issue 190). The fi
 
 ### 1.5 Goal selection
 
-- A fixed pool has 10 **goal templates**, for example "Win {n} Battles with a {Race} Creature Card in the Deck" (section 2).
+- A fixed pool has 8 **goal templates**, for example "Win {n} Battles with a {Race} Creature Card in the Deck" (section 2).
 - The game offers only goals that the Player can do now: the Collection must permit the Deck rule, and the content of the goal (for example Dungeons) must be open.
 - The selection uses a seed, so the rules stay deterministic (ADR-0006). Each Profile keeps a **Quest seed**: a fixed random value from the creation of the Profile, or from its migration for an old Profile. The day number and the Quest seed make the seed of the day.
 - Thus the same Profile at the same moment always gets the same Daily Quests, and a page load never rolls them again.
 - All Daily Quests give the same reward. Thus the luck of the selection gives no advantage (Pillar 1).
 - The 5 active Daily Quests never use the same template at the same time.
+- No goal of the pool repeats another goal or is a harder form of it. All Daily Quests give the same reward, so a harder form would be more work for no more reward.
+- The 5 active Daily Quests show in the order of the goal pool: the win goals first, then the goals of a Battle.
 
 ### 1.6 Locks
 
@@ -66,32 +68,30 @@ Each goal template has a fixed ID, for example `daily.win`. The Profile keeps th
 
 ## 2. Goal pool (draft)
 
-The final `{n}` values come with the tuning. The IDs of the last 5 templates are drafts.
+The final `{n}` values come with the tuning. The table is in the order of the pool.
 
 | ID | Goal | Opens |
 | --- | --- | --- |
 | `daily.win` | Win {3} Battles | Level 3 |
 | `daily.raceWins` | Win {2} Battles with a {Race} Creature Card in the Deck | Level 3 |
+| `daily.boss` | Win {1} Boss Stage | Level 3 |
+| `daily.dungeon` | Win {1} Dungeon | Dungeons open (level 10) |
 | `daily.skillCards` | Play {5} Skill Cards | Level 3 |
 | `daily.damageType` | Your Units and Skill Cards deal {30} {Damage Type} damage | Level 3 |
-| `daily.bossOrDungeon` | Win {1} Boss Stage or Dungeon | Level 3 |
-| `daily.winMore` | Win {5} Battles | Level 3 |
-| `daily.raceDeck` | Win {2} Battles with {4} or more {Race} Creature Cards in the Deck | Level 3 |
 | `daily.kills` | Kill {15} enemy Units | Level 3 |
 | `daily.keyword` | Units with {Keyword} activate it {6} times | Level 3 |
-| `daily.dungeon` | Win {1} Dungeon | Dungeons open (level 10) |
 
 - `daily.kills` counts each enemy Unit that dies in the Battle, also from a Skill Card, and a death with Rebirth. The Battle Events do not tell which Unit made a kill.
-- A goal with a slot gets a value that the Collection permits: a Race with enough Creature Card copies for one Deck, a Damage Type of an owned Creature Card or damage Skill Card, or a Keyword that activates on an owned Creature Card.
+- A goal with a slot gets a value that the Collection permits: a Race of an owned Creature Card, a Damage Type of an owned Creature Card or damage Skill Card, or a Keyword that activates on an owned Creature Card.
 - Each Starter Deck at level 3 must always get 5 Daily Quests.
 
 ## 3. Objectives dialog
 
 - **Entry.** One **Objectives shortcut** on the Town Bar opens the dialog over the current screen. It has no Building: the Hall of banners is decoration. It is open at level 1, and it does not open in a Battle. It reuses the painted Achievements icon.
-- **Form.** A large dialog at the size of the Deck dialog, in the same family as the Deck dialog and the Handbook. The title is "Objectives", and 2 tabs are under it: **Daily Quests** and **Achievements**. It has no painted background, no Town art and no portraits. On a phone in landscape it uses one column.
-- **Daily Quests tab, top.** The Activity count, the Activity bar with the 5 checkpoints, the time to the next Daily reset and to the next Weekly reset, and one Claim button for the reached checkpoints. A tooltip shows the reward of each checkpoint. The Claim button is off when no checkpoint is ready.
-- **Daily Quests tab, rows.** Each row shows a game icon for its goal, the name, the goal, the Coin, the Essence, the Activity, and one of these. There is no "Go" button.
-  - In progress: a progress bar with the count (for example "2 / 3").
+- **Form.** A green leather ledger, the third book of the game box after the Deck dialog and the Handbook. It opens and closes on its spine. The title is "Objective", and 2 ribbons are beside it: **Daily Quests** and **Achievements**. The left page shows the Activity of the week or the page of seals of an Achievement category, and the right page shows the list. Bookmarks at the side of the book select the Achievement category. It has no painted background, no Town art and no portraits. On a smaller screen and on a phone in landscape it shows one page.
+- **Daily Quests tab, left page.** On one page, this is a plaque at the top of the tab. The Activity count, the Activity bar with the 5 checkpoints, the time to the next Daily reset and to the next Weekly reset, and one Claim button for the reached checkpoints. A tooltip shows the reward of each checkpoint. The icon of a reached checkpoint also claims it (section 1.2). The Claim button is off when no checkpoint is ready.
+- **Daily Quests tab, rows.** Each row is a card. It shows a game icon for its goal, the name, the goal, a progress bar with the count (for example "2 / 3"), the Coin, the Essence, the Activity, and one of these.
+  - In progress: a **Go to** button. It closes the dialog and opens the screen of the goal: the Dungeons for a Dungeon goal while they are open, else the Campaign. Thus it never opens a locked screen.
   - Completed: a **Claim** button.
   - Claimed: a check mark. A claimed Daily Quest stays until the reset.
 - **Achievements tab.** See [15 — Achievements 4](./15-achievements.md#4-achievements-tab).

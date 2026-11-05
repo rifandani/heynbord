@@ -22,6 +22,30 @@ export type ProfileMigration = (
   profile: Schema.JsonObject
 ) => Schema.JsonObject;
 
+/** True for a saved Daily Quest of the goal template. */
+const hasTemplate = (quest: Schema.Json, id: string): boolean =>
+  isJsonObject(quest) && quest.templateId === id;
+
+/** A saved Daily Quest of `daily.bossOrDungeon` with the new ID. Other values stay. */
+const withBossTemplate = (quest: Schema.Json): Schema.Json => {
+  if (!isJsonObject(quest) || quest.templateId !== "daily.bossOrDungeon") {
+    return quest;
+  }
+  const saved: Schema.JsonObject = quest;
+  return { ...saved, templateId: "daily.boss" };
+};
+
+/** The Profile with `change` on its Daily Quests. A save with no list stays, and the decode refuses it. */
+const withDailyList = (
+  profile: Schema.JsonObject,
+  change: (daily: readonly Schema.Json[]) => readonly Schema.Json[]
+): Schema.JsonObject => {
+  const quests = isJsonObject(profile.quests) ? profile.quests : {};
+  return Array.isArray(quests.daily)
+    ? { ...profile, quests: { ...quests, daily: change(quests.daily) } }
+    : profile;
+};
+
 /** Each Gear level × 2. A value that is not a level stays, and the decode refuses it. */
 const doubledGear = (gear: Schema.JsonObject): Schema.JsonObject =>
   Object.fromEntries(
@@ -232,6 +256,26 @@ export const PROFILE_MIGRATIONS = {
           quests: noQuests(isNumber(quests.seed) ? quests.seed : 0),
         };
   },
+  /**
+   * Version 18 removes the `daily.winMore` goal template (24 — Quests 2): it
+   * was the same goal as `daily.win`. A save loses its row and gives no reward
+   * for it, because no release had it. The next Daily reset offers 5 again.
+   */
+  17: (profile) =>
+    withDailyList(profile, (daily) =>
+      daily.filter((quest) => !hasTemplate(quest, "daily.winMore"))
+    ),
+  /**
+   * Version 19 changes 2 goal templates (24 — Quests 2). `daily.raceDeck` goes,
+   * as `daily.winMore` did. `daily.bossOrDungeon` becomes `daily.boss`, and a
+   * Daily Quest of it keeps its progress.
+   */
+  18: (profile) =>
+    withDailyList(profile, (daily) =>
+      daily.flatMap((quest) =>
+        hasTemplate(quest, "daily.raceDeck") ? [] : [withBossTemplate(quest)]
+      )
+    ),
 } satisfies Readonly<Record<number, ProfileMigration>>;
 
 const isVersion = Schema.is(Schema.Int);

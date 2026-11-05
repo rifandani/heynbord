@@ -1,3 +1,4 @@
+import { cn } from "cn";
 import type { RefObject } from "react";
 
 import { GameButton } from "@/core/components/game/game-button";
@@ -12,16 +13,23 @@ export const ClaimAllBar = ({
   button,
   testId,
   onClaimAll,
+  className,
 }: {
   /** The rewards that Claim all claims. */
   readonly count: number;
   readonly button: RefObject<HTMLButtonElement | null>;
   readonly testId: string;
   readonly onClaimAll: () => void;
+  readonly className?: string;
 }) => {
   const { tr } = useGameText();
   return (
-    <footer className="bg-parchment-deep border-parchment-rule flex shrink-0 items-center justify-end border-t-2 px-4 py-2 [@media(max-height:500px)]:px-2 [@media(max-height:500px)]:py-1">
+    <footer
+      className={cn(
+        "bg-parchment-deep border-parchment-rule flex shrink-0 items-center justify-end border-t-2 px-4 py-2 [@media(max-height:500px)]:px-2 [@media(max-height:500px)]:py-1",
+        className
+      )}
+    >
       <GameButton
         ref={button}
         intent="gold"

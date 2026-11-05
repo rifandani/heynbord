@@ -15,7 +15,6 @@ import {
 import { absurd } from "effect";
 
 import type { TextRef } from "@/features/battle/card-text";
-import type { RewardBalance } from "@/features/objectives/objectives";
 
 /**
  * The IDs of `after` that are not in `before`, in list order (Achievements
@@ -67,6 +66,22 @@ export interface AchievementRow {
   readonly progress: AchievementProgress | null;
 }
 
+/**
+ * The frame of a row (15 — Achievements 4): `gold` for an earn-only Cosmetic,
+ * `silver` for a Feat, and `plain` for all other Achievements.
+ */
+export type AchievementFrame = "plain" | "silver" | "gold";
+
+export const achievementFrame = ({
+  category,
+  reward,
+}: AchievementDefinition): AchievementFrame => {
+  if (reward.kind === "cosmetic") {
+    return "gold";
+  }
+  return category === "feats" ? "silver" : "plain";
+};
+
 /** One category of the Achievements tab: one category tab and its list. */
 export interface AchievementGroup {
   readonly category: AchievementCategory;
@@ -93,7 +108,7 @@ const rowOf = (
 };
 
 /**
- * The 4 categories of the Achievements tab, in screen order, each with its
+ * The 5 categories of the Achievements tab, in screen order, each with its
  * rows in list order (Achievements 2 and 4).
  */
 export const achievementGroups = (
@@ -182,24 +197,4 @@ export const rewardText = (
       return absurd(reward);
     }
   }
-};
-
-/**
- * The balance that a reward goes into, for its flight to the Balance Plate.
- * `null` for a Cosmetic: it has no balance.
- */
-const rewardBalance = (reward: AchievementReward): RewardBalance | null =>
-  reward.kind === "cosmetic" ? null : reward.kind;
-
-/**
- * The balances of a Claim all, one time each, in Balance Plate order (Coin,
- * Essence, Heynstones): Claim all sends one flight for each.
- */
-export const rewardBalances = (
-  rewards: readonly AchievementReward[]
-): readonly RewardBalance[] => {
-  const kinds = new Set(rewards.map(rewardBalance));
-  return (["coin", "essence", "heynstones"] as const).filter((kind) =>
-    kinds.has(kind)
-  );
 };

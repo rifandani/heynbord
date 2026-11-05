@@ -15,7 +15,7 @@ import { STAR_CHESTS } from "../content/star-chests";
  * shape, or to the meaning of a saved value, adds 1 and a migration step from
  * the old version.
  */
-export const PROFILE_SCHEMA_VERSION = 17;
+export const PROFILE_SCHEMA_VERSION = 19;
 
 /** The longest name that the Player can give a Deck. */
 export const DECK_NAME_MAX = 24;

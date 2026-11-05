@@ -18,7 +18,7 @@ import {
   DAILY_QUEST_REWARD,
   QUEST_TEMPLATES,
 } from "../content/quests";
-import type { DamageType, DeckEntry, RankId } from "../content/schema";
+import type { DamageType } from "../content/schema";
 import { UNLOCK_LEVELS } from "../content/unlocks";
 import { TUTORIAL_STAGE_ID } from "../modes/tutorial";
 import { emptyBattle, placeUnit } from "../testing/fixtures";
@@ -29,6 +29,7 @@ import {
   claimableCheckpointCount,
   claimableQuestCount,
   claimActivityCheckpoints,
+  claimActivityCheckpointsUpTo,
   claimAllQuests,
   claimQuest,
   DAY_MS,
@@ -99,10 +100,6 @@ const collectionOf = (
   copies = 3
 ): CollectionEntry[] =>
   cardIds.map((cardId) => ({ cardId, rank: "common", copies }));
-
-/** `count` copies of a card in a Deck, in Common. */
-const copiesOf = (cardId: string, count: number, rank: RankId = "common") =>
-  Array.from({ length: count }, (): DeckEntry => ({ cardId, rank }));
 
 const stage = (stageId: string): FeatPlace => ({ kind: "stage", stageId });
 
@@ -299,7 +296,7 @@ describe("refreshQuests: the Daily reset (24 — Quests 1.4)", () => {
     const profile = withDaily([
       daily("daily.win", null, 3),
       daily("daily.skillCards", null, 2),
-      daily("daily.bossOrDungeon", null, 1, true),
+      daily("daily.boss", null, 1, true),
     ]);
     const { profile: next, claimed } = refreshQuests(profile, DAY_END + 1);
     expect(next.coin).toBe(profile.coin + DAILY_QUEST_REWARD.coin);
@@ -324,7 +321,7 @@ describe("refreshQuests: the Daily reset (24 — Quests 1.4)", () => {
     );
   });
 
-  it("uses 5 different templates on each day, and all 9 open templates over time", () => {
+  it("uses 5 different templates on each day, and all 7 open templates over time", () => {
     const profile = unlocked();
     const seen = new Set<string>();
     for (let day = 0; day < 60; day += 1) {
@@ -334,7 +331,7 @@ describe("refreshQuests: the Daily reset (24 — Quests 1.4)", () => {
         seen.add(id);
       }
     }
-    expect(seen.size).toBe(9);
+    expect(seen.size).toBe(7);
   });
 });
 
@@ -416,8 +413,6 @@ describe("refreshQuests: the goal selection (24 — Quests 1.5)", () => {
   it("offers only the Races and Damage Types that the Collection permits", () => {
     const quests = days({
       ...atLevel(UNLOCK_LEVELS.quests),
-      // 3 Human cards of 1 kind: a Deck can hold 3, so `daily.raceDeck`
-      // (4 or more) is not possible.
       collection: collectionOf(["human.militiaRecruit", "warrior.spearThrow"]),
     });
     const params = (id: string) =>
@@ -428,7 +423,6 @@ describe("refreshQuests: the goal selection (24 — Quests 1.5)", () => {
       );
     expect(params("daily.raceWins")).toEqual(new Set(["human"]));
     expect(params("daily.damageType")).toEqual(new Set(["physical"]));
-    expect(params("daily.raceDeck").size).toBe(0);
     expect(params("daily.keyword").size).toBe(0);
   });
 
@@ -458,7 +452,9 @@ describe("refreshQuests: the goal selection (24 — Quests 1.5)", () => {
 
   it("selects only from the goal pool of `content`", () => {
     const templates = QUEST_TEMPLATES.filter(
-      (template) => template.slot === null && template.unlock === "quests"
+      (template) =>
+        template.unlock === "quests" &&
+        (template.slot === null || template.id === "daily.raceWins")
     );
     const { quests } = refreshQuests(atLevel(UNLOCK_LEVELS.quests), NOW, {
       templates,
@@ -467,6 +463,17 @@ describe("refreshQuests: the goal selection (24 — Quests 1.5)", () => {
     expect(templatesOf(quests.daily).toSorted()).toEqual(
       templates.map((template) => template.id).toSorted()
     );
+  });
+
+  it("keeps the Daily Quests of a day in the order of the goal pool", () => {
+    const profile = atLevel(UNLOCK_LEVELS.quests);
+    const pool = QUEST_TEMPLATES.map((template) => template.id);
+    for (let day = 0; day < 30; day += 1) {
+      const places = templatesOf(sameDay(profile, day).daily).map((id) =>
+        pool.indexOf(id)
+      );
+      expect(places, `day ${day}`).toEqual(places.toSorted((a, b) => a - b));
+    }
   });
 
   it("gives the Starter Collection 5 Daily Quests at level 3 for each seed and day", () => {
@@ -493,7 +500,6 @@ describe("recordQuestBattle (24 — Quests 1.3)", () => {
     daily("daily.raceWins", "human"),
     daily("daily.kills"),
     daily("daily.keyword", "rally"),
-    daily("daily.raceDeck", "human"),
   ]);
 
   const played = (outcome: QuestOutcome, overrides?: Partial<QuestBattle>) =>
@@ -506,7 +512,7 @@ describe("recordQuestBattle (24 — Quests 1.3)", () => {
       cardPlayed("enemy", "warrior.spearThrow"),
     ];
     expect(progressOf(played("won", { events }).profile)).toEqual([
-      1, 1, 1, 0, 0, 0,
+      1, 1, 1, 0, 0,
     ]);
   });
 
@@ -514,7 +520,7 @@ describe("recordQuestBattle (24 — Quests 1.3)", () => {
     const events = [cardPlayed("player", "warrior.spearThrow")];
     for (const outcome of ["lost", "abandoned"] as const) {
       expect(progressOf(played(outcome, { events }).profile), outcome).toEqual([
-        0, 1, 0, 0, 0, 0,
+        0, 1, 0, 0, 0,
       ]);
     }
   });
@@ -566,21 +572,12 @@ describe("recordQuestBattle (24 — Quests 1.3)", () => {
     });
     expect(
       progressOf(recordQuestBattle(profile, orcAndSkills).profile)
-    ).toEqual([1, 0, 0, 0, 0, 0]);
-    const threeHumans = battle("won", {
-      deck: copiesOf("human.militiaRecruit", 3),
+    ).toEqual([1, 0, 0, 0, 0]);
+    const human = battle("won", {
+      deck: [{ cardId: "human.militiaRecruit", rank: "common" }],
     });
-    expect(progressOf(recordQuestBattle(profile, threeHumans).profile)).toEqual(
-      [1, 0, 1, 0, 0, 0]
-    );
-    const fourHumans = battle("won", {
-      deck: [
-        ...copiesOf("human.militiaRecruit", 3),
-        ...copiesOf("human.shieldbearer", 1, "uncommon"),
-      ],
-    });
-    expect(progressOf(recordQuestBattle(profile, fourHumans).profile)).toEqual([
-      1, 0, 1, 0, 0, 1,
+    expect(progressOf(recordQuestBattle(profile, human).profile)).toEqual([
+      1, 0, 1, 0, 0,
     ]);
   });
 
@@ -626,30 +623,27 @@ describe("recordQuestBattle (24 — Quests 1.3)", () => {
     ).toEqual([9]);
   });
 
-  it("counts a win of a Boss Stage or a Dungeon, and of a Dungeon for the Dungeon goal", () => {
-    const boss = withDaily([
-      daily("daily.bossOrDungeon"),
-      daily("daily.dungeon"),
-    ]);
+  it("counts a win of a Boss Stage for the Boss goal, and of a Dungeon for the Dungeon goal", () => {
+    const boss = withDaily([daily("daily.boss"), daily("daily.dungeon")]);
     const record = (place: FeatPlace, outcome: QuestOutcome = "won") =>
       progressOf(recordQuestBattle(boss, battle(outcome, { place })).profile);
     expect(record(stage("1-2"))).toEqual([0, 0]);
     expect(record(stage("1-10"))).toEqual([1, 0]);
     expect(record(stage("1-10"), "lost")).toEqual([0, 0]);
-    expect(record({ kind: "dungeon", dungeonId: "dungeon-1" })).toEqual([1, 1]);
+    expect(record({ kind: "dungeon", dungeonId: "dungeon-1" })).toEqual([0, 1]);
   });
 
   it("stops the progress at the count, and lists the Daily Quests that became Completed", () => {
     const almost = withDaily([
       daily("daily.win", null, 2),
       daily("daily.skillCards", null, 4),
-      daily("daily.winMore", null, 1),
+      daily("daily.kills", null, 1),
     ]);
     const events = Array.from({ length: 3 }, () =>
       cardPlayed("player", "warrior.spearThrow")
     );
     const result = recordQuestBattle(almost, battle("won", { events }));
-    expect(progressOf(result.profile)).toEqual([3, 5, 2]);
+    expect(progressOf(result.profile)).toEqual([3, 5, 1]);
     expect(result.quests.map((quest) => quest.id)).toEqual([
       "daily.win",
       "daily.skillCards",
@@ -755,6 +749,55 @@ describe("Activity checkpoints (24 — Quests 1.2)", () => {
         withDaily([], { activity: 100, claimedCheckpoints: [100] })
       )
     ).toBeNull();
+  });
+});
+
+/** The checkpoints that a Claim of `target` claims at this Activity. */
+const claimedUpTo = (
+  activity: number,
+  target: number,
+  claimedCheckpoints: number[]
+) =>
+  claimActivityCheckpointsUpTo(
+    withDaily([], { activity, claimedCheckpoints }),
+    target
+  )?.checkpoints.map((each) => each.activity);
+
+describe("claimActivityCheckpointsUpTo (24 — Quests 1.2)", () => {
+  it("claims the checkpoint and the reached checkpoints below it", () => {
+    const profile = withDaily([], {
+      activity: 300,
+      claimedCheckpoints: [100],
+    });
+    const change = claimActivityCheckpointsUpTo(profile, 300);
+    expect(change?.checkpoints.map((each) => each.activity)).toEqual([
+      200, 300,
+    ]);
+    const [, second, third] = ACTIVITY_CHECKPOINTS;
+    expect(change?.profile).toEqual({
+      ...profile,
+      coin:
+        profile.coin + (second?.reward.coin ?? 0) + (third?.reward.coin ?? 0),
+      essence:
+        profile.essence +
+        (second?.reward.essence ?? 0) +
+        (third?.reward.essence ?? 0),
+      quests: { ...profile.quests, claimedCheckpoints: [100, 200, 300] },
+    });
+  });
+
+  it("does not claim a reached checkpoint above it", () => {
+    expect(claimedUpTo(300, 200, [100])).toEqual([200]);
+    expect(claimedUpTo(300, 200, [])).toEqual([100, 200]);
+  });
+
+  it("is `null` for a checkpoint that is not reached, even with a reached one below", () => {
+    expect(claimedUpTo(200, 300, [100])).toBeUndefined();
+  });
+
+  it("is `null` for a claimed checkpoint and for an Activity with no checkpoint", () => {
+    expect(claimedUpTo(300, 200, [100, 200])).toBeUndefined();
+    expect(claimedUpTo(300, 250, [100])).toBeUndefined();
   });
 });
 

@@ -35,7 +35,7 @@ const PLAYER = withDaily([
     claimed: false,
   },
   { templateId: "daily.keyword", param: "rally", progress: 1, claimed: false },
-  { templateId: "daily.raceDeck", param: "orc", progress: 0, claimed: false },
+  { templateId: "daily.kills", param: null, progress: 0, claimed: false },
 ]);
 
 const glyphOf = (templateId: string) =>
@@ -44,6 +44,41 @@ const glyphOf = (templateId: string) =>
   )[0]?.glyph;
 
 describe("questRows (24 — Quests 3)", () => {
+  it("sends a Dungeon goal to the Dungeons when they are open", () => {
+    const quests = [
+      {
+        templateId: "daily.dungeon",
+        param: null,
+        progress: 0,
+        claimed: false,
+      },
+      { templateId: "daily.win", param: null, progress: 0, claimed: false },
+    ];
+    const open = {
+      ...withDaily(quests),
+      xp: PLAYER_LEVEL_XP[UNLOCK_LEVELS.dungeon1 - 1] ?? 0,
+    };
+    expect(questRows(open).map((row) => row.destination)).toEqual([
+      "dungeons",
+      "campaign",
+    ]);
+  });
+
+  it("sends a Dungeon goal to the Campaign while the Dungeons are locked", () => {
+    const locked = {
+      ...withDaily([
+        {
+          templateId: "daily.dungeon",
+          param: null,
+          progress: 0,
+          claimed: false,
+        },
+      ]),
+      xp: 0,
+    };
+    expect(questRows(locked)[0]?.destination).toBe("campaign");
+  });
+
   it("gives each Daily Quest its state and its reward", () => {
     const rows = questRows(PLAYER);
     expect(rows.map((row) => row.quest.state)).toEqual([
@@ -62,13 +97,13 @@ describe("questRows (24 — Quests 3)", () => {
       "leaf",
       "flame",
       "sparkles",
-      "tusks",
+      "skull",
     ]);
   });
 
   it("gives a goal with no slot its own icon", () => {
     expect(glyphOf("daily.skillCards")).toBe("skillCard");
-    expect(glyphOf("daily.bossOrDungeon")).toBe("crown");
+    expect(glyphOf("daily.boss")).toBe("crown");
     expect(glyphOf("daily.kills")).toBe("skull");
     expect(glyphOf("daily.dungeon")).toBe("cave");
   });
@@ -107,7 +142,7 @@ describe("questRows (24 — Quests 3)", () => {
   });
 
   it("puts the count and the name of the parameter into the goal", () => {
-    const [win, race, fire, keyword, deck] = questRows(PLAYER);
+    const [win, race, fire, keyword] = questRows(PLAYER);
     expect(win?.name).toEqual({ key: "quests.templates.daily.win.name" });
     expect(win?.goal).toEqual({
       key: "quests.templates.daily.win.goal",
@@ -115,7 +150,7 @@ describe("questRows (24 — Quests 3)", () => {
     });
     expect(race?.goal).toEqual({
       key: "quests.templates.daily.raceWins.goal",
-      args: { count: 2, creatures: 1, race: { key: "races.elf" } },
+      args: { count: 2, race: { key: "races.elf" } },
     });
     expect(fire?.goal).toEqual({
       key: "quests.templates.daily.damageType.goal",
@@ -124,10 +159,6 @@ describe("questRows (24 — Quests 3)", () => {
     expect(keyword?.goal).toEqual({
       key: "quests.templates.daily.keyword.goal",
       args: { count: 6, keyword: { key: "quests.keywordNames.rally" } },
-    });
-    expect(deck?.goal).toEqual({
-      key: "quests.templates.daily.raceDeck.goal",
-      args: { count: 2, creatures: 4, race: { key: "races.orc" } },
     });
   });
 

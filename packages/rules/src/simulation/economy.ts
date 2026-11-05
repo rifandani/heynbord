@@ -1520,7 +1520,7 @@ export const questBattles = (template: QuestTemplate): number => {
   switch (goal.kind) {
     case "wins":
     case "raceWins":
-    case "bossOrDungeonWins":
+    case "bossWins":
     case "dungeonWins": {
       return template.count;
     }

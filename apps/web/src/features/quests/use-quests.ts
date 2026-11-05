@@ -1,6 +1,7 @@
 import { RegistryContext } from "@effect/atom-react";
 import {
   claimActivityCheckpoints,
+  claimActivityCheckpointsUpTo,
   claimAllQuests,
   claimQuest,
 } from "@workspace/rules";
@@ -28,6 +29,17 @@ export const useQuests = () => {
     },
     claimCheckpoints: (): number => {
       const change = claimActivityCheckpoints(registry.get(profileAtom));
+      if (!change) {
+        return 0;
+      }
+      registry.set(profileAtom, change.profile);
+      return change.checkpoints.length;
+    },
+    claimCheckpointsUpTo: (activity: number): number => {
+      const change = claimActivityCheckpointsUpTo(
+        registry.get(profileAtom),
+        activity
+      );
       if (!change) {
         return 0;
       }

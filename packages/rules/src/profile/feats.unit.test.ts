@@ -197,7 +197,7 @@ const TEN_KEYWORDS = [
   "regenerate",
 ] as const satisfies readonly ActivatedKeyword[];
 
-describe("metFeats (Achievements 2.4)", () => {
+describe("metFeats (Achievements 2.5)", () => {
   it.each([
     ["onlyHuman", "human.shieldbearer", "elf.brambleDuelist"],
     ["onlyElf", "elf.brambleDuelist", "human.shieldbearer"],
