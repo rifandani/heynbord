@@ -136,6 +136,8 @@ for (const locale of ["en-us", "id-id"] as const) {
         };
         try {
           await page.goto("/");
+          // The SSR document is visible before its controls are hydrated.
+          await page.waitForLoadState("networkidle");
           await audit("home");
           await page.getByTestId("play-link").hover();
           await audit("home-hover");
@@ -194,6 +196,13 @@ for (const locale of ["en-us", "id-id"] as const) {
           await audit("settings-muted");
           await page.getByTestId("settings-close").press("Enter");
           await hooks(page, "unlock");
+          await page.getByTestId("town-shortcut-objectives").press("Enter");
+          await expect(page.getByTestId("objectives-dialog")).toBeVisible();
+          await audit("objectives");
+          await page.getByTestId("objectives-tab-daily").press("Enter");
+          await expect(page.getByTestId("objectives-daily")).toBeVisible();
+          await audit("objectives-daily");
+          await page.keyboard.press("Escape");
           for (const screen of [
             "campaign",
             "packs",
@@ -201,12 +210,20 @@ for (const locale of ["en-us", "id-id"] as const) {
             "hero",
             "dungeons",
             "heynspire",
-            "achievements",
             "bazaar",
             "seaport",
           ] as const) {
             await page.getByTestId(`town-shortcut-${screen}`).press("Enter");
             await expect(page.getByTestId(screen)).toBeVisible();
+            if (screen === "campaign") {
+              // Unlocking Heynspire also unlocks the unseen Region 5 scenes.
+              // Dismiss them through their controls before opening a Stage.
+              const skip = page.getByTestId("story-skip");
+              await expect(skip).toBeVisible();
+              while (await skip.isVisible()) {
+                await skip.press("Enter");
+              }
+            }
             await audit(screen);
             if (screen === "packs") {
               await page.getByTestId("drop-rates-button").press("Enter");
@@ -271,6 +288,10 @@ for (const locale of ["en-us", "id-id"] as const) {
           await expect(page.locator("[data-battle-canvas] canvas")).toBeVisible(
             { timeout: 30_000 }
           );
+          // The loading cover stays until the scene is ready.
+          await expect(page.getByTestId("battle-loading")).toBeHidden({
+            timeout: 20_000,
+          });
           await audit("battle");
           const endTurn = page.getByTestId("end-turn");
           await endTurn.hover();
@@ -309,7 +330,9 @@ for (const locale of ["en-us", "id-id"] as const) {
           await audit("battle-log");
           await page.getByTestId("back-to-live").press("Enter");
           await hooks(page, "victory");
-          await expect(page.getByTestId("battle-result")).toBeVisible();
+          await expect(page.getByTestId("battle-result")).toBeVisible({
+            timeout: 30_000,
+          });
           await audit("victory");
           await page.getByTestId("share-replay").press("Enter");
           await expect(page.locator("[data-sonner-toast]")).toBeVisible();
@@ -321,6 +344,9 @@ for (const locale of ["en-us", "id-id"] as const) {
           await expect(page.getByTestId("replay-badge")).toBeVisible({
             timeout: 30_000,
           });
+          await expect(page.getByTestId("battle-loading")).toBeHidden({
+            timeout: 20_000,
+          });
           await page.getByTestId("log-play").press("Enter");
           await audit("watching-replay");
           await page.getByTestId("leave-replay").press("Enter");
@@ -329,7 +355,9 @@ for (const locale of ["en-us", "id-id"] as const) {
             () => "__THREE_GAME_TEST_HOOKS__" in window
           );
           await hooks(page, "defeat");
-          await expect(page.getByTestId("battle-result")).toBeVisible();
+          await expect(page.getByTestId("battle-result")).toBeVisible({
+            timeout: 30_000,
+          });
           await audit("defeat");
           await hooks(page, "dungeon-three");
           await expect(page.getByTestId("battle-result")).toBeHidden();

@@ -2,6 +2,7 @@ import { useAtomSet, useAtomValue } from "@effect/atom-react";
 import { getStage, starsFor } from "@workspace/rules";
 import type { BattleResult, Side } from "@workspace/rules";
 import { cn } from "cn";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Button } from "react-aria-components";
 
 import { GameButton } from "@/core/components/game/game-button";
@@ -17,10 +18,12 @@ import {
   battleLogAtom,
   battleRewardsAtom,
   battleSessionAtom,
+  defeatPanelAtom,
 } from "@/features/battle/battle.atoms";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import {
   ResultAchievements,
+  ResultQuests,
   ResultCard,
   ResultCoin,
   ResultEssence,
@@ -29,7 +32,14 @@ import {
   ResultTickets,
   ResultXp,
 } from "@/features/battle/components/result-rewards";
-import { DROP_SEAL, SHADOW_RESULT_WELL } from "@/features/battle/tokens";
+import { DEFEAT } from "@/features/battle/scene/defeat";
+import {
+  DEFEAT_SCRIM,
+  DROP_SEAL,
+  SHADOW_RESULT_WELL,
+  VICTORY_SCRIM,
+  VICTORY_TITLE_BURST,
+} from "@/features/battle/tokens";
 import type { useBattle } from "@/features/battle/use-battle";
 import { useGameText } from "@/features/battle/use-game-text";
 import { StarIcon } from "@/features/campaign/components/campaign-icons";
@@ -86,29 +96,55 @@ export const TurnBanner = () => {
   );
 };
 
+/**
+ * "Victory" or "Defeat", and the name of the Battle. In a Live win, `stamp`
+ * stamps the word onto the parchment with a ring of light, at the moment that
+ * the Hero raises its sword (`scene/victory.ts`), and the rules draw out from
+ * the name. In a Live loss, `ink` brings "Defeat" up out of the parchment,
+ * slow, a little after the panel settles (`scene/defeat.ts`).
+ */
 const ResultTitle = ({
   won,
   name,
+  stamp = false,
+  ink = false,
 }: {
   readonly won: boolean;
   readonly name: string;
+  readonly stamp?: boolean;
+  readonly ink?: boolean;
 }) => {
   const { tr } = useGameText();
+  const rule = "bg-parchment-rule h-px flex-1";
+  const draw =
+    stamp &&
+    "motion-safe:animate-[result-rule-draw_560ms_cubic-bezier(0.16,1,0.3,1)_320ms_both]";
   return (
-    <header>
+    <header className="relative">
+      {stamp ? (
+        <span
+          aria-hidden
+          className="pointer-events-none absolute top-[1.35rem] left-1/2 size-44 -translate-x-1/2 -translate-y-1/2 rounded-full opacity-0 motion-safe:animate-[result-title-burst_900ms_cubic-bezier(0.16,1,0.3,1)_140ms_both] [@media(max-height:500px)]:top-[0.9rem] [@media(max-height:500px)]:size-32"
+          style={{ backgroundImage: VICTORY_TITLE_BURST }}
+        />
+      ) : null}
       <h2
         id="battle-result-title"
         className={cn(
-          "font-display text-4xl leading-tight font-black [@media(max-height:500px)]:text-2xl",
-          won ? "text-victory-amber" : "text-blood-banner"
+          "font-display relative text-4xl leading-tight font-black [@media(max-height:500px)]:text-2xl",
+          won ? "text-victory-amber" : "text-blood-banner",
+          stamp &&
+            "motion-safe:animate-[result-victory-stamp_560ms_cubic-bezier(0.16,1,0.3,1)_120ms_both]",
+          ink &&
+            "motion-safe:animate-[result-defeat-ink_900ms_cubic-bezier(0.16,1,0.3,1)_260ms_both] motion-reduce:animate-[result-scrim-in_400ms_ease-out_260ms_both]"
         )}
       >
         {won ? tr("battle.victory") : tr("battle.defeat")}
       </h2>
-      <p className="text-ink-soft mt-1 flex items-center gap-3 text-sm">
-        <span aria-hidden className="bg-parchment-rule h-px flex-1" />
+      <p className="text-ink-soft relative mt-1 flex items-center gap-3 text-sm">
+        <span aria-hidden className={cn(rule, "origin-right", draw)} />
         <span className="max-w-[75%] truncate">{name}</span>
-        <span aria-hidden className="bg-parchment-rule h-px flex-1" />
+        <span aria-hidden className={cn(rule, "origin-left", draw)} />
       </p>
     </header>
   );
@@ -217,6 +253,39 @@ const useShownRewards = (session: BattleSession): ShownRewards | null => {
   return shown?.options === session.options ? shown : null;
 };
 
+/** The exit of the result panel, in milliseconds: faster than its entrance. */
+const RESULT_EXIT_MS = 200;
+
+/**
+ * The exit of the result panel: a button first lets the panel go, then
+ * runs its action, so the next screen does not cut in. A second press while
+ * the panel goes does nothing.
+ */
+const useResultExit = () => {
+  const [leaving, setLeaving] = useState(false);
+  const timer = useRef<number | null>(null);
+  useEffect(
+    () => () => {
+      if (timer.current !== null) {
+        window.clearTimeout(timer.current);
+      }
+    },
+    []
+  );
+  const exit = useCallback((action: () => void) => {
+    if (timer.current !== null) {
+      return;
+    }
+    setLeaving(true);
+    timer.current = window.setTimeout(() => {
+      timer.current = null;
+      setLeaving(false);
+      action();
+    }, RESULT_EXIT_MS);
+  }, []);
+  return { leaving, exit };
+};
+
 /** The words and the test ID of each button of a Floor result. */
 const FLOOR_ACTION: Readonly<
   Record<FloorResultAction, { readonly key: string; readonly testId: string }>
@@ -239,10 +308,12 @@ const FloorResultButtons = ({
   battle,
   session,
   actions,
+  exit,
 }: {
   readonly battle: ReturnType<typeof useBattle>;
   readonly session: BattleSession;
   readonly actions: readonly FloorResultAction[];
+  readonly exit: (action: () => void) => void;
 }) => {
   const { tr } = useGameText();
   const openPanel = useAtomSet(floorPanelAtom);
@@ -264,7 +335,7 @@ const FloorResultButtons = ({
         "py-1.5 leading-tight text-balance",
         actions.length === 1 && "col-span-2"
       )}
-      onPress={() => run(action)}
+      onPress={() => exit(() => run(action))}
       data-testid={FLOOR_ACTION[action].testId}
     >
       {tr(FLOOR_ACTION[action].key)}
@@ -289,30 +360,61 @@ const ResultDialog = ({
   const { floor } = session.options;
   const stage = inDungeon || floor ? null : getStage(session.options.stageId);
   const shown = useShownRewards(session);
+  const { leaving, exit } = useResultExit();
   useResultHints(result, session.tutorial !== null);
   return (
-    <div className={cn(GAME_SCRIM, "absolute z-40")}>
+    <div
+      className={cn(
+        GAME_SCRIM,
+        "absolute z-40",
+        // A win and a loss leave the Hero clear at the left (`scene/victory.ts`,
+        // `scene/defeat.ts`): the panel stands at the right, over a scrim that
+        // is dark only there. A loss fades its scrim in slower.
+        "bg-transparent backdrop-blur-none sm:justify-end sm:pr-[max(1.5rem,5vw)]",
+        won
+          ? "motion-safe:animate-[result-scrim-in_480ms_ease-out_both]"
+          : "animate-[result-scrim-in_900ms_ease-out_both]",
+        leaving && "animate-[result-scrim-out_200ms_ease-in_forwards]"
+      )}
+      style={{ backgroundImage: won ? VICTORY_SCRIM : DEFEAT_SCRIM }}
+      data-victory-result={won ? true : undefined}
+      data-defeat-result={won ? undefined : true}
+    >
       <section
         // oxlint-disable-next-line jsx-a11y/prefer-tag-over-role react-doctor/prefer-html-dialog -- a native modal `<dialog>` changes Escape and top-layer behavior; the Retry button takes focus on open
         role="dialog"
         aria-modal="true"
         aria-labelledby="battle-result-title"
-        className="fade-in zoom-in-95 animate-in border-frame-wood bg-parchment text-ink max-h-full w-[min(460px,94vw)] overflow-y-auto rounded-2xl border-4 px-6 pt-5 pb-3 text-center shadow-2xl duration-300 motion-reduce:animate-none [@media(max-height:500px)]:w-[min(560px,94vw)] [@media(max-height:500px)]:px-4 [@media(max-height:500px)]:pt-3 [@media(max-height:500px)]:pb-2"
+        className={cn(
+          "border-frame-wood bg-parchment text-ink max-h-full w-[min(460px,94vw)] overflow-y-auto rounded-2xl border-4 px-6 pt-5 pb-3 text-center shadow-2xl [@media(max-height:500px)]:w-[min(560px,94vw)] [@media(max-height:500px)]:px-4 [@media(max-height:500px)]:pt-3 [@media(max-height:500px)]:pb-2",
+          won
+            ? "motion-safe:animate-[result-victory-rise_560ms_cubic-bezier(0.16,1,0.3,1)_both] motion-reduce:animate-[result-scrim-in_200ms_ease-out_both]"
+            : "motion-safe:animate-[result-defeat-settle_720ms_cubic-bezier(0.22,1,0.36,1)_both] motion-reduce:animate-[result-scrim-in_400ms_ease-out_both]",
+          leaving &&
+            "animate-[result-exit_200ms_cubic-bezier(0.4,0,1,1)_forwards] motion-reduce:animate-[result-scrim-out_200ms_ease-in_forwards]"
+        )}
         data-testid="battle-result"
       >
-        <ResultTitle won={won} name={text(battleNameRef(session.options))} />
+        <ResultTitle
+          won={won}
+          name={text(battleNameRef(session.options))}
+          stamp={won}
+          ink={!won}
+        />
         <ResultReason result={result} />
         {won && stage ? (
           <ResultStars stars={starsFor(session.rules, stage)} />
         ) : null}
         {shown ? <ResultRewards shown={shown} /> : null}
         {shown ? <ResultAchievements ids={shown.achievements} /> : null}
+        {shown ? <ResultQuests lines={shown.quests} /> : null}
         <div className="mt-4 grid grid-cols-2 gap-2 [@media(max-height:500px)]:mt-2 [@media(max-height:500px)]:grid-cols-[1fr_1fr_auto]">
           {floor ? (
             <FloorResultButtons
               battle={battle}
               session={session}
               actions={floorResultActions(floor.number, won)}
+              exit={exit}
             />
           ) : (
             <>
@@ -321,7 +423,9 @@ const ResultDialog = ({
                 autoFocus
                 className="py-1.5 leading-tight text-balance"
                 onPress={() =>
-                  battle.start({ ...session.options, seed: randomSeed() })
+                  exit(() =>
+                    battle.start({ ...session.options, seed: randomSeed() })
+                  )
                 }
                 data-testid="retry"
               >
@@ -330,7 +434,7 @@ const ResultDialog = ({
               <GameButton
                 intent="wood"
                 className="py-1.5 leading-tight text-balance"
-                onPress={() => battle.leave()}
+                onPress={() => exit(() => battle.leave())}
                 data-testid={
                   inDungeon ? "back-to-dungeons" : "back-to-campaign"
                 }
@@ -420,10 +524,54 @@ const ReplayResultDialog = ({
 const replayEnded = (log: BattleLogState | null): boolean =>
   log !== null && !log.playing && atLastEntry(log);
 
+/** The longest wait for the panel of a loss, if the scene never asks for it (no WebGL). */
+const DEFEAT_PANEL_LATEST_MS = (DEFEAT.panel + 1.2) * 1000;
+
+/** The keys that do not open the panel of a loss early: a modifier alone. */
+const MODIFIER_KEYS = new Set(["Alt", "Control", "Meta", "Shift"]);
+
+/**
+ * True while the panel of a Live loss waits for the defeat sequence
+ * (`scene/defeat.ts`). The scene opens it at `DEFEAT.panel`. A key or a click
+ * opens it at once, so a Player who wants to go on never waits. If the scene
+ * does not run, it opens a little later by itself.
+ */
+const useDefeatHold = (session: BattleSession | null): boolean => {
+  const opened = useAtomValue(defeatPanelAtom);
+  const open = useAtomSet(defeatPanelAtom);
+  const options = session?.options ?? null;
+  const waiting =
+    session !== null &&
+    !session.watching &&
+    session.view.result?.winner === "enemy" &&
+    opened !== options;
+  useEffect(() => {
+    if (!waiting || !options) {
+      return;
+    }
+    const openNow = () => open(options);
+    const onKey = (event: KeyboardEvent) => {
+      if (!MODIFIER_KEYS.has(event.key)) {
+        openNow();
+      }
+    };
+    const timer = window.setTimeout(openNow, DEFEAT_PANEL_LATEST_MS);
+    window.addEventListener("pointerdown", openNow);
+    window.addEventListener("keydown", onKey);
+    return () => {
+      window.clearTimeout(timer);
+      window.removeEventListener("pointerdown", openNow);
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [waiting, options, open]);
+  return waiting;
+};
+
 /**
  * Victory or defeat, the Stars of a Stage (GDD 4.11), and what to do next.
  * The Battle Log opens from it, and "Back to Live" shows it again. A Replay
- * shows its own result at its last Log Entry.
+ * shows its own result at its last Log Entry. The panel of a loss waits for
+ * the defeat sequence (`useDefeatHold`).
  */
 export const ResultOverlay = ({
   battle,
@@ -431,13 +579,14 @@ export const ResultOverlay = ({
   readonly battle: ReturnType<typeof useBattle>;
 }) => {
   const session = useAtomValue(battleSessionAtom);
+  const holding = useDefeatHold(session);
   if (session?.watching) {
     const { result } = session.rules;
     return result && replayEnded(battle.log) ? (
       <ReplayResultDialog battle={battle} session={session} result={result} />
     ) : null;
   }
-  if (!session?.view.result || !isIdle(session) || battle.log) {
+  if (!session?.view.result || !isIdle(session) || battle.log || holding) {
     return null;
   }
   return (

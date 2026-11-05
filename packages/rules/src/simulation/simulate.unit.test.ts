@@ -230,13 +230,18 @@ describe("simulateDungeon (GDD 13, step 6)", () => {
     );
   });
 
-  it("at level 30, above all Stages, takes the first-win cards of the Stages of Region 5 too, in the Deck limits", () => {
+  it("at level 30, above all Stages, fills the Deck to its limits in Stage order", () => {
     const deck = dungeonDeck({ ...dungeon, unlockLevel: 30 }, raiders);
     expect(deck.length).toBeLessThanOrEqual(30);
     expect(deckCountdown(deck)).toBeLessThanOrEqual(75);
     expect(deck.slice(0, raiders.deck.length)).toEqual(raiders.deck);
-    // The first-win card of Stage 5-1, at Recommended level 20.
-    expect(deck.map((entry) => entry.cardId)).toContain("undead.rattleknife");
+    // The Deck reaches the Countdown limit before the Region 5 rewards, so the
+    // first-win card of Stage 5-1 does not fit.
+    expect(deckCountdown(deck)).toBe(75);
+    expect(deck.map((entry) => entry.cardId)).toContain("elf.rootboundGuard");
+    expect(deck.map((entry) => entry.cardId)).not.toContain(
+      "undead.rattleknife"
+    );
   });
 
   it("plays at the unlock level and gives the same report each time", () => {
@@ -461,9 +466,9 @@ describe("diagnostic Archetypes (Archetypes 2.1, 2.2)", () => {
         gear: NO_GEAR,
       })
     ).toMatchObject({
-      winRate: 0.525,
-      firstSideWinRate: 0.425,
-      averageTurn: 15.125,
+      winRate: 0.5,
+      firstSideWinRate: 0.5,
+      averageTurn: 14.475,
     });
     // Gear 3 rolls Crit and Block.
     expect(
@@ -473,9 +478,9 @@ describe("diagnostic Archetypes (Archetypes 2.1, 2.2)", () => {
         gear: { weapon: 6, armor: 6, trinket: 6, banner: 6 },
       })
     ).toMatchObject({
-      winRate: 0.5,
-      firstSideWinRate: 0.5,
-      averageTurn: 15.475,
+      winRate: 0.525,
+      firstSideWinRate: 0.475,
+      averageTurn: 15.425,
     });
   });
 });

@@ -27,6 +27,8 @@ import {
 import type { Peek } from "@/features/deck/components/use-card-peek";
 import { ForgeStoneIcon } from "@/features/hero/components/forge-stone-icon";
 import { levelProgress } from "@/features/profile/profile";
+import { questName } from "@/features/quests/quests";
+import type { QuestLine } from "@/features/quests/quests";
 import type { SweepKind } from "@/features/sweep/sweep";
 import { TICKET_GLYPH } from "@/features/sweep/sweep";
 import { BalanceIcon } from "@/features/town/components/balance-icon";
@@ -200,6 +202,79 @@ export const ResultAchievements = ({
                 {tr("achievements.result.completed")}
               </span>
               <span className="truncate">{name}</span>
+            </span>
+          </li>
+        );
+      })}
+    </ul>
+  );
+};
+
+/**
+ * The Daily Quest progress of a result (24 — Quests 3), under the
+ * Achievements: each Daily Quest that the Battle added progress to, with its
+ * count, or "Daily Quest completed". Each shows on the same Night Plate as the
+ * Coin. No progress shows nothing.
+ */
+export const ResultQuests = ({
+  lines,
+}: {
+  readonly lines: readonly QuestLine[];
+}) => {
+  const { tr, text } = useGameText();
+  if (lines.length === 0) {
+    return null;
+  }
+  return (
+    <ul
+      className="mt-2 flex flex-col gap-1.5 [@media(max-height:500px)]:mt-1.5 [@media(max-height:500px)]:flex-row [@media(max-height:500px)]:flex-wrap"
+      aria-label={tr("quests.result.label")}
+      data-testid="result-quests"
+    >
+      {lines.map(({ quest }) => {
+        const name = text(questName(quest.id));
+        const { current, target } = quest.progress;
+        const completed = quest.state !== "inProgress";
+        return (
+          <li
+            key={quest.id}
+            className={cn(
+              REWARD_PLATE,
+              "w-full max-w-full gap-2.5 [@media(max-height:500px)]:w-auto"
+            )}
+            data-testid="result-quest"
+            data-quest={quest.id}
+            data-completed={completed || undefined}
+          >
+            <GlyphIcon
+              glyph="scroll"
+              className={cn(
+                "size-5 shrink-0",
+                completed ? "text-ready-gold" : "text-gold-trim"
+              )}
+            />
+            <span className="sr-only">
+              {completed
+                ? tr("quests.notice.one", { name })
+                : tr("quests.result.line", { name, current, target })}
+            </span>
+            <span
+              aria-hidden
+              className="flex min-w-0 flex-col items-start gap-0.5 text-left"
+            >
+              <span className="text-gold-trim text-[10px] tracking-wide uppercase">
+                {completed
+                  ? tr("quests.result.completed")
+                  : tr("quests.result.progress")}
+              </span>
+              <span className="flex min-w-0 items-baseline gap-1.5">
+                <span className="truncate">{name}</span>
+                {completed ? null : (
+                  <span className="tabular-nums">
+                    {tr("quests.result.count", { current, target })}
+                  </span>
+                )}
+              </span>
             </span>
           </li>
         );

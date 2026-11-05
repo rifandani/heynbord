@@ -16,7 +16,10 @@ import {
   watchBattleLog,
 } from "@/features/battle/battle-log-session";
 import type { BattleLogState } from "@/features/battle/battle-log-session";
-import { recordBattle } from "@/features/battle/battle-result";
+import {
+  recordAbandonedBattle,
+  recordBattle,
+} from "@/features/battle/battle-result";
 import type {
   BattleOptions,
   BattleSession,
@@ -272,14 +275,17 @@ export const useBattle = () => {
 
   /** Back to the screen that started the Battle, or to the Town after a Replay. */
   const leave = () => {
-    const wasWatching = registry.get(battleSessionAtom)?.watching ?? false;
+    const left = registry.get(battleSessionAtom);
+    if (left) {
+      recordAbandonedBattle(registry, left);
+    }
     select(null);
     registry.set(inspectedUnitAtom, null);
     // The Battle Log is not saved: it goes away with the Battle.
     registry.set(battleLogAtom, null);
     stageBattle(null);
     commit(null);
-    if (wasWatching) {
+    if (left?.watching) {
       registry.set(gameScreenAtom, "town");
     }
   };

@@ -67,6 +67,7 @@
         "scripts/security/**",
         "scripts/unit-model/**",
         "apps/web/scripts/**",
+        "packages/rules/scripts/rebalance-*.ts",
         "vitest.msw-setup.ts"
       ],
       "rules": {

@@ -3,7 +3,12 @@ import { getCard } from "@workspace/rules";
 
 import type { BattleSession } from "@/features/battle/battle-session";
 import { isAtLowHp } from "@/features/battle/health";
+import {
+  heroDefeatPhase,
+  heroLosingBlowPhase,
+} from "@/features/battle/scene/defeat";
 import type { HeroClipName } from "@/features/battle/scene/hero-clips";
+import { heroVictoryPhase } from "@/features/battle/scene/victory";
 
 export interface HeroAnimation {
   readonly name: HeroClipName;
@@ -50,7 +55,11 @@ const actionAnimation = (
     event.target.hero === 0 &&
     event.hp < (current?.before.sides.player.heroes[0]?.hp ?? 0)
   ) {
-    return { name: "hurt", phase };
+    // The last hit is not like the others: the Hero recoils into its fall
+    // (`scene/defeat.ts`).
+    return event.hp <= 0
+      ? { name: "defeat", phase: heroLosingBlowPhase(phase) }
+      : { name: "hurt", phase };
   }
   if (
     event?._tag === "CardPlayed" &&
@@ -65,17 +74,34 @@ const actionAnimation = (
   return summonAnimation(session, phase);
 };
 
-/** The Player Hero's animation at one point on the Battle playback clock. */
+/**
+ * The Player Hero's animation at one point on the Battle playback clock. In a
+ * Live win, `victoryTime` is the time of the victory sequence: the clip
+ * follows it, and then loops its held pose (`scene/victory.ts`). In a Live
+ * loss, `defeatTime` is the time of the defeat sequence: the Hero staggers
+ * and drops to its knee (`scene/defeat.ts`).
+ */
 export const heroAnimation = (
   session: BattleSession,
   progress: number,
   time: number,
   loopSeconds: number,
-  reducedMotion: boolean
+  reducedMotion: boolean,
+  victoryTime: number | null = null,
+  defeatTime: number | null = null
 ): HeroAnimation => {
   const { view, current } = session;
   const [hero] = view.sides.player.heroes;
   const phase = Math.max(0, Math.min(1, progress));
+  if (view.result?.winner === "player" && victoryTime !== null) {
+    return {
+      name: "victory",
+      phase: heroVictoryPhase(victoryTime, reducedMotion),
+    };
+  }
+  if (view.result?.winner === "enemy" && defeatTime !== null) {
+    return { name: "defeat", phase: heroDefeatPhase(defeatTime) };
+  }
   if (view.result) {
     return {
       name: view.result.winner === "player" ? "victory" : "defeat",

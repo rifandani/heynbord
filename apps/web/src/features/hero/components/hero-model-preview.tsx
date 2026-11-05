@@ -147,7 +147,9 @@ export const HeroModelPreview = ({
           </Button>
         </div>
       ) : (
-        <output>{tr("hero.modelLoading")}</output>
+        <output className="bg-night-plate text-cream self-center rounded px-2 py-1 text-xs">
+          {tr("hero.modelLoading")}
+        </output>
       )}
     </section>
   );

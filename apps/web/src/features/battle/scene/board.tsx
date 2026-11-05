@@ -12,6 +12,7 @@ import {
   RUNNER_MARGIN_PX,
   RUNNER_SQUARE_PX,
 } from "@/features/battle/scene/textures";
+import { useSceneHold } from "@/features/battle/use-scene-hold";
 import { activeBoardSkinAtom } from "@/features/profile/profile.atoms";
 
 /** The size of a Lane runner plane with its shade margin, in Squares. */
@@ -39,6 +40,9 @@ const LaneRunner = ({
     const loaded = loadedLaneRunner(skin, lane);
     return loaded ? { skin, texture: loaded } : null;
   });
+  // A skin with no Square sheet keeps the Standard ground; it ends the hold.
+  const [missing, setMissing] = useState<CosmeticId | null>(null);
+  useSceneHold(art?.skin !== skin && missing !== skin);
   useEffect(() => {
     if (art?.skin === skin) {
       return;
@@ -46,8 +50,13 @@ const LaneRunner = ({
     let mounted = true;
     const load = async () => {
       const texture = await laneRunnerTexture(skin, lane);
-      if (mounted && texture) {
+      if (!mounted) {
+        return;
+      }
+      if (texture) {
         setArt({ skin, texture });
+      } else {
+        setMissing(skin);
       }
     };
     void load();

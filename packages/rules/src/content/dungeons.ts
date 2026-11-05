@@ -11,7 +11,7 @@ import { UNLOCK_LEVELS } from "./unlocks";
 const NO_GEAR = { weapon: 0, armor: 0, trinket: 0, banner: 0 };
 
 /** The Gear of each Dungeon 3 Boss: its "higher power than in the Campaign". */
-const DUNGEON_3_GEAR = { weapon: 25, armor: 0, trinket: 25, banner: 25 };
+const DUNGEON_3_GEAR = { weapon: 19, armor: 0, trinket: 19, banner: 19 };
 
 /**
  * The Dungeons (GDD 8.4). Each Dungeon has 4 Lanes (ADR-0010) and 1 enemy
@@ -35,7 +35,7 @@ export const DUNGEONS: readonly DungeonDefinition[] = [
         // of the Player.
         id: "foremanGritjaw",
         front: [0, 1],
-        heroHp: 24,
+        heroHp: 30,
         classId: "warrior",
         gear: NO_GEAR,
         deck: [
@@ -74,7 +74,7 @@ export const DUNGEONS: readonly DungeonDefinition[] = [
         // cheap Units come at the Player in her 2 Lanes.
         id: "rootwardenSylla",
         front: [2, 3],
-        heroHp: 24,
+        heroHp: 30,
         classId: "ranger",
         gear: NO_GEAR,
         deck: [

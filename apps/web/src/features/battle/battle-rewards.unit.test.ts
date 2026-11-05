@@ -1,16 +1,20 @@
+import type { Profile } from "@workspace/rules";
 import {
   enemyHeroDamage,
   floorFirstWinReward,
   getFloor,
   getStage,
   newProfile,
+  PLAYER_LEVEL_XP,
   starsFor,
+  UNLOCK_LEVELS,
 } from "@workspace/rules";
 import { describe, expect, it } from "vitest";
 
 import {
   dungeonResultOf,
   floorResultOf,
+  recordAbandon,
   recordBattleResult,
   stageResultOf,
 } from "@/features/battle/battle-rewards";
@@ -117,10 +121,10 @@ const feats = (profile: {
 }) => profile.completedAchievements.filter((id) => id.startsWith("feat."));
 
 describe("recordBattleResult with Feats (Achievements 1.3)", () => {
-  // The QA win of seed 1 Routs the enemy Side. The Tutorial is won, so the
+  // The QA win of seed 3 Routs the enemy Side. The Tutorial is won, so the
   // Battle is a repeat win of Stage 1-1.
   const tutorialWon = { ...newProfile(7), stageResults: { "1-1": 1 } };
-  const auto = buildQaState("victory", 1);
+  const auto = buildQaState("victory", 3);
   if (!auto) {
     throw new Error("No victory Battle");
   }
@@ -259,6 +263,85 @@ describe("recordBattleResult of a Floor (Economy 2.3)", () => {
     expect(recordBattleResult(climber(1), won, null)).toBeNull();
     expect(
       recordBattleResult({ ...newProfile(0), heynspireFloorsWon: 0 }, won, null)
+    ).toBeNull();
+  });
+});
+
+/** A Profile at level 3 with the Tutorial won and these Daily Quests. */
+const withDailies = (dailies: Profile["quests"]["daily"]): Profile => {
+  const fresh = newProfile(7);
+  return {
+    ...fresh,
+    xp: PLAYER_LEVEL_XP[UNLOCK_LEVELS.quests - 1] ?? 0,
+    stageResults: { "1-1": 1 },
+    quests: { ...fresh.quests, lastDailyReset: 20_000, daily: dailies },
+  };
+};
+
+describe("recordBattleResult with Quests (24 — Quests 1.3)", () => {
+  const profile = withDailies([
+    { templateId: "daily.win", param: null, progress: 2, claimed: false },
+    {
+      templateId: "daily.boss",
+      param: null,
+      progress: 0,
+      claimed: false,
+    },
+  ]);
+  const auto = finished("victory");
+
+  it("adds the progress of a won Battle in the same Profile write, also with Auto-play, and shows it", () => {
+    for (const session of [auto, { ...auto, autoPlayed: false }]) {
+      const recorded = recordBattleResult(profile, session, null);
+      expect(recorded?.profile.quests.daily[0]?.progress).toBe(3);
+      expect(recorded?.shown.quests).toEqual([
+        {
+          quest: expect.objectContaining({
+            id: "daily.win",
+            state: "completed",
+          }),
+          before: 2,
+        },
+      ]);
+    }
+  });
+
+  it("adds nothing for the Tutorial or a Battle that the dev panel changed", () => {
+    for (const session of [
+      { ...auto, tutorial: startTutorial() },
+      { ...auto, devChanged: true },
+    ]) {
+      const recorded = recordBattleResult(profile, session, null);
+      expect(recorded?.profile.quests).toEqual(profile.quests);
+      expect(recorded?.shown.quests).toEqual([]);
+    }
+  });
+
+  it("adds a loss only to the goals that say play", () => {
+    const recorded = recordBattleResult(profile, finished("defeat"), null);
+    expect(recorded?.profile.quests).toEqual(profile.quests);
+    expect(recorded?.shown.quests).toEqual([]);
+  });
+});
+
+describe("recordAbandon (24 — Quests 1.3)", () => {
+  const profile = withDailies([
+    { templateId: "daily.win", param: null, progress: 0, claimed: false },
+  ]);
+  const won = finished("victory");
+  const abandoned = { ...won, rules: { ...won.rules, result: null } };
+
+  it("records the Abandon of a Battle with no result, and adds nothing to a goal that says win", () => {
+    const change = recordAbandon(profile, abandoned);
+    expect(change).not.toBeNull();
+    expect(change?.profile.quests.daily[0]?.progress).toBe(0);
+  });
+
+  it("is `null` for a Battle with a result, a Replay and the Tutorial", () => {
+    expect(recordAbandon(profile, won)).toBeNull();
+    expect(recordAbandon(profile, { ...abandoned, watching: true })).toBeNull();
+    expect(
+      recordAbandon(profile, { ...abandoned, tutorial: startTutorial() })
     ).toBeNull();
   });
 });

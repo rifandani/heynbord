@@ -6,6 +6,7 @@ import {
   GameButton,
   gameButtonStyles,
 } from "@/core/components/game/game-button";
+import { goldFace } from "@/core/components/game/surfaces";
 import { enemyNameRef } from "@/features/battle/battle-content";
 import type { BattleSession } from "@/features/battle/battle-session";
 import { isIdle } from "@/features/battle/battle-session";
@@ -39,22 +40,52 @@ const TurnBadge = ({
 }) => {
   const { tr } = useGameText();
   return (
-    <div className="border-gold-trim/70 bg-night-plate/85 text-cream flex items-center gap-2 rounded-xl border-2 px-3 py-1">
-      <span
-        className="font-display text-sm font-bold tabular-nums"
-        data-testid="turn-number"
-      >
-        {tr("battle.turn", { number: turnNumber })}
-      </span>
+    <div
+      data-testid="turn-badge"
+      data-side={yourTurn ? "player" : "enemy"}
+      className={cn(
+        "shadow-badge flex h-11 min-w-60 items-center gap-2 rounded-xl border-2 p-1",
+        yourTurn
+          ? goldFace
+          : "border-enemy-red bg-blood-banner text-cream flex-row-reverse"
+      )}
+    >
       <span
         className={cn(
-          "rounded px-1.5 py-0.5 text-xs font-semibold",
-          yourTurn
-            ? "bg-ready-gold text-ink-on-gold"
-            : "bg-blood-banner text-white"
+          "flex flex-1 items-center justify-center gap-1.5 px-1",
+          !yourTurn && "flex-row-reverse"
         )}
       >
-        {yourTurn ? tr("battle.yourTurn") : tr("battle.enemyTurn")}
+        <GlyphIcon
+          glyph="chevron"
+          className={cn(
+            "size-5 shrink-0",
+            yourTurn ? "rotate-90" : "-rotate-90"
+          )}
+        />
+        <span className="font-display text-base leading-none font-black whitespace-nowrap">
+          {yourTurn ? tr("battle.yourTurn") : tr("battle.enemyTurn")}
+        </span>
+      </span>
+      <span
+        className="border-bronze-rim text-cream shadow-badge flex size-12 shrink-0 flex-col items-center justify-center rounded-full border-[3px] bg-[radial-gradient(circle_at_35%_30%,var(--color-plate-ember),var(--color-night-plate)_70%)]"
+        data-testid="turn-number"
+      >
+        <span className="sr-only">
+          {tr("battle.turn", { number: turnNumber })}
+        </span>
+        <span
+          aria-hidden="true"
+          className="text-gold-light text-2xl leading-6 font-black tabular-nums"
+        >
+          {turnNumber}
+        </span>
+        <span
+          aria-hidden="true"
+          className="text-cream-dim text-micro leading-3 font-bold uppercase"
+        >
+          {tr("battle.turnLabel")}
+        </span>
       </span>
     </div>
   );

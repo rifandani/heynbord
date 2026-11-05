@@ -58,7 +58,7 @@ const HINT_ANCHOR: Readonly<Record<HintPlace, string>> = {
   // The Sweep row of the docked Dungeon Panel (the Hint goes at its foot, `hintAnchor`).
   dungeonSweepRow: "[data-hint-anchor='dungeon-sweep-row']",
   tower: "[data-testid='building-heynspire']",
-  achievementsShortcut: "[data-testid='town-shortcut-achievements']",
+  objectivesShortcut: "[data-testid='town-shortcut-objectives']",
   quay: "[data-testid='building-seaport']",
 };
 
@@ -305,7 +305,8 @@ type ShortcutHint =
   | "dungeons"
   | "heynspire"
   | "achievements"
-  | "seaport";
+  | "seaport"
+  | "quests";
 
 type SealShortcut =
   | "deck"
@@ -314,7 +315,7 @@ type SealShortcut =
   | "hero"
   | "dungeons"
   | "heynspire"
-  | "achievements"
+  | "objectives"
   | "seaport";
 
 const SHORTCUT_OF: Readonly<Record<ShortcutHint, SealShortcut>> = {
@@ -326,8 +327,9 @@ const SHORTCUT_OF: Readonly<Record<ShortcutHint, SealShortcut>> = {
   gear: "hero",
   dungeons: "dungeons",
   heynspire: "heynspire",
-  achievements: "achievements",
+  achievements: "objectives",
   seaport: "seaport",
+  quests: "objectives",
 };
 
 /** The glyph of a shortcut while its painted icon does not exist. */
@@ -338,7 +340,7 @@ const SHORTCUT_GLYPH: Readonly<Record<SealShortcut, Glyph>> = {
   hero: "helmet",
   dungeons: "cave",
   heynspire: "tower",
-  achievements: "banner",
+  objectives: "banner",
   seaport: "anchor",
 };
 
@@ -381,7 +383,8 @@ const SubjectIcon = ({ hint }: { readonly hint: HintId }): ReactElement => {
     case "dungeons":
     case "heynspire":
     case "achievements":
-    case "seaport": {
+    case "seaport":
+    case "quests": {
       const shortcut = SHORTCUT_OF[hint];
       const painted = paintedIcon(shortcut);
       return painted ? (

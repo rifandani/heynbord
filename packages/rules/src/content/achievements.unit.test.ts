@@ -39,10 +39,10 @@ describe("ACHIEVEMENTS (Achievements 2)", () => {
     expect(kinds.filter((kind) => kind === "tally")).toHaveLength(3);
   });
 
-  it("lists the categories in screen order, with 8, 5, 9 and 18 Achievements", () => {
+  it("lists the categories in screen order, with 8, 3, 2, 9 and 18 Achievements", () => {
     expect(
       ACHIEVEMENT_CATEGORIES.map((category) => ofCategory(category).length)
-    ).toEqual([8, 5, 9, 18]);
+    ).toEqual([8, 3, 2, 9, 18]);
     const order = ACHIEVEMENTS.map((achievement) =>
       ACHIEVEMENT_CATEGORIES.indexOf(achievement.category)
     );

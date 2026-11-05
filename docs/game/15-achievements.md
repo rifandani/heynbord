@@ -10,7 +10,7 @@ Status: **approved** (2026-10-16). The names are drafts. The data is `ACHIEVEMEN
 
 - An Achievement is **In progress**, then **Completed**, then **Claimed**.
 - The game records an Achievement as Completed the first time that the Player meets its goal. A Completed Achievement stays Completed, also when the Profile changes later. For example, an Extract after "Discover 68 cards" does not undo it.
-- The Player claims the reward on the Achievements screen. Then the reward goes into the Profile. A Star chest works the same way.
+- The Player claims the reward in the Achievements tab of the Objectives dialog. Then the reward goes into the Profile. A Star chest works the same way.
 - Each Achievement can be Completed and Claimed one time only.
 
 ### 1.2 Kinds of goal
@@ -77,17 +77,22 @@ Each Achievement has a fixed ID, for example `feat.onlyUndead`. The Profile keep
 | `campaign.allStars` | Every Star in Heynbord | Get 150 Stars: 3 Stars in all 50 Stages | Profile | Earn-only Cosmetic (hard) |
 | `campaign.allChests` | Chest Hunter | Claim all 15 Star chests | Profile | 500 Coin |
 
-### 2.2 Dungeons and Heynspire
+### 2.2 Dungeons
 
 | ID | Name (draft) | Goal | Kind | Reward |
 | --- | --- | --- | --- | --- |
 | `dungeon.rootdeepMine` | Into the Mine | Win Dungeon 1 (The Rootdeep Mine) | Profile | 25 Heynstones |
 | `dungeon.rimebarrow` | Cold Comfort | Win Dungeon 2 (The Rimebarrow) | Profile | 35 Heynstones |
 | `dungeon.brokenVault` | Vault Breaker | Win Dungeon 3 (The Broken Vault) | Profile | 50 Heynstones |
+
+### 2.3 Heynspire
+
+| ID | Name (draft) | Goal | Kind | Reward |
+| --- | --- | --- | --- | --- |
 | `heynspire.floor25` | Halfway Up | Win Floor 25 | Profile | 30 Heynstones |
 | `heynspire.floor50` | Top of the Spire | Win Floor 50 | Profile | 60 Heynstones |
 
-### 2.3 Progress, Collection and Workshop
+### 2.4 Progress, Collection and Workshop
 
 | ID | Name (draft) | Goal | Kind | Reward |
 | --- | --- | --- | --- | --- |
@@ -101,7 +106,7 @@ Each Achievement has a fixed ID, for example `feat.onlyUndead`. The Profile keep
 | `gear.ten` | Sharpened | Upgrade one Gear item to level 10 | Profile | 15 Heynstones |
 | `gear.max` | Fully Forged | Upgrade all 4 Gear items to level 25 | Profile | 60 Heynstones |
 
-### 2.4 Feats
+### 2.5 Feats
 
 | ID | Name (draft) | Goal | Reward |
 | --- | --- | --- | --- |
@@ -132,12 +137,13 @@ Notes:
 - For "Every Element", only damage above 0 counts. Burn and Poison damage has no dealer, so it does not count.
 - Nothing heals a Hero ([ADR-0027](../adr/0027-nothing-heals-a-hero.md)), so "full HP" means that the enemy never damaged the Hero.
 
-### 2.5 Totals
+### 2.6 Totals
 
 | Category | Achievements | Heynstones | Other |
 | --- | ---: | ---: | --- |
 | Campaign | 8 | 165 | 500 Coin, 1 Cosmetic |
-| Dungeons and Heynspire | 5 | 200 | — |
+| Dungeons | 3 | 110 | — |
+| Heynspire | 2 | 90 | — |
 | Progress, Collection and Workshop | 9 | 215 | 50 Essence, 1 Cosmetic |
 | Feats | 18 | 420 | 1 Cosmetic |
 | **Total** | **40** | **1,000** | **500 Coin, 50 Essence, 3 Cosmetics** |
@@ -151,13 +157,15 @@ With the 250 Heynstones of the 10th Floors, the v1 supply is 1,250 Heynstones. T
 - **The totals match.** The Heynstone ledger (`HEYNSTONE_SOURCES` in `packages/rules/src/content/heynstones.ts`) takes the count and the Heynstones of the Achievements from `ACHIEVEMENTS`. A test checks that the list gives 1,000 Heynstones, the value of Economy 2.5 and 2.6.
 - **The economy sim.** After each Battle and the spending, a simulated Player records the Profile goals and the Tally goals that it meets, and claims each Completed Achievement at once (`claimAchievements` in `packages/rules/src/simulation/economy.ts`). It gets the Coin and the Essence. In practice, only the first Craft (50 Essence) changes the results, because the sim does not open the 30-Star chests ([Economy 7.1](./07-economy.md#71-economy-simulation)). The sim plays no Battle, so it completes no Feat, and its results are still a floor. The Heynstones of the Achievements are in the Heynstone ledger, not in the sim.
 
-## 4. Achievements screen
+## 4. Achievements tab
 
-- **Town.** The Hall of banners (Town Concepts 2.9) becomes a selectable Building with a label. The Achievements shortcut on the Town Bar opens. There is no level lock.
-- **Layout.** The screen lists the categories of section 2 in that order. Each row shows the name, the goal, the reward and one of these:
-  - In progress: a progress bar with the count (for example "41 / 65"). A Feat shows no bar, only "Not done".
+The Achievements are in the second tab of the Objectives dialog ([24 — Quests 3](./24-quests.md#3-objectives-dialog)). There is no Achievements screen, and the Hall of banners (Town Concepts 2.9) is decoration. There is no level lock.
+
+- **Layout.** The left page shows the page of seals of the selected category: one place for each Achievement, and a wax seal on each Claimed one. The right page shows the list. 5 bookmarks at the side of the book select the category, in the order of section 2. Each bookmark shows the name, the done count and a gold count of rewards to claim. On one page, the bookmarks are a row above the list. The tab opens on the first category with a reward to claim, else on Campaign.
+- Each row is a card. It shows the name, the goal, the reward and one of these. The frame of the card shows what the Achievement is worth: a gold frame for an earn-only Cosmetic and a silver frame for a Feat.
+  - In progress: a progress bar with the count (for example "41 / 65"), in the bottom edge of the card. A Feat shows no bar, only "Not done".
   - Completed: a **Claim** button.
   - Claimed: a check mark.
-- A **Claim all** button claims all Completed Achievements. It is off when no Achievement is Completed.
-- **Notice.** When an Achievement becomes Completed outside a Battle, a toast shows "Achievement completed: {name}". A Feat shows on the Battle result, under the rewards. The Achievements shortcut shows a badge with the number of Completed Achievements that are not Claimed.
-- **Hint.** The Achievements Hint shows at the first Completed Achievement and points at the shortcut.
+- A **Claim all** button claims all Completed Achievements of the 5 categories. It is off when no Achievement is Completed.
+- **Notice.** When an Achievement becomes Completed outside a Battle, a toast shows "Achievement completed: {name}". A Feat shows on the Battle result, under the rewards. The Objectives badge counts the Completed Achievements that are not Claimed.
+- **Hint.** The Achievements Hint shows at the first Completed Achievement and points at the Objectives shortcut.

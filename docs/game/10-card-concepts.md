@@ -15,7 +15,7 @@ The provisional set is budget-valid and simulation-ready. It is not balance-appr
 - **Creature Cards and Tokens** use the prompts of 5.2. They make one export: the card art. The silhouette must be clear at 128 px tall.
 - **Skill Cards** use the prompts of 5.2.1. They show the effect with a partial figure that has no Race. They have no Unit.
 - **Provisional power.** A Summon or a Last Breath that summons uses 50% of the Token power at the Base Rank of its Card. All provisional Cards must stay within 10% of their Countdown budget.
-- **Power Budget `19 + 3 × (Countdown − 3)`** (the same as `10 + 3 × Countdown`). The base was 21 before [ADR-0029](../adr/0029-keywords-set-speed-and-range-and-there-are-no-roles.md): the Base Speed 2 is now free. The Human, Orc, Goblin, Feral, Elf and Undead values are the fit of `packages/rules/scripts/fit-budget.ts` to this budget ([ADR-0021](../adr/0021-countdown-is-a-real-cost.md), [08 — Archetypes, 3.1](./08-archetypes.md#31-balance-changes)). The Undead values use `--hp-per-attack 2`: the fit selects 1 Attack for each 2 HP at the Base Rank, not the shape of the old line. The old Undead shapes (for example 4/3 and 5/3) lost almost all Matchups ([08 — Archetypes, 3.1](./08-archetypes.md#31-balance-changes)). A Token has no budget of its own. Only the cards that summon it have a budget.
+- **Power Budget `(19 + 3 × (Countdown − 3)) × baseRankBonus`** (the same as `(10 + 3 × Countdown) × baseRankBonus`). The base was 21 before [ADR-0029](../adr/0029-keywords-set-speed-and-range-and-there-are-no-roles.md): the Base Speed 2 is now free. The Base Rank bonus is Common ×1.0, Uncommon ×1.25, Rare ×1.4463, Epic ×1.6529 and Legendary ×1.7 ([ADR-0055](../adr/0055-a-higher-base-rank-gives-a-power-budget-bonus.md)). The Human, Orc, Goblin, Feral, Elf and Undead values are the fit of `packages/rules/scripts/fit-budget.ts` to this budget ([ADR-0021](../adr/0021-countdown-is-a-real-cost.md), [08 — Archetypes, 3.1](./08-archetypes.md#31-balance-changes)). The Undead values use `--hp-per-attack 2`: the fit selects 1 Attack for each 2 HP at the Base Rank, not the shape of the old line. The old Undead shapes (for example 4/3 and 5/3) lost almost all Matchups ([08 — Archetypes, 3.1](./08-archetypes.md#31-balance-changes)). A Token has no budget of its own. Only the cards that summon it have a budget. Issue [#189](https://github.com/rifandani/heynbord/issues/189) applies the fitted table to every card, so no card is a written exception.
 - **Common values and Power Points.** The Attack and HP on each line are Common values. The Power on each line measures Attack and HP at the Base Rank of the card, with the Rank scale of GDD 5.3 ([ADR-0020](../adr/0020-the-power-budget-measures-a-card-at-its-base-rank.md)). Thus an Uncommon, Rare or Epic card has lower Common Attack and HP than a Common card of the same power.
 
 ### 1.1 Settings
@@ -188,7 +188,7 @@ Purpose: a cheap Lane block. Power 14, budget 13, deviation +7.7%.
 
 > Please enter the queue. The back of the queue.
 
-Purpose: a melee attacker that pushes the enemy off the bridge. Power 19, budget 19, deviation 0%.
+Purpose: a melee attacker that pushes the enemy off the bridge. Power 19, budget 23.8, deviation −20.0%.
 
 | Field | Brief |
 | --- | --- |
@@ -206,7 +206,7 @@ Purpose: a melee attacker that pushes the enemy off the bridge. Power 19, budget
 
 > The sermon ends when morale improves.
 
-Purpose: a low-cost Rally source and Holy attacker. Power 18, budget 19, deviation -5.3%.
+Purpose: a low-cost Rally source and Holy attacker. Power 19, budget 23.8, deviation −20.0%.
 
 | Field | Brief |
 | --- | --- |
@@ -224,7 +224,7 @@ Purpose: a low-cost Rally source and Holy attacker. Power 18, budget 19, deviati
 
 > The message says urgent. She was already running.
 
-Purpose: maximum Human Speed with less Attack than River Knight. Power 20, budget 22, deviation -9.1%.
+Purpose: maximum Human Speed with less Attack than River Knight. Power 20, budget 31.8, deviation −37.1%.
 
 | Field | Brief |
 | --- | --- |
@@ -242,7 +242,7 @@ Purpose: maximum Human Speed with less Attack than River Knight. Power 20, budge
 
 > He brings his own wall and calls it a firing position.
 
-Purpose: a durable Long-range Unit. Power 23, budget 22, deviation +4.5%.
+Purpose: a durable Long-range Unit. Power 23, budget 31.8, deviation −27.7%.
 
 | Field | Brief |
 | --- | --- |
@@ -260,7 +260,7 @@ Purpose: a durable Long-range Unit. Power 23, budget 22, deviation +4.5%.
 
 > Even broken, it gets the last word.
 
-Purpose: a premium Wall that damages the nearest enemy Unit ahead when it leaves. Power 23, budget 22, deviation +4.5%.
+Purpose: a premium Wall that damages the nearest enemy Unit ahead when it leaves. Power 22, budget 31.8, deviation −30.9%.
 
 | Field | Brief |
 | --- | --- |
@@ -274,11 +274,11 @@ Purpose: a premium Wall that damages the nearest enemy Unit ahead when it leaves
 
 ### 2.15 Marshal Elian Voss (draft)
 
-`human.marshalElianVoss` · Epic · Countdown 6 · Attack 1 · HP 6 · Holy · Mid-range · Bulwark 1 · Rally 2 · Unique
+`human.marshalElianVoss` · Epic · Countdown 6 · Attack 1 · HP 6 · Holy · Mid-range · Bulwark 2 · Rally 2 · Unique
 
 > Hold the line. I have six more reasons.
 
-Purpose: the named Human Epic and Rally capstone. Power 27, budget 28, deviation -3.6%.
+Purpose: the named Human Epic and Rally capstone. The Epic Base Rank budget is ×1.6529 ([ADR-0055](../adr/0055-a-higher-base-rank-gives-a-power-budget-bonus.md)).
 
 | Field | Brief |
 | --- | --- |
@@ -296,7 +296,7 @@ Purpose: the named Human Epic and Rally capstone. Power 27, budget 28, deviation
 
 > Hold the line. Then hold the line again.
 
-Purpose: the Human Specialist. He is the wall that the Human identity wants: Iron Guard stops a large hit, and the Warrior Class gives him the tempo Skill Cards. Rally 2 lifts the Units of his Lane, and Wallbreaker breaks a Wall in half the hits. Power 30, budget 28, deviation +7.1% ([ADR-0048](../adr/0048-a-base-rank-legendary-creature-card-is-a-specialist.md), [ADR-0054](../adr/0054-each-specialist-has-a-second-keyword.md)).
+Purpose: the Human Specialist. He is the wall that the Human identity wants: Iron Guard stops a large hit, and the Warrior Class gives him the tempo Skill Cards. Rally 2 lifts the Units of his Lane, and Wallbreaker breaks a Wall in half the hits. Power 30, budget 47.6, deviation −37.0% ([ADR-0048](../adr/0048-a-base-rank-legendary-creature-card-is-a-specialist.md), [ADR-0054](../adr/0054-each-specialist-has-a-second-keyword.md)).
 
 | Field | Brief |
 | --- | --- |
@@ -404,7 +404,7 @@ Purpose: a fast Unit that hits the Hero and still hits when he falls. Power 16, 
 
 > He always knows where you are. Mostly behind you.
 
-Purpose: the Orc Pivot Unit, and a trade that still hits. Power 15, budget 16, deviation -6.3%. HP 5 → 4 on 2026-10-24 for the Raiders Matchups ([08 — Archetypes, 3.1](./08-archetypes.md#31-balance-changes)).
+Purpose: the Orc Pivot Unit, and a trade that still hits. Power 15, budget 20, deviation −25.0%. HP 5 → 4 on 2026-10-24 for the Raiders Matchups ([08 — Archetypes, 3.1](./08-archetypes.md#31-balance-changes)).
 
 | Field | Brief |
 | --- | --- |
@@ -487,7 +487,7 @@ Purpose: the Orc Wall. It stops a Lane for the Orc rush, and when it falls, its 
 
 > She never waits for the gate to open.
 
-Purpose: a fast Fire attacker. Power 19, budget 19, deviation 0%.
+Purpose: a fast Fire attacker. Power 19, budget 23.8, deviation −20.0%.
 
 | Field | Brief |
 | --- | --- |
@@ -505,7 +505,7 @@ Purpose: a fast Fire attacker. Power 19, budget 19, deviation 0%.
 
 > She only knows one rhythm: faster.
 
-Purpose: a low-Countdown rush enabler. Power 15, budget 16, deviation -6.3%.
+Purpose: a low-Countdown rush enabler. Power 15, budget 20, deviation −25.0%.
 
 | Field | Brief |
 | --- | --- |
@@ -519,18 +519,18 @@ Purpose: a low-Countdown rush enabler. Power 15, budget 16, deviation -6.3%.
 
 ### 3.12 Ashspit Hunter
 
-`orc.ashspitHunter` · Rare · Countdown 4 · Attack 4 · HP 4 · Fire · Long-range
+`orc.ashspitHunter` · Rare · Countdown 4 · Attack 3 · HP 4 · Fire · Long-range · Heroic 2 at Rare, 3 at Epic, 4 at Legendary
 
 > He measures range by how far the eyebrows burn.
 
-Purpose: a ranged Fire threat. Power 23, budget 22, deviation +4.5%.
+Purpose: a scaling ranged Fire threat. Heroic 2 gives the card a different role from Ember Shaman: after each attack on a Unit, it gets +2 Attack, and it can grow behind the front line. The Rare Base Rank budget is ×1.4463 ([ADR-0055](../adr/0055-a-higher-base-rank-gives-a-power-budget-bonus.md)).
 
 | Field | Brief |
 | --- | --- |
 | Subject | A lean orc man with one singed eyebrow. |
 | Pose | He braces a long fire tube. |
 | Props | Iron fire tube, brass trim, ember basket and leather coat. |
-| Gameplay cues | The long weapon shows Long-range; its trail shows Fire. |
+| Gameplay cues | The long weapon shows Long-range; its trail shows Fire; he grows bolder with each hit (Heroic). |
 | Silhouette hook | Horizontal tube and ember basket. |
 | Humor note | His remaining eyebrow shows concern. |
 | Setting | A ledge above a canyon. |
@@ -541,7 +541,7 @@ Purpose: a ranged Fire threat. Power 23, budget 22, deviation +4.5%.
 
 > Hit her once. That is how counting lessons start.
 
-Purpose: an aggressive Heavy Unit that protects through threat. Power 20, budget 22, deviation -9.1%.
+Purpose: an aggressive Heavy Unit that protects through threat. Power 20, budget 31.8, deviation −37.1%.
 
 | Field | Brief |
 | --- | --- |
@@ -559,7 +559,7 @@ Purpose: an aggressive Heavy Unit that protects through threat. Power 20, budget
 
 > The axe is hot. Her temper is hotter.
 
-Purpose: a heavy Fire finisher. Power 26, budget 25, deviation +4.0%.
+Purpose: a heavy Fire finisher. Power 26, budget 36.2, deviation −28.1%.
 
 | Field | Brief |
 | --- | --- |
@@ -577,7 +577,7 @@ Purpose: a heavy Fire finisher. Power 26, budget 25, deviation +4.0%.
 
 > Follow the banner. Ignore where it is going.
 
-Purpose: the archetypal Orc Epic: immediate movement, stronger allies and Hero pressure. Power 27, budget 28, deviation -3.6%.
+Purpose: the archetypal Orc Epic: immediate movement, stronger allies and Hero pressure. Power 29, budget 46.3, deviation −37.3%.
 
 | Field | Brief |
 | --- | --- |
@@ -595,7 +595,7 @@ Purpose: the archetypal Orc Epic: immediate movement, stronger allies and Hero p
 
 > Everything burns. Some things burn on a schedule.
 
-Purpose: the Orc Specialist. Bolt 2 gives the Orc identity a Mage: damage that arrives in each Start Phase, without an attack. Mid-range lets him burn from the second Square, and Resistance 2 keeps him alive against the Fire and Frost of a Mage. Power 30, budget 28, deviation +7.1% ([ADR-0048](../adr/0048-a-base-rank-legendary-creature-card-is-a-specialist.md), [ADR-0054](../adr/0054-each-specialist-has-a-second-keyword.md)).
+Purpose: the Orc Specialist. Bolt 2 gives the Orc identity a Mage: damage that arrives in each Start Phase, without an attack. Mid-range lets him burn from the second Square, and Resistance 2 keeps him alive against the Fire and Frost of a Mage. Power 30, budget 47.6, deviation −37.0% ([ADR-0048](../adr/0048-a-base-rank-legendary-creature-card-is-a-specialist.md), [ADR-0054](../adr/0054-each-specialist-has-a-second-keyword.md)).
 
 | Field | Brief |
 | --- | --- |
@@ -617,7 +617,7 @@ Identity: patient forest people and plant spirits. They control movement from ra
 
 > He has held this path since it was somewhere else.
 
-Purpose: an Elf Lane anchor. Power 18, budget 19, deviation -5.3%.
+Purpose: an Elf Lane anchor. Power 18, budget 19, deviation −5.3%.
 
 | Field | Brief |
 | --- | --- |
@@ -635,7 +635,7 @@ Purpose: an Elf Lane anchor. Power 18, budget 19, deviation -5.3%.
 
 > One cut for honor. Two because the hedge was rude.
 
-Purpose: a simple Elf attacker. Power 15, budget 16, deviation -6.3%.
+Purpose: a simple Elf attacker. Power 15, budget 16, deviation −6.3%.
 
 | Field | Brief |
 | --- | --- |
@@ -653,7 +653,7 @@ Purpose: a simple Elf attacker. Power 15, budget 16, deviation -6.3%.
 
 > The message says urgent. The parcel is a sandwich.
 
-Purpose: cheap Flying Hero pressure. Power 15, budget 16, deviation -6.3%.
+Purpose: cheap Flying Hero pressure. Power 15, budget 16, deviation −6.3%.
 
 | Field | Brief |
 | --- | --- |
@@ -671,7 +671,7 @@ Purpose: cheap Flying Hero pressure. Power 15, budget 16, deviation -6.3%.
 
 > He can hear a boot step. He cannot hear advice.
 
-Purpose: a durable Elf Long-range Unit that heals. Power 18, budget 19, deviation -5.3%.
+Purpose: a durable Elf Long-range Unit that heals. Power 18, budget 19, deviation −5.3%.
 
 | Field | Brief |
 | --- | --- |
@@ -689,7 +689,7 @@ Purpose: a durable Elf Long-range Unit that heals. Power 18, budget 19, deviatio
 
 > Growth takes patience. Wilt takes less.
 
-Purpose: a Holy Long-range Unit that applies Poison. Power 18, budget 19, deviation -5.3%.
+Purpose: a Holy Long-range Unit that applies Poison. Power 18, budget 19, deviation −5.3%.
 
 | Field | Brief |
 | --- | --- |
@@ -707,7 +707,7 @@ Purpose: a Holy Long-range Unit that applies Poison. Power 18, budget 19, deviat
 
 > Behind him is only another front.
 
-Purpose: the Elf Pivot Unit. Power 18, budget 19, deviation -5.3%.
+Purpose: the Elf Pivot Unit. Power 18, budget 23.8, deviation −24.2%.
 
 | Field | Brief |
 | --- | --- |
@@ -725,7 +725,7 @@ Purpose: the Elf Pivot Unit. Power 18, budget 19, deviation -5.3%.
 
 > The stairs were deemed inefficient.
 
-Purpose: mobile pressure with fragile stats. Power 18, budget 19, deviation -5.3%.
+Purpose: mobile pressure with fragile stats. Power 18, budget 23.8, deviation −24.2%.
 
 | Field | Brief |
 | --- | --- |
@@ -743,7 +743,7 @@ Purpose: mobile pressure with fragile stats. Power 18, budget 19, deviation -5.3
 
 > The arrow leaves. The ache stays.
 
-Purpose: reliable ranged Poison. Power 19, budget 19, deviation 0%. HP 4 → 5 on 2026-10-24 for the Raiders Matchups ([08 — Archetypes, 3.1](./08-archetypes.md#31-balance-changes)).
+Purpose: reliable ranged Poison. Power 19, budget 23.8, deviation −20.0%. HP 4 → 5 on 2026-10-24 for the Raiders Matchups ([08 — Archetypes, 3.1](./08-archetypes.md#31-balance-changes)).
 
 | Field | Brief |
 | --- | --- |
@@ -761,7 +761,7 @@ Purpose: reliable ranged Poison. Power 19, budget 19, deviation 0%. HP 4 → 5 o
 
 > She collects morning dew. Afternoon dew is paperwork.
 
-Purpose: a durable Holy support. Power 19, budget 19, deviation 0%.
+Purpose: a durable Holy support. Power 18, budget 23.8, deviation −24.2%.
 
 | Field | Brief |
 | --- | --- |
@@ -779,7 +779,7 @@ Purpose: a durable Holy support. Power 19, budget 19, deviation 0%.
 
 > It is not blocking the path. It is the path now.
 
-Purpose: a Wall that grows back. Power 20, budget 19, deviation +5.3%.
+Purpose: a Wall that grows back. Power 20, budget 23.8, deviation −15.8%.
 
 | Field | Brief |
 | --- | --- |
@@ -797,7 +797,7 @@ Purpose: a Wall that grows back. Power 20, budget 19, deviation +5.3%.
 
 > It stops armies and loses arguments with windows.
 
-Purpose: a fast Flying Poison attacker with low HP. Power 19, budget 19, deviation 0%.
+Purpose: a fast Flying Poison attacker with low HP. Power 19, budget 27.5, deviation −30.9%.
 
 | Field | Brief |
 | --- | --- |
@@ -815,7 +815,7 @@ Purpose: a fast Flying Poison attacker with low HP. Power 19, budget 19, deviati
 
 > She waits for the perfect shot. Lunch waits too.
 
-Purpose: durable ranged Poison. Power 23, budget 22, deviation +4.5%.
+Purpose: durable ranged Poison. Power 23, budget 31.8, deviation −27.7%.
 
 | Field | Brief |
 | --- | --- |
@@ -833,7 +833,7 @@ Purpose: durable ranged Poison. Power 23, budget 22, deviation +4.5%.
 
 > Every seed has a destination. He stays to water them.
 
-Purpose: a durable Flying healer. Power 21, budget 22, deviation -4.5%.
+Purpose: a durable Flying healer. Power 20, budget 31.8, deviation −37.1%.
 
 | Field | Brief |
 | --- | --- |
@@ -851,7 +851,7 @@ Purpose: a durable Flying healer. Power 21, budget 22, deviation -4.5%.
 
 > The warning was yesterday.
 
-Purpose: the archetypal Elf Epic: approach denial, and one of the 2 Elf cards with Entangle (ADR-0022, ADR-0025). Power 23, budget 25, deviation -8.0%.
+Purpose: the archetypal Elf Epic: approach denial, and one of the 2 Elf cards with Entangle (ADR-0022, ADR-0025). Power 23, budget 41.3, deviation −44.3%.
 
 | Field | Brief |
 | --- | --- |
@@ -869,7 +869,7 @@ Purpose: the archetypal Elf Epic: approach denial, and one of the 2 Elf cards wi
 
 > The forest grew wild. Lethiel called it adequate.
 
-Purpose: the named Elf Epic and a durable healer. She has Entangle, the Elf Race Keyword (ADR-0025). Power 24, budget 25, deviation -4.0%.
+Purpose: the named Elf Epic and a durable healer. She has Entangle, the Elf Race Keyword (ADR-0025). Power 23, budget 41.3, deviation −44.3%.
 
 | Field | Brief |
 | --- | --- |
@@ -887,7 +887,7 @@ Purpose: the named Elf Epic and a durable healer. She has Entangle, the Elf Race
 
 > Every gate has a warden. This one shoots first.
 
-Purpose: the Elf Specialist. She punishes the enemy summon: Spawnbane 2 hits each Unit from a Creature Card before it can use Sabotage or Summon, and Long-range keeps her behind the front. Heal 2 mends the most hurt Unit of her Side in each Start Phase. Power 26, budget 25, deviation +4% ([ADR-0048](../adr/0048-a-base-rank-legendary-creature-card-is-a-specialist.md), [ADR-0054](../adr/0054-each-specialist-has-a-second-keyword.md)).
+Purpose: the Elf Specialist. She punishes the enemy summon: Spawnbane 2 hits each Unit from a Creature Card before it can use Sabotage or Summon, and Long-range keeps her behind the front. Heal 2 mends the most hurt Unit of her Side in each Start Phase. Power 26, budget 42.5, deviation −38.8% ([ADR-0048](../adr/0048-a-base-rank-legendary-creature-card-is-a-specialist.md), [ADR-0054](../adr/0054-each-specialist-has-a-second-keyword.md)).
 
 | Field | Brief |
 | --- | --- |
@@ -909,7 +909,7 @@ Identity: old spirits in bones and armor. They use many cheap Units, Swarm, Rebi
 
 > He works better when somebody watches.
 
-Purpose: a cheap blocker that rewards a crowded Lane. Power 12, budget 13, deviation -7.7%.
+Purpose: a cheap blocker that rewards a crowded Lane. Power 12, budget 13, deviation −7.7%.
 
 | Field | Brief |
 | --- | --- |
@@ -963,7 +963,7 @@ Purpose: cheap early Hero pressure. Power 13, budget 13, deviation 0%.
 
 > Quiet in life. Considerably noisier afterward.
 
-Purpose: a cheap Long-range Unit that summons a Skeleton beside it. Power 15, budget 16, deviation -6.3%.
+Purpose: a cheap Long-range Unit that summons a Skeleton beside it. Power 15, budget 16, deviation −6.3%.
 
 | Field | Brief |
 | --- | --- |
@@ -981,7 +981,7 @@ Purpose: a cheap Long-range Unit that summons a Skeleton beside it. Power 15, bu
 
 > One ring for supper. Two for reinforcements.
 
-Purpose: efficient two-body Lane setup. Power 15, budget 16, deviation -6.3%.
+Purpose: efficient two-body Lane setup. Power 15, budget 16, deviation −6.3%.
 
 | Field | Brief |
 | --- | --- |
@@ -999,7 +999,7 @@ Purpose: efficient two-body Lane setup. Power 15, budget 16, deviation -6.3%.
 
 > Nobody passes without the correct expired permit.
 
-Purpose: the Undead Pivot Unit. Power 15, budget 16, deviation -6.3%.
+Purpose: the Undead Pivot Unit. Power 15, budget 20, deviation −25.0%.
 
 | Field | Brief |
 | --- | --- |
@@ -1017,7 +1017,7 @@ Purpose: the Undead Pivot Unit. Power 15, budget 16, deviation -6.3%.
 
 > They agree on everything, very loudly.
 
-Purpose: the main cheap Swarm attacker. Power 17, budget 16, deviation +6.3%.
+Purpose: the main cheap Swarm attacker. Power 17, budget 20, deviation −15.0%.
 
 | Field | Brief |
 | --- | --- |
@@ -1035,7 +1035,7 @@ Purpose: the main cheap Swarm attacker. Power 17, budget 16, deviation +6.3%.
 
 > The rider asked for a slower horse.
 
-Purpose: fast Frost tempo and Hero pressure. Power 15, budget 16, deviation -6.3%.
+Purpose: fast Frost tempo and Hero pressure. Power 15, budget 20, deviation −25.0%.
 
 | Field | Brief |
 | --- | --- |
@@ -1053,7 +1053,7 @@ Purpose: fast Frost tempo and Hero pressure. Power 15, budget 16, deviation -6.3
 
 > She closes one eye. The other is already frozen open.
 
-Purpose: cheap melee Frost control. Its high Attack kills a Frozen target fast, so the Freeze lock ends fast. Power 17, budget 16, deviation +6.3%.
+Purpose: cheap melee Frost control. Its high Attack kills a Frozen target fast, so the Freeze lock ends fast. Power 17, budget 20, deviation −15.0%.
 
 This card was a Ranged Frost Unit with Range 3, Rime-Eye Archer. No Ranged Unit has Frost damage ([ADR-0024](../adr/0024-no-ranged-unit-has-frost-damage.md), issue #28).
 
@@ -1073,7 +1073,7 @@ This card was a Ranged Frost Unit with Range 3, Rime-Eye Archer. No Ranged Unit 
 
 > Nobody knows the tune. Everybody marches.
 
-Purpose: a Swarm payoff and Lane support. Power 17, budget 16, deviation +6.3%.
+Purpose: a Swarm payoff and Lane support. Power 17, budget 20, deviation −15.0%.
 
 | Field | Brief |
 | --- | --- |
@@ -1091,7 +1091,7 @@ Purpose: a Swarm payoff and Lane support. Power 17, budget 16, deviation +6.3%.
 
 > The coffin is defensive equipment.
 
-Purpose: a compact persistent blocker. Power 15, budget 16, deviation -6.3%.
+Purpose: a compact persistent blocker. Power 15, budget 23.1, deviation −35.2%.
 
 | Field | Brief |
 | --- | --- |
@@ -1109,7 +1109,7 @@ Purpose: a compact persistent blocker. Power 15, budget 16, deviation -6.3%.
 
 > It brings enough cold for the whole pack.
 
-Purpose: an anti-melee finisher and Swarm payoff. Power 20, budget 19, deviation +5.3%.
+Purpose: an anti-melee finisher and Swarm payoff. Power 20, budget 27.5, deviation −27.2%.
 
 | Field | Brief |
 | --- | --- |
@@ -1127,7 +1127,7 @@ Purpose: an anti-melee finisher and Swarm payoff. Power 20, budget 19, deviation
 
 > She always leaves a light on for the late.
 
-Purpose: Frost support that creates a mobile second threat. Power 17.5, budget 19, deviation -7.9%.
+Purpose: Frost support that creates a mobile second threat. Power 17.5, budget 27.5, deviation −36.3%.
 
 | Field | Brief |
 | --- | --- |
@@ -1145,7 +1145,7 @@ Purpose: Frost support that creates a mobile second threat. Power 17.5, budget 1
 
 > Death excuses neither payment nor the late fee.
 
-Purpose: the named Undead Epic and a large finisher that comes back slowly. Charge gives him a fast first Turn. Rebirth brings him back at 1 HP, and the reborn Odo does not get Charge again. Power 22, budget 22, deviation 0%.
+Purpose: the named Undead Epic and a large finisher that comes back slowly. Charge gives him a fast first Turn. Rebirth brings him back at 1 HP, and the reborn Odo does not get Charge again. Power 22, budget 36.4, deviation −39.5%.
 
 He had Speed 2 before, and then Speed 1 (issue #35). Now he has the Base Speed 2 and no Speed Keyword, the same as most Units ([ADR-0029](../adr/0029-keywords-set-speed-and-range-and-there-are-no-roles.md)).
 
@@ -1165,7 +1165,7 @@ He had Speed 2 before, and then Speed 1 (issue #35). Now he has the Base Speed 2
 
 > Please use the other Lane.
 
-Purpose: the archetypal Undead Epic and persistent Swarm shield. Power 20, budget 19, deviation +5.3%.
+Purpose: the archetypal Undead Epic and persistent Swarm shield. Power 20, budget 31.4, deviation −36.3%.
 
 | Field | Brief |
 | --- | --- |
@@ -1183,7 +1183,7 @@ Purpose: the archetypal Undead Epic and persistent Swarm shield. Power 20, budge
 
 > She sings the dead into a better shape.
 
-Purpose: the Undead Specialist. Soul Harvest makes her grow with each kill, and the Priest Class gives her the healing and Ward that an Undead front needs. Rebirth brings her back one time, and Dispel clears 1 Debuff from a friendly Unit in each Start Phase. Power 29, budget 28, deviation +3.6% ([ADR-0048](../adr/0048-a-base-rank-legendary-creature-card-is-a-specialist.md), [ADR-0054](../adr/0054-each-specialist-has-a-second-keyword.md)).
+Purpose: the Undead Specialist. Soul Harvest makes her grow with each kill, and the Priest Class gives her the healing and Ward that an Undead front needs. Rebirth brings her back one time, and Dispel clears 1 Debuff from a friendly Unit in each Start Phase. Power 29, budget 47.6, deviation −39.1% ([ADR-0048](../adr/0048-a-base-rank-legendary-creature-card-is-a-specialist.md), [ADR-0054](../adr/0054-each-specialist-has-a-second-keyword.md)).
 
 | Field | Brief |
 | --- | --- |
@@ -1207,7 +1207,7 @@ Goblin art must not look like Orc art. Each Goblin figure is very small: about h
 
 > Ankles are the easiest part of a knight to reach.
 
-Purpose: a cheap fast trap that slows the first fast enemy Unit. Power 12, budget 13, deviation -7.7%.
+Purpose: a cheap fast trap that slows the first fast enemy Unit. Power 12, budget 13, deviation −7.7%.
 
 | Field | Brief |
 | --- | --- |
@@ -1243,7 +1243,7 @@ Purpose: a one-Countdown bomb. Last Breath 3 hits the nearest enemy Unit ahead w
 
 > One goblin's junk is another knight's limp.
 
-Purpose: a cheap Long-range Unit that slows the Unit it hits. Power 15, budget 16, deviation -6.3%.
+Purpose: a cheap Long-range Unit that slows the Unit it hits. Power 15, budget 16, deviation −6.3%.
 
 | Field | Brief |
 | --- | --- |
@@ -1279,7 +1279,7 @@ Purpose: the first Sabotage card. When it comes from its Card, the enemy card wi
 
 > Armor is armor. Even if it was a stove.
 
-Purpose: a cheap Goblin Lane anchor. Power 15, budget 16, deviation -6.3%.
+Purpose: a cheap Goblin Lane anchor. Power 15, budget 16, deviation −6.3%.
 
 | Field | Brief |
 | --- | --- |
@@ -1297,7 +1297,7 @@ Purpose: a cheap Goblin Lane anchor. Power 15, budget 16, deviation -6.3%.
 
 > Front door? Never heard of it.
 
-Purpose: the Goblin Pivot Unit. Power 16, budget 16, deviation 0%.
+Purpose: the Goblin Pivot Unit. Power 16, budget 20, deviation −20.0%.
 
 | Field | Brief |
 | --- | --- |
@@ -1315,7 +1315,7 @@ Purpose: the Goblin Pivot Unit. Power 16, budget 16, deviation 0%.
 
 > Built in one night. Paid for by nobody.
 
-Purpose: the Goblin Wall. It also delays an enemy card when it comes in. Power 17, budget 16, deviation +6.3%.
+Purpose: the Goblin Wall. It also delays an enemy card when it comes in. Power 17, budget 20, deviation −15.0%.
 
 | Field | Brief |
 | --- | --- |
@@ -1333,7 +1333,7 @@ Purpose: the Goblin Wall. It also delays an enemy card when it comes in. Power 1
 
 > Catch!
 
-Purpose: a Long-range Fire Unit that Burns its target. Power 18, budget 19, deviation -5.3%.
+Purpose: a Long-range Fire Unit that Burns its target. Power 18, budget 23.8, deviation −24.2%.
 
 | Field | Brief |
 | --- | --- |
@@ -1351,7 +1351,7 @@ Purpose: a Long-range Fire Unit that Burns its target. Power 18, budget 19, devi
 
 > Mind the floor.
 
-Purpose: slows a Unit for 2 End Phases, and delays an enemy card when it comes in. Power 20, budget 19, deviation +5.3%.
+Purpose: slows a Unit for 2 End Phases, and delays an enemy card when it comes in. Power 20, budget 23.8, deviation −15.8%.
 
 | Field | Brief |
 | --- | --- |
@@ -1369,7 +1369,7 @@ Purpose: slows a Unit for 2 End Phases, and delays an enemy card when it comes i
 
 > Steering is a later invention.
 
-Purpose: a fast Goblin Unit that hits the Hero. Its Fire hits Burn, and Last Breath 2 hits when it falls. Power 19, budget 19, deviation 0%.
+Purpose: a fast Goblin Unit that hits the Hero. Its Fire hits Burn, and Last Breath 2 hits when it falls. Power 19, budget 23.8, deviation −20.0%.
 
 | Field | Brief |
 | --- | --- |
@@ -1387,7 +1387,7 @@ Purpose: a fast Goblin Unit that hits the Hero. Its Fire hits Burn, and Last Bre
 
 > Every wall has a weak spot. I bring my own.
 
-Purpose: a Fire attacker that hits hard and explodes when it falls. Power 21, budget 22, deviation -4.5%.
+Purpose: a Fire attacker that hits hard and explodes when it falls. Power 21, budget 31.8, deviation −34.0%.
 
 | Field | Brief |
 | --- | --- |
@@ -1405,7 +1405,7 @@ Purpose: a Fire attacker that hits hard and explodes when it falls. Power 21, bu
 
 > I see your plans. I do not like them.
 
-Purpose: a Long-range Unit that delays an enemy card. Power 23, budget 22, deviation +4.5%.
+Purpose: a Long-range Unit that delays an enemy card. Power 23, budget 31.8, deviation −27.7%.
 
 | Field | Brief |
 | --- | --- |
@@ -1423,7 +1423,7 @@ Purpose: a Long-range Unit that delays an enemy card. Power 23, budget 22, devia
 
 > It walks. Mostly forward.
 
-Purpose: the Goblin Lane anchor with Bulwark 2. Power 21, budget 22, deviation -4.5%.
+Purpose: the Goblin Lane anchor with Bulwark 2. Power 21, budget 31.8, deviation −34.0%.
 
 | Field | Brief |
 | --- | --- |
@@ -1441,7 +1441,7 @@ Purpose: the Goblin Lane anchor with Bulwark 2. Power 21, budget 22, deviation -
 
 > Every plan has gears. We have more.
 
-Purpose: the archetypal Goblin Epic. Sabotage 2 makes the enemy's next card 2 Turns later. Power 22, budget 22, deviation 0%.
+Purpose: the archetypal Goblin Epic. Sabotage 2 makes the enemy's next card 2 Turns later. Power 22, budget 36.4, deviation −39.5%.
 
 | Field | Brief |
 | --- | --- |
@@ -1459,7 +1459,7 @@ Purpose: the archetypal Goblin Epic. Sabotage 2 makes the enemy's next card 2 Tu
 
 > "Everything down here is mine. That is the joke. Laugh."
 
-Purpose: the named Goblin Epic. He delays an enemy card when he comes in, Burns what he hits, and explodes when he falls. Power 25, budget 25, deviation 0%.
+Purpose: the named Goblin Epic. He delays an enemy card when he comes in, Burns what he hits, and explodes when he falls. Power 25, budget 41.3, deviation −39.5%.
 
 | Field | Brief |
 | --- | --- |
@@ -1477,7 +1477,7 @@ Purpose: the named Goblin Epic. He delays an enemy card when he comes in, Burns 
 
 > He does not aim at you. He aims at the one behind you.
 
-Purpose: the Goblin Specialist. Hero's Bane puts 1 Physical damage on the enemy Hero in each Start Phase, so a Goblin Deck can win without crossing the Board. Mid-range lets him shoot from the second Square, and Quick Study takes 1 Countdown from the slowest card of his Hand each time an enemy Hero plays a Skill Card. Power 28, budget 28, deviation 0% ([ADR-0048](../adr/0048-a-base-rank-legendary-creature-card-is-a-specialist.md), [ADR-0054](../adr/0054-each-specialist-has-a-second-keyword.md)).
+Purpose: the Goblin Specialist. Hero's Bane puts 1 Physical damage on the enemy Hero in each Start Phase, so a Goblin Deck can win without crossing the Board. Mid-range lets him shoot from the second Square, and Quick Study takes 1 Countdown from the slowest card of his Hand each time an enemy Hero plays a Skill Card. Power 28, budget 47.6, deviation −41.2% ([ADR-0048](../adr/0048-a-base-rank-legendary-creature-card-is-a-specialist.md), [ADR-0054](../adr/0054-each-specialist-has-a-second-keyword.md)).
 
 | Field | Brief |
 | --- | --- |
@@ -1519,7 +1519,7 @@ Purpose: the only fast Feral Unit. Trample lets a kill also hit the Unit behind.
 
 > It sat on this rock for a hundred years. Now it is your rock.
 
-Purpose: a cheap Feral blocker with Bulwark. Power 15, budget 16, deviation -6.3%.
+Purpose: a cheap Feral blocker with Bulwark. Power 15, budget 16, deviation −6.3%.
 
 | Field | Brief |
 | --- | --- |
@@ -1591,7 +1591,7 @@ Purpose: a durable Feral Long-range Unit that heals. Power 19, budget 19, deviat
 
 > It moves for nobody. It hardly moves for itself.
 
-Purpose: the Feral Wall. It heals 2 HP in each Start Phase. Power 20, budget 19, deviation +5.3%.
+Purpose: the Feral Wall. It heals 2 HP in each Start Phase. Power 20, budget 23.8, deviation −15.8%.
 
 | Field | Brief |
 | --- | --- |
@@ -1609,7 +1609,7 @@ Purpose: the Feral Wall. It heals 2 HP in each Start Phase. Power 20, budget 19,
 
 > Look it in the eye? It looks at your ankles.
 
-Purpose: the Feral Pivot Unit. Its tail hits Units behind it and next to it. Power 18, budget 19, deviation -5.3%.
+Purpose: the Feral Pivot Unit. Its tail hits Units behind it and next to it. Power 18, budget 23.8, deviation −24.2%.
 
 | Field | Brief |
 | --- | --- |
@@ -1627,7 +1627,7 @@ Purpose: the Feral Pivot Unit. Its tail hits Units behind it and next to it. Pow
 
 > Cut it. Wait. Cut it again.
 
-Purpose: a durable Feral front that heals 2 HP in each Start Phase. Power 18, budget 19, deviation -5.3%.
+Purpose: a durable Feral front that heals 2 HP in each Start Phase. Power 18, budget 23.8, deviation −24.2%.
 
 | Field | Brief |
 | --- | --- |
@@ -1645,7 +1645,7 @@ Purpose: a durable Feral front that heals 2 HP in each Start Phase. Power 18, bu
 
 > The road ends where it stops.
 
-Purpose: a large Trample attacker. Power 19, budget 19, deviation 0%.
+Purpose: a large Trample attacker. Power 19, budget 23.8, deviation −20.0%.
 
 | Field | Brief |
 | --- | --- |
@@ -1663,7 +1663,7 @@ Purpose: a large Trample attacker. Power 19, budget 19, deviation 0%.
 
 > Where she walks, the herd follows.
 
-Purpose: the Feral Rally Unit. Rally 1 gives the other friendly Units in her Lane +1 Attack. Her Frost hits Freeze. Power 20, budget 19, deviation +5.3%.
+Purpose: the Feral Rally Unit. Rally 1 gives the other friendly Units in her Lane +1 Attack. Her Frost hits Freeze. Power 20, budget 23.8, deviation −15.8%.
 
 | Field | Brief |
 | --- | --- |
@@ -1681,7 +1681,7 @@ Purpose: the Feral Rally Unit. Rally 1 gives the other friendly Units in her Lan
 
 > It came down with the snow. The snow was the smaller problem.
 
-Purpose: a Rare Trample attacker with high Attack. Power 22, budget 22, deviation 0%.
+Purpose: a Rare Trample attacker with high Attack. Power 22, budget 31.8, deviation −30.9%.
 
 | Field | Brief |
 | --- | --- |
@@ -1699,7 +1699,7 @@ Purpose: a Rare Trample attacker with high Attack. Power 22, budget 22, deviatio
 
 > It does not stop. Plan around it.
 
-Purpose: a Rare front that also Tramples. Power 24, budget 25, deviation -4.0%.
+Purpose: a Rare front that also Tramples. Power 24, budget 36.2, deviation −33.6%.
 
 | Field | Brief |
 | --- | --- |
@@ -1717,7 +1717,7 @@ Purpose: a Rare front that also Tramples. Power 24, budget 25, deviation -4.0%.
 
 > Its breath is the weather.
 
-Purpose: a Flying Frost attacker. Power 24, budget 25, deviation -4.0%. No Ranged Unit has Frost ([ADR-0024](../adr/0024-no-ranged-unit-has-frost-damage.md)).
+Purpose: a Flying Frost attacker. Power 24, budget 36.2, deviation −33.6%. No Ranged Unit has Frost ([ADR-0024](../adr/0024-no-ranged-unit-has-frost-damage.md)).
 
 | Field | Brief |
 | --- | --- |
@@ -1735,7 +1735,7 @@ Purpose: a Flying Frost attacker. Power 24, budget 25, deviation -4.0%. No Range
 
 > The mountain stood up. Then it walked.
 
-Purpose: the archetypal Feral Epic: a huge front that heals and Tramples. Power 27, budget 28, deviation -3.6%.
+Purpose: the archetypal Feral Epic: a huge front that heals and Tramples. Power 27, budget 46.3, deviation −41.7%.
 
 | Field | Brief |
 | --- | --- |
@@ -1753,7 +1753,7 @@ Purpose: the archetypal Feral Epic: a huge front that heals and Tramples. Power 
 
 > Every village has a story about it. Every story is too small.
 
-Purpose: the named Feral Epic: a huge Frost attacker that Tramples, and its bite makes the target Bleeding. Bleed is 2 at Epic and 3 at Legendary ([ADR-0019](../adr/0019-bleed-is-a-feral-keyword-on-two-cards.md)). Its Common HP went from 14 to 13 to pay for Bleed. Then ADR-0020 lowered its Common Attack and HP. Power 29, budget 28, deviation +3.6%.
+Purpose: the named Feral Epic: a huge Frost attacker that Tramples, and its bite makes the target Bleeding. Bleed is 2 at Epic and 3 at Legendary ([ADR-0019](../adr/0019-bleed-is-a-feral-keyword-on-two-cards.md)). Its Common HP went from 14 to 13 to pay for Bleed. Then ADR-0020 lowered its Common Attack and HP. Power 29, budget 46.3, deviation −37.3%.
 
 | Field | Brief |
 | --- | --- |
@@ -1771,7 +1771,7 @@ Purpose: the named Feral Epic: a huge Frost attacker that Tramples, and its bite
 
 > It eats what it kills. Then it keeps the leftovers.
 
-Purpose: the Feral Specialist. Vampirism turns each Physical hit into HP, so a huge Feral Unit stays on the Board without a healer. Bleed 2 takes half of each heal of the Unit it hits, and Piercing makes its damage too strong to be reduced. Power 30, budget 28, deviation +7.1% ([ADR-0048](../adr/0048-a-base-rank-legendary-creature-card-is-a-specialist.md), [ADR-0054](../adr/0054-each-specialist-has-a-second-keyword.md)).
+Purpose: the Feral Specialist. Vampirism turns each Physical hit into HP, so a huge Feral Unit stays on the Board without a healer. Bleed 2 takes half of each heal of the Unit it hits, and Piercing makes its damage too strong to be reduced. Power 30, budget 47.6, deviation −37.0% ([ADR-0048](../adr/0048-a-base-rank-legendary-creature-card-is-a-specialist.md), [ADR-0054](../adr/0054-each-specialist-has-a-second-keyword.md)).
 
 | Field | Brief |
 | --- | --- |

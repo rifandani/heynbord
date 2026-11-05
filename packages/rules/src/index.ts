@@ -272,6 +272,22 @@ export {
   stageCoin,
 } from "./content/stage-coin";
 export type { StageOutcome } from "./content/stage-coin";
+export {
+  ACTIVITY_CHECKPOINTS,
+  DAILY_QUEST_ACTIVITY,
+  DAILY_QUEST_REWARD,
+  DAILY_QUESTS,
+  getQuestTemplate,
+  QUEST_TEMPLATES,
+} from "./content/quests";
+export type {
+  ActivityCheckpoint,
+  DailyQuestReward,
+  QuestBattleGoal,
+  QuestReward,
+  QuestSlot,
+  QuestTemplate,
+} from "./content/quests";
 export { getStage, STAGES } from "./content/stages";
 export {
   CAMPAIGN_REGIONS,
@@ -321,6 +337,36 @@ export type {
 } from "./profile/achievements";
 export { recordFeats } from "./profile/feats";
 export type { FeatBattle, FeatPlace } from "./profile/feats";
+export {
+  activityCheckpoints,
+  claimableCheckpointCount,
+  claimableQuestCount,
+  claimActivityCheckpoints,
+  claimActivityCheckpointsUpTo,
+  claimAllQuests,
+  claimQuest,
+  dailyQuests,
+  DAY_MS,
+  nextDailyReset,
+  nextWeeklyReset,
+  noQuests,
+  questDay,
+  recordQuestBattle,
+  refreshQuests,
+} from "./profile/quests";
+export type {
+  CheckpointChange,
+  CheckpointState,
+  CheckpointView,
+  QuestBattle,
+  QuestChange,
+  QuestClaims,
+  QuestContent,
+  QuestOutcome,
+  QuestProfile,
+  QuestState,
+  QuestView,
+} from "./profile/quests";
 export { buyDeckSlot, INITIAL_DECK_SLOTS } from "./profile/deck-slots";
 export {
   activeCosmetic,
@@ -385,8 +431,10 @@ export {
 } from "./profile/schema";
 export type {
   ActiveCosmetics,
+  DailyQuest,
   DeckSlot,
   PackState,
+  QuestsState,
   SeaportState,
   Tallies,
   UnopenedPack,

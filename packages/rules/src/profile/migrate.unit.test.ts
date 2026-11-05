@@ -2,9 +2,12 @@ import type { Schema } from "effect";
 import { Result } from "effect";
 import { describe, expect, it } from "vitest";
 
+import { PLAYER_LEVEL_XP } from "../content/player-levels";
+import { UNLOCK_LEVELS } from "../content/unlocks";
 import { migrateProfile, PROFILE_MIGRATIONS } from "./migrate";
 import type { ProfileMigration } from "./migrate";
 import { newProfile } from "./new-profile";
+import { noQuests, refreshQuests } from "./quests";
 import { PROFILE_SCHEMA_VERSION } from "./schema";
 
 const failure = (result: ReturnType<typeof migrateProfile>) =>
@@ -15,6 +18,14 @@ const v12 = (seaport: Schema.JsonObject) => ({
   ...newProfile(3),
   schemaVersion: 12,
   seaport,
+});
+
+/** A saved Daily Quest with no parameter. */
+const quest = (templateId: string, progress: number) => ({
+  templateId,
+  param: null,
+  progress,
+  claimed: false,
 });
 
 describe("migrateProfile", () => {
@@ -43,6 +54,106 @@ describe("migrateProfile", () => {
     ]);
     expect(migrated.stageResults).toEqual({ "1-10": 1, "2-10": 2, "3-1": 1 });
     expect(migrated.coin).toBe(old.coin);
+  });
+
+  it("adds an empty Quest state for version 15, with a stable Quest seed", () => {
+    const { quests: _, ...old } = newProfile(3);
+    const v15 = { ...old, schemaVersion: 15 };
+    const migrated = Result.getOrThrow(migrateProfile(v15));
+    expect(migrated.quests).toEqual({
+      seed: old.rewardRandomState,
+      lastDailyReset: null,
+      daily: [],
+      lastWeeklyReset: null,
+      activity: 0,
+      claimedCheckpoints: [],
+    });
+    expect(Result.getOrThrow(migrateProfile(v15))).toEqual(migrated);
+    // The first refresh offers the Daily Quests from level 3.
+    const refreshed = refreshQuests(
+      { ...migrated, xp: PLAYER_LEVEL_XP[UNLOCK_LEVELS.quests - 1] ?? 0 },
+      Date.UTC(2026, 10, 3)
+    ).profile;
+    expect(refreshed.quests.daily).toHaveLength(5);
+  });
+
+  it("clears the draft Quest state of a version 16 save, and keeps its Quest seed", () => {
+    const profile = newProfile(3);
+    const draft = {
+      ...profile,
+      schemaVersion: 16,
+      quests: {
+        seed: 77,
+        lastReset: 20_395,
+        daily: [
+          { templateId: "daily.win", param: null, progress: 1, claimed: false },
+        ],
+        bounties: [{ templateId: "bounty.kills", param: null, progress: 12 }],
+        bountiesLeft: 4,
+        story: { "story.r1.q1": "offered" },
+      },
+    };
+    expect(Result.getOrThrow(migrateProfile(draft)).quests).toEqual(
+      noQuests(77)
+    );
+  });
+
+  it("keeps the Quest state of a version 16 save with Activity", () => {
+    const profile = newProfile(3);
+    const quests = { ...profile.quests, lastDailyReset: 20_395, activity: 40 };
+    const v16 = { ...profile, schemaVersion: 16, quests };
+    expect(Result.getOrThrow(migrateProfile(v16)).quests).toEqual(quests);
+  });
+
+  it("removes the Daily Quest of the old `daily.winMore` template from a version 17 save", () => {
+    const profile = newProfile(3);
+    const win = {
+      templateId: "daily.win",
+      param: null,
+      progress: 2,
+      claimed: false,
+    };
+    const v17 = {
+      ...profile,
+      schemaVersion: 17,
+      quests: {
+        ...profile.quests,
+        activity: 20,
+        daily: [
+          win,
+          {
+            templateId: "daily.winMore",
+            param: null,
+            progress: 5,
+            claimed: true,
+          },
+        ],
+      },
+    };
+    expect(Result.getOrThrow(migrateProfile(v17)).quests).toEqual({
+      ...v17.quests,
+      daily: [win],
+    });
+  });
+
+  it("removes `daily.raceDeck` and renames `daily.bossOrDungeon` in a version 18 save", () => {
+    const profile = newProfile(3);
+    const v18 = {
+      ...profile,
+      schemaVersion: 18,
+      quests: {
+        ...profile.quests,
+        daily: [
+          quest("daily.bossOrDungeon", 1),
+          { ...quest("daily.raceDeck", 1), param: "undead" },
+          quest("daily.win", 2),
+        ],
+      },
+    };
+    expect(Result.getOrThrow(migrateProfile(v18)).quests.daily).toEqual([
+      quest("daily.boss", 1),
+      quest("daily.win", 2),
+    ]);
   });
 
   it("preserves current viewing records and pending scenes on load", () => {

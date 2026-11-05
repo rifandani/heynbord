@@ -120,7 +120,6 @@ describe("SELECTABLE_BUILDINGS", () => {
       "hero",
       "dungeons",
       "heynspire",
-      "achievements",
       "seaport",
     ]);
   });
@@ -150,12 +149,6 @@ describe("SELECTABLE_BUILDINGS", () => {
     expect(quay && quay.rect.x + quay.rect.width).toBe(PAINTING.width);
     for (const id of ["workshop", "cave", "bazaar"] as const) {
       expect(overlaps(withLabel("seaport"), withLabel(id)), id).toBe(false);
-    }
-  });
-
-  it("keeps the Hall of banners clear of the Town Gate, the Card shop and Heynspire, with their labels (Achievements 4)", () => {
-    for (const id of ["townGate", "cardShop", "heynspire"] as const) {
-      expect(overlaps(withLabel("hall"), withLabel(id)), id).toBe(false);
     }
   });
 
@@ -203,7 +196,7 @@ describe("overlaps", () => {
 });
 
 describe("TOWN_SHORTCUTS", () => {
-  it("opens the Town, the Campaign, Heynspire, the Dungeons, the Seaport, the Workshop, the Packs, the Hero screen, the Achievements screen and the Bazaar", () => {
+  it("opens the Town, the Campaign, Heynspire, the Dungeons, the Seaport, the Workshop, the Packs, the Hero screen and the Bazaar", () => {
     expect(
       TOWN_SHORTCUTS.filter((shortcut) => shortcut.screen !== null).map(
         (shortcut) => shortcut.id
@@ -217,7 +210,6 @@ describe("TOWN_SHORTCUTS", () => {
       "workshop",
       "packs",
       "hero",
-      "achievements",
       "bazaar",
     ]);
     expect(TOWN_SHORTCUTS[0]?.id).toBe("town");
@@ -248,7 +240,7 @@ describe("the Handbook shortcut", () => {
       "campaign",
       "deck",
       "packs",
-      "achievements",
+      "objectives",
       "bazaar",
       "handbook",
     ]);
@@ -269,16 +261,13 @@ describe("level locks (GDD 11.4)", () => {
     expect(packs && opensAtLevel(packs, 30)).toBeNull();
   });
 
-  it("never locks the Achievements screen: it opens at any Player level", () => {
-    const achievements = TOWN_SHORTCUTS.find(
-      (shortcut) => shortcut.id === "achievements"
+  it("never locks the Objectives shortcut: it opens at any Player level (24 — Quests 3)", () => {
+    const objectives = TOWN_SHORTCUTS.find(
+      (shortcut) => shortcut.id === "objectives"
     );
-    const hall = SELECTABLE_BUILDINGS.find(
-      (building) => building.id === "hall"
-    );
+    expect(objectives).toMatchObject({ screen: null, dialog: "objectives" });
     for (const level of [1, 2, 30]) {
-      expect(achievements && isLocked(achievements, at(level))).toBe(false);
-      expect(hall && townLock(hall, at(level))).toBeNull();
+      expect(objectives && isLocked(objectives, at(level))).toBe(false);
     }
   });
 
@@ -363,6 +352,12 @@ describe("level locks (GDD 11.4)", () => {
   });
 });
 
+describe("the Objectives shortcut icon (24 — Quests 3)", () => {
+  it("reuses the painted Achievements icon", () => {
+    expect(paintedIcon("objectives")).toBe("/town/bar/achievements.webp");
+  });
+});
+
 describe("the Heynspire lock (GDD 8.2)", () => {
   const shortcut = TOWN_SHORTCUTS.find((item) => item.id === "heynspire");
   const tower = SELECTABLE_BUILDINGS.find((item) => item.id === "heynspire");
@@ -435,8 +430,8 @@ describe("glowBox", () => {
 
   it("adds 8% on each side of the Building box when it has no glow box", () => {
     const building: SelectableBuilding = {
-      id: "hall",
-      screen: "achievements",
+      id: "seaport",
+      screen: "seaport",
       rect: { x: 100, y: 200, width: 50, height: 100 },
       label: { x: 100, y: 180, width: 50, height: 20 },
     };

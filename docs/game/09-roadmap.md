@@ -57,6 +57,7 @@ Regions 2 to 5 (M3) come after the Workshop and Gear, because their tuning needs
 
 - [ ] Heynspire (50 Floors). All Floors use 4 Lanes ([ADR-0010](../adr/0010-the-type-of-battle-sets-the-number-of-lanes.md)). Heynspire unlocks after the Region 5 Boss Stage, so the strength of Floor 1 starts at the values of the Region 5 Boss.
 - [ ] Achievements and Cosmetics.
+- [ ] Objectives: Daily Quests, Activity and the Achievements in one dialog ([24 — Quests](./24-quests.md)). The economy sim adds the income, and `sim:check` gates its cap.
 - [ ] Heynstones and the Bazaar (Cosmetics). Check the Heynstone total again: Star chests give no Heynstones, so the supply is about 1,250 ([07 — Economy, 2.6](./07-economy.md)).
 - [ ] Dungeon Sweep (BAT-12, [ADR-0039](../adr/0039-dungeons-have-a-dungeon-sweep-with-their-own-tickets.md)), Battle Log (BAT-13: #73, #74, #76).
 - [ ] Mobile landscape layout and touch input. Portrait warning.
@@ -75,5 +76,5 @@ The order of the versions after v1 can change after player feedback.
 | **v2.x — Social** | Guilds, guild bosses, friends, weekly Heynspire reset, events |
 | **v3 — Co-op** | 2v2 and co-op bosses, real-time Turns with a 30-second timer |
 | **v3.x — Expansion** | New Races, a sixth Rank, new Keywords and Damage Types |
-| **To be decided** | Return rewards: a free Merchant Pack each day, a login streak bonus, event rewards. They need their own economy design. They also give a path back to a valid Deck for a player who Extracted too many cards (GDD 7.4) |
+| **To be decided** | Return rewards: a free Merchant Pack each day, a login streak bonus, event rewards. Daily Quests are decided and are in v1 ([ADR-0056](../adr/0056-daily-quests-expire-at-a-0000-utc-reset.md)); the items of this row are not. They need their own economy design. They also give a path back to a valid Deck for a player who Extracted too many cards (GDD 7.4) |
 | **To be decided** | Trading between players (needs a separate design review, see Economy section 6) |

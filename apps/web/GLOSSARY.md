@@ -78,6 +78,16 @@ React app on TanStack Start. The server renders and streams each page.
 
 **Source Contract**: The committed record of the bounds, the skeleton and the animation of a Raw Export. A Published Model must match its Source Contract. _Avoid_: manifest, checksum, metadata file
 
+**Body Plan**: The shared skeleton, proportions, IK and clip slots that a group of Unit Models uses. A Unit Model belongs to one Body Plan and changes only its own parts, palette and overrides. _Avoid_: rig family, archetype (a rules term), model type, base rig
+
+**Unit Spec**: The per-unit record that a Body Plan and the model kit read to build one Unit Model. It names the Body Plan, the height, the palette, the parts, the props and the clip overrides. _Avoid_: config, manifest, model data
+
+**Turnaround**: The approved four-view drawing of one Unit Model: front, three-quarter, side and back, with a detail sheet. It is the target for every side of the model. _Avoid_: reference sheet, model sheet, concept sheet
+
+**Review Scene**: The fixed camera, light and clip setup that captures a Unit Model for review. It shows the Unit Model as the player sees it. _Avoid_: preview, viewer, render scene
+
+**Review Gate**: A deterministic check that blocks a Unit Model from publication when it fails. Each Review Gate answers one question and leaves a JSON record. _Avoid_: check, test (test is code), gate (a Town word and a rules word)
+
 **Low HP**: The state of a Unit or Hero with HP at 1/3 of its Max HP or less. Its Unit Model or Hero Model shows a tired pose at rest; it is presentation only and does not change the Battle. _Avoid_: wounded (that word is avoided for Bleeding), badly damaged, critical, dying
 
 **Keyword Plate**: The small Night Plate with a Keyword name and its value that shows over a Unit in Live when that Keyword occurs, for example "Swarm 2". It shows each time a Keyword changes the Battle, for all Keywords that can occur. _Avoid_: keyword flash, keyword popup, keyword toast, activation
@@ -122,7 +132,7 @@ React app on TanStack Start. The server renders and streams each page.
 
 **Town**: The hub screen of the game, and the first screen that the Player sees. It is a painted view of a town, with one Building for each screen that the Player can open. _Avoid_: Camp, city, hub, home, lobby, main menu
 
-**Building**: One place in the Town that opens one screen when the Player selects it. A Building that has no screen yet is only decoration: it has no label and the Player cannot select it. The Town Gate, the Card shop, the Workshop, the Market, the Barracks, the Dungeons cave, the Heynspire tower, the Hall of banners and the Seaport quay can be selected. _Avoid_: hotspot, landmark, location, house
+**Building**: One place in the Town that opens one screen when the Player selects it. A Building that has no screen yet is only decoration: it has no label and the Player cannot select it. The Town Gate, the Card shop, the Workshop, the Market, the Barracks, the Dungeons cave, the Heynspire tower and the Seaport quay can be selected. _Avoid_: hotspot, landmark, location, house
 
 **Town Gate**: The Building that opens the Campaign: a large gate with a road that goes out of the Town. _Avoid_: Campaign Building, map house, exit
 
@@ -136,13 +146,13 @@ React app on TanStack Start. The server renders and streams each page.
 
 **Heynspire tower**: The Building that opens the Heynspire screen: the white castle with the tall tower and the blue roofs on the hill at the back of the Town. It opens with the first win of Stage 5-10, not at a Player level. Its label is on the walls of the castle, because a wide screen crops the top of the tower. _Avoid_: castle Building, spire Building, endless tower
 
-**Hall of banners**: The Building that opens the Achievements screen: a wide hall with red roofs and long blue and gold banners, behind the Library and the Card shop. It has no lock: it opens at any Player level. Its label is on the red roofs, under the Heynspire hill. _Avoid_: trophy hall, achievements Building, guild hall
+**Hall of banners**: A wide hall with red roofs and long blue and gold banners in the Town painting, behind the Library and the Card shop. It is only decoration: it has no label and the Player cannot select it. _Avoid_: trophy hall, achievements Building, guild hall
 
 **Seaport quay**: The Building that opens the Seaport screen: the harbour by the sea at the right edge of the Town, with the long piers, the moored ships and the towers with blue roofs, under the Balance Plate corner. It opens at Player level 8. It is outside the safe area, so a narrow screen crops it, and the Seaport shortcut is the sure way in. The current Town painting already has it. _Avoid_: harbour Building, port, dock, pier
 
 **Lock Plate**: The small plate with a lock that replaces the name label of a Building whose screen the Player has not unlocked. It shows the level that opens the screen, or, for the Heynspire tower, the ID of the Boss Stage to win first with a small crown. It has the same tooltip as the Town Bar shortcut: "Opens at level N", or "Win Marrow Castle (5-10) to open". _Avoid_: level badge, locked label
 
-**Town Bar**: The panel at the bottom of the Town and of each screen except the Battle. It has one shortcut for each screen that has a Building, the screens that do not exist yet too, a shortcut back to the Town, and a shortcut to the Handbook. _Avoid_: menu bar, nav bar, footer, dock
+**Town Bar**: The panel at the bottom of the Town and of each screen except the Battle. It has one shortcut for each screen that has a Building, the screens that do not exist yet too, a shortcut back to the Town, and shortcuts to the Objectives dialog and the Handbook. The names that the Player sees are singular: Dungeon, Pack, Objective and Setting. _Avoid_: menu bar, nav bar, footer, dock
 
 **Stowed Town Bar**: The Town Bar when the Player puts it away. It has no wood and takes no room, so the screen fills the space. Only the brass pull stays, at the corner of the screen. _Avoid_: collapsed bar, hidden bar, minimized bar, rail
 
@@ -186,17 +196,15 @@ React app on TanStack Start. The server renders and streams each page.
 
 **Hero screen**: The screen that shows the Player's Hero: its Class, its Hero HP and its 4 Gear items. The Player does Gear upgrades there. It shows the Class of the Active Deck, and it opens the Deck dialog to change it. _Avoid_: Character screen, armory, equipment screen, Gear screen, profile
 
-### Achievements screen
+### Objectives dialog
 
-**Achievements screen**: The screen that lists all Achievements in their 4 categories, with the progress of each, and where the Player claims their rewards. The Hall of banners and the Achievements shortcut open it. _Avoid_: trophy room, quest log, challenges screen, badges
+**Objectives dialog**: The large dialog that opens over the current screen and has 2 tabs: Daily Quests and Achievements. The Player claims all Daily Quest and Achievement rewards there. It has no Building. Only the Objectives shortcut opens it. _Avoid_: Quests screen, Achievements screen, quest log, journal, missions screen, trophy room
 
-**Category Flag**: One cloth flag on the pole at the left of the Achievements screen: a tab for one category of Achievements. It shows the name of the category, its done count ("3 / 8") and the number of its rewards to claim. The selected flag goes under the edge of the Achievement Roll. _Avoid_: category tab, banner tab, filter
+**Activity bar**: The bar at the top of the Daily Quests tab that shows the Activity of the week and its Activity checkpoints. _Avoid_: progress bar, quest bar, point bar
 
-**Achievement Roll**: The parchment list at the right of the Achievements screen with the rows of the selected category, and Claim all at its foot. Each row shows the name, the goal, the reward and the state: a progress bar ("Not done" for a Feat), Claim, or the check seal. _Avoid_: achievement list, quest list, table
+**Claim**: The action that adds the reward of one Completed Achievement or Daily Quest to the Profile, on its row of the Objectives dialog. **Claim all** claims all rewards of the open tab: the Daily Quests tab also claims the reached Activity checkpoints. A press on the icon of a reached Activity checkpoint claims it and each reached checkpoint below it. The rules term is the same for a Star chest. _Avoid_: collect (a Collect is for an Expedition of the Seaport), redeem, receive
 
-**Claim**: The action that adds the reward of one Completed Achievement to the Profile, on its row of the Achievement Roll. **Claim all** claims all Completed Achievements of all categories at one time. The rules term is the same for a Star chest. _Avoid_: collect (a Collect is for an Expedition of the Seaport), redeem, receive
-
-**Achievements badge**: The small gold count on the Achievements shortcut of the Town Bar: the number of Completed Achievements that the Player did not claim. It does not show at 0. _Avoid_: notification dot, red dot, alert
+**Objectives badge**: The small gold count on the Objectives shortcut of the Town Bar: the number of rewards that the Player can claim in the Objectives dialog. It does not show at 0. _Avoid_: notification dot, red dot, alert
 
 ### Dungeons screen
 
@@ -232,7 +240,9 @@ React app on TanStack Start. The server renders and streams each page.
 
 ### Bazaar screen
 
-**Bazaar screen**: The screen that the Market opens: the offers that the Player buys with Heynstones, one section for each Cosmetic family, behind the inside of the Market. A Card Back that the Player owns can be made the Active Cosmetic there. _Avoid_: shop screen, store screen, market screen
+**Bazaar screen**: The screen that the Market opens: the offers that the Player buys with Heynstones, one tab for each Cosmetic family, in front of the inside of the Market. A look that the Player owns can be made the Active Cosmetic there. _Avoid_: shop screen, store screen, market screen
+
+**Inspector**: The right column of the Bazaar screen. It shows the look of the selected tile large, its text, and the one Buy or Use. To show a look there does not make it the Active Cosmetic. _Avoid_: preview pane, detail panel, shelf
 
 **Item plate**: One offer on the Bazaar screen: the painted face of a Card Back or the glyph of its family, the name, and the price, "Owned" or "In use", with **Buy** or **Use**. _Avoid_: offer card, product tile, row
 
@@ -278,7 +288,7 @@ React app on TanStack Start. The server renders and streams each page.
 
 ## Relationships
 
-- Each selectable **Building** opens one screen for a rules term. The Town Gate opens the Campaign, the Card shop opens the Packs screen, the Workshop Building opens the Workshop, the Market opens the Bazaar, the Barracks opens the Hero screen, the Dungeons cave opens the Dungeons screen, the Heynspire tower opens the Heynspire screen, and the Hall of banners opens the Achievements screen. The Seaport quay opens the Seaport screen.
+- Each selectable **Building** opens one screen for a rules term. The Town Gate opens the Campaign, the Card shop opens the Packs screen, the Workshop Building opens the Workshop, the Market opens the Bazaar, the Barracks opens the Hero screen, the Dungeons cave opens the Dungeons screen, and the Heynspire tower opens the Heynspire screen. The Seaport quay opens the Seaport screen.
 - The **Handbook** and the **Card Details** show the same rule text for a Keyword and a Status. The **Card Details** show the name of a **Damage Type** only; its rule is in the Handbook. The Handbook never has its own copy of a rule.
 - A **Creature Card** painting has one **Facing**. The Board mirrors that painting for an enemy **Unit**.
 - The **Battle Log** shows the Battle Events that the screen already played. It never shows a later moment than **Live**. While it is open, the Live playback pauses.

@@ -5,10 +5,13 @@
  * a Region again until it has 3 Stars (ADR-0044), and uses its Sweep Tickets.
  * Each Player has one Play Style, which sets how it spends Coin. A play
  * calendar turns the Battles into days, so the Player also sends the ship of
- * the Seaport between its sessions. The report gives the values at each
+ * the Seaport between its sessions, and does the resets of its Daily Quests at
+ * the start of each session. The report gives the values at each
  * checkpoint of Economy 4. The seeds count up from 1, so the same content
  * always gives the same report.
  */
+import { absurd } from "effect";
+
 import { ownedCopies } from "../collection/deck-building";
 import type { Collection } from "../collection/deck-building";
 import { CARDS, getCard } from "../content/cards";
@@ -62,6 +65,8 @@ import {
   playerLevelForXp,
   stageXp,
 } from "../content/player-levels";
+import { getQuestTemplate } from "../content/quests";
+import type { QuestTemplate } from "../content/quests";
 import { RANKS } from "../content/ranks";
 import type {
   CardDefinition,
@@ -101,7 +106,14 @@ import {
 } from "../profile/dungeon-result";
 import { NO_TALLIES } from "../profile/new-profile";
 import { addCopies, discoveredCards } from "../profile/packs";
-import type { SeaportState } from "../profile/schema";
+import {
+  claimAllQuests,
+  DAY_MS,
+  noQuests,
+  refreshQuests,
+} from "../profile/quests";
+import type { QuestClaims } from "../profile/quests";
+import type { DailyQuest, QuestsState, SeaportState } from "../profile/schema";
 import {
   activeExpedition,
   AT_BERTH,
@@ -505,6 +517,8 @@ export interface CheckpointSnapshot {
   readonly income: Income;
   /** The part of `income` that came from the Seaport (Economy 2.8). */
   readonly seaportIncome: Income;
+  /** The part of `income` that came from Daily Quests and Activity checkpoints (Economy 2.9). */
+  readonly questIncome: Income;
 }
 
 /**
@@ -580,6 +594,13 @@ export interface EconomyPlayer {
   income: Income;
   /** The part of `income` that came from the Seaport. */
   seaportIncome: Income;
+  /**
+   * The Daily Quests and the Activity of the Profile (24 — Quests). The sim
+   * claims each Completed Daily Quest and each reached checkpoint at once.
+   */
+  quests: QuestsState;
+  /** The part of `income` that came from Daily Quests and Activity checkpoints. */
+  questIncome: Income;
 }
 
 /** The Player level of `player`. */
@@ -628,6 +649,8 @@ export const newEconomyPlayer = (seed: number): EconomyPlayer => {
     voyages: 0,
     income: NO_INCOME,
     seaportIncome: NO_INCOME,
+    quests: noQuests(seed),
+    questIncome: NO_INCOME,
   };
   return player;
 };
@@ -697,6 +720,7 @@ const snapshot = (player: EconomyPlayer): CheckpointSnapshot => ({
   dungeonSweepTickets: player.dungeonSweepTickets,
   income: player.income,
   seaportIncome: player.seaportIncome,
+  questIncome: player.questIncome,
 });
 
 // ─── Player actions ──────────────────────────────────────────────────────────
@@ -1471,6 +1495,133 @@ export const claimAchievements = (player: EconomyPlayer): void => {
   player.claimedAchievements = claimed.claimedAchievements;
 };
 
+// ─── Daily Quests ────────────────────────────────────────────────────────────
+
+/**
+ * The amount of a goal that one Battle gives in the count model (24 — Quests
+ * 4), for a goal that is not a count of wins. The sim plays no Battle, so
+ * these values are a high guess: a high guess gives more Quest income, so a
+ * pass of the cap with them is safe.
+ */
+const QUEST_AMOUNT_PER_BATTLE = {
+  skillCards: 3,
+  damage: 20,
+  kills: 6,
+  keyword: 4,
+} as const;
+
+/**
+ * The Battle count of a goal template (24 — Quests 4): the wins that complete
+ * it in the count model. A goal that counts wins needs its count. The Deck
+ * rules always pass: the game offers only goals that the Collection permits.
+ */
+export const questBattles = (template: QuestTemplate): number => {
+  const { goal } = template;
+  switch (goal.kind) {
+    case "wins":
+    case "raceWins":
+    case "bossWins":
+    case "dungeonWins": {
+      return template.count;
+    }
+    case "skillCards":
+    case "damage":
+    case "kills":
+    case "keyword": {
+      return Math.ceil(template.count / QUEST_AMOUNT_PER_BATTLE[goal.kind]);
+    }
+    default: {
+      return absurd(goal);
+    }
+  }
+};
+
+/** The progress that one win adds to a Daily Quest: its Battle count of wins completes it. */
+const progressPerWin = (templateId: string): number => {
+  const template = getQuestTemplate(templateId);
+  return Math.ceil(template.count / questBattles(template));
+};
+
+/** The Daily Quest with the progress of one win, up to the count of its template. */
+const withWin = (quest: DailyQuest): DailyQuest => ({
+  ...quest,
+  progress: Math.min(
+    getQuestTemplate(quest.templateId).count,
+    quest.progress + progressPerWin(quest.templateId)
+  ),
+});
+
+/** The Coin and the Essence of what the Player claimed. */
+const claimedIncome = ({
+  claimed,
+  checkpoints,
+}: Omit<QuestClaims<unknown>, "profile">): Income =>
+  [...claimed, ...checkpoints].reduce(
+    (income, { reward }) =>
+      addIncome(income, {
+        ...NO_INCOME,
+        coin: reward.coin,
+        essence: reward.essence,
+      }),
+    NO_INCOME
+  );
+
+/** Day 4 of the epoch is a Monday: the first session of the Quest calendar. */
+const FIRST_MONDAY = 4;
+
+/**
+ * The time of a session on the Quest calendar (24 — Quests 4): one day for
+ * each session from a Monday, so each session has a Daily reset and each 7
+ * sessions have a Weekly reset. The play calendar has 25 hours for each
+ * session, so it does not give these resets.
+ */
+export const questSessionTime = (session: number): number =>
+  (FIRST_MONDAY + session) * DAY_MS;
+
+/**
+ * The Daily Quests after a Battle or at the start of a session (24 — Quests
+ * 4), with the rules of the game at `now` on the Quest calendar. A win adds the
+ * progress of the count model to each active Daily Quest. Then the Player does
+ * the resets of a new day or week, and claims each Completed Daily Quest and
+ * each reached checkpoint at once. A loss adds nothing: the count model counts
+ * only wins. No Daily Quest gives XP.
+ */
+export const updateQuests = (
+  player: EconomyPlayer,
+  now: number,
+  won: boolean
+): void => {
+  const quests: QuestsState = won
+    ? {
+        ...player.quests,
+        daily: player.quests.daily.map((quest) =>
+          quest.claimed ? quest : withWin(quest)
+        ),
+      }
+    : player.quests;
+  const refreshed = refreshQuests(
+    {
+      xp: player.xp,
+      collection: player.collection,
+      coin: player.coin,
+      essence: player.essence,
+      quests,
+    },
+    now
+  );
+  const claim = claimAllQuests(refreshed.profile);
+  const profile = claim?.profile ?? refreshed.profile;
+  const income = addIncome(
+    claimedIncome(refreshed),
+    claim === null ? NO_INCOME : claimedIncome(claim)
+  );
+  player.questIncome = addIncome(player.questIncome, income);
+  player.income = addIncome(player.income, income);
+  player.coin = profile.coin;
+  player.essence = profile.essence;
+  player.quests = profile.quests;
+};
+
 // ─── Battles ─────────────────────────────────────────────────────────────────
 
 /** The middle of a win-rate target or a 3-Star target (Economy 7.1). */
@@ -1505,6 +1656,11 @@ interface EconomyRunOptions {
    * default, but false for the First-try run, which also uses no Sweep.
    */
   readonly seaport?: boolean;
+  /**
+   * The Player does its Daily Quests (24 — Quests 4). The same as `seaport` by
+   * default: the First-try run does none.
+   */
+  readonly quests?: boolean;
   /** A fixed win chance for each Battle. */
   readonly fixedWinChance?: number;
   /** A fixed 3-Star chance for each Stage win. */
@@ -1691,8 +1847,11 @@ export const simulateEconomyRun = (options: EconomyRunOptions): EconomyRun => {
   };
   const firstTry = options.firstTry === true;
   const seaport = options.seaport ?? !firstTry;
+  const quests = options.quests ?? seaport;
   /** The time of the play calendar, in milliseconds from the first Battle. */
   let now = 0;
+  /** The sessions before this one, for the Quest calendar. */
+  let session = 0;
 
   /** Rolls a chance. A chance of 1 or more never uses a random value. */
   const rolls = (chance: number): boolean =>
@@ -1702,7 +1861,8 @@ export const simulateEconomyRun = (options: EconomyRunOptions): EconomyRun => {
   const wins = (chance: number): boolean =>
     firstTry || rolls(options.fixedWinChance ?? chance);
 
-  const playDungeon = (dungeon: DungeonRewardDefinition) => {
+  /** Plays one Dungeon Battle. Returns true for a win. */
+  const playDungeon = (dungeon: DungeonRewardDefinition): boolean => {
     const won = wins(
       winChance(middle(NORMAL_STAGE_TARGET), dungeon.unlockLevel, player)
     );
@@ -1713,15 +1873,17 @@ export const simulateEconomyRun = (options: EconomyRunOptions): EconomyRun => {
     }
     giveDungeonReward(player, dungeon, outcome);
     if (!won) {
-      return;
+      return false;
     }
     player.dungeonSweepTickets += DUNGEON_SWEEP_TICKETS_PER_WIN;
     if (!firstTry) {
       dungeonSweep(player, dungeon);
     }
+    return true;
   };
 
-  const playStage = (index: number, stage: EconomyStage) => {
+  /** Plays one Stage Battle. Returns true for a win. */
+  const playStage = (index: number, stage: EconomyStage): boolean => {
     if (levelsAtStages.length === index) {
       levelsAtStages.push(levelOf(player));
       gearAtStages.push({ ...player.gear });
@@ -1758,9 +1920,11 @@ export const simulateEconomyRun = (options: EconomyRunOptions): EconomyRun => {
       firstTry,
       player
     );
+    return won;
   };
 
-  const playFloor = (floor: number) => {
+  /** Plays one Floor Battle. Returns true for a win. */
+  const playFloor = (floor: number): boolean => {
     if (gearAtFloors.length === floor - 1) {
       gearAtFloors.push({ ...player.gear });
     }
@@ -1787,7 +1951,7 @@ export const simulateEconomyRun = (options: EconomyRunOptions): EconomyRun => {
           progress.dungeonUntil = levelOf(player) + 1;
         }
       }
-      return;
+      return false;
     }
     giveReward(player, reward);
     player.campaignSweepTickets += CAMPAIGN_SWEEP_TICKETS_PER_WIN;
@@ -1797,9 +1961,11 @@ export const simulateEconomyRun = (options: EconomyRunOptions): EconomyRun => {
       floor < HEYNSPIRE_FLOORS
         ? { kind: "heynspire", floor: floor + 1 }
         : { kind: "done" };
+    return true;
   };
 
-  const playOne = () => {
+  /** Plays the next Battle. Returns true for a win. */
+  const playOne = (): boolean => {
     const level = levelOf(player);
     if (progress.dungeonUntil !== null && level >= progress.dungeonUntil) {
       progress.dungeonUntil = null;
@@ -1810,8 +1976,7 @@ export const simulateEconomyRun = (options: EconomyRunOptions): EconomyRun => {
       if (stage === undefined) {
         throw new Error(`No Campaign Stage at index ${position.stage}`);
       }
-      playStage(position.stage, stage);
-      return;
+      return playStage(position.stage, stage);
     }
     const dungeon = unlockedDungeon(level);
     const detour =
@@ -1821,12 +1986,10 @@ export const simulateEconomyRun = (options: EconomyRunOptions): EconomyRun => {
         0,
         progress.dungeonBattlesLeft - 1
       );
-      playDungeon(dungeon);
-      return;
+      return playDungeon(dungeon);
     }
     if (position.kind === "heynspire") {
-      playFloor(position.floor);
-      return;
+      return playFloor(position.floor);
     }
     throw new Error("The Player has no Battle to play");
   };
@@ -1841,12 +2004,20 @@ export const simulateEconomyRun = (options: EconomyRunOptions): EconomyRun => {
   const finished = () =>
     levelOf(player) >= MAX_PLAYER_LEVEL && player.floorsWon >= HEYNSPIRE_FLOORS;
 
-  // The end of a session, 1 day away, and the start of the next session.
-  // The Player spends the Seaport income at once.
+  // The end of a session, 1 day away, and the start of the next session:
+  // a new day, so the resets of the Daily Quests (ADR-0056). The Player
+  // spends the Seaport income and the Quest income at once.
   const restDay = () => {
-    dispatchExpeditionAt(player, now);
+    if (seaport) {
+      dispatchExpeditionAt(player, now);
+    }
     now += HOURS_AWAY * HOUR_MS;
-    if (collectExpeditionAt(player, now)) {
+    const collected = seaport && collectExpeditionAt(player, now);
+    if (quests) {
+      session += 1;
+      updateQuests(player, questSessionTime(session), false);
+    }
+    if (collected || quests) {
       spend(player, options.playStyle);
       claimAchievements(player);
     }
@@ -1871,14 +2042,20 @@ export const simulateEconomyRun = (options: EconomyRunOptions): EconomyRun => {
     recordLevels();
     player.battles += 1;
     now += BATTLE_MINUTES * 60_000;
-    playOne();
-    // A Sweep takes no Battle and no time.
+    const won = playOne();
+    // A Sweep takes no Battle and no time, and adds no Quest progress.
     if (!firstTry) {
       campaignSweep(player, stages);
     }
+    if (quests) {
+      updateQuests(player, questSessionTime(session), won);
+    }
     spend(player, options.playStyle);
     claimAchievements(player);
-    if (seaport && playDays(player.battles) > playDays(player.battles - 1)) {
+    if (
+      (seaport || quests) &&
+      playDays(player.battles) > playDays(player.battles - 1)
+    ) {
       restDay();
     }
     recordCheckpoints();
@@ -2011,6 +2188,7 @@ export type Metric = Exclude<
   | "floorsWon"
   | "income"
   | "seaportIncome"
+  | "questIncome"
   | RepeatMetric
 >;
 
@@ -2034,8 +2212,8 @@ export interface Spread {
   readonly p90: number;
 }
 
-/** The Seaport income of one kind, and its share of the income from all sources. */
-interface SeaportSpread {
+/** The income of one kind from one source, and its share of the income from all sources. */
+interface IncomeSpread {
   readonly amount: Spread;
   /** From 0 to 1. 0 when the Player got none of this kind. */
   readonly share: Spread;
@@ -2049,7 +2227,9 @@ interface CheckpointSummary {
   readonly forgeStones: Readonly<Record<ForgeStoneTier, Spread>> | null;
   readonly repeats: Readonly<Record<RepeatMetric, Spread>> | null;
   /** The Seaport income of each kind (Economy 2.8). */
-  readonly seaport: Readonly<Record<IncomeKind, SeaportSpread>> | null;
+  readonly seaport: Readonly<Record<IncomeKind, IncomeSpread>> | null;
+  /** The income of each kind from Daily Quests and Activity checkpoints (Economy 2.9). */
+  readonly quests: Readonly<Record<IncomeKind, IncomeSpread>> | null;
   /** The share of the Players with a Combine done, from 0 to 1. */
   readonly combinedShare: number;
 }
@@ -2089,6 +2269,16 @@ const spreadOf = (values: readonly number[]): Spread => {
   };
 };
 
+/** The income spread of each kind. */
+const byKind = (
+  spreadFor: (kind: IncomeKind) => IncomeSpread
+): Readonly<Record<IncomeKind, IncomeSpread>> => ({
+  coin: spreadFor("coin"),
+  xp: spreadFor("xp"),
+  essence: spreadFor("essence"),
+  epicStones: spreadFor("epicStones"),
+});
+
 const summarize = (
   snapshots: readonly CheckpointSnapshot[]
 ): CheckpointSummary => {
@@ -2099,6 +2289,7 @@ const summarize = (
       forgeStones: null,
       repeats: null,
       seaport: null,
+      quests: null,
       combinedShare: 0,
     };
   }
@@ -2106,16 +2297,16 @@ const summarize = (
     spreadOf(snapshots.map((snap) => snap[metric]));
   const stones = (tier: ForgeStoneTier) =>
     spreadOf(snapshots.map((snap) => snap.forgeStones[tier]));
-  const seaport = (kind: IncomeKind): SeaportSpread => ({
-    amount: spreadOf(snapshots.map((snap) => snap.seaportIncome[kind])),
-    share: spreadOf(
-      snapshots.map((snap) =>
-        snap.income[kind] === 0
-          ? 0
-          : snap.seaportIncome[kind] / snap.income[kind]
-      )
-    ),
-  });
+  const sourceOf =
+    (source: "seaportIncome" | "questIncome") =>
+    (kind: IncomeKind): IncomeSpread => ({
+      amount: spreadOf(snapshots.map((snap) => snap[source][kind])),
+      share: spreadOf(
+        snapshots.map((snap) =>
+          snap.income[kind] === 0 ? 0 : snap[source][kind] / snap.income[kind]
+        )
+      ),
+    });
   return {
     reached: snapshots.length,
     metrics: {
@@ -2147,12 +2338,8 @@ const summarize = (
       dungeonTicketsUsed: spread("dungeonTicketsUsed"),
       dungeonSweepTickets: spread("dungeonSweepTickets"),
     },
-    seaport: {
-      coin: seaport("coin"),
-      xp: seaport("xp"),
-      essence: seaport("essence"),
-      epicStones: seaport("epicStones"),
-    },
+    seaport: byKind(sourceOf("seaportIncome")),
+    quests: byKind(sourceOf("questIncome")),
     combinedShare:
       snapshots.filter((snap) => snap.combines > 0).length / snapshots.length,
   };
@@ -2312,6 +2499,46 @@ export const judgePacing = (
         },
       ];
     });
+  });
+
+/**
+ * The most that Daily Quests and Activity checkpoints together give of the
+ * Coin and of the Essence of the median Player at Heynspire Floor 50 (Economy 2.9). It
+ * gates release.
+ */
+export const QUEST_SHARE_CAP = { coin: 0.1, essence: 0.15 } as const;
+
+/** The judgement of the Quest share cap of one kind for a Play Style (Economy 2.9). */
+export interface QuestShareVerdict {
+  readonly kind: keyof typeof QUEST_SHARE_CAP;
+  readonly playStyle: PlayStyle;
+  /**
+   * The median share of the income of that kind at Floor 50 that came from
+   * Daily Quests and checkpoints, from 0 to 1. `null` when no Player won Floor 50.
+   */
+  readonly value: number | null;
+  readonly cap: number;
+  readonly onTarget: boolean;
+}
+
+/**
+ * Judges the Quest share cap of the Coin and of the Essence for the Play
+ * Style of `report` (Economy 2.9): the median share at Floor 50.
+ */
+export const judgeQuestShare = (
+  report: PlayStyleReport,
+  caps: Readonly<Record<keyof typeof QUEST_SHARE_CAP, number>> = QUEST_SHARE_CAP
+): QuestShareVerdict[] =>
+  (["coin", "essence"] as const).map((kind) => {
+    const value =
+      report.checkpoints.floor50.quests?.[kind].share.median ?? null;
+    return {
+      kind,
+      playStyle: report.playStyle,
+      value,
+      cap: caps[kind],
+      onTarget: value !== null && value <= caps[kind],
+    };
   });
 
 interface HeynstoneLedger {

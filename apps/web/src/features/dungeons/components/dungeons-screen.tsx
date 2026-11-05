@@ -93,7 +93,7 @@ export const DungeonsScreen = ({
             setSelected(number);
           }}
           onEnter={() => {
-            // The gold action, or Edit Decks while the Deck cannot fight.
+            // The gold action, or Edit Deck while the Deck cannot fight.
             const action = screen.current?.querySelector<HTMLElement>(
               "[data-testid='dungeon-panel'] [data-primary]:not([disabled])"
             );

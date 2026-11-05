@@ -9,11 +9,19 @@ import { getFloor } from "../content/floors";
 import { NO_FORGE_STONES } from "../content/forge-stones";
 import { HEYNSPIRE_FLOORS } from "../content/heynspire";
 import { PLAYER_LEVEL_XP } from "../content/player-levels";
+import {
+  ACTIVITY_CHECKPOINTS,
+  DAILY_QUEST_ACTIVITY,
+  DAILY_QUEST_REWARD,
+  getQuestTemplate,
+  QUEST_TEMPLATES,
+} from "../content/quests";
 import { STAGES } from "../content/stages";
 import { UNLOCK_LEVELS } from "../content/unlocks";
 import { EXTRACT_ESSENCE, FUSE_ESSENCE } from "../content/workshop";
 import { dungeonCardPool } from "../profile/dungeon-result";
 import { discoveredCards } from "../profile/packs";
+import { questDay, questWeek } from "../profile/quests";
 import { AT_BERTH } from "../profile/seaport";
 import { findStage, stageCardPool } from "../profile/stage-result";
 import {
@@ -30,6 +38,7 @@ import {
   expectedGearAtLevel,
   heynstoneLedger,
   judgePacing,
+  judgeQuestShare,
   INCOME_KINDS,
   MAX_REPEAT_BATTLES,
   newEconomyPlayer,
@@ -39,9 +48,13 @@ import {
   PACING_TARGETS,
   pacingTarget,
   PLAY_STYLES,
+  QUEST_SHARE_CAP,
+  questBattles,
+  questSessionTime,
   simulateEconomy,
   simulateEconomyRun,
   spend,
+  updateQuests,
 } from "./economy";
 import type {
   CheckpointId,
@@ -1121,5 +1134,154 @@ describe("heynstoneLedger (Economy 2.6)", () => {
       ledger.sources.reduce((total, source) => total + source.heynstones, 0)
     );
     expect(ledger.catalogShare).toBeCloseTo(ledger.total / ledger.catalog, 10);
+  });
+});
+
+/** The most Battle counts of the active Daily Quests. */
+const mostBattles = (quests: readonly { readonly templateId: string }[]) =>
+  Math.max(
+    ...quests.map((quest) => questBattles(getQuestTemplate(quest.templateId)))
+  );
+
+/** A Player at the unlock with no active Daily Quest: only the resets act. */
+const idlePlayer = (now: number) => {
+  const player = playerAt(UNLOCK_LEVELS.quests, 0);
+  updateQuests(player, now, false);
+  player.quests = { ...player.quests, daily: [] };
+  return player;
+};
+
+describe("Daily Quests in the economy sim (24 — Quests 4)", () => {
+  /** The first day of the play calendar, and the next one. */
+  const DAY_0 = 0;
+  const DAY_1 = 24 * HOUR_MS;
+
+  it("gives each template a Battle count: the count of a goal that counts wins", () => {
+    for (const template of QUEST_TEMPLATES) {
+      const battles = questBattles(template);
+      expect(battles, template.id).toBeGreaterThanOrEqual(1);
+      expect(battles, template.id).toBeLessThanOrEqual(template.count);
+      if (template.needsWin) {
+        expect(battles, template.id).toBe(template.count);
+      }
+    }
+  });
+
+  it("offers no Daily Quest below level 3, and 5 at level 3", () => {
+    const early = playerAt(UNLOCK_LEVELS.quests - 1, 0);
+    updateQuests(early, DAY_0, false);
+    expect(early.quests.daily).toEqual([]);
+    const player = playerAt(UNLOCK_LEVELS.quests, 0);
+    updateQuests(player, DAY_0, false);
+    expect(player.quests.daily).toHaveLength(5);
+    expect(player.questIncome).toEqual(NO_INCOME);
+  });
+
+  it("completes and claims the 5 Daily Quests after their Battle counts of wins in one session", () => {
+    const player = playerAt(UNLOCK_LEVELS.quests, 0);
+    updateQuests(player, DAY_0, false);
+    const wins = mostBattles(player.quests.daily);
+    for (let win = 1; win < wins; win += 1) {
+      updateQuests(player, DAY_0, true);
+    }
+    expect(player.quests.daily.every((quest) => quest.claimed)).toBe(false);
+    updateQuests(player, DAY_0, true);
+    expect(player.quests.daily.every((quest) => quest.claimed)).toBe(true);
+    expect(player.quests.activity).toBe(5 * DAILY_QUEST_ACTIVITY);
+    const [first] = ACTIVITY_CHECKPOINTS;
+    expect(player.questIncome.coin).toBe(
+      5 * DAILY_QUEST_REWARD.coin + (first?.reward.coin ?? 0)
+    );
+    expect(player.questIncome.essence).toBe(
+      5 * DAILY_QUEST_REWARD.essence + (first?.reward.essence ?? 0)
+    );
+    expect(player.questIncome.xp).toBe(0);
+    expect(player.xp).toBe(PLAYER_LEVEL_XP[UNLOCK_LEVELS.quests - 1]);
+  });
+
+  it("adds nothing for a loss: the count model counts only wins", () => {
+    const player = playerAt(UNLOCK_LEVELS.quests, 0);
+    updateQuests(player, DAY_0, false);
+    const before = player.quests;
+    updateQuests(player, DAY_0, false);
+    expect(player.quests).toEqual(before);
+  });
+
+  it("does a Daily reset at the start of the next session", () => {
+    const player = playerAt(UNLOCK_LEVELS.quests, 0);
+    updateQuests(player, DAY_0, false);
+    updateQuests(player, DAY_1, false);
+    expect(player.quests.lastDailyReset).toBe(1);
+    expect(player.quests.daily.every((quest) => quest.progress === 0)).toBe(
+      true
+    );
+  });
+
+  it("does a Daily reset at each session and a Weekly reset each 7 sessions", () => {
+    const weeks = Array.from({ length: 15 }, (_, session) =>
+      questWeek(questSessionTime(session))
+    );
+    const days = Array.from({ length: 15 }, (_, session) =>
+      questDay(questSessionTime(session))
+    );
+    const first = weeks[0] ?? 0;
+    expect(weeks).toEqual([
+      ...Array.from({ length: 7 }, () => first),
+      ...Array.from({ length: 7 }, () => first + 1),
+      first + 2,
+    ]);
+    expect(new Set(days).size).toBe(15);
+  });
+
+  it("sets the Activity to 0 at the Weekly reset", () => {
+    const player = idlePlayer(questSessionTime(0));
+    player.quests = { ...player.quests, activity: 60 };
+    updateQuests(player, questSessionTime(6), false);
+    expect(player.quests.activity).toBe(60);
+    updateQuests(player, questSessionTime(7), false);
+    expect(player.quests.activity).toBe(0);
+  });
+
+  it("claims each checkpoint at once", () => {
+    const player = idlePlayer(DAY_0);
+    player.quests = { ...player.quests, activity: 200 };
+    updateQuests(player, DAY_0, false);
+    expect(player.quests.claimedCheckpoints).toEqual([100, 200]);
+    const [first, second] = ACTIVITY_CHECKPOINTS;
+    expect(player.questIncome.coin).toBe(
+      (first?.reward.coin ?? 0) + (second?.reward.coin ?? 0)
+    );
+    expect(player.coin).toBe(player.questIncome.coin);
+  });
+
+  it("gives Daily Quest income in a run, with no XP, and none in the First-try run", () => {
+    const run = simulateEconomyRun({ playStyle: "balanced", seed: 1 });
+    expect(run.end.questIncome.coin).toBeGreaterThan(0);
+    expect(run.end.questIncome.essence).toBeGreaterThan(0);
+    expect(run.end.questIncome.xp).toBe(0);
+    const firstTry = simulateEconomyRun({
+      playStyle: "balanced",
+      seed: 1,
+      firstTry: true,
+    });
+    expect(firstTry.end.questIncome).toEqual(NO_INCOME);
+  });
+
+  it("reports the share at Floor 50, and fails a share above the cap", () => {
+    const report = simulateEconomy("balanced", { seeds: 3 });
+    const floor50 = report.checkpoints.floor50.quests;
+    expect(floor50?.coin.share.median).toBeGreaterThan(0);
+    expect(floor50?.essence.share.median).toBeGreaterThan(0);
+    const verdicts = judgeQuestShare(report);
+    expect(verdicts.map((verdict) => verdict.kind)).toEqual([
+      "coin",
+      "essence",
+    ]);
+    for (const verdict of verdicts) {
+      expect(verdict.cap).toBe(QUEST_SHARE_CAP[verdict.kind]);
+      expect(verdict.onTarget, verdict.kind).toBe(true);
+    }
+    const strict = judgeQuestShare(report, { coin: 0.001, essence: 0.001 });
+    expect(strict.every((verdict) => !verdict.onTarget)).toBe(true);
   });
 });

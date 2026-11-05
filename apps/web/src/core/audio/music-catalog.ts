@@ -12,8 +12,7 @@ export type MusicTrack =
   | "packs"
   | "bazaar"
   | "seaport"
-  | "hero"
-  | "achievements";
+  | "hero";
 
 export type MusicFeature =
   | "heynspire"
@@ -22,8 +21,7 @@ export type MusicFeature =
   | "packs"
   | "bazaar"
   | "seaport"
-  | "hero"
-  | "achievements";
+  | "hero";
 
 /** Selects the looping music for the current screen or Battle. */
 export const musicTrackFor = (

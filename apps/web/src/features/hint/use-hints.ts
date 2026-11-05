@@ -4,7 +4,7 @@ import { isUnlocked } from "@workspace/rules";
 import type { ContextType } from "react";
 import { useContext, useEffect } from "react";
 
-import { anyAchievementCompletedAtom } from "@/features/achievements/achievements-screen.atoms";
+import { anyAchievementCompletedAtom } from "@/features/achievements/achievement-counts.atoms";
 import type { BattleSession } from "@/features/battle/battle-session";
 import { heroOf } from "@/features/battle/battle-view";
 import { collectionAtom, deckSlotsAtom } from "@/features/deck/deck.atoms";
@@ -166,7 +166,8 @@ const useTownHint = (hint: HintId, open: boolean) => {
  * closes when the Town closes. The Workshop (level 3) and Craft (level 6)
  * Hints show near the Workshop in the same way, one after the other, the
  * Seaport Hint (level 8) near the Seaport quay, and the Dungeons Hint
- * (level 10) near the cave. The Seaport and Dungeons Hints point at their
+ * (level 10) near the cave, and the Quests Hint (level 3) near the Objectives
+ * shortcut. The Seaport and Dungeons Hints point at their
  * shortcuts when the screen crops their Buildings. The Heynspire Hint shows near the tower
  * the first time that the Town shows after the first win of the last Boss
  * Stage, which opens Heynspire. These Hints go before the Deck builder
@@ -186,6 +187,7 @@ export const useTownHints = (active: boolean, inTown: boolean) => {
   useTownHint("workshop", townHintOpen(town, level, "combine"));
   useTownHint("craft", townHintOpen(town, level, "craft"));
   useTownHint("seaport", townHintOpen(town, level, "seaport"));
+  useTownHint("quests", townHintOpen(town, level, "quests"));
   useTownHint("dungeons", townHintOpen(town, level, "dungeon1"));
   useTownHint("heynspire", whenTown(town, heynspireOpen));
   useTownHint("achievements", whenTown(town, anyCompleted));

@@ -17,21 +17,10 @@ export interface BazaarGroup {
 }
 
 /** The families whose look the game can draw, so the Player can select one. */
-export type LookFamily = "cardBack" | "heroPortrait" | "gearLook" | "boardSkin";
+export type LookFamily = CosmeticFamily;
 
-/** The families with a painted look and a Use. */
-export const LOOK_FAMILIES: readonly LookFamily[] = [
-  "cardBack",
-  "heroPortrait",
-  "gearLook",
-  "boardSkin",
-];
-
-const LOOK_FAMILY_SET: ReadonlySet<CosmeticFamily> = new Set(LOOK_FAMILIES);
-
-/** True when the game draws a look of this family, so the Bazaar offers a Use. */
-export const isLookFamily = (family: CosmeticFamily): family is LookFamily =>
-  LOOK_FAMILY_SET.has(family);
+/** The tile key of the Standard look of a family. */
+export const STANDARD_TILE = "standard";
 
 /**
  * True when the game can draw the Cosmetic: a Card Back or a Hero portrait
@@ -93,7 +82,41 @@ export const canBuyCosmetic = (
   (item.price ?? Number.POSITIVE_INFINITY) <= heynstones &&
   !owned.includes(item.id);
 
-/** The look that the Player previews on the shelf of one family. */
+/** What the Inspector offers for the look that it shows. */
+export type InspectorAction =
+  | { readonly kind: "inUse" }
+  | { readonly kind: "use" }
+  | { readonly kind: "buy"; readonly price: number }
+  | {
+      readonly kind: "needMore";
+      readonly price: number;
+      readonly missing: number;
+    };
+
+/**
+ * The one action of the Inspector. `item` is `null` for the Standard look:
+ * every Player has it, so it has no price. A look that the Player does not
+ * own has its price, also when the Player cannot pay it yet.
+ */
+export const inspectorAction = (
+  item: Cosmetic | null,
+  activeId: CosmeticId | null,
+  owned: readonly CosmeticId[],
+  heynstones: number
+): InspectorAction => {
+  if ((item?.id ?? null) === activeId) {
+    return { kind: "inUse" };
+  }
+  if (item === null || owned.includes(item.id)) {
+    return { kind: "use" };
+  }
+  const price = item.price ?? 0;
+  return price <= heynstones
+    ? { kind: "buy", price }
+    : { kind: "needMore", price, missing: price - heynstones };
+};
+
+/** The look that the Inspector shows for one family. */
 export interface ShelfPreview {
   readonly family: LookFamily;
   readonly look: CosmeticId | null;

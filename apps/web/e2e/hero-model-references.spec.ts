@@ -62,8 +62,9 @@ test("the first four appearances load in the Gear looks preview", async ({
   await page.reload();
   await expect(page.getByTestId("town")).toBeVisible({ timeout: 30_000 });
   await page.getByTestId("town-shortcut-bazaar").click();
+  await page.getByTestId("bazaar-family-gearLook").click();
   const preview = page
-    .locator('[data-testid="bazaar-shelf-preview"][data-family="gearLook"]')
+    .getByTestId("bazaar-inspector-preview")
     .getByTestId("hero-model-preview");
   mkdirSync(evidence, { recursive: true });
   const capture = async (name: string) => {
@@ -79,13 +80,17 @@ test("the first four appearances load in the Gear looks preview", async ({
   };
   await capture("standard-standard");
   const gear = page.locator('[data-cosmetic-id="gearLook.goldInlay"]');
-  await gear.getByTestId("bazaar-preview").click();
+  await gear.click();
   await capture("standard-gold-inlay");
-  const portrait = page.locator('[data-cosmetic-id="heroPortrait.tentRings"]');
-  await portrait.getByRole("button", { name: "Use Tent Rings" }).click();
-  await portrait.getByTestId("bazaar-preview").click();
+  await page.getByTestId("bazaar-family-heroPortrait").click();
+  await page.locator('[data-cosmetic-id="heroPortrait.tentRings"]').click();
+  await page.getByRole("button", { name: "Use Tent Rings" }).click();
+  await page.getByTestId("bazaar-family-gearLook").click();
+  await page
+    .locator('[data-testid="cosmetic-standard"][data-family="gearLook"]')
+    .click();
   await capture("tent-rings-standard");
-  await gear.getByTestId("bazaar-preview").click();
+  await gear.click();
   await capture("tent-rings-gold-inlay");
   await expect(gear).not.toHaveAttribute("data-active", "true");
 });

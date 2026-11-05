@@ -28,8 +28,6 @@
  * - `raw/workshop/prompts.md`: the setup message, then the painting message.
  * - `raw/barracks/layout.png`, `raw/barracks/outside-reference.png` and
  *   `raw/barracks/prompts.md`: the same for the Barracks inside (section 11).
- * - `raw/hall/layout.png`, `raw/hall/outside-reference.png` and
- *   `raw/hall/prompts.md`: the same for the Hall inside (section 15).
  * - `raw/bazaar/layout.png`, `raw/bazaar/outside-reference.png` and
  *   `raw/bazaar/prompts.md`: the same for the Bazaar inside (section 16).
  * - `raw/seaport/layout.png`, `raw/seaport/outside-reference.png` and
@@ -79,8 +77,6 @@ import {
   BAZAAR_SETUP_PROMPT,
   BARRACKS_PROMPT,
   BARRACKS_SETUP_PROMPT,
-  HALL_PROMPT,
-  HALL_SETUP_PROMPT,
   CAVE_PROMPT,
   CAVE_SETUP_PROMPT,
   DUNGEON_PART_PROMPTS,
@@ -332,63 +328,6 @@ const writeBarracksOutside = async (file: string) => {
   await sharp(path.join(ROOT, "apps/web/public/town/town.webp"))
     .extract(BARRACKS_OUTSIDE)
     .resize({ width: BARRACKS_OUTSIDE.width * 2 })
-    .png()
-    .toFile(file);
-};
-
-/**
- * The layout sketch of the Hall inside: flat shapes at the areas of the
- * table in section 15.2. ChatGPT keeps its composition, not its colors.
- */
-const writeHallLayout = async (file: string) => {
-  const svg = [
-    `<svg xmlns="http://www.w3.org/2000/svg" width="${ROOM.width}" height="${ROOM.height}">`,
-    // The calm back wall of pale stone in shadow.
-    `<rect width="100%" height="100%" fill="#6a6157"/>`,
-    ...[32, 48, 64].map(
-      (y) => `<rect ${roomBox(12, 88, y, y + 0.4)} fill="#5e554b"/>`
-    ),
-    // The ceiling beams, the banners and the high window.
-    `<rect ${roomBox(0, 100, 0, 7)} fill="#2a1a10"/>`,
-    `<rect ${roomBox(0, 100, 11, 14)} fill="#2a1a10"/>`,
-    ...[20, 32, 64, 76].map(
-      (x) => `<rect ${roomBox(x, x + 4, 14, 34)} fill="#2f4f9a"/>`
-    ),
-    `<rect ${roomBox(3, 11, 2, 11)} rx="20" fill="#f6e7b0"/>`,
-    // The trophy shelves on their steps at the left edge.
-    `<rect ${roomBox(0, 12, 22, 84)} fill="#7a5233"/>`,
-    ...[34, 50, 66].map(
-      (y) =>
-        `<circle cx="${0.06 * ROOM.width}" cy="${(y / 100) * ROOM.height}" r="24" fill="#f2c14e"/>`
-    ),
-    // The bell rope, the stair and the bell keeper at the right edge.
-    `<rect ${roomBox(90, 91, 0, 70)} fill="#c9a46a"/>`,
-    `<rect ${roomBox(88, 100, 40, 84)} fill="#857a6c"/>`,
-    `<circle cx="${0.95 * ROOM.width}" cy="${0.46 * ROOM.height}" r="22" fill="#efe6d2"/>`,
-    // The stone floor and the red carpet.
-    `<rect ${roomBox(0, 100, 84, 100)} fill="#4f4842"/>`,
-    `<rect ${roomBox(0, 100, 88, 94)} fill="#8e1f1f"/>`,
-    "</svg>",
-  ].join("");
-  await sharp(Buffer.from(svg)).png().toFile(file);
-};
-
-/**
- * The Hall of banners in the Town painting, in pixels of `town.webp`: the
- * red roofs, the banners and the steps (the glow box of `hall` in
- * `town.ts`, a little wider).
- */
-const HALL_OUTSIDE = {
-  left: 800,
-  top: 230,
-  width: 370,
-  height: 250,
-} as const;
-
-const writeHallOutside = async (file: string) => {
-  await sharp(path.join(ROOT, "apps/web/public/town/town.webp"))
-    .extract(HALL_OUTSIDE)
-    .resize({ width: HALL_OUTSIDE.width * 2 })
     .png()
     .toFile(file);
 };
@@ -939,25 +878,6 @@ const barracksFile = (): string =>
     "",
   ].join("\n");
 
-const hallFile = (): string =>
-  [
-    "# Hall inside prompts",
-    "",
-    "1. Open a new ChatGPT conversation. Attach, in this order: `layout.png`, `../style-reference.png`, `outside-reference.png`. Send the setup message.",
-    "2. Send the painting message. Use high quality, at 1536 × 1024. Make 4 to 8 images: send the painting message again for each new image.",
-    "3. Select one image with the review checklist (Town Concepts, 15.6). Fix small problems with the edit tool of ChatGPT. Save it in this folder.",
-    "4. Do steps 3 to 6 of Town Concepts, 15.5.",
-    "",
-    "## Setup message",
-    "",
-    block(HALL_SETUP_PROMPT),
-    "",
-    "## Painting",
-    "",
-    block(HALL_PROMPT),
-    "",
-  ].join("\n");
-
 const BAZAAR_FIXES = [
   "| Problem | Fix |",
   "| --- | --- |",
@@ -1243,7 +1163,6 @@ const packsDir = path.join(RAW_DIR, "packs");
 const shopDir = path.join(RAW_DIR, "shop");
 const workshopDir = path.join(RAW_DIR, "workshop");
 const barracksDir = path.join(RAW_DIR, "barracks");
-const hallDir = path.join(RAW_DIR, "hall");
 const bazaarDir = path.join(RAW_DIR, "bazaar");
 const seaportDir = path.join(RAW_DIR, "seaport");
 const gearDir = path.join(RAW_DIR, "gear");
@@ -1252,7 +1171,6 @@ const heynspireDir = path.join(RAW_DIR, "heynspire");
 const dungeonsDir = path.join(RAW_DIR, "dungeons");
 mkdirSync(dungeonsDir, { recursive: true });
 mkdirSync(barracksDir, { recursive: true });
-mkdirSync(hallDir, { recursive: true });
 mkdirSync(bazaarDir, { recursive: true });
 mkdirSync(seaportDir, { recursive: true });
 mkdirSync(caveDir, { recursive: true });
@@ -1287,9 +1205,6 @@ writeFileSync(path.join(workshopDir, "prompts.md"), workshopFile());
 await writeBarracksLayout(path.join(barracksDir, "layout.png"));
 await writeBarracksOutside(path.join(barracksDir, "outside-reference.png"));
 writeFileSync(path.join(barracksDir, "prompts.md"), barracksFile());
-await writeHallLayout(path.join(hallDir, "layout.png"));
-await writeHallOutside(path.join(hallDir, "outside-reference.png"));
-writeFileSync(path.join(hallDir, "prompts.md"), hallFile());
 await writeBazaarLayout(path.join(bazaarDir, "layout.png"));
 await writeBazaarOutside(path.join(bazaarDir, "outside-reference.png"));
 writeFileSync(path.join(bazaarDir, "prompts.md"), bazaarFile());
@@ -1336,5 +1251,5 @@ console.log(
   `Packs: ${packs.length} Packs, set reference ${PACK_SET_REFERENCE}`
 );
 console.log(
-  `References: ${RAW_DIR}\nPrompts: ${RAW_DIR}/painting/prompts.md, ${RAW_DIR}/bar/prompts.md, ${RAW_DIR}/packs/prompts.md, ${RAW_DIR}/shop/prompts.md, ${RAW_DIR}/workshop/prompts.md, ${RAW_DIR}/barracks/prompts.md, ${RAW_DIR}/hall/prompts.md, ${RAW_DIR}/bazaar/prompts.md, ${RAW_DIR}/seaport/prompts.md, ${RAW_DIR}/gear/prompts.md, ${RAW_DIR}/cave/prompts.md, ${RAW_DIR}/heynspire/prompts.md and ${RAW_DIR}/dungeons/prompts.md`
+  `References: ${RAW_DIR}\nPrompts: ${RAW_DIR}/painting/prompts.md, ${RAW_DIR}/bar/prompts.md, ${RAW_DIR}/packs/prompts.md, ${RAW_DIR}/shop/prompts.md, ${RAW_DIR}/workshop/prompts.md, ${RAW_DIR}/barracks/prompts.md, ${RAW_DIR}/bazaar/prompts.md, ${RAW_DIR}/seaport/prompts.md, ${RAW_DIR}/gear/prompts.md, ${RAW_DIR}/cave/prompts.md, ${RAW_DIR}/heynspire/prompts.md and ${RAW_DIR}/dungeons/prompts.md`
 );

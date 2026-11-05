@@ -28,11 +28,11 @@ describe("skillSwap (Archetypes 3.3)", () => {
     const swap = skillSwap(skill("warrior.warDrums"));
     expect(swap.base.id).toBe("vanguardFull");
     // Crossbow Guard (Countdown 2, 2 copies) is a Range 3 Shooter: the swap
-    // takes the melee Shieldbearer.
-    expect(swap.creature.cardId).toBe("human.shieldbearer");
+    // takes the melee Halberdier, which has the same Countdown 3.
+    expect(swap.creature.cardId).toBe("human.halberdier");
     expect(swap.sameCountdown).toBe(true);
     expect(countOf(swap.swapped.deck, "warrior.warDrums")).toBe(2);
-    expect(countOf(swap.swapped.deck, "human.shieldbearer")).toBe(0);
+    expect(countOf(swap.swapped.deck, "human.halberdier")).toBe(0);
     expect(swap.swapped.deck).toHaveLength(swap.base.deck.length);
     expect(deckCountdown(swap.swapped.deck)).toBe(
       deckCountdown(swap.base.deck)
@@ -43,7 +43,7 @@ describe("skillSwap (Archetypes 3.3)", () => {
     const swap = skillSwap(skill("warrior.warDrums"));
     expect(swap.reverse).not.toBeNull();
     expect(countOf(swap.reverse?.deck ?? [], "warrior.warDrums")).toBe(0);
-    expect(countOf(swap.reverse?.deck ?? [], "human.shieldbearer")).toBe(2);
+    expect(countOf(swap.reverse?.deck ?? [], "human.halberdier")).toBe(2);
   });
 
   it("uses each Class Deck", () => {
@@ -59,7 +59,7 @@ describe("skillSwap (Archetypes 3.3)", () => {
 
   it("uses the nearest Countdown when no melee Creature Card has the same one", () => {
     // Thornwatch has no Countdown 4 Creature Card.
-    const swap = skillSwap(skill("ranger.longShot"));
+    const swap = skillSwap(skill("ranger.venomArrow"));
     expect(swap.sameCountdown).toBe(false);
     expect(getCard(swap.creature.cardId).countdown).toBe(3);
   });
@@ -77,10 +77,10 @@ describe("swappedCreature", () => {
   it("selects the higher of two nearest Countdowns, then the card with the most copies", () => {
     // Countdown 2: Militia Recruit (1) and Halberdier (3) are both 1 away.
     // Crossbow Guard has Countdown 2, but it is a Shooter.
-    expect(swappedCreature(deck, skill("warrior.warDrums")).cardId).toBe(
+    expect(swappedCreature(deck, skill("warrior.shieldBash")).cardId).toBe(
       "human.halberdier"
     );
-    expect(swappedCreature(deck, skill("ranger.longShot")).cardId).toBe(
+    expect(swappedCreature(deck, skill("ranger.venomArrow")).cardId).toBe(
       "human.kingsCourier"
     );
   });

@@ -150,7 +150,7 @@ const undeadStage = (): StageDefinition => {
 };
 
 describe("applyEvent with Swarm, Rebirth and Summon", () => {
-  const battles = [1, 2, 3].map((seed) =>
+  const battles = [4, 7, 10].map((seed) =>
     steps(seed, "1-4", "vanguard", undeadStage())
   );
 

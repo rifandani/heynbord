@@ -54,7 +54,7 @@ export const achievementToasts = (
     ? [{ kind: "many", count: ids.length }]
     : ids.map((id) => ({ kind: "one", id }));
 
-/** One row of the Achievements screen (Achievements 4). */
+/** One row of the Achievements tab (Achievements 4). */
 export interface AchievementRow {
   readonly achievement: AchievementDefinition;
   readonly state: AchievementState;
@@ -66,7 +66,23 @@ export interface AchievementRow {
   readonly progress: AchievementProgress | null;
 }
 
-/** One category of the Achievements screen: one flag and its roll. */
+/**
+ * The frame of a row (15 — Achievements 4): `gold` for an earn-only Cosmetic,
+ * `silver` for a Feat, and `plain` for all other Achievements.
+ */
+export type AchievementFrame = "plain" | "silver" | "gold";
+
+export const achievementFrame = ({
+  category,
+  reward,
+}: AchievementDefinition): AchievementFrame => {
+  if (reward.kind === "cosmetic") {
+    return "gold";
+  }
+  return category === "feats" ? "silver" : "plain";
+};
+
+/** One category of the Achievements tab: one category tab and its list. */
 export interface AchievementGroup {
   readonly category: AchievementCategory;
   readonly rows: readonly AchievementRow[];
@@ -92,8 +108,8 @@ const rowOf = (
 };
 
 /**
- * The 4 categories of the Achievements screen, in screen order, each with
- * its rows in list order (Achievements 2 and 4).
+ * The 5 categories of the Achievements tab, in screen order, each with its
+ * rows in list order (Achievements 2 and 4).
  */
 export const achievementGroups = (
   profile: Profile
@@ -111,7 +127,7 @@ export const achievementGroups = (
   });
 
 /**
- * The category that the screen opens on: the first one with a reward to
+ * The category that the tab opens on: the first one with a reward to
  * claim, else the first one (Campaign).
  */
 export const openingCategory = (
@@ -123,7 +139,7 @@ export const openingCategory = (
  * Where the focus goes after the Claim of `claimed` in `rows` (the rows of
  * the open category, before the Claim): the next Completed row after it,
  * else the first Completed row before it, else `null` (Claim all, or the
- * roll when Claim all is off).
+ * list when Claim all is off).
  */
 export const claimFocusAfter = (
   rows: readonly AchievementRow[],
@@ -153,19 +169,19 @@ export const rewardText = (
   switch (reward.kind) {
     case "heynstones": {
       return {
-        key: "achievements.screen.rewards.heynstones",
+        key: "achievements.tab.rewards.heynstones",
         args: { amount: reward.amount },
       };
     }
     case "essence": {
       return {
-        key: "achievements.screen.rewards.essence",
+        key: "achievements.tab.rewards.essence",
         args: { amount: reward.amount },
       };
     }
     case "coin": {
       return {
-        key: "achievements.screen.rewards.coin",
+        key: "achievements.tab.rewards.coin",
         args: { coin: coinWords(reward.amount) },
       };
     }
@@ -173,35 +189,12 @@ export const rewardText = (
       return {
         key:
           state === "claimed"
-            ? "achievements.screen.rewards.cosmeticLater"
-            : "achievements.screen.rewards.cosmetic",
+            ? "achievements.tab.rewards.cosmeticLater"
+            : "achievements.tab.rewards.cosmetic",
       };
     }
     default: {
       return absurd(reward);
     }
   }
-};
-
-/** A balance on the Balance Plate that a reward goes into. */
-export type RewardBalance = "heynstones" | "coin" | "essence";
-
-/**
- * The balance that a reward goes into, for its flight to the Balance Plate.
- * `null` for a Cosmetic: it has no balance.
- */
-const rewardBalance = (reward: AchievementReward): RewardBalance | null =>
-  reward.kind === "cosmetic" ? null : reward.kind;
-
-/**
- * The balances of a Claim all, one time each, in Balance Plate order (Coin,
- * Essence, Heynstones): Claim all sends one flight for each.
- */
-export const rewardBalances = (
-  rewards: readonly AchievementReward[]
-): readonly RewardBalance[] => {
-  const kinds = new Set(rewards.map(rewardBalance));
-  return (["coin", "essence", "heynstones"] as const).filter((kind) =>
-    kinds.has(kind)
-  );
 };

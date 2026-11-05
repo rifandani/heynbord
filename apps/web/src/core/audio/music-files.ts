@@ -15,7 +15,6 @@ export const TRACK_FILES: Readonly<Record<MusicTrack, string>> = {
   bazaar: "bazaar.mp3",
   seaport: "seaport.ogg",
   hero: "hero.mp3",
-  achievements: "achievements.mp3",
 };
 
 export const STING_FILES = {

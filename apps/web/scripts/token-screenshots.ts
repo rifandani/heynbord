@@ -223,9 +223,10 @@ const main = async (): Promise<void> => {
     await shot("heynspire-locked");
     await backToTown();
 
-    await openShortcut("achievements", "achievements");
-    await shot("achievements");
-    await backToTown();
+    await page.getByTestId("town-shortcut-objectives").click();
+    await page.getByTestId("objectives-dialog").waitFor();
+    await shot("objectives");
+    await page.keyboard.press("Escape");
 
     await openShortcut("bazaar", "bazaar");
     await shot("bazaar");

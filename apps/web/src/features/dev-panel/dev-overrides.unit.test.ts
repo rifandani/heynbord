@@ -1,4 +1,4 @@
-import type { StageDefinition } from "@workspace/rules";
+import type { QuestsState, StageDefinition } from "@workspace/rules";
 import {
   activeExpedition,
   CARDS,
@@ -14,6 +14,8 @@ import { describe, expect, it } from "vitest";
 
 import {
   canSetStars,
+  addActivity,
+  completeQuests,
   finishVoyage,
   floorsWon,
   fromOverlay,
@@ -324,5 +326,43 @@ describe("setStageStars", () => {
 
   it("keeps the Stars from 1 to 3", () => {
     expect(setStageStars(STAGES_FIXTURE, {}, "1-1", 9)).toEqual({ "1-1": 3 });
+  });
+});
+
+describe("completeQuests (24 — Quests)", () => {
+  const quests: QuestsState = {
+    seed: 1,
+    lastDailyReset: 20_000,
+    daily: [
+      { templateId: "daily.win", param: null, progress: 1, claimed: false },
+      {
+        templateId: "daily.skillCards",
+        param: null,
+        progress: 5,
+        claimed: true,
+      },
+    ],
+    lastWeeklyReset: 2857,
+    activity: 40,
+    claimedCheckpoints: [],
+  };
+
+  it("puts each active Daily Quest at its count, and a claimed one stays", () => {
+    expect(completeQuests(quests)).toEqual({
+      ...quests,
+      daily: [
+        { templateId: "daily.win", param: null, progress: 3, claimed: false },
+        {
+          templateId: "daily.skillCards",
+          param: null,
+          progress: 5,
+          claimed: true,
+        },
+      ],
+    });
+  });
+
+  it("adds Activity", () => {
+    expect(addActivity(quests, 100)).toEqual({ ...quests, activity: 140 });
   });
 });

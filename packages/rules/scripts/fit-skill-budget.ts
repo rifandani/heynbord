@@ -213,7 +213,10 @@ const values = skills.map((skill) => {
   return {
     skill,
     swap,
-    value: powerBudget(skill.countdown) + swap.creatureDeviation + delta,
+    value:
+      powerBudget(skill.countdown, skill.baseRank) +
+      swap.creatureDeviation +
+      delta,
   };
 });
 
@@ -378,7 +381,7 @@ console.table(
     const row = best.rows[index];
     return {
       skill: skill.id,
-      budget: powerBudget(skill.countdown),
+      budget: powerBudget(skill.countdown, skill.baseRank),
       creature: `${swap.creatureId} (${signed(swap.creatureDeviation, 0)})`,
       change: swap.changes.map((change) => signed(change * 100)).join(" / "),
       value: value.toFixed(1),

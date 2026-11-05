@@ -1,15 +1,17 @@
 import type { RankId } from "./schema";
 
-/** The groups of the Achievements screen, in screen order (Achievements 2). */
+/** The groups of the Achievements tab, in screen order (Achievements 2). */
 export type AchievementCategory =
   | "campaign"
-  | "dungeonsAndHeynspire"
+  | "dungeons"
+  | "heynspire"
   | "progress"
   | "feats";
 
 export const ACHIEVEMENT_CATEGORIES: readonly AchievementCategory[] = [
   "campaign",
-  "dungeonsAndHeynspire",
+  "dungeons",
+  "heynspire",
   "progress",
   "feats",
 ];
@@ -24,7 +26,7 @@ export const TALLY_IDS: readonly TallyId[] = [
   "fuses",
 ];
 
-/** A Feat: an Achievement that one won Battle completes (Achievements 2.4). */
+/** A Feat: an Achievement that one won Battle completes (Achievements 2.5). */
 export type FeatId =
   | "onlyHuman"
   | "onlyElf"
@@ -168,38 +170,39 @@ export const ACHIEVEMENTS: readonly AchievementDefinition[] = [
     goal: { kind: "starChests", count: 15 },
     reward: { kind: "coin", amount: 500 },
   },
-  // 2.2 Dungeons and Heynspire
+  // 2.2 Dungeons
   {
     id: "dungeon.rootdeepMine",
-    category: "dungeonsAndHeynspire",
+    category: "dungeons",
     goal: { kind: "dungeonWon", dungeonId: "dungeon-1" },
     reward: heynstones(25),
   },
   {
     id: "dungeon.rimebarrow",
-    category: "dungeonsAndHeynspire",
+    category: "dungeons",
     goal: { kind: "dungeonWon", dungeonId: "dungeon-2" },
     reward: heynstones(35),
   },
   {
     id: "dungeon.brokenVault",
-    category: "dungeonsAndHeynspire",
+    category: "dungeons",
     goal: { kind: "dungeonWon", dungeonId: "dungeon-3" },
     reward: heynstones(50),
   },
+  // 2.3 Heynspire
   {
     id: "heynspire.floor25",
-    category: "dungeonsAndHeynspire",
+    category: "heynspire",
     goal: { kind: "floorsWon", floors: 25 },
     reward: heynstones(30),
   },
   {
     id: "heynspire.floor50",
-    category: "dungeonsAndHeynspire",
+    category: "heynspire",
     goal: { kind: "floorsWon", floors: 50 },
     reward: heynstones(60),
   },
-  // 2.3 Progress, Collection and Workshop
+  // 2.4 Progress, Collection and Workshop
   {
     id: "level.max",
     category: "progress",
@@ -254,7 +257,7 @@ export const ACHIEVEMENTS: readonly AchievementDefinition[] = [
     goal: { kind: "gearLevel", level: 25, items: 4 },
     reward: heynstones(60),
   },
-  // 2.4 Feats
+  // 2.5 Feats
   feat("onlyHuman", heynstones(25)),
   feat("onlyElf", heynstones(25)),
   feat("onlyUndead", heynstones(25)),

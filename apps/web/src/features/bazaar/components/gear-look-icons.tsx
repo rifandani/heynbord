@@ -70,9 +70,9 @@ export const GearLookThumb = ({
 );
 
 /**
- * The Gear look on the shelf (web ADR-0013): its 4 icons in a 2 × 2 grid,
- * in the order of the Gear Rack, at about the size of the Board skin shelf.
- * The Standard kit shows the 4 icons of the Hero screen.
+ * The Gear look in the Inspector (web ADR-0013): its 4 icons in a row under
+ * the Hero Model, in the order of the Gear Rack. The Standard kit shows the 4
+ * icons of the Hero screen.
  */
 export const GearLookShelfLook = ({
   look,
@@ -81,7 +81,7 @@ export const GearLookShelfLook = ({
 }) => (
   <span
     aria-hidden
-    className="grid grid-cols-2 gap-1"
+    className="flex justify-center gap-1.5"
     data-testid="gear-look-shelf-look"
     data-look={look ?? "standard"}
   >
@@ -90,7 +90,7 @@ export const GearLookShelfLook = ({
         key={slot}
         look={look}
         slot={slot}
-        className="size-14 [@media(max-height:500px)]:size-10"
+        className="size-11 [@media(max-height:500px)]:size-7"
       />
     ))}
   </span>

@@ -603,7 +603,10 @@ export const HandBar = ({ battle }: { readonly battle: Battle }) => {
   };
 
   return (
-    <footer className="pointer-events-none absolute inset-x-0 bottom-0 z-20 flex items-end p-2 pr-[max(0.5rem,env(safe-area-inset-right))] pb-[max(0.5rem,env(safe-area-inset-bottom))] pl-[max(0.5rem,env(safe-area-inset-left))]">
+    <footer
+      data-battle-hud="hand"
+      className="pointer-events-none absolute inset-x-0 bottom-0 z-20 flex items-end p-2 pr-[max(0.5rem,env(safe-area-inset-right))] pb-[max(0.5rem,env(safe-area-inset-bottom))] pl-[max(0.5rem,env(safe-area-inset-left))]"
+    >
       {/* 2 spacers of equal growth keep the bar at the middle of the screen. */}
       <div className="min-w-0 flex-1" aria-hidden />
       <div

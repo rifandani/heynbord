@@ -23,6 +23,8 @@ export type SoundName =
   | "turn"
   | "victory"
   | "defeat"
+  | "finalHit"
+  | "kneel"
   | "packTear"
   | "cardFlip"
   | "revealRare"
@@ -81,7 +83,12 @@ export const makeSounds = (
     oscillator.stop(start + duration + 0.02);
   };
 
-  const noise = (duration: number, frequency: number, gain = 0.35): void => {
+  const noise = (
+    duration: number,
+    frequency: number,
+    gain = 0.35,
+    delay = 0
+  ): void => {
     const length = Math.floor(context.sampleRate * duration);
     const buffer = context.createBuffer(1, length, context.sampleRate);
     const data = buffer.getChannelData(0);
@@ -96,7 +103,7 @@ export const makeSounds = (
     const level = context.createGain();
     level.gain.value = gain;
     source.connect(filter).connect(level).connect(destination);
-    source.start();
+    source.start(context.currentTime + delay);
   };
 
   return {
@@ -152,10 +159,31 @@ export const makeSounds = (
         tone(note, 0.3, { delay: index * 0.12, gain: 0.2 });
       }
     },
+    // The Battle is lost: a ring in the ears over a low hum, and then the
+    // four falling notes, soft and slow, under the music sting.
     defeat: () => {
+      tone(2637, 2.6, { type: "sine", gain: 0.022 });
+      tone(2649, 2.2, { type: "sine", gain: 0.014, delay: 0.05 });
+      tone(98, 2.4, { type: "sine", gain: 0.09, slideTo: 82 });
       for (const [index, note] of [392, 349, 311, 262].entries()) {
-        tone(note, 0.35, { delay: index * 0.16, gain: 0.18, type: "sine" });
+        tone(note, 0.55, {
+          delay: 0.7 + index * 0.24,
+          gain: 0.11,
+          type: "sine",
+        });
       }
+    },
+    // The last hit of a lost Battle: heavier than a hit, with a low body blow.
+    finalHit: () => {
+      noise(0.22, 700, 0.55);
+      tone(92, 0.42, { type: "sine", slideTo: 46, gain: 0.32 });
+      tone(180, 0.16, { type: "square", slideTo: 90, gain: 0.1 });
+    },
+    // The knee of the Hero hits the ground: a dull thud and a little grit.
+    kneel: () => {
+      tone(70, 0.3, { type: "sine", slideTo: 42, gain: 0.28 });
+      noise(0.16, 320, 0.3);
+      noise(0.35, 1400, 0.05, 0.04);
     },
     // A Boss falls (ADR-0009): a low fall, then a dull drop on the ground.
     bossDefeated: () => {
@@ -225,8 +253,8 @@ export const makeSounds = (
       tone(2730, 0.22, { type: "sine", gain: 0.05 });
       tone(1568, 0.45, { type: "sine", delay: 0.09, gain: 0.1 });
     },
-    // The Achievements screen: a claimed reward gets to its balance. Two bright
-    // bell notes that go up, as a coin in a full purse.
+    // The Objectives dialog: a Claim adds a reward. Two bright bell notes that
+    // go up, as a coin in a full purse.
     claim: () => {
       tone(1319, 0.22, { type: "triangle", gain: 0.1 });
       tone(1976, 0.34, { type: "sine", delay: 0.07, gain: 0.08 });

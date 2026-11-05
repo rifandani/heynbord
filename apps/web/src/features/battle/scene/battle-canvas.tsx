@@ -8,6 +8,7 @@ import { shownSessionAtom } from "@/features/battle/battle.atoms";
 import { Board } from "@/features/battle/scene/board";
 import { CameraRig } from "@/features/battle/scene/camera-rig";
 import { CastMarks } from "@/features/battle/scene/cast-marks";
+import { DefeatLayer } from "@/features/battle/scene/defeat-layer";
 import { Diagnostics } from "@/features/battle/scene/diagnostics";
 import { EffectsLayer } from "@/features/battle/scene/effects-layer";
 import { Environment } from "@/features/battle/scene/environment";
@@ -16,10 +17,12 @@ import { Heroes } from "@/features/battle/scene/heroes";
 import { KeywordPlateLayer } from "@/features/battle/scene/keyword-plate-layer";
 import { ParticleLayer } from "@/features/battle/scene/particle-layer";
 import { PlaybackDriver } from "@/features/battle/scene/playback-driver";
+import { SceneReady } from "@/features/battle/scene/scene-ready";
 import { TargetMarkers } from "@/features/battle/scene/target-markers";
 import { TutorialMarks } from "@/features/battle/scene/tutorial-marks";
 import { UnitInspector } from "@/features/battle/scene/unit-inspector";
 import { FallenMarks, Units } from "@/features/battle/scene/units";
+import { VictoryLayer } from "@/features/battle/scene/victory-layer";
 import { useGameText } from "@/features/battle/use-game-text";
 
 const NO_LANES: readonly number[] = [];
@@ -85,10 +88,13 @@ const BattleCanvas = ({
         <EffectsLayer />
         <KeywordPlateLayer />
         <ParticleLayer />
+        <VictoryLayer />
+        <DefeatLayer />
         <TutorialMarks />
         <TargetMarkers onPick={onPick} />
         <UnitInspector />
         <Diagnostics />
+        <SceneReady />
       </Canvas>
     </div>
   );

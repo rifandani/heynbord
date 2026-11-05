@@ -1,44 +1,71 @@
-import type { CosmeticId, Side } from "@workspace/rules";
+import type { ClassId, CosmeticId, Side } from "@workspace/rules";
 import { cn } from "cn";
+import { useState } from "react";
+import { Button, TooltipTrigger } from "react-aria-components";
 
+import {
+  GAME_TOOLTIP_CLASS,
+  GameTooltip,
+} from "@/core/components/game/game-tooltip";
 import { SIDE_COLORS } from "@/core/components/game/tokens";
 import type { HeroView } from "@/features/battle/battle-view";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
+import { HealthBar } from "@/features/battle/components/health-bar";
 import { classGlyph } from "@/features/battle/glyphs";
-import { isAtLowHp } from "@/features/battle/health";
 import { useGameText } from "@/features/battle/use-game-text";
 import { HeroPortrait } from "@/features/hero/components/hero-portrait";
 
-/** The HP bar turns red at one third HP or less. */
-const HpBar = ({
+/** The width shared by each Hero profile in the Battle top bar. */
+export const BATTLE_PROFILE_WIDTH = "w-[clamp(12rem,15vw,18rem)]";
+
+/** The Class glyph shows its translated name on hover, focus or touch. */
+const HeroClassIcon = ({
+  classId,
   side,
-  hero,
 }: {
+  readonly classId: ClassId;
   readonly side: Side;
-  readonly hero: HeroView;
 }) => {
-  const percent = Math.max(0, Math.min(100, (hero.hp / hero.maxHp) * 100));
+  const { tr } = useGameText();
+  const [open, setOpen] = useState(false);
+  const label = tr(`classes.${classId}`);
   return (
-    <div className="mt-1 flex items-center gap-2">
-      <div className="relative h-3 w-[clamp(80px,14vw,180px)] overflow-hidden rounded-full bg-black/60 ring-1 ring-white/20">
-        <div
-          className={cn(
-            "h-full rounded-full transition-[width] duration-300",
-            isAtLowHp(hero) ? "bg-hp-low" : "bg-hp-full"
-          )}
-          style={{ width: `${percent}%` }}
-        />
-      </div>
-      <span
-        className="text-cream text-sm font-black tabular-nums"
-        data-testid={`hero-${side}-hp`}
+    <TooltipTrigger
+      delay={200}
+      isOpen={open}
+      onOpenChange={setOpen}
+      shouldCloseOnPress={false}
+    >
+      <Button
+        aria-label={label}
+        onPress={(press) => {
+          if (press.pointerType !== "mouse") {
+            setOpen(!open);
+          }
+        }}
+        className={cn(
+          "text-cream data-[focus-visible]:ring-focus-cream flex shrink-0 cursor-help items-center justify-center rounded outline-none data-[focus-visible]:ring-2 data-[hovered]:brightness-125",
+          side === "player"
+            ? "border-gold-trim bg-night-plate absolute -right-1 -bottom-1 size-5 rounded-md border shadow-sm after:absolute after:-inset-0.5"
+            : "size-10 rounded-lg [@media(max-height:500px)]:size-8"
+        )}
+        style={
+          side === "enemy" ? { background: SIDE_COLORS[side].dark } : undefined
+        }
       >
-        {hero.hp}
-        <span className="text-cream-dim text-xs font-medium">
-          /{hero.maxHp}
-        </span>
-      </span>
-    </div>
+        <GlyphIcon
+          glyph={classGlyph(classId)}
+          className={
+            side === "player"
+              ? "size-3.5"
+              : "size-6 [@media(max-height:500px)]:size-5"
+          }
+        />
+      </Button>
+      <GameTooltip placement="bottom" className={GAME_TOOLTIP_CLASS}>
+        {label}
+      </GameTooltip>
+    </TooltipTrigger>
   );
 };
 
@@ -61,7 +88,8 @@ export const HeroPanel = ({
     <section
       aria-label={`${name}: ${tr("battle.hp")} ${hero.hp} / ${hero.maxHp}`}
       className={cn(
-        "bg-night-plate/85 flex min-w-0 items-center gap-2 rounded-xl border-2 p-1.5 pr-3 backdrop-blur-sm transition-shadow",
+        "bg-night-plate/85 flex min-w-0 shrink-0 items-center gap-2 rounded-xl border-2 p-1.5 pr-3 backdrop-blur-sm transition-shadow",
+        BATTLE_PROFILE_WIDTH,
         side === "enemy" && "flex-row-reverse pr-1.5 pl-3",
         active ? "shadow-active" : "shadow-md"
       )}
@@ -69,33 +97,24 @@ export const HeroPanel = ({
       data-testid={`hero-${side}`}
     >
       {side === "player" ? (
-        <HeroPortrait
-          id={portrait}
-          classId={hero.classId}
-          className="w-10 shrink-0 [@media(max-height:500px)]:w-8"
-        />
-      ) : (
-        <span
-          className="text-cream flex size-10 shrink-0 items-center justify-center rounded-lg [@media(max-height:500px)]:size-8"
-          style={{
-            background: SIDE_COLORS[side].dark,
-          }}
-          aria-hidden
-        >
-          <GlyphIcon
-            glyph={classGlyph(hero.classId)}
-            className="size-6 [@media(max-height:500px)]:size-5"
-          />
+        <span className="relative block w-10 shrink-0 [@media(max-height:500px)]:w-8">
+          <HeroPortrait id={portrait} classId={hero.classId} />
+          <HeroClassIcon classId={hero.classId} side={side} />
         </span>
+      ) : (
+        <HeroClassIcon classId={hero.classId} side={side} />
       )}
       <div className={cn("min-w-0 flex-1", side === "enemy" && "text-right")}>
-        <p className="text-cream truncate text-sm leading-tight font-semibold [@media(max-height:500px)]:text-xs">
-          {name}{" "}
-          <span className="text-cream-dim font-normal">
-            · {tr(`classes.${hero.classId}`)}
-          </span>
+        <p className="font-display text-cream truncate text-sm leading-tight font-bold">
+          {name}
         </p>
-        <HpBar side={side} hero={hero} />
+        <HealthBar
+          side={side}
+          hp={hero.hp}
+          maxHp={hero.maxHp}
+          className="mt-1 w-full"
+          valueTestId={`hero-${side}-hp`}
+        />
       </div>
     </section>
   );

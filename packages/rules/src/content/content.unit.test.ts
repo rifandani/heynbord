@@ -1,9 +1,12 @@
+import { readFileSync } from "node:fs";
+
 import { Predicate, Schema } from "effect";
 import { describe, expect, it } from "vitest";
 
 import { DUNGEON_LANES, STAGE_LANES } from "../battle/types";
 import { ARCHETYPES, MATCHUP_LEVEL } from "./archetypes";
 import {
+  BASE_RANK_BUDGET_BONUS,
   budgetDeviation,
   creaturePower,
   POWER_BUDGET_SLOPE,
@@ -182,62 +185,90 @@ const skill = (id: string) => {
   return card;
 };
 
+/** The power of a card copy at a Rank (ADR-0020, ADR-0055). */
+const powerAtRank = (card: CardDefinition, rank: RankId): number =>
+  card.kind === "creature" ? creaturePower(card, rank) : skillPower(card, rank);
+
+/** The strongest Common card copy of a kind and Countdown at a Rank. */
+const commonReference = (
+  kind: "creature" | "skill",
+  countdown: number,
+  rank: RankId
+): { readonly power: number; readonly ids: readonly string[] } | null => {
+  const commons = CARDS.filter(
+    (card) =>
+      card.kind === kind &&
+      card.countdown === countdown &&
+      card.baseRank === "common"
+  );
+  if (commons.length === 0) {
+    return null;
+  }
+  const powers = commons.map((card) => powerAtRank(card, rank));
+  const bestPower = Math.max(...powers);
+  return {
+    power: bestPower,
+    ids: commons
+      .filter((_, index) => powers[index] === bestPower)
+      .map((card) => card.id),
+  };
+};
+
+interface PairwiseViolation {
+  readonly cardId: string;
+  readonly rank: RankId;
+  readonly reference: string;
+  readonly power: number;
+  readonly referencePower: number;
+}
+
 /**
- * The Skill Cards that miss their nearest step or the hard cap, with the
- * reason (GDD 13, ADR-0031). The swap change is against Vanguard / Raiders
- * (1000 seeds, Archetypes 3.4). The sim wins over the content test. A card
- * leaves the list when a tuning pass brings it to its budget.
+ * The copies that are weaker than the strongest Common copy of the same kind
+ * and Countdown at the same Rank (ADR-0055). A Countdown with no Common copy
+ * uses the Power Budget of that Rank as the reference.
  */
-const SKILL_BUDGET_EXCEPTIONS = {
-  "warrior.spearThrow":
-    "Swap +8.1 / +4.0 points. The sim finds it too strong, but one damage rate for all Classes puts it under. After the re-fit (issue #67), no Main Archetype holds it.",
-  "warrior.shoulderCharge":
-    "Swap −1.9 / +0.5 points. The sim passes, and the sim wins over the test. A damage point is worth more in the Warrior Deck than the one damage rate gives.",
-  "warrior.shieldBash":
-    "Swap −2.6 / +0.4 points. The sim passes, and the sim wins over the test.",
-  "warrior.groundSlam":
-    "Swap −6.5 / −1.4 points. The sim fails by 1.5 points. At Countdown 2 it failed high (+6.6 against Raiders), and 3 damage is far over.",
-  "warrior.callToArms":
-    "Swap −3.0 / −2.9 points. The sim passes, and the sim wins over the test.",
-  "ranger.longShot":
-    "Swap −8.4 / −13.0 points. The sim fails with no value change: after the promotion (issue #68), Thornwatch has no Long Shot, so the swap Deck has 1 copy, not 2. It passed with 2 copies (+2.0 / −0.6).",
-  "ranger.quickShot":
-    "Swap −1.2 / +1.8 points. The sim passes, and the sim wins over the test.",
-  "ranger.barbedArrow":
-    "Swap −4.1 / −2.1 points. The sim passes, and the sim wins over the test.",
-  "ranger.skybreaker":
-    "Swap −1.9 / −2.1 points. The sim passes, and the sim wins over the test.",
-  "ranger.venomArrow":
-    "Swap −4.0 / +0.1 points. The sim passes, and the sim wins over the test.",
-  "ranger.huntersFocus":
-    "Swap −10.0 / −11.5 points. The sim fails, and its sim value did not move with more amount. Thornwatch holds it after the promotion (issue #68), so a change to it also moves the Main Matchups.",
-  "ranger.rainOfArrows":
-    "Swap −1.6 / 0.0 points. The sim passes, and the sim wins over the test.",
-  "mage.fireball":
-    "Swap −8.5 / −7.1 points. The sim fails. Raiders holds it after the re-fit (issue #67), so a change to it also moves the Main Matchup.",
-  "mage.frostBolt":
-    "Swap −9.6 / −9.0 points. The sim fails. Raiders holds it after the re-fit (issue #67), so a change to it also moves the Main Matchup.",
-  "mage.flameWave":
-    "Swap −7.7 / −9.2 points. The sim fails. After the re-fit (issue #67), no Main Archetype holds it.",
-  "mage.arcLightning":
-    "Swap −9.5 / −7.3 points. The sim fails, and its sim value did not move with more amount.",
-  "priest.mend":
-    "Swap −3.7 / −6.7 points. The sim fails with no value change: the Feral tuning of issue #80 moved its base Deck. It passed before (+0.7 / −4.8). Wild Hunt holds it, so a change to it also moves the Main Matchups.",
-  "priest.smite":
-    "Swap −6.0 / −5.5 points. The sim fails with no value change: the Feral tuning of issue #80 moved its base Deck. It passed before (−3.1 / +0.8).",
-  "priest.sanctuary":
-    "Swap −3.0 / −7.4 points. The sim fails with no value change: after the Feral tuning of issue #80, the swap takes out a Crag Rhino in place of a Cave Bear (now Countdown 2). It passed before (−3.5 / −4.0). Wild Hunt holds it, so a change to it also moves the Main Matchups.",
-  "priest.blessingOfLight":
-    "Swap −4.6 / −6.7 points. The sim fails, and its sim value did not move with more amount. Deathless Host holds it after the promotion (issue #68), so a change to it also moves the Main Matchups.",
-  "priest.radiantStrike":
-    "Swap −4.5 / −3.8 points. The sim passes, and the sim wins over the test.",
-  "priest.prayerOfHealing":
-    "Swap −13.5 / −13.4 points. The sim fails, and its sim value did not move with more amount. After the Feral tuning of issue #80, the swap takes out a Crag Rhino in place of a Cave Bear. Deathless Host holds it after the promotion (issue #68), so a change to it also moves the Main Matchups.",
-  "priest.cleanse":
-    "Swap −11.2 / −12.4 points. The sim fails with no value change: the re-fit Wild Hunt (issue #68) and the Feral tuning of issue #80 moved its base Deck, and the swap takes out a Crag Rhino in place of a Cave Bear. It passed before (−4.3 / −4.6).",
-  "priest.aegisOfDawn":
-    "Swap −0.2 / −5.9 points. The sim fails, and its sim value did not move with more amount.",
-} satisfies Readonly<Record<string, string>>;
+const pairwiseViolations = (): readonly PairwiseViolation[] => {
+  const violations: PairwiseViolation[] = [];
+  for (const kind of ["creature", "skill"] as const) {
+    const cards = CARDS.filter((card) => card.kind === kind);
+    for (const countdown of new Set(cards.map((card) => card.countdown))) {
+      for (const rank of RANKS) {
+        const reference = commonReference(kind, countdown, rank);
+        const referencePower = reference?.power ?? powerBudget(countdown, rank);
+        const referenceName = reference?.ids.join(", ") ?? "the Power Budget";
+        for (const card of cards) {
+          if (
+            card.countdown !== countdown ||
+            card.baseRank === "common" ||
+            !isRankAtLeast(rank, card.baseRank)
+          ) {
+            continue;
+          }
+          const copyPower = powerAtRank(card, rank);
+          if (copyPower < referencePower) {
+            violations.push({
+              cardId: card.id,
+              rank,
+              reference: referenceName,
+              power: copyPower,
+              referencePower,
+            });
+          }
+        }
+      }
+    }
+  }
+  return violations;
+};
+
+/**
+ * The cards that are outside the fitted Base Rank budget or the pairwise
+ * rule (ADR-0055). The full rebalance of issue #189 emptied this set, so a
+ * card that leaves the budget or the pairwise rule now fails the test at
+ * once. The set stays as the one place where a later tuning pass can write a
+ * temporary exception.
+ */
+const POWER_BUDGET_EXCEPTIONS = new Set<string>();
 
 describe("card content (CRD-01, technical design 3.5)", () => {
   it("passes the card schema and has unique IDs", () => {
@@ -305,6 +336,7 @@ describe("card content (CRD-01, technical design 3.5)", () => {
         turns: 2,
       },
     });
+    expect(skillAmounts("mage.blizzard")).toEqual([5, 5, 5, 5, 7]);
     expect(getCard("mage.blizzard")).toMatchObject({
       baseRank: "epic",
       target: "area",
@@ -312,7 +344,7 @@ describe("card content (CRD-01, technical design 3.5)", () => {
         type: "fieldEffect",
         damageType: "frost",
         lanes: 3,
-        columns: 2,
+        columns: 3,
         turns: 2,
       },
     });
@@ -329,11 +361,11 @@ describe("card content (CRD-01, technical design 3.5)", () => {
   });
 
   it("gives the Common and Uncommon Skill Cards of #57 their effects and values", () => {
-    expect(skillAmounts("warrior.shoulderCharge")).toEqual([3, 4, 5, 6, 7]);
-    expect(skillAmounts("ranger.quickShot")).toEqual([5, 6, 7, 8, 9]);
-    expect(skillAmounts("priest.blessingOfLight")).toEqual([4, 5, 6, 7, 8]);
+    expect(skillAmounts("warrior.shoulderCharge")).toEqual([7, 9, 10, 10, 10]);
+    expect(skillAmounts("ranger.quickShot")).toEqual([6, 7, 8, 10, 11]);
+    expect(skillAmounts("priest.blessingOfLight")).toEqual([7, 9, 11, 12, 14]);
     expect(skillAmounts("priest.prayerOfHealing")).toEqual([
-      11, 11, 13, 15, 17,
+      20, 20, 24, 27, 30,
     ]);
     expect(getCard("priest.prayerOfHealing")).toMatchObject({
       target: "friendlyLane",
@@ -350,14 +382,14 @@ describe("card content (CRD-01, technical design 3.5)", () => {
       effect: {
         type: "damageUnitHero",
         amount: { common: 4, uncommon: 5, rare: 6, epic: 7, legendary: 8 },
-        heroAmount: { common: 4, uncommon: 4, rare: 4, epic: 5, legendary: 6 },
+        heroAmount: { common: 4, uncommon: 4, rare: 4, epic: 5, legendary: 4 },
         damageType: "physical",
       },
     });
   });
 
   it("gives Skybreaker its Base Rank, Countdown, effect and values", () => {
-    expect(skillAmounts("ranger.skybreaker")).toEqual([7, 7, 9, 11, 14]);
+    expect(skillAmounts("ranger.skybreaker")).toEqual([10, 10, 13, 16, 20]);
     expect(getCard("ranger.skybreaker")).toMatchObject({
       class: "ranger",
       baseRank: "uncommon",
@@ -369,7 +401,7 @@ describe("card content (CRD-01, technical design 3.5)", () => {
 
   it("gives the Rare and Epic Ranger Skill Cards their effects and values", () => {
     expect(skillAmounts("ranger.venomArrow")).toEqual([4, 4, 4, 5, 6]);
-    expect(skillAmounts("ranger.rainOfArrows")).toEqual([3, 3, 3, 3, 5]);
+    expect(skillAmounts("ranger.rainOfArrows")).toEqual([6, 6, 6, 6, 10]);
     expect(getCard("ranger.venomArrow")).toMatchObject({
       baseRank: "rare",
       countdown: 4,
@@ -377,7 +409,7 @@ describe("card content (CRD-01, technical design 3.5)", () => {
       effect: {
         type: "damagePoison",
         amount: { common: 4, uncommon: 4, rare: 4, epic: 5, legendary: 6 },
-        poison: { rare: 5, epic: 6, legendary: 7 },
+        poison: { rare: 12, epic: 14, legendary: 17 },
       },
     });
     expect(getCard("ranger.huntersFocus")).toMatchObject({
@@ -386,7 +418,7 @@ describe("card content (CRD-01, technical design 3.5)", () => {
       target: "friendlyUnit",
       effect: {
         type: "unitAttackRange",
-        attack: { common: 4, uncommon: 4, rare: 4, epic: 5, legendary: 6 },
+        attack: { common: 8, uncommon: 8, rare: 8, epic: 10, legendary: 12 },
         range: 1,
       },
     });
@@ -396,14 +428,14 @@ describe("card content (CRD-01, technical design 3.5)", () => {
       target: "enemyLane",
       effect: {
         type: "damageLaneEntangle",
-        amount: { common: 3, uncommon: 3, rare: 3, epic: 3, legendary: 5 },
+        amount: { common: 6, uncommon: 6, rare: 6, epic: 6, legendary: 10 },
       },
     });
   });
 
   it("gives the Rare and Epic Priest Skill Cards of #61 their effects and values", () => {
-    expect(skillAmounts("priest.cleanse")).toEqual([8, 8, 8, 9, 10]);
-    expect(skillAmounts("priest.aegisOfDawn")).toEqual([8, 8, 8, 8, 10]);
+    expect(skillAmounts("priest.cleanse")).toEqual([15, 15, 15, 17, 19]);
+    expect(skillAmounts("priest.aegisOfDawn")).toEqual([11, 13, 16, 19, 23]);
     expect(getCard("priest.cleanse")).toMatchObject({
       baseRank: "rare",
       countdown: 3,
@@ -425,19 +457,19 @@ describe("card content (CRD-01, technical design 3.5)", () => {
   });
 
   it("gives the Rare and Epic Warrior Skill Cards of #63 their effects and values", () => {
-    expect(skillAmounts("warrior.exposeWeakness")).toEqual([2, 2, 2, 3, 4]);
+    expect(skillAmounts("warrior.exposeWeakness")).toEqual([4, 4, 4, 4, 8]);
     expect(getCard("warrior.callToArms")).toMatchObject({
       baseRank: "rare",
       countdown: 3,
       target: "friendlyLane",
       effect: {
         type: "laneAttack",
-        attack: { common: 4, uncommon: 4, rare: 4, epic: 5, legendary: 6 },
+        attack: { common: 7, uncommon: 7, rare: 7, epic: 9, legendary: 11 },
       },
     });
     expect(getCard("warrior.exposeWeakness")).toMatchObject({
       baseRank: "rare",
-      countdown: 2,
+      countdown: 3,
       target: "enemyUnit",
       effect: { type: "exposeUnit" },
     });
@@ -450,9 +482,9 @@ describe("card content (CRD-01, technical design 3.5)", () => {
   });
 
   it("scales the Priest heal, damage and Ward with Rank, and targets a friendly Unit with Mend and Sanctuary", () => {
-    expect(skillAmounts("priest.mend")).toEqual([8, 10, 12, 14, 16]);
-    expect(skillAmounts("priest.smite")).toEqual([3, 4, 4, 5, 6]);
-    expect(skillAmounts("priest.sanctuary")).toEqual([9, 9, 11, 13, 15]);
+    expect(skillAmounts("priest.mend")).toEqual([9, 11, 12, 13, 13]);
+    expect(skillAmounts("priest.smite")).toEqual([4, 5, 6, 6, 6]);
+    expect(skillAmounts("priest.sanctuary")).toEqual([13, 13, 16, 19, 22]);
     expect(getCard("priest.mend")).toMatchObject({
       target: "friendlyUnit",
       countdown: 2,
@@ -471,22 +503,26 @@ describe("card content (CRD-01, technical design 3.5)", () => {
   });
 
   it("scales the Ranger Skill damage with Rank, but not the push", () => {
-    expect(skillAmounts("ranger.pinningShot")).toEqual([6, 7, 9, 11, 13]);
-    expect(skillAmounts("ranger.warningShot")).toEqual([8, 9, 10, 12, 14]);
-    expect(skillAmounts("ranger.longShot")).toEqual([12, 14, 17, 21, 25]);
+    expect(skillAmounts("ranger.pinningShot")).toEqual([6, 7, 8, 9, 9]);
+    expect(skillAmounts("ranger.warningShot")).toEqual([8, 9, 10, 11, 14]);
+    expect(skillAmounts("ranger.longShot")).toEqual([14, 16, 18, 21, 25]);
     expect(getCard("ranger.warningShot")).toMatchObject({
       target: "enemyUnit",
       effect: { type: "damagePush", squares: 2 },
     });
     expect(getCard("ranger.longShot")).toMatchObject({
+      countdown: 3,
       target: "enemyHero",
       effect: { type: "damageHero" },
     });
   });
 
-  it("keeps each Creature Card within ±10% of its power budget (GDD 13)", () => {
+  it("keeps each Creature Card within ±10% of its power budget, or a written exception (GDD 13)", () => {
     for (const card of CARDS) {
-      if (card.kind === "creature") {
+      if (card.kind !== "creature") {
+        continue;
+      }
+      if (!POWER_BUDGET_EXCEPTIONS.has(card.id)) {
         expect(Math.abs(budgetDeviation(card)), card.id).toBeLessThanOrEqual(
           1000
         );
@@ -494,9 +530,9 @@ describe("card content (CRD-01, technical design 3.5)", () => {
     }
     // `19 + s × (Countdown − 3)` with s = 3 (ADR-0021, ADR-0029): 19 at
     // Countdown 3, and Countdown 6 is 1.75 × Countdown 2.
-    expect(powerBudget(3)).toBe(19);
-    expect(powerBudget(2)).toBe(16);
-    expect(powerBudget(6)).toBe(28);
+    expect(powerBudget(3, "common")).toBe(19);
+    expect(powerBudget(2, "common")).toBe(16);
+    expect(powerBudget(6, "common")).toBe(28);
     // 4/2 with Swift 2 and Last Breath 1.
     const runt = getCard("orc.badlandRunt");
     expect(runt.kind === "creature" && creaturePower(runt)).toBe(13);
@@ -506,43 +542,105 @@ describe("card content (CRD-01, technical design 3.5)", () => {
     expect(recruit.kind === "creature" && budgetDeviation(recruit)).toBe(-769);
   });
 
-  it("keeps each Skill Card at its Power Budget with the nearest-step rule and the hard cap (ADR-0031)", () => {
+  it("keeps each Skill Card at its Power Budget and the pairwise rule, or a written exception (ADR-0031, ADR-0055)", () => {
+    const violations = pairwiseViolations();
     for (const card of CARDS) {
       if (card.kind !== "skill") {
         continue;
       }
+      if (POWER_BUDGET_EXCEPTIONS.has(card.id)) {
+        continue;
+      }
       const check = skillBudgetCheck(card);
-      const passes =
-        check.nearestStep && Math.abs(check.deviation) <= SKILL_BUDGET_CAP;
-      // A card in the list has a written reason (GDD 13), and it must still
-      // fail, so that the list stays current.
-      expect(passes, card.id).toBe(
-        !Object.hasOwn(SKILL_BUDGET_EXCEPTIONS, card.id)
-      );
+      expect(
+        check.nearestStep && Math.abs(check.deviation) <= SKILL_BUDGET_CAP,
+        `${card.id} budget`
+      ).toBe(true);
+      expect(
+        violations.some((violation) => violation.cardId === card.id),
+        `${card.id} pairwise`
+      ).toBe(false);
     }
+  });
+
+  it("gives each higher Base Rank copy at least the power of the strongest Common copy at the same Rank (ADR-0055)", () => {
+    for (const violation of pairwiseViolations()) {
+      expect(
+        POWER_BUDGET_EXCEPTIONS.has(violation.cardId),
+        `${violation.cardId} at ${violation.rank}: ${violation.power.toFixed(1)} < ${violation.referencePower.toFixed(1)} (${violation.reference})`
+      ).toBe(true);
+    }
+  });
+
+  it("keeps the Power Budget exception list current (ADR-0055)", () => {
+    const violations = pairwiseViolations();
+    for (const id of POWER_BUDGET_EXCEPTIONS) {
+      const card = getCard(id);
+      const bandFail =
+        card.kind === "creature" && Math.abs(budgetDeviation(card)) > 1000;
+      const check = card.kind === "skill" ? skillBudgetCheck(card) : null;
+      const skillFail =
+        check !== null &&
+        (!check.nearestStep || Math.abs(check.deviation) > SKILL_BUDGET_CAP);
+      const pairFail = violations.some((violation) => violation.cardId === id);
+      expect(bandFail || skillFail || pairFail, id).toBe(true);
+    }
+  });
+
+  it("writes each Power Budget exception in ADR 0055 (ADR-0055)", () => {
+    const adr = readFileSync(
+      new URL(
+        "../../../../docs/adr/0055-a-higher-base-rank-gives-a-power-budget-bonus.md",
+        import.meta.url
+      ),
+      "utf-8"
+    );
+    const section = adr.split("### The written exceptions")[1] ?? "";
+    const written = new Set(
+      section
+        .split("## Considered Options")[0]
+        ?.match(/`[a-z]+\.[A-Za-z0-9]+`/gu)
+        ?.map((id) => id.slice(1, -1))
+    );
+    expect(written).toEqual(POWER_BUDGET_EXCEPTIONS);
   });
 
   it("measures a Skill Card at its Base Rank, with each effect and no Crit (ADR-0031)", () => {
     const quickShot = skill("ranger.quickShot");
     const rate = SKILL_RATES.unitDamage;
-    // 5 Physical damage to one Unit at Common.
-    expect(skillPower(quickShot)).toBe(5 * rate * recallMultiplier("common"));
-    // At Base Rank Epic, the damage table reads 8: the Base Rank counts.
+    // 6 Physical damage to one Unit at Common.
+    expect(skillPower(quickShot)).toBe(6 * rate * recallMultiplier("common"));
+    // At Base Rank Epic, the damage table reads 10: the Base Rank counts.
     expect(skillPower({ ...quickShot, baseRank: "epic" })).toBe(
-      8 * rate * recallMultiplier("epic")
+      10 * rate * recallMultiplier("epic")
     );
-    // A card with no main amount has no step, so only the cap checks it.
-    expect(skillBudgetCheck(skill("priest.unbrokenVow")).steps).toEqual([]);
     // The steps are the main amount 1 lower and 1 higher at the Base Rank.
     expect(skillBudgetCheck(quickShot).steps).toEqual([
-      4 * rate * recallMultiplier("common"),
-      6 * rate * recallMultiplier("common"),
+      5 * rate * recallMultiplier("common"),
+      7 * rate * recallMultiplier("common"),
     ]);
   });
 
   it("keeps the Power Budget slope at or above its floor (ADR-0021)", () => {
     expect(POWER_BUDGET_SLOPE).toBeGreaterThanOrEqual(1.33);
-    expect(powerBudget(6)).toBeGreaterThanOrEqual(1.3 * powerBudget(2));
+    expect(powerBudget(6, "common")).toBeGreaterThanOrEqual(
+      1.3 * powerBudget(2, "common")
+    );
+  });
+
+  it("gives each higher Base Rank a written Power Budget bonus (ADR-0055)", () => {
+    expect(BASE_RANK_BUDGET_BONUS).toEqual({
+      common: 1,
+      uncommon: 1.25,
+      rare: 1.4463,
+      epic: 1.6529,
+      legendary: 1.7,
+    });
+    expect(powerBudget(3, "common")).toBe(19);
+    expect(powerBudget(3, "uncommon")).toBeCloseTo(23.75);
+    expect(powerBudget(3, "rare")).toBeCloseTo(27.4797);
+    expect(powerBudget(3, "epic")).toBeCloseTo(31.4051);
+    expect(powerBudget(3, "legendary")).toBeCloseTo(32.3);
   });
 
   it("measures Attack and HP at the Base Rank (ADR-0020)", () => {
@@ -697,7 +795,9 @@ describe("card content (CRD-01, technical design 3.5)", () => {
   it("keeps Shieldbearer within ±10% of its power budget (GDD 13)", () => {
     const card = getCard("human.shieldbearer");
     expect(card.kind === "creature" && creaturePower(card)).toBe(15);
-    expect(card.kind === "creature" && powerBudget(card.countdown)).toBe(16);
+    expect(
+      card.kind === "creature" && powerBudget(card.countdown, card.baseRank)
+    ).toBe(16);
     expect(
       card.kind === "creature" && Math.abs(budgetDeviation(card))
     ).toBeLessThanOrEqual(1000);
@@ -764,13 +864,13 @@ describe("card content (CRD-01, technical design 3.5)", () => {
 
   it("gives Sabotage N × 4, Trample 3 and Rally N × 3 power points (GDD 13)", () => {
     expect(power("goblin.tunnelSaboteur")).toBe(17);
-    expect(power("goblin.grandGearjammer")).toBe(22);
+    expect(power("goblin.grandGearjammer")).toBe(40);
     expect(power("feral.bristlebackBoar")).toBe(17);
     expect(power("feral.webSpitter")).toBe(19);
-    expect(power("feral.frostElkMatriarch")).toBe(20);
+    expect(power("feral.frostElkMatriarch")).toBe(24);
     // Unique and Wall use 0 points.
-    expect(power("feral.oldFrostmaw")).toBe(29);
-    expect(power("goblin.junkBarricade")).toBe(17);
+    expect(power("feral.oldFrostmaw")).toBe(47);
+    expect(power("goblin.junkBarricade")).toBe(22);
   });
 
   it("puts Bleed only on the Feral cards, with 1 up to Rare, 2 at Epic and 3 at Legendary (ADR-0019)", () => {
@@ -830,11 +930,11 @@ describe("card content (CRD-01, technical design 3.5)", () => {
   });
 
   it("gives Charge N × 1 power points at the Base Rank (GDD 13)", () => {
-    // Charge 1: 3/7 is 4/8 at Uncommon. 4 × 2 + 8 + Swift 2 + 1.
-    expect(power("orc.howlingCharger")).toBe(19);
-    // Charge 2 at Epic. Grukka: 3/5 is 5/9 at Epic. 5 × 2 + 9 + Swift 2 + 2 + Heroic 6.
-    expect(power("orc.warchiefGrukka")).toBe(29);
-    expect(power("orc.warbandStandardBearer")).toBe(29);
+    // Charge 1 at Uncommon: 5/11 with Swift 2 and Charge 1.
+    expect(power("orc.howlingCharger")).toBe(24);
+    // Charge 2 at Epic: 9/19 with Swift 2, Charge 2 and Heroic 6.
+    expect(power("orc.warchiefGrukka")).toBe(47);
+    expect(power("orc.warbandStandardBearer")).toBe(47);
   });
 
   it("gives Heroic N with 1 at Common and Uncommon, 2 at Rare, 3 at Epic and 4 at Legendary (ADR-0046)", () => {
@@ -856,8 +956,8 @@ describe("card content (CRD-01, technical design 3.5)", () => {
   it("gives Heroic N × 2 power points at the Base Rank (ADR-0046)", () => {
     // Heroic 1: 5/8 at Common. 5 × 2 + 8 + 2.
     expect(power("orc.tuskBrute")).toBe(20);
-    // Heroic 2: 4/5 is 6/7 at Rare. 6 × 2 + 7 + Fire + 4.
-    expect(power("orc.pyreaxeRavager")).toBe(26);
+    // Heroic 2 at Rare: 9/12 with Fire 3 and Heroic 4.
+    expect(power("orc.pyreaxeRavager")).toBe(37);
   });
 
   it("gives Bleed N × 1 power points (GDD 13)", () => {
@@ -865,19 +965,20 @@ describe("card content (CRD-01, technical design 3.5)", () => {
   });
 
   it("gives First Strike 4 and Entangle 2 power points (GDD 13)", () => {
-    // 3/3 is 5/5 at Epic: 5 × 2 + 5 + Long-range 2, with First Strike 4 and
-    // Entangle 2.
-    expect(power("elf.canopyVinewarden")).toBe(23);
+    // Epic: 9/16 with Long-range 2, First Strike 4 and Entangle 2.
+    expect(power("elf.canopyVinewarden")).toBe(42);
   });
 
   it("fits Lethiel with Entangle to the budget of Countdown 5 (ADR-0025)", () => {
-    // 1/6 is 2/11 at Epic: 2 × 2 + 11 + Mid-range 1 + Holy 1, with
-    // Regenerate 2 × 2 and Entangle 2.
+    // Epic: 3/26 with Mid-range 1, Holy 1, Regenerate 4 and Entangle 2.
     const card = getCard("elf.lethielFirstGardener");
     expect(card.kind === "creature" && card.keywords.entangle).toBe(true);
-    expect(power("elf.lethielFirstGardener")).toBe(23);
-    expect(card.kind === "creature" && powerBudget(card.countdown)).toBe(25);
-    expect(card.kind === "creature" && budgetDeviation(card)).toBe(-800);
+    expect(power("elf.lethielFirstGardener")).toBe(42);
+    expect(
+      card.kind === "creature" && powerBudget(card.countdown, card.baseRank)
+    ).toBeCloseTo(41.3225);
+    expect(card.kind === "creature" && budgetDeviation(card)).toBe(163);
+    expect(POWER_BUDGET_EXCEPTIONS.has(card.id)).toBe(false);
   });
 
   it("gives Swarm N × 1 and Rebirth 5 power points at the Base Rank (GDD 13)", () => {
@@ -927,17 +1028,19 @@ describe("card content (CRD-01, technical design 3.5)", () => {
   it("fits the Undead cards to the ADR-0021 budget (Card Concepts 5)", () => {
     // Summon Skeleton: 3/5 is 3 × 2 + 5 + Long-range 2 + 0.5 × 4.
     expect(power("undead.hushbow")).toBe(15);
-    // Summon Restless Wisp: 1/4 is 1/6 at Rare. 1 × 2 + 6 + Frost 3 + 0.5 × 13.
-    expect(power("undead.lanternWidow")).toBe(17.5);
-    // Rebirth and Charge 2 at Epic: 2/4 is 4/7. 4 × 2 + 7 + 5 + 2.
-    expect(power("undead.sirOdoLastTaxman")).toBe(22);
-    // Wall: 0/5 is 0/9 at Epic. 9 + Bulwark 2 × 3 + Rebirth 5.
-    expect(power("undead.boneRampart")).toBe(20);
+    // Summon Restless Wisp: 2/8 at Rare. 2 × 2 + 8 + Frost 3 + 0.5 × 13.
+    expect(power("undead.lanternWidow")).toBe(27.5);
+    // Rebirth and Charge 2 at Epic: 5/8. 5 × 2 + 8 + 5 + 2.
+    expect(power("undead.sirOdoLastTaxman")).toBe(39);
+    // Wall: 0/12 at Epic. 12 + Bulwark 2 × 3 + Rebirth 5.
+    expect(power("undead.boneRampart")).toBe(32);
     const undead = creatures.filter((creature) => creature.race === "undead");
     for (const card of undead) {
-      expect(Math.abs(budgetDeviation(card)), card.id).toBeLessThanOrEqual(
-        1000
-      );
+      if (!POWER_BUDGET_EXCEPTIONS.has(card.id)) {
+        expect(Math.abs(budgetDeviation(card)), card.id).toBeLessThanOrEqual(
+          1000
+        );
+      }
     }
   });
 

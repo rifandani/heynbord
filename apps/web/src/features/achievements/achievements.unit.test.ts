@@ -8,25 +8,33 @@ import {
 import { AtomRegistry } from "effect/reactivity";
 import { describe, expect, it } from "vitest";
 
+import { anyAchievementCompletedAtom } from "@/features/achievements/achievement-counts.atoms";
 import type { AchievementRow } from "@/features/achievements/achievements";
 import {
+  achievementFrame,
   achievementGroups,
   achievementToasts,
   claimFocusAfter,
   NAMED_NOTICES,
   newlyCompleted,
   openingCategory,
-  rewardBalances,
   rewardText,
 } from "@/features/achievements/achievements";
-import {
-  anyAchievementCompletedAtom,
-  claimableCountAtom,
-} from "@/features/achievements/achievements-screen.atoms";
+import { objectivesBadgeAtom } from "@/features/objectives/objectives.atoms";
 import {
   profileAtom,
   profileStateAtom,
 } from "@/features/profile/profile.atoms";
+
+const frameOf = (id: string) => achievementFrame(getAchievement(id));
+
+describe("achievementFrame (Achievements 4)", () => {
+  it("gives a Cosmetic the gold frame, a Feat the silver frame, and others none", () => {
+    expect(frameOf("campaign.allStars")).toBe("gold");
+    expect(frameOf("feat.rout")).toBe("silver");
+    expect(frameOf("campaign.hearthvale")).toBe("plain");
+  });
+});
 
 const fresh = newProfile(7);
 const profile = (overrides: Partial<Profile> = {}): Profile => ({
@@ -74,15 +82,16 @@ describe("achievementToasts", () => {
 });
 
 describe("achievementGroups", () => {
-  it("lists the 4 categories in screen order, with all 40 rows in list order", () => {
+  it("lists the 5 categories in screen order, with all 40 rows in list order", () => {
     const groups = achievementGroups(fresh);
     expect(groups.map((group) => group.category)).toEqual([
       "campaign",
-      "dungeonsAndHeynspire",
+      "dungeons",
+      "heynspire",
       "progress",
       "feats",
     ]);
-    expect(groups.map((group) => group.rows.length)).toEqual([8, 5, 9, 18]);
+    expect(groups.map((group) => group.rows.length)).toEqual([8, 3, 2, 9, 18]);
     expect(
       groups.flatMap((group) => group.rows.map((row) => row.achievement.id))
     ).toEqual(ACHIEVEMENTS.map((achievement) => achievement.id));
@@ -135,7 +144,8 @@ describe("achievementGroups", () => {
       groups.map((group) => [group.category, group.done, group.claimable])
     ).toEqual([
       ["campaign", 2, 1],
-      ["dungeonsAndHeynspire", 0, 0],
+      ["dungeons", 0, 0],
+      ["heynspire", 0, 0],
       ["progress", 0, 0],
       ["feats", 1, 1],
     ]);
@@ -195,7 +205,7 @@ describe("rewardText", () => {
         coinWords
       )
     ).toEqual({
-      key: "achievements.screen.rewards.heynstones",
+      key: "achievements.tab.rewards.heynstones",
       args: { amount: 15 },
     });
     expect(
@@ -205,7 +215,7 @@ describe("rewardText", () => {
         coinWords
       )
     ).toEqual({
-      key: "achievements.screen.rewards.essence",
+      key: "achievements.tab.rewards.essence",
       args: { amount: 50 },
     });
   });
@@ -218,7 +228,7 @@ describe("rewardText", () => {
         coinWords
       )
     ).toEqual({
-      key: "achievements.screen.rewards.coin",
+      key: "achievements.tab.rewards.coin",
       args: { coin: "500 Copper" },
     });
   });
@@ -226,13 +236,13 @@ describe("rewardText", () => {
   it("says an earn-only Cosmetic, and after its Claim that it comes in a later update", () => {
     const { reward } = getAchievement("campaign.allStars");
     expect(rewardText(reward, "inProgress", coinWords)).toEqual({
-      key: "achievements.screen.rewards.cosmetic",
+      key: "achievements.tab.rewards.cosmetic",
     });
     expect(rewardText(reward, "completed", coinWords)).toEqual({
-      key: "achievements.screen.rewards.cosmetic",
+      key: "achievements.tab.rewards.cosmetic",
     });
     expect(rewardText(reward, "claimed", coinWords)).toEqual({
-      key: "achievements.screen.rewards.cosmeticLater",
+      key: "achievements.tab.rewards.cosmeticLater",
     });
   });
 });
@@ -259,9 +269,6 @@ describe("Claim all", () => {
     const groups = achievementGroups(change?.profile ?? player);
     expect(groups.every((group) => group.claimable === 0)).toBe(true);
     expect(change?.profile.heynstones).toBe(player.heynstones + 15 + 15);
-    expect(
-      rewardBalances(change?.achievements.map((item) => item.reward) ?? [])
-    ).toEqual(["coin", "essence", "heynstones"]);
   });
 
   it("is off when no Achievement is Completed", () => {
@@ -276,17 +283,17 @@ const loaded = (player: Profile) => {
   return registry;
 };
 
-describe("the Achievements badge", () => {
+describe("the Objectives badge with Achievements", () => {
   it("counts the Completed Achievements that are not Claimed", () => {
     const registry = loaded(fresh);
-    expect(registry.get(claimableCountAtom)).toBe(0);
+    expect(registry.get(objectivesBadgeAtom)).toBe(0);
     expect(registry.get(anyAchievementCompletedAtom)).toBe(false);
     registry.set(profileAtom, {
       ...registry.get(profileAtom),
       completedAchievements: ["campaign.hearthvale", "feat.rout"],
       claimedAchievements: ["feat.rout"],
     });
-    expect(registry.get(claimableCountAtom)).toBe(1);
+    expect(registry.get(objectivesBadgeAtom)).toBe(1);
     expect(registry.get(anyAchievementCompletedAtom)).toBe(true);
   });
 
@@ -296,11 +303,11 @@ describe("the Achievements badge", () => {
         completedAchievements: ["campaign.hearthvale", "campaign.redMesas"],
       })
     );
-    expect(registry.get(claimableCountAtom)).toBe(2);
+    expect(registry.get(objectivesBadgeAtom)).toBe(2);
     registry.set(profileAtom, {
       ...registry.get(profileAtom),
       claimedAchievements: ["campaign.hearthvale"],
     });
-    expect(registry.get(claimableCountAtom)).toBe(1);
+    expect(registry.get(objectivesBadgeAtom)).toBe(1);
   });
 });

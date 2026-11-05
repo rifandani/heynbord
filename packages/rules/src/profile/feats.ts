@@ -164,7 +164,7 @@ const isOnlyRace = (deck: readonly DeckEntry[], race: RaceId): boolean => {
 };
 
 /** The Side of each Unit that the events summon, Tokens too, by Unit ID. */
-const unitOwners = (
+export const unitOwners = (
   events: readonly BattleEvent[]
 ): ReadonlyMap<number, Side> => {
   const owners = new Map<number, Side>();
@@ -307,7 +307,7 @@ const isUntouchedVault = (battle: WonBattle): boolean =>
   battle.dungeon?.number === VAULT_DUNGEON && isFullHp(battle.state);
 
 /**
- * True when the won Battle meets the goal of the Feat (Achievements 2.4). A
+ * True when the won Battle meets the goal of the Feat (Achievements 2.5). A
  * new Feat does not compile without a case here.
  */
 const meetsFeat = (feat: FeatId, battle: WonBattle): boolean => {
@@ -381,7 +381,7 @@ const FEAT_IDS: readonly FeatId[] = ACHIEVEMENTS.flatMap((achievement) =>
 );
 
 /**
- * The Feats that the Battle meets, in list order (Achievements 2.4). None for
+ * The Feats that the Battle meets, in list order (Achievements 2.5). None for
  * a loss, a Battle that is not finished, and a Battle in a place that is not
  * a Stage, a Dungeon or a Floor of `content`. It does not read the Profile.
  */

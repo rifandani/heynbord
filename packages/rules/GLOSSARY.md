@@ -160,7 +160,7 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Power Points**: The strength of one Card at its Base Rank. A Creature Card gets them from its Attack, HP, Speed, Range, Damage Type and Keywords. A Skill Card gets them from its effect, its Damage Type and its Recall. _Avoid_: power level, rating, score, value, Skill Points
 
-**Power Budget**: The Power Points that a Card can have for its Countdown. A Creature Card and a Skill Card with the same Countdown have the same Power Budget. A Card must stay near its Power Budget. _Avoid_: cost, mana curve, stat budget, Skill Power Budget
+**Power Budget**: The Power Points that a Card can have for its Countdown and Base Rank. A higher Base Rank has a written bonus ([ADR-0055](../../docs/adr/0055-a-higher-base-rank-gives-a-power-budget-bonus.md)). A Creature Card and a Skill Card with the same Countdown and Base Rank have the same Power Budget. A Card must stay near its Power Budget. _Avoid_: cost, mana curve, stat budget, Skill Power Budget
 
 **Countdown Band**: The Countdowns that the Creature Cards of one Race can have for each Base Rank. For example, a Feral Common has Countdown 2 or 3, and no Feral card has Countdown 1. _Avoid_: Countdown range, cost tier, mana band
 
@@ -342,15 +342,25 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Bazaar item**: A Bazaar Cosmetic with a Heynstone price. _Avoid_: product, offer item
 
-**Achievement**: A one-time goal with a reward. It is In progress, then Completed when the Player meets the goal, then Claimed when the Player takes the reward. _Avoid_: quest, mission, trophy, badge
+**Achievement**: A one-time goal with a reward. It is In progress, then Completed when the Player meets the goal, then Claimed when the Player takes the reward. _Avoid_: mission, trophy, badge
 
 **Feat**: An Achievement that one won Battle completes, with a goal about the Deck, the Turns or the events of that Battle. _Avoid_: challenge, trial, battle achievement
 
 **Tally**: A lifetime count in the Profile that an Achievement uses, for example the number of Packs opened. It only goes up. _Avoid_: stat, statistic, counter
 
+**Daily Quest**: A goal with a reward that the game offers for one day, between two Daily resets. An Achievement is different: it is one fixed list that the Player can see from the start. _Avoid_: Quest as a separate kind, daily, daily task, mission, challenge, objective
+
+**Activity**: The points that a Daily Quest gives at its Claim. They add up over one week and go to 0 at the Weekly reset. _Avoid_: points, quest points, stamina, energy
+
+**Activity checkpoint**: One of the 5 marks on the Activity of a week, each 100 Activity from the last. The last one is the weekly goal. _Avoid_: milestone, chest, tier
+
+**Daily reset**: The time each day when the Daily Quests change: 00:00 UTC for all Players. _Avoid_: midnight, rollover, day change
+
+**Weekly reset**: The time each week when Activity goes to 0: Monday 00:00 UTC for all Players. _Avoid_: week rollover, weekly refresh
+
 **Seaport**: The feature that gives a reward while the Player is away: one ship, one berth and the Expeditions. It opens at Player level 8. _Avoid_: harbor, port, idle mode, AFK reward, offline reward
 
-**Expedition**: One voyage of the Seaport ship: a **Cargo** and a duration (6, 12, 24 or 48 hours). Its reward is the rate of the Cargo for each hour away, with the bonus of the duration. _Avoid_: voyage (as a term), trip, mission, quest, sailing
+**Expedition**: One voyage of the Seaport ship: a **Cargo** and a duration (6, 12, 24 or 48 hours). Its reward is the rate of the Cargo for each hour away, with the bonus of the duration. _Avoid_: voyage (as a term), trip, mission, sailing
 
 **Cargo**: What an Expedition brings back: Coin, XP, Essence or Forge Stones. Each Cargo gives only its own resource and has its own unlock level. _Avoid_: expedition type, mode, resource type, load
 
@@ -436,6 +446,22 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Hint**: A one-line tip that shows one time, when the Player first meets something that the Tutorial does not teach. It is not part of the Tutorial. _Avoid_: tutorial step, tooltip, popup
 
+### Balance
+
+**Win-rate target**: The interval of win rates that a Stage, a Dungeon or a Floor must reach in the simulation, for example 60% to 80% for a normal Stage. A Boss row has its own target. _Avoid_: difficulty band, win chance, balance target
+
+**Window**: The width of a **Win-rate target** in percentage points: 20 for a normal Stage or Floor, 30 for a Boss row. _Avoid_: band, range, tolerance
+
+**Row**: One line of the simulation check: one Stage, Dungeon or Floor, one **Starter Deck**, and one Gear setting. _Avoid_: entry, case, sample
+
+**Gear row**: A **Row** with no Gear, or a **Row** with the **Expected Gear** (or with the Gear of `--gear`). _Avoid_: gear level, gear tier
+
+**Gear spread**: The difference between the Gear row and the no-Gear row of the same Deck, in percentage points. _Avoid_: gear gap, gear bonus
+
+**Deck spread**: The difference between the Raiders row and the Vanguard row of the same Gear row, in percentage points. _Avoid_: deck gap, deck imbalance
+
+**Span**: The difference between the highest and the lowest **Row** of one Stage, Dungeon or Floor. It is about the **Gear spread** plus the **Deck spread**. _Avoid_: gap, range
+
 ## Relationships
 
 - A **Player** controls one **Hero**. The Hero has one **Class**: the Class of the **Active Deck**. The Player changes the Hero Class when the Player selects a Deck of another Class.
@@ -477,6 +503,8 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 - **Heynspire** opens with the first win of the last **Boss Stage**. The Player fights only the **Current Floor**, and a won **Floor** cannot be played again: it has no repeat-win reward and no **Sweep**. A Floor win gives no **Stars**. Each Floor hits the win-rate target of a **Stage**, and each **Boss Floor** the target of a **Boss Stage**, with no **Gear** and with the **Expected Gear** ([ADR-0040](../../docs/adr/0040-heynspire-floors-come-from-templates-and-a-strength-curve.md)).
 - An **Achievement** that is Completed stays Completed, also when the Profile changes later. Its reward goes into the Profile only when the Player claims it.
 - Only a **Battle** that the Player plays can complete a **Feat**. A **Sweep**, a **Replay**, **Auto-play** and the **Tutorial** never complete a Feat, and a Sweep never adds to a **Tally**.
+- Only a **Battle** that the Player plays, also with **Auto-play**, adds progress to a **Daily Quest**. A **Sweep**, a **Replay** and the **Tutorial** add no progress to a Daily Quest.
+- A **Daily Quest** and an **Activity checkpoint** never give Heynstones, XP, cards, Forge Stones or Tickets.
 - The Player has one balance of **Coin**, shown in **Gold**, **Silver** and **Copper**, and a separate balance of **Heynstones**.
 - **Coin** and **Heynstones** never change into each other or into **Essence**.
 - A **Player** has at most one **Active Cosmetic** of each family, and it is always a **Cosmetic** that the Player **Owns**. A family with no Active Cosmetic shows its **Standard look**, which needs no Cosmetic.
@@ -500,7 +528,7 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 - The tutorial was 6 steps before: Stages 1-1 to 1-3, the Deck builder, the first Pack and Combine. Now the **Tutorial** is one session in Stage 1-1, and the other lessons are **Hints**.
 - GDD 8.3 says "a quit". The term is **Abandon**: it records no result, and it is not a loss.
 - A **Deck Slot** cost Heynstones in the **Bazaar** before, and a new Player had 5. Now a new Player has 3, and the Player buys more with **Coin**. A Deck Slot is still a **Convenience**, because it gives no power.
-- **Collect** and **Claim** are different. A Claim takes the reward of an **Achievement** or a **Star chest**: a fixed reward, one time. A Collect takes the reward of an **Expedition**: its size comes from the time away, and the Player can Collect again after each **Dispatch**.
+- **Collect** and **Claim** are different. A Claim takes the reward of an **Achievement**, a **Daily Quest** or a **Star chest**: a fixed reward, one time for each Achievement, Daily Quest or Star chest. A Collect takes the reward of an **Expedition**: its size comes from the time away, and the Player can Collect again after each **Dispatch**.
 - **Coin** was named "Marks" before. Gold, Silver and Copper are its denominations, not separate currencies.
 - The **Summon Column** was a Side's Column 1 only. Now the **Summon Zone** is Columns 1 to 3, so a Unit can be summoned past an enemy Unit in the zone ([ADR-0011](../../docs/adr/0011-the-summon-zone-is-3-columns-deep.md)). A Unit with **Wall** can also be summoned into Columns 4 and 5. Those Squares are not part of the Summon Zone ([ADR-0023](../../docs/adr/0023-a-wall-can-be-summoned-up-to-column-5.md)).
 - The **Races** were named Hearthkin, Thornwild, Hollowborn and Wildmaw before. Those names did not tell Players what the people are. Now they are **Human**, **Elf**, **Undead** and **Orc**, with the same battle identities. Region names such as Hearthvale stay, because they are place names, not Race names.
@@ -538,3 +566,4 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 - The Keyword **Bulwark N** had the name "Armor N" before. "Armor" is also the name of a Gear slot, but Armor Gear gives Hero HP and does not reduce damage. Now "Armor" is only the Gear slot. ADR-0030 and the old rows of the balance log still say "Armor".
 - GDD 4.12 had watched **Auto-play** on each won Stage. Then an Auto-play win could give more **Stars**, and the AI could open **Star chests** for the Player. Now a Stage has the **Sweep**, only at 3 Stars. A Sweep is not Auto-play: it plays no Battle. Watched Auto-play stayed only on won **Dungeons**. Then the **Dungeon Sweep** replaced it, and now the Player cannot start Auto-play ([ADR-0039](../../docs/adr/0039-dungeons-have-a-dungeon-sweep-with-their-own-tickets.md)). "Skip Ticket" is not a term, because **Skip** already means to skip the animations of a Resolution Phase. "Sweep Ticket" was the name of the **Campaign Sweep Ticket** before the **Dungeon Sweep Ticket** was added. It is not a term now: say which type.
 - The first name of **Forge Stone** was "Enchanting Gem". It is not a term: "gems" is a word to avoid for **Heynstones**, and a Player can think that money buys them. "Enchant" is a word to avoid for **Gear upgrade**. For the same reasons, the item for Gear levels 21 to 25 is not a "Legendary Gem". It is the Legendary **Forge Stone tier**.
+- "Gap" is not a term. It meant the **Gear spread** in one place and the **Deck spread** in another, and the two numbers have different fixes. Say which one, or say **Span** for the whole Stage or Floor.

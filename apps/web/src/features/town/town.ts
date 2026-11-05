@@ -15,7 +15,6 @@ export type GameScreen =
   | "hero"
   | "dungeons"
   | "heynspire"
-  | "achievements"
   | "bazaar"
   | "seaport";
 
@@ -113,7 +112,6 @@ export interface SelectableBuilding {
     | "barracks"
     | "cave"
     | "heynspire"
-    | "hall"
     | "seaport";
   readonly screen: GameScreen;
   /** The Building in the painting, in painting coordinates. */
@@ -251,20 +249,6 @@ export const SELECTABLE_BUILDINGS: readonly SelectableBuilding[] = [
     glow: { x: 500, y: 0, width: 300, height: 250 },
   },
   {
-    // The Hall of banners (11 — Town Concepts 2.9): the wide hall with the
-    // red roofs and the long blue and gold banners, behind the Library and
-    // the Card shop. Its label is on the red roofs, under the Heynspire
-    // hill and at the right of the Heynspire box, so the two never touch.
-    // The box is the front of the hall with its banners. It stops at the top
-    // of the Card shop label, so that label keeps the pointer. The light
-    // goes down over the steps and the trophies.
-    id: "hall",
-    screen: "achievements",
-    rect: { x: 790, y: 296, width: 300, height: 94 },
-    label: { x: 800, y: 250, width: 280, height: 46 },
-    glow: { x: 770, y: 226, width: 340, height: 230 },
-  },
-  {
     // The Seaport quay (11 — Town Concepts 2.10): the harbour at the right
     // edge of the painting, with the tall towers, the big ship, the two piers
     // and the small ship. It is outside the safe area, as the Dungeons cave
@@ -306,12 +290,12 @@ export interface TownShortcut {
     | "workshop"
     | "packs"
     | "hero"
-    | "achievements"
+    | "objectives"
     | "bazaar"
     | "handbook";
   readonly screen: GameScreen | null;
   /** The dialog that the shortcut opens over the current screen. */
-  readonly dialog?: "deck" | "handbook";
+  readonly dialog?: "deck" | "handbook" | "objectives";
   /** What unlocks the screen, if something does. */
   readonly unlock?: TownUnlock;
 }
@@ -381,7 +365,8 @@ export const isLocked = (
  * 7): 128 × 128 WebP with transparency.
  */
 export const shortcutImage = (id: TownShortcut["id"] | "settings") =>
-  `/town/bar/${id}.webp`;
+  // The Objectives shortcut reuses the painted Achievements icon (24 — Quests 3).
+  `/town/bar/${id === "objectives" ? "achievements" : id}.webp`;
 
 /**
  * The shortcuts whose painted icon does not exist yet. Each one shows a
@@ -409,7 +394,9 @@ export const TOWN_SHORTCUTS: readonly TownShortcut[] = [
   { id: "workshop", screen: "workshop", unlock: "combine" },
   { id: "packs", screen: "packs", unlock: "packs" },
   { id: "hero", screen: "hero", unlock: "gear" },
-  { id: "achievements", screen: "achievements" },
+  // The Objectives dialog opens over the current screen, also below level 3:
+  // its Achievements tab has no lock (24 — Quests 3).
+  { id: "objectives", screen: null, dialog: "objectives" },
   // The Bazaar Building is decoration in v1 (Town Concepts 2.6): the
   // shortcut is the way in.
   { id: "bazaar", screen: "bazaar" },

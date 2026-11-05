@@ -15,7 +15,7 @@ import { STAR_CHESTS } from "../content/star-chests";
  * shape, or to the meaning of a saved value, adds 1 and a migration step from
  * the old version.
  */
-export const PROFILE_SCHEMA_VERSION = 15;
+export const PROFILE_SCHEMA_VERSION = 19;
 
 /** The longest name that the Player can give a Deck. */
 export const DECK_NAME_MAX = 24;
@@ -115,6 +115,44 @@ const SeaportState = Schema.Union([
 export type SeaportState = typeof SeaportState.Type;
 
 /**
+ * A Daily Quest of the current day (24 — Quests 1.5): its goal template, the
+ * parameter that the selection put into the slot of the template (a Race, a
+ * Damage Type or a Keyword, or `null`), the progress since the offer, and its
+ * Claim. It is Completed when the progress is the count of the template. A
+ * claimed Daily Quest stays until the reset.
+ */
+const DailyQuest = Schema.Struct({
+  templateId: Schema.NonEmptyString,
+  param: Schema.NullOr(Schema.NonEmptyString),
+  progress: Schema.Natural,
+  claimed: Schema.Boolean,
+});
+export type DailyQuest = typeof DailyQuest.Type;
+
+/** The Daily Quests and the Activity of the Player (24 — Quests). */
+const QuestsState = Schema.Struct({
+  /** The stable Quest seed: with the day number it selects the Daily Quests (ADR-0006). */
+  seed: RandomState,
+  /**
+   * The day number of the last Daily reset: whole days since the Unix epoch,
+   * so 00:00 UTC is the reset (ADR-0056). `null` before Daily Quests unlock.
+   */
+  lastDailyReset: Schema.NullOr(Schema.Int),
+  /** The Daily Quests of the day of `lastDailyReset`, in screen order. */
+  daily: Schema.Array(DailyQuest),
+  /**
+   * The week number of the last Weekly reset, so a week starts on a Monday
+   * (ADR-0056). `null` before Daily Quests unlock.
+   */
+  lastWeeklyReset: Schema.NullOr(Schema.Int),
+  /** The Activity of the week of `lastWeeklyReset`. */
+  activity: Schema.Natural,
+  /** The Activity of each Activity checkpoint that the Player claimed this week. */
+  claimedCheckpoints: Schema.Array(Schema.Natural),
+});
+export type QuestsState = typeof QuestsState.Type;
+
+/**
  * The Active Cosmetic of each family (Economy 3.5): the Cosmetic that the
  * Player uses now. A family with no ID shows its Standard look. The action
  * `selectCosmetic` writes it, and only for a Cosmetic that the Player owns.
@@ -197,5 +235,7 @@ export const Profile = Schema.Struct({
   tallies: Tallies,
   /** The Seaport ship: at the berth, or on an Expedition since its Dispatch. */
   seaport: SeaportState,
+  /** The Daily Quests and the Activity (24 — Quests). */
+  quests: QuestsState,
 });
 export type Profile = typeof Profile.Type;

@@ -56,12 +56,16 @@
  *   The Players repeat each Stage for 3 Stars and use their Sweep Tickets
  *   (Economy 7.1, ADR-0044). `battles` is the number of seeds for each Play
  *   Style. A play calendar of 1 hour each day sends the ship of the Seaport
- *   between the sessions. It reports the Economy 4 checkpoints, the Stars,
- *   repeat Battles and Sweeps, the Seaport income, and the Heynstone ledger. The Player level targets are on the
- *   First-try run only. `--check` judges each Pacing target that applies to
- *   the Play Style: the median of the Players, the level of the First-try run,
- *   or a share of the Players. A miss of a gated target fails the check. A
- *   miss of a draft target (`draftFor`) shows "review".
+ *   between the sessions, and each session is a new day with a Daily reset of
+ *   the Daily Quests, and a Weekly reset each 7 sessions. It reports the Economy 4 checkpoints, the Stars, repeat
+ *   Battles and Sweeps, the Seaport income, the Quest income, and the
+ *   Heynstone ledger. The Player level targets are on the First-try run only.
+ *   `--check` judges each Pacing target that applies to the Play Style: the
+ *   median of the Players, the level of the First-try run, or a share of the
+ *   Players. A miss of a gated target fails the check. A miss of a draft
+ *   target (`draftFor`) shows "review". `--check` also fails when Daily
+ *   Quests and Activity checkpoints give more than 10% of the Coin or 15% of the Essence
+ *   of the median Player at Floor 50 (Economy 2.9).
  * - `skill-swap`: the swap rule for each Skill Card (Archetypes 3.3). In a
  *   Deck of its Class, 1 more copy of the Skill Card replaces 1 Creature Card
  *   with the same Countdown. The Deck plays Vanguard and Raiders before and
@@ -102,6 +106,7 @@ import {
   HOURS_AWAY,
   INCOME_KINDS,
   judgePacing,
+  judgeQuestShare,
   MAX_BATTLES,
   MAX_REPEAT_BATTLES,
   METRICS,
@@ -1018,6 +1023,41 @@ if (modes.includes("economy")) {
         };
       })
     );
+    const questVerdicts = judgeQuestShare(report);
+    for (const verdict of questVerdicts) {
+      if (!verdict.onTarget) {
+        misses.push(
+          `${playStyle} floor50 Quest share of ${verdict.kind}: ${verdict.value === null ? "no Player" : percent(verdict.value)} → at most ${percent(verdict.cap)} (Economy 2.9)`
+        );
+      }
+    }
+    console.log(
+      "Daily Quest income (Economy 2.9). Cells: median (10th–90th percentile), then the median share of the income of that kind from all sources. Daily Quests and Activity checkpoints together"
+    );
+    console.table(
+      CHECKPOINTS.map((id) => {
+        const { quests } = report.checkpoints[id];
+        const cell = (kind: "coin" | "essence") => {
+          if (quests === null) {
+            return "—";
+          }
+          const verdict =
+            id === "floor50"
+              ? questVerdicts.find((each) => each.kind === kind)
+              : undefined;
+          const cap =
+            verdict === undefined
+              ? ""
+              : ` → at most ${percent(verdict.cap)}${verdict.onTarget ? "" : " MISS"}`;
+          return `${spreadWith((value) => value.toFixed(0), quests[kind].amount)}, ${percent(quests[kind].share.median)}${cap}`;
+        };
+        return {
+          checkpoint: id,
+          coin: cell("coin"),
+          essence: cell("essence"),
+        };
+      })
+    );
     console.log(
       `Stuck Players (below level 30 or without the Floor 50 win after ${MAX_BATTLES} Battles): ${report.stuck}/${report.seeds}`
     );
@@ -1041,7 +1081,7 @@ if (modes.includes("economy")) {
     "\nPacks of each Play Style: collector merchant (royal after Region 2), upgrader peddler, balanced merchant."
   );
   console.log(
-    `Play calendar: ${PLAY_MINUTES_PER_DAY} minutes of play each day, then ${HOURS_AWAY} hours away, so the hours are also the days. Each Player Dispatches the ship at the end of a session, with each open Cargo in turn on the longest open duration, and Collects it at the start of the first session after the ship is back. The First-try run sends no ship.`
+    `Play calendar: ${PLAY_MINUTES_PER_DAY} minutes of play each day, then ${HOURS_AWAY} hours away, so the hours are also the days. Each Player Dispatches the ship at the end of a session, with each open Cargo in turn on the longest open duration, and Collects it at the start of the first session after the ship is back. Each session is a new day: the Player does the Daily reset at its start, and each 7 sessions the Weekly reset (ADR-0056). The First-try run sends no ship and does no Daily Quests.`
   );
   const ledger = heynstoneLedger();
   console.log("\nHeynstone ledger (one-time sources, Economy 2.6)");
@@ -1061,6 +1101,9 @@ if (modes.includes("economy")) {
     "\nAchievements: after each Battle, the Player claims each Completed Profile goal and Tally goal at once and gets its Coin and Essence. The Achievement Heynstones are in the ledger, not in the sim."
   );
   console.log(
+    "Daily Quests (24 — Quests 4): a count model. Each Daily Quest is complete after its Battle count of wins, and the Player claims each Completed Daily Quest and each reached Activity checkpoint at once. A Sweep adds no progress."
+  );
+  console.log(
     "Not in the sim: Feats (the sim plays no Battle, and no Feat gives Coin or Essence), Dungeon 3 (the sim plays only the Dungeons that give XP) and the first-win cards of Dungeons."
   );
 }
@@ -1078,7 +1121,7 @@ const pointsOf = (skillId: string) => {
     return "—";
   }
   const budget = skillBudgetCheck(card);
-  return `${budget.power.toFixed(1)} / ${budget.budget}${budget.nearestStep ? "" : " off step"}`;
+  return `${budget.power.toFixed(1)} / ${budget.budget.toFixed(1)}${budget.nearestStep ? "" : " off step"}`;
 };
 
 const signedPoints = (value: number) => (value > 0 ? `+${value}` : `${value}`);

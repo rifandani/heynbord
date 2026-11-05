@@ -197,7 +197,7 @@ const TEN_KEYWORDS = [
   "regenerate",
 ] as const satisfies readonly ActivatedKeyword[];
 
-describe("metFeats (Achievements 2.4)", () => {
+describe("metFeats (Achievements 2.5)", () => {
   it.each([
     ["onlyHuman", "human.shieldbearer", "elf.brambleDuelist"],
     ["onlyElf", "elf.brambleDuelist", "human.shieldbearer"],
@@ -709,7 +709,7 @@ const FIXTURES: readonly FeatFixture[] = [
   raceFixture("onlyGoblin", "goblin"),
   raceFixture("onlyFeral", "feral"),
   raceFixture("creaturesOnly", "elf"),
-  strong("commonOnly", stage("3-10"), threeOf("common", RACE_CARDS.human), 54),
+  strong("commonOnly", stage("3-10"), threeOf("common", RACE_CARDS.human), 354),
   raceFixture("untouched", "orc"),
   strong(
     "swiftBoss",
@@ -731,9 +731,9 @@ const FIXTURES: readonly FeatFixture[] = [
     deck: threeOf("common", RACE_CARDS.feral),
     level: 20,
     gear: NO_GEAR,
-    seed: 203,
+    seed: 233,
   },
-  strong("rout", BOSS_STAGE, threeOf("legendary", RACE_CARDS.goblin), 6),
+  strong("rout", BOSS_STAGE, threeOf("legendary", RACE_CARDS.goblin), 16),
   strong("fullZone", BOSS_STAGE, threeOf("legendary", RACE_CARDS.undead), 1),
   strong(
     "allDamageTypes",
@@ -783,7 +783,7 @@ const FIXTURES: readonly FeatFixture[] = [
         ["feral.frostfangLynx", 2],
       ] as const
     ).flatMap(([cardId, count]) => copies(count, cardId, "legendary")),
-    26
+    48
   ),
   strong(
     "noLosses",
@@ -795,7 +795,7 @@ const FIXTURES: readonly FeatFixture[] = [
       "feral.woollyMammoth",
       "feral.caveTroll",
     ]),
-    3,
+    2,
     "priest"
   ),
   strong(

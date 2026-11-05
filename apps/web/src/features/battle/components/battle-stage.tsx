@@ -5,6 +5,7 @@ import {
   Suspense,
   useCallback,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useState,
 } from "react";
@@ -14,6 +15,7 @@ import { GameButton } from "@/core/components/game/game-button";
 import type { PadPress } from "@/core/input/gamepad";
 import { useGamepad } from "@/core/input/use-gamepad";
 import { battlePainting } from "@/features/battle/battle-painting";
+import { waitForImage } from "@/features/battle/battle-preload";
 import type { BattleSession } from "@/features/battle/battle-session";
 import { heroOf } from "@/features/battle/battle-view";
 import {
@@ -52,12 +54,21 @@ import { padBattleCommand } from "@/features/battle/components/pad-battle";
 import { TopBar } from "@/features/battle/components/top-bar";
 import { TutorialPanel } from "@/features/battle/components/tutorial-panel";
 import { UnitDetails } from "@/features/battle/components/unit-details";
+import { sceneLoad } from "@/features/battle/scene-load";
+import {
+  DEFEAT_DESATURATE,
+  DEFEAT_PULSE,
+  DEFEAT_SHADE,
+  VICTORY_FLASH,
+  VICTORY_SUNLIGHT,
+} from "@/features/battle/tokens";
 import type { useBattle } from "@/features/battle/use-battle";
 import {
   clearBattleModels,
   useBattleModels,
 } from "@/features/battle/use-battle-models";
 import { useGameText } from "@/features/battle/use-game-text";
+import { SceneHold } from "@/features/battle/use-scene-hold";
 import { useHandbook } from "@/features/handbook/use-handbook";
 import { useBattleHints } from "@/features/hint/use-hints";
 
@@ -365,7 +376,7 @@ const useBattlePad = (battle: Battle, overlays: BattleOverlays) => {
   });
 };
 
-/** The 3D Board, which loads in its own chunk. */
+/** The 3D Board, which loads in its own chunk under the loading cover. */
 const BoardLayer = ({
   battle,
   webgl2,
@@ -373,24 +384,125 @@ const BoardLayer = ({
   readonly battle: Battle;
   readonly webgl2: boolean;
 }) => {
-  const { tr } = useGameText();
   if (!webgl2) {
     return null;
   }
   return (
-    <Suspense
-      fallback={
-        <div className="absolute inset-0 flex items-center justify-center">
-          <p className="font-display bg-night-plate/85 rounded-xl px-6 py-3 text-xl">
-            {tr("battle.loading")}
-          </p>
-        </div>
-      }
-    >
+    <Suspense fallback={<SceneHold />}>
       <BattleCanvas onPick={(target) => battle.play(target)} />
     </Suspense>
   );
 };
+
+/**
+ * The longest time the loading cover waits for the scene. After it, the
+ * Battle shows with what loaded, so a slow file never keeps the Player out.
+ */
+const COVER_LIMIT_MS = 15_000;
+
+/** The longest wait for the decode of a loaded Battle Painting. */
+const PAINTING_DECODE_MS = 400;
+
+/**
+ * Starts the scene loads of the loading cover: the Battle Painting, then the
+ * parts of the 3D scene. Without WebGL 2 there is no scene, so the cover
+ * lifts at once to show the message.
+ */
+const useSceneLoad = (painting: string | null, webgl2: boolean) => {
+  useLayoutEffect(() => {
+    sceneLoad.start();
+    if (!webgl2) {
+      sceneLoad.ready();
+    }
+    const limit = window.setTimeout(() => sceneLoad.ready(), COVER_LIMIT_MS);
+    return () => {
+      window.clearTimeout(limit);
+      sceneLoad.reset();
+    };
+  }, [webgl2]);
+  useLayoutEffect(() => {
+    if (!painting) {
+      return;
+    }
+    const release = sceneLoad.hold();
+    const load = async () => {
+      await waitForImage(painting, PAINTING_DECODE_MS);
+      release();
+    };
+    void load();
+    return release;
+  }, [painting]);
+};
+
+/**
+ * The light that breaks through over the Player Hero in a win, and the flash
+ * of the last hit (`scene/victory.ts`). They start clear: the scene writes
+ * their opacity in each frame (`VictoryLayer`), so they never re-render React.
+ */
+const VictoryAtmosphere = () => (
+  <>
+    <div
+      aria-hidden
+      data-victory-light
+      className="pointer-events-none absolute inset-0 opacity-0 mix-blend-screen"
+      style={{ backgroundImage: VICTORY_SUNLIGHT }}
+    />
+    <div
+      aria-hidden
+      data-victory-flash
+      className="pointer-events-none absolute inset-0 opacity-0 mix-blend-screen"
+      style={{ backgroundColor: VICTORY_FLASH }}
+    />
+  </>
+);
+
+/**
+ * The shade and the grey that come over the Board in a loss, and the pulse at
+ * the edges of the screen at its last hit (`scene/defeat.ts`). They start
+ * clear: the scene writes their opacity in each frame (`DefeatLayer`).
+ */
+const DefeatAtmosphere = () => (
+  <>
+    <div
+      aria-hidden
+      data-defeat-grey
+      className="pointer-events-none absolute inset-0 opacity-0 mix-blend-saturation"
+      style={{ backgroundColor: DEFEAT_DESATURATE }}
+    />
+    <div
+      aria-hidden
+      data-defeat-shade
+      className="pointer-events-none absolute inset-0 opacity-0 mix-blend-multiply"
+      style={{ backgroundImage: DEFEAT_SHADE }}
+    />
+    <div
+      aria-hidden
+      data-defeat-pulse
+      className="pointer-events-none absolute inset-0 opacity-0"
+      style={{ backgroundImage: DEFEAT_PULSE }}
+    />
+  </>
+);
+
+/**
+ * True while the Live Battle shows its loss: the HUD steps away for the
+ * defeat sequence, as it does in a win.
+ */
+const mourning = (battle: Battle): boolean =>
+  battle.log === null &&
+  battle.session !== null &&
+  !battle.session.watching &&
+  battle.session.view.result?.winner === "enemy";
+
+/**
+ * True while the Live Battle shows its win: the HUD steps away for the
+ * victory sequence. "Back to Live" from the Battle Log shows it again.
+ */
+const celebrating = (battle: Battle): boolean =>
+  battle.log === null &&
+  battle.session !== null &&
+  !battle.session.watching &&
+  battle.session.view.result?.winner === "player";
 
 /**
  * The Battle in front of the Play screen: the Board, the Top Bar, the Hand
@@ -405,6 +517,7 @@ const BattleStageContent = ({ battle }: { readonly battle: Battle }) => {
     () => (options ? battlePainting(options) : null),
     [options]
   );
+  useSceneLoad(painting, webgl2);
   const handbook = useHandbook();
   const setGuide = useAtomSet(controlsGuideAtom);
   const setLeave = useAtomSet(leaveConfirmAtom);
@@ -427,6 +540,8 @@ const BattleStageContent = ({ battle }: { readonly battle: Battle }) => {
     <div
       className="text-cream fixed inset-0 overflow-hidden overscroll-none"
       data-testid="battle-stage"
+      data-victory={celebrating(battle) ? true : undefined}
+      data-defeat={mourning(battle) ? true : undefined}
     >
       {/*
        * In the Battle Log, the painting and the Board are grey and a little
@@ -443,6 +558,8 @@ const BattleStageContent = ({ battle }: { readonly battle: Battle }) => {
         {/* The painting loads before the 3D chunk, so it shows at once (web ADR-0006). */}
         <BattlePainting src={painting} />
         <BoardLayer battle={battle} webgl2={webgl2} />
+        <DefeatAtmosphere />
+        <VictoryAtmosphere />
       </div>
       {webgl2 ? null : (
         <div

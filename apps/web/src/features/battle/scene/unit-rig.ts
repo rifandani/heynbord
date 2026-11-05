@@ -76,9 +76,14 @@ const colorChannel = (tint: Pose["tint"], channel: "r" | "g" | "b") =>
 
 const applyFade = (material: Material, pose: Pose) => {
   const fading = pose.opacity < 1;
-  material.transparent = fading;
+  if (material.transparent !== fading) {
+    material.transparent = fading;
+    material.depthWrite = !fading;
+    // An opaque program ignores the opacity: it must compile again, or a
+    // fading Unit draws dark in place of fading out.
+    material.needsUpdate = true;
+  }
   material.opacity = pose.opacity;
-  material.depthWrite = !fading;
 };
 
 const tintable = (

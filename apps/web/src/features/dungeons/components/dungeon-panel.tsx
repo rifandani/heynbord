@@ -587,7 +587,6 @@ export const DungeonPanel = ({
         "border-frame-wood bg-parchment text-ink absolute top-[calc(max(0.5rem,env(safe-area-inset-top))+4.25rem)] right-[max(1rem,env(safe-area-inset-right))] bottom-[calc(var(--town-bar)+8px)] flex w-[min(440px,38vw)] flex-col overflow-hidden rounded-2xl border-4",
         "[@media(max-height:500px)]:top-[calc(max(0.5rem,env(safe-area-inset-top))+2.75rem)] [@media(max-height:500px)]:right-[max(0.5rem,env(safe-area-inset-right))] [@media(max-height:500px)]:bottom-[calc(var(--town-bar)+4px)] [@media(max-height:500px)]:w-[min(460px,54vw)] [@media(max-height:500px)]:rounded-xl [@media(max-height:500px)]:border-[3px]"
       )}
-      style={{ boxShadow: DUNGEON_CSS.panelLift }}
       data-testid="dungeon-panel"
       data-dungeon={slot.number}
     >

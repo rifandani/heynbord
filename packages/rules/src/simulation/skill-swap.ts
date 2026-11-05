@@ -226,7 +226,8 @@ export const simulateSkillSwap = (
     creatureId: swap.creature.cardId,
     creatureDeviation:
       creature.kind === "creature"
-        ? creaturePower(creature) - powerBudget(creature.countdown)
+        ? creaturePower(creature) -
+          powerBudget(creature.countdown, creature.baseRank)
         : 0,
     sameCountdown: swap.sameCountdown,
     countdownChange:

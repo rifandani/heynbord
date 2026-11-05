@@ -102,6 +102,7 @@ Priority: **M** = Must (v1.0 cannot release without it), **S** = Should (do it i
 | MOD-08 | The Bazaar must sell Cosmetics for Heynstones, with the prices in the Economy document. Earn-only Cosmetics must not be in the Bazaar. | S |
 | MOD-09 | Heynstones must come only from the one-time sources in the Economy document. | S |
 | MOD-10 | The game must have 3 Dungeons that unlock at player level 10, 20 and 30. Each Dungeon must be one Battle against 2 or 3 Bosses, with the rules in GDD section 8.4. | S |
+| MOD-11 | The game must have Daily Quests and Activity with the rules in [24 — Quests](./24-quests.md), in one Objectives dialog with the Achievements. A Daily Quest or an Activity checkpoint must never give Heynstones. | S |
 
 ### 6.5 User interface (UI)
 

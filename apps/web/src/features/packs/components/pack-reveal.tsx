@@ -404,38 +404,6 @@ const FlipCard = ({
   );
 };
 
-/** The name and the Rank under a card, after its flip. */
-const CardName = ({
-  card,
-  shown,
-  delay,
-}: {
-  readonly card: RevealedCard;
-  readonly shown: boolean;
-  readonly delay: number;
-}) => {
-  const { tr } = useGameText();
-  return (
-    <span
-      className={cn(
-        "mt-2 flex w-[9em] flex-col items-center text-center leading-tight",
-        shown
-          ? "motion-safe:animate-[pack-name_300ms_cubic-bezier(0.2,0.8,0.2,1)_both]"
-          : "invisible"
-      )}
-      style={{ animationDelay: `${delay + 350}ms` }}
-      aria-hidden
-    >
-      <span className="font-display text-cream text-[max(12px,1.05em)] font-bold">
-        {tr(`cards.${card.cardId}.name`)}
-      </span>
-      <span className="text-cream text-[max(10px,0.85em)] font-bold">
-        {tr(`ranks.${card.rank}`)}
-      </span>
-    </span>
-  );
-};
-
 /** A line under the cards when a rule gave a card of the Guarantee Rank. */
 const GuaranteeNote = ({ pack }: { readonly pack: RevealedPack }) => {
   const { tr } = useGameText();
@@ -633,7 +601,6 @@ const SingleReveal = ({
                 place={key}
                 testId={`reveal-card-${index}`}
               />
-              <CardName card={card} shown={flipped} delay={delay} />
             </li>
           );
         })}
@@ -732,7 +699,6 @@ const Highlight = ({
           place={String(phase.index)}
           testId="highlight-card"
         />
-        <CardName card={card} shown={phase.flipped} delay={0} />
       </div>
       <div className={ACTIONS}>
         <GameButton

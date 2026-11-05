@@ -3,16 +3,9 @@ import { newProfile } from "@workspace/rules";
 import { AtomRegistry } from "effect/reactivity";
 import { describe, expect, it } from "vitest";
 
-import { achievementGroups } from "@/features/achievements/achievements";
-import {
-  achievementGroupsAtom,
-  anyAchievementCompletedAtom,
-  claimableCountAtom,
-} from "@/features/achievements/achievements-screen.atoms";
-import {
-  profileAtom,
-  profileStateAtom,
-} from "@/features/profile/profile.atoms";
+import { anyAchievementCompletedAtom } from "@/features/achievements/achievement-counts.atoms";
+import { objectivesBadgeAtom } from "@/features/objectives/objectives.atoms";
+import { profileStateAtom } from "@/features/profile/profile.atoms";
 
 const loaded = (profile: Profile) => {
   const registry = AtomRegistry.make();
@@ -28,23 +21,16 @@ const regionOneWon: Profile = {
   ),
 };
 
-describe("Achievements screen atoms", () => {
+describe("Achievement atoms", () => {
   it("show no claim and no Hint for a new Player", () => {
     const registry = loaded(newProfile(1));
-    expect(registry.get(claimableCountAtom)).toBe(0);
+    expect(registry.get(objectivesBadgeAtom)).toBe(0);
     expect(registry.get(anyAchievementCompletedAtom)).toBe(false);
   });
 
   it("count the Completed Achievements that the Player has not claimed", () => {
     const registry = loaded(regionOneWon);
-    expect(registry.get(claimableCountAtom)).toBe(1);
+    expect(registry.get(objectivesBadgeAtom)).toBe(1);
     expect(registry.get(anyAchievementCompletedAtom)).toBe(true);
-  });
-
-  it("group the rows of the shown Profile by category", () => {
-    const registry = loaded(regionOneWon);
-    expect(registry.get(achievementGroupsAtom)).toEqual(
-      achievementGroups(registry.get(profileAtom))
-    );
   });
 });
