@@ -276,7 +276,6 @@ export const useBattle = () => {
   /** Back to the screen that started the Battle, or to the Town after a Replay. */
   const leave = () => {
     const left = registry.get(battleSessionAtom);
-    const wasWatching = left?.watching ?? false;
     if (left) {
       recordAbandonedBattle(registry, left);
     }
@@ -286,7 +285,7 @@ export const useBattle = () => {
     registry.set(battleLogAtom, null);
     stageBattle(null);
     commit(null);
-    if (wasWatching) {
+    if (left?.watching) {
       registry.set(gameScreenAtom, "town");
     }
   };
