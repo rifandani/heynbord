@@ -5,6 +5,8 @@ import {
   skillAmountForRank,
   skillCountForRank,
   skillSquaresForRank,
+  skillTurnsForRank,
+  STAT_SCALE,
 } from "./ranks";
 import type {
   CreatureCardDefinition,
@@ -351,8 +353,11 @@ const EFFECT_TERMS: EffectTerms = {
         (effect.turns - 1) * FIELD_TURN_POINTS
     ),
   damageHero: (effect, rank) => hit("heroDamage", effect, rank),
-  damageByAttack: (effect) => ({
-    rates: [["byAttack", 1]],
+  damageByAttack: (effect, rank) => ({
+    rates: [
+      ["byAttack", 1],
+      ["unitDamage", skillAmountForRank(effect.bonus, rank)],
+    ],
     damageType: effect.damageType,
     flat: 0,
   }),
@@ -369,7 +374,11 @@ const EFFECT_TERMS: EffectTerms = {
     help([["unitWard", skillAmountForRank(effect.ward, rank)]]),
   wardLane: (effect, rank) =>
     help([["laneWard", skillAmountForRank(effect.ward, rank)]]),
-  steadfastUnit: () => help([["steadfast", 1]]),
+  steadfastUnit: (effect, rank) =>
+    help([
+      ["steadfast", 1],
+      ["unitWard", skillAmountForRank(effect.ward, rank)],
+    ]),
   exposeUnit: (effect, rank) =>
     help([["exposed", skillAmountForRank(effect.exposed, rank)]]),
   laneAttack: (effect, rank) =>
@@ -379,12 +388,15 @@ const EFFECT_TERMS: EffectTerms = {
       [["unitAttack", skillAmountForRank(effect.attack, rank)]],
       effect.range * RANGE_SQUARE_POINTS
     ),
-  // The bonus Attack is only at Legendary, and no Card has that Base Rank.
-  laneExtraAction: () => help([["extraAction", 1]]),
+  laneExtraAction: (effect, rank) =>
+    help([
+      ["extraAction", 1],
+      ["laneAttack", skillAmountForRank(effect.attack, rank)],
+    ]),
   laneBulwark: (effect, rank) =>
     help(
       [["laneBulwark", skillAmountForRank(effect.bulwark, rank)]],
-      (effect.turns - 1) * BULWARK_TURN_POINTS
+      (skillTurnsForRank(effect.turns, rank) - 1) * BULWARK_TURN_POINTS
     ),
   lowerCountdown: (effect, rank) =>
     help([
@@ -534,6 +546,26 @@ const MAIN_AMOUNT: MainAmounts = {
     set: (effect, bulwark) => ({ ...effect, bulwark }),
   },
   lowerCountdown: amountOf(),
+};
+
+/** The minimum Rank Growth as a share of the maximum, in basis points (ADR-0057). */
+const RANK_GROWTH_FLOOR = 7500;
+
+/**
+ * The Rank Growth of a Skill Card (ADR-0057): its Power Points at Legendary
+ * divided by its Power Points at its Base Rank.
+ */
+export const rankGrowth = (card: SkillCardDefinition): number =>
+  skillPower(card, "legendary") / skillPower(card);
+
+/**
+ * The allowed Rank Growth of a Base Rank (ADR-0057). The maximum is the growth
+ * of the Stat scale from the Base Rank to Legendary, and the minimum is 75% of
+ * the maximum.
+ */
+export const rankGrowthRange = (baseRank: RankId) => {
+  const maximum = STAT_SCALE.legendary / STAT_SCALE[baseRank];
+  return { minimum: (maximum * RANK_GROWTH_FLOOR) / 10_000, maximum };
 };
 
 /** The largest difference from the Power Budget, in basis points (±25%). */

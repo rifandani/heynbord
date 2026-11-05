@@ -262,6 +262,8 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Rank**: The power grade of one copy of a Card: Common, Uncommon, Rare, Epic or Legendary. The Rank names use usual rarity words, so that players know the order immediately. But the concept is a Rank, not a rarity: Combine can make the Rank of a copy higher. _Avoid_: rarity, tier, star, level, quality
 
+**Rank Growth**: The Power Points of a Skill Card at Legendary divided by its Power Points at its Base Rank. It has a minimum and a maximum for each Base Rank ([ADR-0057](../../docs/adr/0057-each-combine-of-a-skill-card-changes-its-effect.md)). _Avoid_: scaling, curve, rank power
+
 **Base Rank**: The lowest Rank in which a Card exists. A Creature Card with Base Rank Legendary is a Specialist. _Avoid_: rarity, starting tier
 
 **Specialist**: A Creature Card with Base Rank Legendary. It has one Class, and a Hero can put it in a Deck only when the Hero has that Class. Every Specialist has Unique. Only a Specialist has a Class. _Avoid_: class creature, restricted card, legendary unit
@@ -482,6 +484,7 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 - A **Starter Deck** holds only copies in the **Rank** Common or Uncommon. The Player gets a Rare, Epic or Legendary copy only from play, for example from the first win of a **Boss Stage**.
 - A **Starter Deck** can also be an **Archetype**. An Archetype does not have to be a Starter Deck. A **Matchup** of an Archetype against itself is a mirror.
 - A **Card copy** has one **Rank**. **Combine** raises the Rank. The **Countdown** does not change with the Rank.
+- Each **Combine** of a **Skill Card** changes its effect. A **Recall** gain alone is not sufficient. No value of the effect goes down at a higher **Rank** ([ADR-0057](../../docs/adr/0057-each-combine-of-a-skill-card-changes-its-effect.md)).
 - A **Card copy** is never below its **Base Rank**: in a **Deck**, in a **Collection** and as a **Start Unit**.
 - A **Deck** holds a **Card** and a **Rank**, not one specific **Card copy**. After a **Combine**, a Deck that used the old-Rank copies uses the new-Rank copy. After an **Extract** or a **Fuse**, the copy goes out of each Deck that used it. A Card stays **Discovered** after its last copy is Extracted or Fused.
 - A **Fuse** uses 2 copies in the **Rank** Common or Uncommon, 3 copies in the Rank Rare, or 4 copies in the Rank Epic. A Legendary copy is never an input, and a **Specialist** is never a result. The Rank is the Rank of each copy, not its **Base Rank**: a Common Card at Rare Rank is a Rare input ([ADR-0049](../../docs/adr/0049-fuse-gives-a-card-that-is-not-discovered.md)).

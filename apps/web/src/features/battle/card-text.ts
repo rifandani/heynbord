@@ -17,6 +17,7 @@ import {
   recallChance,
   skillAmountForRank,
   skillCountForRank,
+  skillTurnsForRank,
   skillSquaresForRank,
 } from "@workspace/rules";
 import { absurd, Predicate } from "effect";
@@ -206,7 +207,10 @@ const friendlyEffectText = (
       };
     }
     case "steadfastUnit": {
-      return { key: "effects.steadfastUnit" };
+      const ward = skillAmountForRank(effect.ward, rank);
+      return ward > 0
+        ? { key: "effects.steadfastUnitWard", args: { ward } }
+        : { key: "effects.steadfastUnit" };
     }
     case "cleanseUnit": {
       return {
@@ -219,7 +223,7 @@ const friendlyEffectText = (
         key: "effects.laneBulwark",
         args: {
           bulwark: skillAmountForRank(effect.bulwark, rank),
-          turns: effect.turns,
+          turns: skillTurnsForRank(effect.turns, rank),
         },
       };
     }
@@ -245,12 +249,10 @@ const friendlyEffectText = (
       };
     }
     case "laneExtraAction": {
-      return rank === "legendary" && effect.legendaryAttack !== undefined
-        ? {
-            key: "effects.laneExtraActionLegendary",
-            args: { attack: effect.legendaryAttack },
-          }
-        : { key: "effects.laneExtraAction" };
+      return {
+        key: "effects.laneExtraAction",
+        args: { attack: skillAmountForRank(effect.attack, rank) },
+      };
     }
     case "lowerCountdown": {
       return {
@@ -389,10 +391,11 @@ const effectText = (card: SkillCardDefinition, rank: RankId): TextRef => {
       };
     }
     case "damageByAttack": {
-      return {
-        key: "effects.damageByAttack",
-        args: { damageType: { key: `damageTypes.${effect.damageType}` } },
-      };
+      const damageType = { key: `damageTypes.${effect.damageType}` };
+      const bonus = skillAmountForRank(effect.bonus, rank);
+      return bonus > 0
+        ? { key: "effects.damageByAttackBonus", args: { damageType, bonus } }
+        : { key: "effects.damageByAttack", args: { damageType } };
     }
     case "damageLaneBulwark": {
       return {

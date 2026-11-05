@@ -10,10 +10,12 @@ import { creaturePower, powerBudget } from "../content/balance";
 import { getCard } from "../content/cards";
 import { deckCountdown, MAX_COPIES } from "../content/decks";
 import { isRangedRange, keywordRange } from "../content/keywords";
+import { isRankAtLeast } from "../content/ranks";
 import type {
   Archetype,
   ClassId,
   DeckEntry,
+  RankId,
   SkillCardDefinition,
 } from "../content/schema";
 import { simulateMatchup } from "./simulate";
@@ -46,9 +48,24 @@ const archetypeOf = (id: string): Archetype => {
   return archetype;
 };
 
+/**
+ * `archetype` with each copy at `rank` or higher (ADR-0057). A copy is never
+ * below its Rank in the Deck. With no `rank`, the Deck does not change.
+ */
+const atRank = (archetype: Archetype, rank?: RankId): Archetype =>
+  rank === undefined
+    ? archetype
+    : {
+        ...archetype,
+        deck: archetype.deck.map((entry) => ({
+          ...entry,
+          rank: isRankAtLeast(entry.rank, rank) ? entry.rank : rank,
+        })),
+      };
+
 /** The swap Deck of a Skill Card, before the swap. */
-const swapDeckOf = (skill: SkillCardDefinition): Archetype =>
-  archetypeOf(SWAP_DECKS[skill.class]);
+const swapDeckOf = (skill: SkillCardDefinition, rank?: RankId): Archetype =>
+  atRank(archetypeOf(SWAP_DECKS[skill.class]), rank);
 
 const countOf = (deck: readonly DeckEntry[], cardId: string) =>
   deck.filter((entry) => entry.cardId === cardId).length;
@@ -116,16 +133,22 @@ export interface SkillSwap {
   readonly reverse: Archetype | null;
 }
 
-/** The scratch Decks of the swap for one Skill Card. */
-export const skillSwap = (skill: SkillCardDefinition): SkillSwap => {
-  const base = swapDeckOf(skill);
+/**
+ * The scratch Decks of the swap for one Skill Card. With `rank`, each copy of
+ * the swap Decks is at `rank` or higher, also the Skill Card.
+ */
+export const skillSwap = (
+  skill: SkillCardDefinition,
+  rank?: RankId
+): SkillSwap => {
+  const base = swapDeckOf(skill, rank);
   if (countOf(base.deck, skill.id) >= MAX_COPIES) {
     throw new Error(
       `${base.id} already has ${MAX_COPIES} copies of ${skill.id}`
     );
   }
   const creature = swappedCreature(base.deck, skill);
-  const skillCopy = { cardId: skill.id, rank: skill.baseRank };
+  const skillCopy = { cardId: skill.id, rank: rank ?? skill.baseRank };
   const hasReverse =
     countOf(base.deck, skill.id) > 0 &&
     countOf(base.deck, creature.cardId) < MAX_COPIES;
@@ -194,16 +217,19 @@ export const isSwapPass = (before: number, after: number, battles: number) =>
 
 /**
  * The swap report of one Skill Card. `cache` keeps the win rates of each base
- * Deck, so that the cards of one Class play the base Matchups one time.
+ * Deck, so that the cards of one Class play the base Matchups one time. With
+ * `rank`, all copies of both sides play at `rank` or higher (ADR-0057). A run
+ * uses one `rank`, and each `rank` needs its own `cache`.
  */
 export const simulateSkillSwap = (
   skill: SkillCardDefinition,
   options: MatchupOptions,
-  cache = new Map<string, MatchupReport>()
+  cache = new Map<string, MatchupReport>(),
+  rank?: RankId
 ): SkillSwapReport => {
-  const swap = skillSwap(skill);
+  const swap = skillSwap(skill, rank);
   const matchup = (deck: Archetype, opponentId: string) =>
-    simulateMatchup(deck, archetypeOf(opponentId), options);
+    simulateMatchup(deck, atRank(archetypeOf(opponentId), rank), options);
   const results = SWAP_OPPONENTS.map((opponentId): SwapResult => {
     const key = `${swap.base.id}:${opponentId}`;
     const before = cache.get(key) ?? matchup(swap.base, opponentId);

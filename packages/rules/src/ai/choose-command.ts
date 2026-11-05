@@ -41,6 +41,7 @@ import {
   skillAmountForRank,
   skillCountForRank,
   skillSquaresForRank,
+  skillTurnsForRank,
 } from "../content/ranks";
 import type {
   CreatureCardDefinition,
@@ -482,15 +483,17 @@ const skillHits = (
     );
   }
   const length = effect.type === "damageArea" ? effect.length : 1;
-  const amount =
-    effect.type === "damageByAttack"
-      ? 0
-      : skillAmountForRank(effect.amount, card.rank);
+  const amount = skillAmountForRank(
+    effect.type === "damageByAttack" ? effect.bonus : effect.amount,
+    card.rank
+  );
   return unitsInArea(state, otherSide(side), target, length).map((unit) =>
-    // Penance: the Attack of the target at the moment of the hit.
+    // Penance: the Attack of the target at the moment of the hit, plus the bonus.
     hitOn(
       unit,
-      effect.type === "damageByAttack" ? attackOf(state, unit) : amount,
+      effect.type === "damageByAttack"
+        ? attackOf(state, unit) + amount
+        : amount,
       effect.damageType
     )
   );
@@ -1249,15 +1252,13 @@ const scoreExtraActions = (
   state: BattleState,
   side: Side,
   target: Target,
-  legendaryAttack: number
+  attack: number
 ): number =>
   extraActors(state, side, target).reduce(
-    (sum, unit) => sum + 2 + (attackOf(state, unit) + legendaryAttack) * 2,
+    (sum, unit) => sum + 2 + (attackOf(state, unit) + attack) * 2,
     0
   ) +
-  attackBonusTargets(state, side, target).length *
-    legendaryAttack *
-    BONUS_ATTACK_WEIGHT;
+  attackBonusTargets(state, side, target).length * attack * BONUS_ATTACK_WEIGHT;
 
 /**
  * The Hold Rules of the Warrior cards *Expose Weakness*, *Call to Arms* and
@@ -1290,6 +1291,12 @@ const meetsWarriorHoldRule = (
     }
   }
 };
+
+/**
+ * *War Drums*: it waits for this many cards that are not Ready, or for all the
+ * cards that it lowers, when it lowers fewer. A Hand seldom has more.
+ */
+const WAR_DRUMS_HOLD = 2;
 
 /** *Arc Lightning*, *Thunderstorm* and a Field Effect: at least this many enemy Units. */
 const MAGE_UNITS_HOLD = 2;
@@ -1550,7 +1557,7 @@ const meetsHoldRule = (
     case "lowerCountdown": {
       return (
         notReadyCards(state, side, hero, card).length >=
-        skillCountForRank(effect.cards, card.rank)
+        Math.min(skillCountForRank(effect.cards, card.rank), WAR_DRUMS_HOLD)
       );
     }
     default: {
@@ -1681,7 +1688,10 @@ const scoreSkill = (
       return scoreLaneWard(state, side, card, effect.ward, target);
     }
     case "steadfastUnit": {
-      return scoreSteadfast(state, side, target);
+      return (
+        scoreSteadfast(state, side, target) +
+        scoreWard(state, side, card, effect.ward, target)
+      );
     }
     case "cleanseUnit": {
       return scoreCleanse(state, side, card, effect.heal, target);
@@ -1693,7 +1703,7 @@ const scoreSkill = (
             side,
             target,
             skillAmountForRank(effect.bulwark, card.rank),
-            effect.turns
+            skillTurnsForRank(effect.turns, card.rank)
           )
         : 0;
     }
@@ -1715,7 +1725,7 @@ const scoreSkill = (
         state,
         side,
         target,
-        card.rank === "legendary" ? (effect.legendaryAttack ?? 0) : 0
+        skillAmountForRank(effect.attack, card.rank)
       );
     }
     case "lowerCountdown": {

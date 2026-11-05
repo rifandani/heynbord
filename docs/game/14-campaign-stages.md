@@ -400,7 +400,7 @@ The columns are the same as in 2.2.
 | 4-5 | 56 | 0 / 0 / 0 / 0 | 25 | — | — | Web Spitter (Common) | 17 | 71% / 71% | 9 / 9 / 9 / 9 | 78% / 77% | 23 | 38% / 42% |
 | 4-6 | 38 | 0 / 0 / 0 / 0 | 25 | — | — | Boulder Tortoise (Uncommon) | 17 | 64% / 69% | 10 / 10 / 10 / 9 | 72% / 78% | 22 | 39% / 39% |
 | 4-7 | 56 | 0 / 0 / 0 / 0 | 25 | — | — | Tailsweep Basilisk (Uncommon) | 17 | 67% / 66% | 10 / 10 / 10 / 10 | 79% / 76% | 23 | 35% / 40% |
-| 4-8 | 54 | 0 / 0 / 0 / 2 | 27 | — | — | Cave Troll (Uncommon) | 18 | 62% / 69% | 10 / 10 / 10 / 10 | 72% / 79% | 22 | 39% / 42% |
+| 4-8 | 54 | 0 / 0 / 0 / 2 | 27 | — | — | Cave Troll (Uncommon) | 18 | 61% / 70% | 10 / 10 / 10 / 10 | 71% / 79% | 22 | 39% / 42% |
 | 4-9 | 39 | 0 / 0 / 0 / 0 | 26 | — | — | Amberwing Dart (Rare) | 18 | 61% / 66% | 10 / 10 / 10 / 10 | 70% / 77% | 21 | 35% / 40% |
 | 4-10 | 65 | 2 / 0 / 0 / 0 | 28 | — | Mountain Colossus (Epic), Lane 3, Column 11 · Bramble Nest (Uncommon), Lane 1, Column 10 | Mountain Colossus (Epic) | 19 | 27% / 45% | 10 / 10 / 10 / 10 | 34% / 55% | 25 | 27% / 32% |
 
@@ -460,7 +460,7 @@ Notes from the first tuning:
 | 4-5 | 3× Web Spitter (U), 1× Tailsweep Basilisk (R), 2× Bristleback Boar (U), 1× Crag Rhino (R), 1× Acorn Tender (U), 1× Mosspitcher Lookout (U), 1× Dewkeeper (R), 1× Pinning Shot (C), 2× Quick Shot (C), 3× Bramble Duelist (C), 1× Rootbound Guard (C), 3× Fernwing Courier (C), 2× Warning Shot (C), 1× Crag Lizard (C), 2× Harrying Shot (C) |
 | 4-6 | 3× Boulder Tortoise (R), 2× Crag Rhino (R), 2× Bristleback Boar (U), 2× Mosspitcher Lookout (U), 1× Thornline Archer (R), 3× Acorn Tender (C), 1× Dewkeeper (U), 1× Frost Bolt (C), 1× Fireball (C), 1× Frost Shards (C), 1× Arc Lightning (U), 1× Frost Wave (U), 1× Web Spitter (C), 3× Bramble Duelist (C), 2× Fernwing Courier (C) |
 | 4-7 | 2× Call to Arms (R), 3× Tailsweep Basilisk (U), 2× Bristleback Boar (C), 2× Crag Rhino (U), 2× Cave Bear (C), 2× Glade Turnblade (U), 2× Canopy Skirmisher (U), 2× Rootbound Guard (C), 2× Mosspitcher Lookout (C), 1× Seedwind Shepherd (R), 1× Shield Bash (C), 1× War Drums (U), 1× Spear Throw (C), 2× Bramble Duelist (C) |
-| 4-8 | 2× Penance (R), 2× Cave Bear (U), 1× Crag Rhino (E), 1× Crag Rhino (R), 2× Dewkeeper (U), 2× Acorn Tender (C), 2× Mosspitcher Lookout (C), 3× Rootbound Guard (C), 1× Seedwind Shepherd (R), 1× Prayer of Healing (U), 1× Smite (C), 1× Boulder Tortoise (U), 2× Bramble Duelist (C), 1× Cave Troll (U), 1× Web Spitter (C), 3× Fernwing Courier (C), 1× Sanctuary (U) |
+| 4-8 | 1× Penance (R), 1× Penance (U), 2× Cave Bear (U), 1× Crag Rhino (E), 1× Crag Rhino (R), 2× Dewkeeper (U), 2× Acorn Tender (C), 2× Mosspitcher Lookout (C), 3× Rootbound Guard (C), 1× Seedwind Shepherd (R), 1× Prayer of Healing (U), 1× Smite (C), 1× Boulder Tortoise (U), 2× Bramble Duelist (C), 1× Cave Troll (U), 1× Web Spitter (C), 3× Fernwing Courier (C), 1× Sanctuary (U) |
 | 4-9 | 2× Bristleback Boar (U), 2× Crag Rhino (R), 1× Cave Bear (U), 1× Cave Troll (R), 1× Crag Lizard (C), 1× Tailsweep Basilisk (U), 1× Amberwing Dart (R), 2× Mosspitcher Lookout (C), 1× Rootbound Guard (C), 1× Canopy Skirmisher (U), 1× Glade Turnblade (U), 1× Dewkeeper (U), 1× Pinning Shot (C), 1× Quick Shot (C), 1× Harrying Shot (C), 1× Warning Shot (C), 1× Web Spitter (C), 3× Bramble Duelist (C), 1× Thornline Archer (U), 2× Fernwing Courier (C) |
 | 4-10 | 1× Mountain Colossus (L), 1× Crag Rhino (U), 1× Frostfang Lynx (C), 1× Shield Bash (C), 3× Bristleback Boar (C), 2× Cave Bear (C), 1× Boulder Tortoise (U), 1× Mosspitcher Lookout (C), 2× Crag Lizard (C), 1× Mosspitcher Lookout (C), 1× Frostfang Lynx (C), 1× Thornline Archer (U), 1× Rootbound Guard (C), 3× Bramble Duelist (C), 1× Fernwing Courier (C), 1× Cleave (U), 1× Call to Arms (R), 1× Frostfang Lynx (C), 1× Shield Wall (C), 1× Shield Bash (C), 2× Acorn Tender (C) |
 
@@ -501,7 +501,7 @@ The columns are the same as in 2.2.
 | 5-2 | 56 | 0 / 0 / 0 / 0 | 28 | — | — | Grave Bell Tender (Common) | 20 | 66% / 71% | 10 / 10 / 10 / 10 | 76% / 78% | 26 | 38% / 42% |
 | 5-3 | 58 | 0 / 0 / 2 / 0 | 29 | — | — | Frostfang Lynx (Common) | 20 | 71% / 71% | 11 / 10 / 10 / 10 | 79% / 77% | 25 | 38% / 41% |
 | 5-4 | 52 | 0 / 0 / 0 / 0 | 29 | — | — | Coffin-Lid Skater (Common) | 21 | 63% / 67% | 11 / 11 / 11 / 10 | 72% / 78% | 23 | 36% / 40% |
-| 5-5 | 60 | 0 / 0 / 0 / 0 | 29 | — | — | Coffin Lancer (Rare) | 21 | 63% / 69% | 11 / 11 / 11 / 11 | 75% / 78% | 29 | 35% / 40% |
+| 5-5 | 60 | 0 / 0 / 0 / 0 | 29 | — | — | Coffin Lancer (Rare) | 21 | 60% / 65% | 11 / 11 / 11 / 11 | 70% / 75% | 29 | 35% / 40% |
 | 5-6 | 34 | 0 / 0 / 0 / 0 | 29 | — | — | Rime-Eye Reaper (Uncommon) | 21 | 62% / 65% | 12 / 12 / 12 / 11 | 73% / 75% | 22 | 37% / 39% |
 | 5-7 | 35 | 0 / 0 / 0 / 0 | 29 | — | — | Lantern Widow (Rare) | 21 | 69% / 68% | 12 / 12 / 12 / 12 | 79% / 78% | 22 | 36% / 40% |
 | 5-8 | 26 | 0 / 0 / 0 / 0 | 29 | — | — | Frost Elk Matriarch (Uncommon) | 22 | 61% / 69% | 13 / 12 / 12 / 12 | 71% / 77% | 17 | 36% / 39% |

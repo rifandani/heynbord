@@ -6,6 +6,7 @@ import {
   skillAmountForRank,
   skillCountForRank,
   skillSquaresForRank,
+  skillTurnsForRank,
 } from "../content/ranks";
 import type {
   SkillCardDefinition,
@@ -572,12 +573,14 @@ const applyHit = (
   for (const unit of unitsInArea(ctx.state, enemy, target, length)) {
     if (effect.type === "damageByAttack") {
       // Penance deals the Attack of the Unit, so its Swarm bonus adds to it.
+      // A Unit with Attack 0 takes only the bonus of the Rank.
       activateSwarm(ctx, unit);
     }
     damageUnit(ctx, unit, {
       amount:
         effect.type === "damageByAttack"
-          ? attackOf(ctx.state, unit)
+          ? attackOf(ctx.state, unit) +
+            skillAmountForRank(effect.bonus, card.rank)
           : skillAmountForRank(effect.amount, card.rank),
       damageType: effect.damageType,
       source: "skill",
@@ -642,6 +645,10 @@ const applyFriendly = (
       }
       case "steadfastUnit": {
         steadfastUnit(ctx, unit);
+        const ward = skillAmountForRank(effect.ward, card.rank);
+        if (ward > 0) {
+          wardUnit(ctx, unit, ward);
+        }
         break;
       }
       case "cleanseUnit": {
@@ -654,7 +661,7 @@ const applyFriendly = (
           ctx,
           unit,
           skillAmountForRank(effect.bulwark, card.rank),
-          effect.turns
+          skillTurnsForRank(effect.turns, card.rank)
         );
         break;
       }
@@ -698,10 +705,9 @@ const applyWarrior = (
 ): void => {
   if (effect.type === "laneExtraAction") {
     if (target._tag === "Lane") {
-      if (card.rank === "legendary" && effect.legendaryAttack !== undefined) {
-        for (const unit of unitsInArea(ctx.state, side, target, 1)) {
-          giveBonusAttack(ctx, unit, effect.legendaryAttack);
-        }
+      const attack = skillAmountForRank(effect.attack, card.rank);
+      for (const unit of unitsInArea(ctx.state, side, target, 1)) {
+        giveBonusAttack(ctx, unit, attack);
       }
       runExtraActions(ctx, side, target.lane);
     }

@@ -46,6 +46,19 @@ describe("skillSwap (Archetypes 3.3)", () => {
     expect(countOf(swap.reverse?.deck ?? [], "human.halberdier")).toBe(2);
   });
 
+  it("puts each copy at the Rank, and never a copy below its Rank (ADR-0057)", () => {
+    const swap = skillSwap(skill("warrior.shieldWall"), "epic");
+    const ranks = new Set(swap.swapped.deck.map((entry) => entry.rank));
+    expect(ranks.has("common")).toBe(false);
+    expect(ranks.has("uncommon")).toBe(false);
+    expect(ranks.has("rare")).toBe(false);
+    expect(swap.swapped.deck).toContainEqual({
+      cardId: "warrior.shieldWall",
+      rank: "epic",
+    });
+    expect(swap.base.deck).toHaveLength(swap.swapped.deck.length);
+  });
+
   it("uses each Class Deck", () => {
     expect(
       [

@@ -239,6 +239,7 @@ export {
   skillAmountForRank,
   skillCountForRank,
   skillSquaresForRank,
+  skillTurnsForRank,
 } from "./content/ranks";
 export { ClassId, DeckEntry } from "./content/schema";
 export type {

@@ -1203,11 +1203,20 @@ describe("the Common and Uncommon Skill Cards of #57 (GDD 5.5)", () => {
       preventRout(state);
       const first = run(state, play(0, square(0, 6)));
       expect(unitById(first.state, rallied.id)?.hp).toBe(14);
-      // The Rank does not change the damage.
+      // Legendary: the Attack of the Unit, plus the bonus of 4.
       const second = run(first.state, play(0, square(1, 6)));
-      expect(unitById(second.state, swarming.id)?.hp).toBe(15);
+      expect(unitById(second.state, swarming.id)?.hp).toBe(11);
       const third = run(second.state, play(0, square(2, 6)));
       expect(unitById(third.state, harmless.id)?.hp).toBe(6);
+    });
+
+    it("deals only the bonus of the Rank to a Unit with Attack 0 (ADR-0057)", () => {
+      const state = emptyBattle();
+      giveHand(state, "player", [["priest.penance", 0, "epic"]]);
+      const harmless = enemyAt(state, 6, { hp: 10, maxHp: 10, attack: 0 });
+      preventRout(state);
+      const { state: next } = run(state, play(0, square(0, 6)));
+      expect(unitById(next, harmless.id)?.hp).toBe(8);
     });
 
     it("is absorbed by a Ward", () => {
@@ -1369,7 +1378,7 @@ describe("the Rare and Epic Ranger Skill Cards of #59 (GDD 5.5)", () => {
       });
       const second = run(first.state, play(0, square(1, 2)));
       expect(unitById(second.state, legendary.id)).toMatchObject({
-        bonusAttack: 12,
+        bonusAttack: 11,
         bonusRange: 1,
       });
       const third = run(second.state, play(0, square(0, 4)));
@@ -1544,13 +1553,13 @@ describe("the Rare and Epic Ranger Skill Cards of #59 (GDD 5.5)", () => {
       });
     });
 
-    it("deals 10 damage at Legendary", () => {
+    it("deals 7 damage at Legendary", () => {
       const state = emptyBattle();
       giveHand(state, "player", [["ranger.rainOfArrows", 0, "legendary"]]);
       const target = enemyAt(state, 6, { hp: 16, maxHp: 16 });
       const { state: next } = run(state, play(0, Target.Lane({ lane: 0 })));
       expect(unitById(next, target.id)).toMatchObject({
-        hp: 6,
+        hp: 9,
         entangled: true,
       });
     });
@@ -1725,20 +1734,72 @@ describe("the Rare and Epic Priest Skill Cards of #61 (GDD 5.5)", () => {
       ]);
     });
 
-    it("gives Ward 23 at Legendary", () => {
+    it("gives Ward 22 at Legendary", () => {
       const state = emptyBattle();
       giveHand(state, "player", [["priest.aegisOfDawn", 0, "legendary"]]);
       const unit = friendAt(state, 2);
       const { state: next } = run(state, play(0, Target.Lane({ lane: 0 })));
-      expect(unitById(next, unit.id)?.ward).toBe(23);
+      expect(unitById(next, unit.id)?.ward).toBe(22);
     });
+  });
+});
+
+describe("the Rank parts of ADR-0057", () => {
+  it.each([
+    ["uncommon", 2],
+    ["rare", 3],
+    ["epic", 4],
+    ["legendary", 5],
+  ] as const)("gives Shield Wall its enemy Turns at %s", (rank, turns) => {
+    const state = emptyBattle();
+    giveHand(state, "player", [["warrior.shieldWall", 0, rank]]);
+    const unit = friendAt(state, 2);
+    preventRout(state);
+    const { state: next } = run(state, play(0, Target.Lane({ lane: 0 })));
+    expect(unitById(next, unit.id)).toMatchObject({
+      bonusBulwark: 2,
+      bonusBulwarkTurns: turns,
+    });
+  });
+
+  it("gives Unbroken Vow no Ward at Rare and Ward 5 at Legendary", () => {
+    const state = emptyBattle({ lanes: 2 });
+    giveHand(state, "player", [
+      ["priest.unbrokenVow", 0, "rare"],
+      ["priest.unbrokenVow", 0, "legendary"],
+    ]);
+    const rare = friendAt(state, 2);
+    const legendary = friendAt(state, 2, { lane: 1 });
+    preventRout(state);
+    const first = run(state, play(0, square(0, 2)));
+    expect(unitById(first.state, rare.id)).toMatchObject({
+      steadfast: true,
+      ward: 0,
+    });
+    const second = run(first.state, play(0, square(1, 2)));
+    expect(unitById(second.state, legendary.id)).toMatchObject({
+      steadfast: true,
+      ward: 5,
+    });
+  });
+
+  it("gives the Ward of Unbroken Vow to a Steadfast Unit", () => {
+    const state = emptyBattle();
+    giveHand(state, "player", [["priest.unbrokenVow", 0, "epic"]]);
+    const unit = friendAt(state, 2, { steadfast: true });
+    preventRout(state);
+    const { state: next, events } = run(state, play(0, square(0, 2)));
+    expect(unitById(next, unit.id)?.ward).toBe(2);
+    expect(eventsOfType(events, "StatusApplied")).toEqual([
+      expect.objectContaining({ status: "ward", count: 2 }),
+    ]);
   });
 });
 
 describe("Ground Slam", () => {
   it.each([
     ["rare", 4],
-    ["epic", 6],
+    ["epic", 5],
   ] as const)(
     "deals the correct damage to each enemy Unit at %s",
     (rank, damage) => {
@@ -1762,7 +1823,7 @@ describe("Ground Slam", () => {
     }
   );
 
-  it("deals 8 Physical damage to each enemy Unit in the Lane at Legendary", () => {
+  it("deals 6 Physical damage to each enemy Unit in the Lane at Legendary", () => {
     const state = emptyBattle();
     giveHand(state, "player", [["warrior.groundSlam", 0, "legendary"]]);
     const target = enemyAt(state, 6, { hp: 20, maxHp: 20 });
@@ -1772,11 +1833,11 @@ describe("Ground Slam", () => {
       play(0, Target.Lane({ lane: 0 }))
     );
 
-    expect(unitById(next, target.id)?.hp).toBe(12);
+    expect(unitById(next, target.id)?.hp).toBe(14);
     expect(eventsOfType(events, "DamageDealt")).toContainEqual(
       expect.objectContaining({
         target: { _tag: "Unit", unitId: target.id },
-        amount: 8,
+        amount: 6,
         source: "skill",
       })
     );
@@ -1799,7 +1860,7 @@ describe("Cleave", () => {
     ).toEqual([6, 6]);
   });
 
-  it("deals 11 Physical damage to the target and the next Square at Legendary", () => {
+  it("deals 10 Physical damage to the target and the next Square at Legendary", () => {
     const state = emptyBattle();
     giveHand(state, "player", [["warrior.cleave", 0, "legendary"]]);
     const first = enemyAt(state, 6, { hp: 20, maxHp: 20 });
@@ -1807,11 +1868,11 @@ describe("Cleave", () => {
 
     const { state: result, events } = run(state, play(0, square(0, 6)));
 
-    expect(unitById(result, first.id)?.hp).toBe(9);
-    expect(unitById(result, next.id)?.hp).toBe(9);
+    expect(unitById(result, first.id)?.hp).toBe(10);
+    expect(unitById(result, next.id)?.hp).toBe(10);
     expect(
       eventsOfType(events, "DamageDealt").map((event) => event.amount)
-    ).toEqual([11, 11]);
+    ).toEqual([10, 10]);
   });
 });
 
@@ -1912,21 +1973,21 @@ describe("the Rare and Epic Warrior Skill Cards of #63 (GDD 5.5)", () => {
       expect(legalTargets(state, 0, 0)).toEqual([square(0, 6)]);
       const epic = run(state, play(0, square(0, 6)));
       expect(unitById(epic.state, enemy.id)).toMatchObject({
-        exposed: 4,
+        exposed: 5,
         exposedTurns: 2,
       });
       expect(eventsOfType(epic.events, "StatusApplied")).toEqual([
         expect.objectContaining({
           unitId: enemy.id,
           status: "exposed",
-          count: 4,
+          count: 5,
         }),
       ]);
       const rare = run(epic.state, play(0, square(0, 6)));
-      expect(unitById(rare.state, enemy.id)?.exposed).toBe(4);
+      expect(unitById(rare.state, enemy.id)?.exposed).toBe(5);
       expect(eventsOfType(rare.events, "StatusApplied")).toEqual([]);
       const legendary = run(rare.state, play(0, square(0, 6)));
-      expect(unitById(legendary.state, enemy.id)?.exposed).toBe(8);
+      expect(unitById(legendary.state, enemy.id)?.exposed).toBe(6);
     });
 
     it("adds N to each Physical Skill hit after Bulwark, and not to Holy or Frost damage", () => {
@@ -2085,11 +2146,23 @@ describe("the Rare and Epic Warrior Skill Cards of #63 (GDD 5.5)", () => {
         ["UnitMoved", back.id],
       ]);
       expect(unitById(played.state, other.id)?.position).toBe(2);
-      expect(unitById(played.state, enemy.id)?.hp).toBe(16);
+      // The bonus Attack of 1 at Epic comes before the attack.
+      expect(unitById(played.state, enemy.id)?.hp).toBe(15);
       // The Resolution Phase still gives the normal action.
       const resolved = run(played.state, Command.EndTurn());
       expect(unitById(resolved.state, back.id)?.position).toBe(4);
-      expect(unitById(resolved.state, enemy.id)?.hp).toBe(12);
+      expect(unitById(resolved.state, enemy.id)?.hp).toBe(10);
+    });
+
+    it("gives bonus Attack 2 at Legendary (ADR-0057)", () => {
+      const state = emptyBattle();
+      giveHand(state, "player", [["warrior.onslaught", 0, "legendary"]]);
+      const unit = friendAt(state, 5, { speed: 1 });
+      const enemy = enemyAt(state, 6, { hp: 20, maxHp: 20 });
+      preventRout(state);
+      const { state: next } = run(state, play(0, Target.Lane({ lane: 0 })));
+      expect(unitById(next, unit.id)?.bonusAttack).toBe(2);
+      expect(unitById(next, enemy.id)?.hp).toBe(14);
     });
 
     it("is a normal action: it uses up a Freeze and an Entangled, and no Phase effect occurs again", () => {

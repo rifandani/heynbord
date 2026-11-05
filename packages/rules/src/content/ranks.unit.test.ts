@@ -7,6 +7,7 @@ import {
   skillAmountForRank,
   skillCountForRank,
   skillSquaresForRank,
+  skillTurnsForRank,
 } from "./ranks";
 
 const TABLE = { common: 1, uncommon: 2, rare: 3, epic: 4, legendary: 5 };
@@ -47,5 +48,10 @@ describe("Skill Card values at a Rank", () => {
   it("keeps one push distance for each Rank, and reads a distance table", () => {
     expect(skillSquaresForRank(1, "epic")).toBe(1);
     expect(skillSquaresForRank(TABLE, "uncommon")).toBe(2);
+  });
+
+  it("keeps one Turn value for each Rank, and reads a Turn table", () => {
+    expect(skillTurnsForRank(2, "legendary")).toBe(2);
+    expect(skillTurnsForRank(TABLE, "rare")).toBe(3);
   });
 });

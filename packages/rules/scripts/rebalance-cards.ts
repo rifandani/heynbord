@@ -158,6 +158,7 @@ for (const card of CARDS) {
   const check = skillBudgetCheck(card);
   const pair = RANKS.filter(
     (rank) =>
+      card.baseRank !== "common" &&
       isRankAtLeast(rank, card.baseRank) &&
       (referenceFor(card, rank) ?? 0) > skillPower(card, rank) + 1e-9
   );
