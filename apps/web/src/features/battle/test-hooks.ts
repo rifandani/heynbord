@@ -64,6 +64,7 @@ export const QA_STATES = [
   "enemy-cast",
   "victory",
   "defeat",
+  "defeat-blow",
   "dungeon",
   "dungeon-three",
   "dungeon-boss-rule",
@@ -74,6 +75,7 @@ export type QaState = (typeof QA_STATES)[number];
 
 /** The states that start in the middle of their queued events, so that a capture shows them play. */
 const PLAYING_STATES: ReadonlySet<QaState> = new Set([
+  "defeat-blow",
   "resolution",
   "enemy-cast",
   "dungeon-boss-rule",
@@ -188,6 +190,28 @@ const finishedBattle = (
     session = playOut(stageId, seed + offset);
   }
   return session;
+};
+
+/** True when `event` puts the Player Hero at 0 HP: the last hit of a loss. */
+const isLosingHit = (event: BattleEvent): boolean =>
+  event._tag === "DamageDealt" &&
+  event.target._tag === "Hero" &&
+  event.target.side === "player" &&
+  event.hp <= 0;
+
+/**
+ * A lost Battle, stopped just before its last hit, so that a capture shows
+ * the whole defeat sequence (`scene/defeat.ts`).
+ */
+const losingBlowBattle = (seed: number): BattleSession => {
+  // A loss can also be a rout, with no last hit: look on in the next seeds.
+  for (let offset = 0; offset < 40; offset += 1) {
+    const lost = finishedBattle(seed + offset, "enemy");
+    if (lost.log.some(isLosingHit)) {
+      return dungeonBefore(startSession(lost.options), isLosingHit, 80);
+    }
+  }
+  return finishedBattle(seed, "enemy");
 };
 
 /** Plays the Battle of `options` to its end with the AI for both sides. */
@@ -358,6 +382,9 @@ export const buildQaState = (
     case "defeat": {
       return finishedBattle(seed, "enemy");
     }
+    case "defeat-blow": {
+      return losingBlowBattle(seed);
+    }
     case "unit-model": {
       return unitModelBattle(seed);
     }
@@ -395,6 +422,14 @@ export const installTestHooks = (
       registry.set(profileAtom, {
         ...profile,
         unopenedPacks: [...profile.unopenedPacks, pack],
+      });
+    },
+    /** Sets the Activity of the week, so that a test can claim a checkpoint. */
+    setActivity: (activity: number) => {
+      const profile = registry.get(profileAtom);
+      registry.set(profileAtom, {
+        ...profile,
+        quests: { ...profile.quests, activity },
       });
     },
     /** Sets the Essence of the Profile, so that a test can Craft. */

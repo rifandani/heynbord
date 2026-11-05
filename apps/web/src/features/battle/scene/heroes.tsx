@@ -1,6 +1,6 @@
 import { useAtomValue } from "@effect/atom-react";
 import { useFrame } from "@react-three/fiber";
-import type { CosmeticId, HeroRef, Side } from "@workspace/rules";
+import type { ClassId, CosmeticId, HeroRef, Side } from "@workspace/rules";
 import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
 import type { CanvasTexture, Group, Mesh, MeshBasicMaterial } from "three";
 import { Color, ShaderMaterial } from "three";
@@ -8,6 +8,8 @@ import { Color, ShaderMaterial } from "three";
 import { SIDE_COLORS } from "@/core/components/game/tokens";
 import { hasManyHeroes } from "@/features/battle/battle-view";
 import { shownSessionAtom } from "@/features/battle/battle.atoms";
+import { SceneHold, useSceneHold } from "@/features/battle/scene-load";
+import { heroSlump, ringLightAt } from "@/features/battle/scene/defeat";
 import {
   BRACKET_WIDTH,
   bracketSpot,
@@ -19,7 +21,11 @@ import {
   heroScale,
   heroX,
 } from "@/features/battle/scene/layout";
-import { playback } from "@/features/battle/scene/playback";
+import {
+  defeatTime,
+  playback,
+  victoryTime,
+} from "@/features/battle/scene/playback";
 import { useReducedMotion } from "@/features/battle/scene/reduced-motion";
 import {
   blobShadowTexture,
@@ -27,7 +33,15 @@ import {
   heroPortraitTexture,
   loadedHeroPortrait,
 } from "@/features/battle/scene/textures";
-import { HIT_TINT, SCENE_WHITE } from "@/features/battle/tokens";
+import {
+  enemyHeroDissolve,
+  heroFlourish,
+} from "@/features/battle/scene/victory";
+import {
+  HIT_TINT,
+  SCENE_WHITE,
+  VICTORY_FADE_TINT,
+} from "@/features/battle/tokens";
 
 const HeroModelBody = lazy(
   () => import("@/features/battle/scene/hero-model-body")
@@ -36,6 +50,8 @@ const HeroModelBody = lazy(
 const WHITE = new Color(SCENE_WHITE);
 const HIT = new Color(HIT_TINT);
 const CAST = new Color();
+const FADE = new Color(VICTORY_FADE_TINT);
+const PLAYER_RING = new Color(SIDE_COLORS.player.main);
 
 /** The opacity of the Hero ring in full view. */
 const RING_OPACITY = 0.85;
@@ -69,6 +85,7 @@ const placeHero = (
   if (pivot) {
     pivot.position.x = (pose.x - x) / scale;
     pivot.position.y = pose.y - HERO_FIGURE_Y;
+    pivot.rotation.x = 0;
     pivot.rotation.y = turn;
     pivot.rotation.z = pose.lean;
   }
@@ -95,6 +112,87 @@ const tintHero = (parts: FigureParts, pose: HeroPose) => {
   }
 };
 
+/**
+ * The victory sequence on a Hero (`scene/victory.ts`), on top of its pose: the
+ * Player Hero celebrates in the way of its Class, and a lone enemy Hero
+ * greys, tips back and dissolves. The Bosses of a Dungeon already fell, one
+ * by one, in `HeroDefeated`.
+ */
+const celebrate = (
+  parts: FigureParts,
+  side: Side,
+  classId: ClassId,
+  alone: boolean,
+  scale: number,
+  reducedMotion: boolean
+) => {
+  const t = victoryTime();
+  const { stand, pivot, figure, ring, shadow } = parts;
+  if (t === null || !pivot) {
+    return;
+  }
+  if (side === "player") {
+    const flourish = heroFlourish(classId, t, reducedMotion);
+    pivot.position.y += flourish.lift / scale;
+    pivot.rotation.y += flourish.spin;
+    pivot.rotation.z += flourish.lean;
+    return;
+  }
+  if (!alone) {
+    return;
+  }
+  const gone = enemyHeroDissolve(t, reducedMotion);
+  pivot.position.y -= gone.sink;
+  // The enemy falls back to the right, away from the Board.
+  pivot.rotation.z -= gone.lean;
+  if (figure) {
+    figure.opacity *= gone.opacity;
+    figure.color.lerp(FADE, gone.grey * 0.8);
+  }
+  if (ring) {
+    ring.opacity *= gone.opacity;
+  }
+  if (shadow) {
+    shadow.opacity *= gone.opacity;
+  }
+  if (stand) {
+    stand.visible = gone.opacity > 0.001;
+  }
+};
+
+/**
+ * The defeat sequence on the Player Hero (`scene/defeat.ts`), on top of its
+ * pose: the weight of the body as it staggers, drops and sags, its slow
+ * breath, and its Side ring that goes out to grey. The ring dims with
+ * reduced motion too: it is a change of light, not of place.
+ */
+const mourn = (
+  parts: FigureParts,
+  side: Side,
+  scale: number,
+  reducedMotion: boolean
+) => {
+  const { pivot, ring } = parts;
+  if (side !== "player") {
+    return;
+  }
+  const t = defeatTime();
+  if (ring) {
+    const light = t === null ? 1 : ringLightAt(t);
+    ring.color.copy(PLAYER_RING).lerp(FADE, (1 - light) * 0.85);
+    ring.opacity *= 0.35 + 0.65 * light;
+  }
+  if (t === null || !pivot) {
+    return;
+  }
+  const slump = heroSlump(t, reducedMotion);
+  pivot.position.y += slump.lift / scale;
+  // A positive Z turn tips the player Hero back, away from the Board (as a
+  // fall does in `heroPose`). A positive X turn bows it to the camera.
+  pivot.rotation.z -= slump.sway;
+  pivot.rotation.x += slump.bow;
+};
+
 const HeroFigure = ({ side, hero }: HeroRef) => {
   const session = useAtomValue(shownSessionAtom);
   const classId = session?.view.sides[side].heroes[hero]?.classId ?? "warrior";
@@ -115,6 +213,11 @@ const HeroFigure = ({ side, hero }: HeroRef) => {
       : undefined;
     return loaded ? { id: shownPortrait, texture: loaded } : null;
   });
+  // A missing portrait keeps the Class standee; it ends the hold.
+  const [missing, setMissing] = useState<CosmeticId | null | undefined>();
+  useSceneHold(
+    showPortrait && art?.id !== shownPortrait && missing !== shownPortrait
+  );
   useEffect(() => {
     const id = shownPortrait;
     if (!showPortrait || art?.id === id) {
@@ -123,8 +226,13 @@ const HeroFigure = ({ side, hero }: HeroRef) => {
     let mounted = true;
     const load = async () => {
       const texture = await heroPortraitTexture(side, id);
-      if (mounted && texture) {
+      if (!mounted) {
+        return;
+      }
+      if (texture) {
         setArt({ id, texture });
+      } else {
+        setMissing(id);
       }
     };
     void load();
@@ -177,14 +285,24 @@ const HeroFigure = ({ side, hero }: HeroRef) => {
       ring: ring.current,
       shadow: shadow.current,
     };
+    const scale = heroScale(shown.view, side);
     placeHero(
       parts,
       pose,
       x,
       Math.atan2(camera.position.x - x, camera.position.z - pose.z),
-      heroScale(shown.view, side)
+      scale
     );
     tintHero(parts, pose);
+    celebrate(
+      parts,
+      side,
+      classId,
+      shown.view.sides[side].heroes.length === 1,
+      scale,
+      reducedMotion
+    );
+    mourn(parts, side, scale, reducedMotion);
   });
 
   return (
@@ -212,7 +330,14 @@ const HeroFigure = ({ side, hero }: HeroRef) => {
       </mesh>
       <group ref={pivot}>
         {side === "player" ? (
-          <Suspense fallback={fallback}>
+          <Suspense
+            fallback={
+              <>
+                {fallback}
+                <SceneHold />
+              </>
+            }
+          >
             <HeroModelBody
               appearance={
                 session?.options.appearance ?? {

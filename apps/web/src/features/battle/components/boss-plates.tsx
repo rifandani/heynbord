@@ -19,6 +19,8 @@ import { shownSessionAtom } from "@/features/battle/battle.atoms";
 import { cardText } from "@/features/battle/card-text";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { countdownLabel } from "@/features/battle/components/hand-card";
+import { HealthBar } from "@/features/battle/components/health-bar";
+import { BATTLE_PROFILE_WIDTH } from "@/features/battle/components/hero-panel";
 import { classGlyph } from "@/features/battle/glyphs";
 import {
   BOSS_CHIP_READY,
@@ -172,38 +174,18 @@ const BossHp = ({
 }: {
   readonly hero: HeroView;
   readonly breaking: number | null;
-}) => {
-  const percent = Math.max(0, Math.min(100, (hero.hp / hero.maxHp) * 100));
-  return (
-    <div className="flex items-center gap-1.5 [@media(max-height:500px)]:gap-1">
-      <div className="relative h-2.5 min-w-6 flex-1 [@media(max-height:500px)]:h-2">
-        <div className="absolute inset-0 overflow-hidden rounded-full bg-black/60 ring-1 ring-white/20">
-          <div
-            className={cn(
-              "h-full rounded-full transition-[width] duration-300",
-              percent <= 30 ? "bg-hp-low" : "bg-hp-full"
-            )}
-            style={{ width: `${percent}%` }}
-          />
-        </div>
-        {hero.bossRules.map((rule, index) => (
-          <Notch
-            // oxlint-disable-next-line react/no-array-index-key react-doctor/no-array-index-as-key -- the Boss Rules of a Boss never change order; the index is the rule index of `BossRuleActivated`.
-            key={index}
-            rule={rule}
-            breaking={breaking === index}
-          />
-        ))}
-      </div>
-      <span className="text-cream text-sm leading-none font-black whitespace-nowrap tabular-nums [@media(max-height:500px)]:text-xs">
-        {hero.hp}
-        <span className="text-cream-dim text-xs font-medium [@media(max-height:500px)]:text-[10px]">
-          /{hero.maxHp}
-        </span>
-      </span>
-    </div>
-  );
-};
+}) => (
+  <HealthBar side="enemy" hp={hero.hp} maxHp={hero.maxHp}>
+    {hero.bossRules.map((rule, index) => (
+      <Notch
+        // oxlint-disable-next-line react/no-array-index-key react-doctor/no-array-index-as-key -- the Boss Rules of a Boss never change order; the index is the rule index of `BossRuleActivated`.
+        key={index}
+        rule={rule}
+        breaking={breaking === index}
+      />
+    ))}
+  </HealthBar>
+);
 
 /** The Hand of one Boss: only the Countdowns show (GDD 11.2). */
 const BossHand = ({ hand }: { readonly hand: readonly HandCardView[] }) => {
@@ -441,7 +423,7 @@ const BossPlate = ({
       >
         <LaneStrip front={defeated ? [] : hero.front} lanes={lanes} />
         <span className="flex min-w-0 flex-1 flex-col justify-center gap-1">
-          <span className="text-cream truncate text-right text-sm leading-tight font-semibold [@media(max-height:500px)]:text-xs">
+          <span className="font-display text-cream truncate text-right text-sm leading-tight font-bold">
             {name}
           </span>
           {defeated ? null : <BossHp hero={hero} breaking={breaking} />}
@@ -522,7 +504,7 @@ export const BossPlates = ({ battle }: { readonly battle: Battle }) => {
             <li
               // oxlint-disable-next-line react/no-array-index-key react-doctor/no-array-index-as-key -- a Boss is its index in the Side; the list never changes order.
               key={index}
-              className="relative w-[clamp(9rem,18vw,14rem)] min-w-0 [@media(max-height:500px)]:w-[clamp(9.5rem,18vw,11rem)]"
+              className={cn("relative min-w-0", BATTLE_PROFILE_WIDTH)}
               // A Boss Rule label comes out of the bottom of its plate: it
               // shows over the plates below it.
               style={{ zIndex: heroes.length - index }}

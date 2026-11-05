@@ -12,7 +12,7 @@ describe("makeSounds", () => {
     // SAFETY: makeSounds fills every SoundName key of its record.
     const names = Object.keys(sounds) as SoundName[];
 
-    expect(names).toHaveLength(32);
+    expect(names).toHaveLength(34);
     for (const name of names) {
       expect(() => sounds[name]()).not.toThrow();
     }

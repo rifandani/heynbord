@@ -122,7 +122,7 @@ describe("recordBattle and the Daily Quest toast (24 — Quests 3)", () => {
         daily: [
           { templateId: "daily.win", param: null, progress: 2, claimed: false },
           {
-            templateId: "daily.winMore",
+            templateId: "daily.kills",
             param: null,
             progress: 0,
             claimed: false,
@@ -139,7 +139,7 @@ describe("recordBattle and the Daily Quest toast (24 — Quests 3)", () => {
         }),
       }),
       expect.objectContaining({
-        quest: expect.objectContaining({ id: "daily.winMore" }),
+        quest: expect.objectContaining({ id: "daily.kills" }),
       }),
     ]);
     expect(registry.get(newQuestsAtom)).toEqual([]);

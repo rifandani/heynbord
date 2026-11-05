@@ -199,6 +199,10 @@ export const GLYPHS = {
     "M-6 -44 L-38 -32 Q-38 20 -6 46 L-1 24 L-12 8 L0 -8 L-10 -26 Z M6 -44 L38 -32 Q38 20 6 46 L11 24 L0 8 L12 -8 L2 -26 Z",
   // Grounded (GDD 4.7): an arrow that points down onto the ground.
   grounded: "M-8 -46 H8 V4 H26 L0 30 L-26 4 H-8 Z M-44 36 H44 V46 H-44 Z",
+  /** An upward arrow: Player advancement in the Progress Achievements. */
+  levelUp: "M-14 44 H14 V-2 H38 L0 -44 L-38 -2 H-14 Z",
+  /** A star medal with two ribbons: the Feats Achievements. Fill keeps the star open. */
+  medal: `${circle(0, -14, 30)} M0 -33 L5 -21 L18 -20 L8 -11 L11 2 L0 -5 L-11 2 L-8 -11 L-18 -20 L-5 -21 Z M-23 17 L-35 43 L-19 38 L-11 48 L-1 24 Z M23 17 L35 43 L19 38 L11 48 L1 24 Z`,
   // Onslaught: two swords that cross, for one more action.
   crossedSwords: crossedSwords(),
   // Steadfast (GDD 4.7): the Unit holds firm at 1 HP.
@@ -214,6 +218,8 @@ export const GLYPHS = {
   mute: "M-40 -14 H-18 L10 -38 V38 L-18 14 H-40 Z M22 -18 L46 18 M46 -18 L22 18",
   hourglass:
     "M-32 -46 H32 V-36 H-32 Z M-32 36 H32 V46 H-32 Z M-24 -36 H24 Q24 -14 6 0 Q24 14 24 36 H-24 Q-24 14 -6 0 Q-24 -14 -24 -36 Z",
+  /** A round dial with its hands at 3 o'clock. */
+  clock: `${circle(0, 0, 46)} ${circle(0, 0, 35)} M-5 -25 H5 V-5 H22 V5 H-5 Z`,
   crown:
     "M-40 26 L-44 -26 L-20 0 L0 -38 L20 0 L44 -26 L40 26 Z M-40 34 H40 V44 H-40 Z",
   leaf: "M-34 34 Q-46 -34 42 -42 Q34 38 -34 34 Z M-34 34 L-46 46",
@@ -344,6 +350,7 @@ export type Glyph = keyof typeof GLYPHS;
 
 /** Filled artwork. A stroke closes the cutouts. */
 export const FILLED_GLYPHS: ReadonlySet<Glyph> = new Set([
+  "medal",
   "breastplate",
   "amulet",
   "bow",
@@ -358,6 +365,7 @@ export const FILLED_GLYPHS: ReadonlySet<Glyph> = new Set([
   "campaignTicket",
   "dungeonTicket",
   "crucible",
+  "clock",
 ]);
 
 /**

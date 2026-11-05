@@ -401,3 +401,91 @@ export const TEXTURE_SNOW = "rgba(240, 248, 255, 0.9)";
 /** The dark plate of a keyword plate, and its cream label. */
 export const TEXTURE_PLATE = "rgba(28, 20, 14, 0.92)";
 export const TEXTURE_PLATE_SHADE = "rgba(0, 0, 0, 0.45)";
+
+// ------------------------------------------------------------ The defeat
+
+/**
+ * The light of a loss (`scene/defeat.ts`): the sun goes behind a cloud. The
+ * key light and the sky go to a cool grey blue, never to night.
+ */
+export const DEFEAT_LIGHT = { key: "#c9d3e8", sky: "#d9dfea" } as const;
+
+/** The cool grey that a Player Unit takes when its Hero falls. */
+export const DEFEAT_UNIT_TINT = "#7f8796";
+
+/** The dust that the knee of the Hero puts up from the painted ground. */
+export const DEFEAT_DUST = "#cbb58f";
+
+/**
+ * The shade over the Board in a loss: the edges go dim and cool, so the eye
+ * stays on the Hero. Multiply blend, so it darkens and never greys the
+ * center.
+ */
+export const DEFEAT_SHADE = [
+  "radial-gradient(ellipse 80% 90% at 30% 70%, rgba(255, 255, 255, 0) 32%, rgba(150, 160, 182, 0.55) 78%, rgba(118, 126, 148, 0.9) 100%)",
+  "linear-gradient(180deg, rgba(196, 204, 222, 0.75) 0%, rgba(255, 255, 255, 0) 45%)",
+].join(", ");
+
+/** The color that takes the saturation out of the Board in a loss (saturation blend). */
+export const DEFEAT_DESATURATE = "rgb(128, 128, 128)";
+
+/** The pulse at the edges of the screen at the last hit of a loss: a muted banner red. */
+export const DEFEAT_PULSE =
+  "radial-gradient(ellipse 75% 70% at 50% 50%, rgba(140, 30, 24, 0) 45%, rgba(140, 30, 24, 0.55) 82%, rgba(110, 20, 18, 0.85) 100%)";
+
+/**
+ * The scrim of a lost result: clear over the kneeling Hero at the left, a
+ * cool dark behind the result panel at the right.
+ */
+export const DEFEAT_SCRIM =
+  "linear-gradient(90deg, rgba(14, 18, 28, 0) 0%, rgba(14, 18, 28, 0.14) 34%, rgba(14, 18, 28, 0.52) 62%, rgba(14, 18, 28, 0.66) 100%)";
+
+// ------------------------------------------------------------ The victory
+
+/**
+ * The light of a win (`scene/victory.ts`). The key light goes warm, as if the
+ * clouds open over the Board, and the hemisphere sky goes to a light gold.
+ */
+export const VICTORY_LIGHT = { key: "#ffd9a0", sky: "#fff0c4" } as const;
+
+/** The grey that a defeated enemy takes while it fades from the Board. */
+export const VICTORY_FADE_TINT = "#8c8a84";
+
+/**
+ * The confetti of a win: the gold of the Heynbord mark, a cream and the royal
+ * blue of the player Side, with one warm red, so it reads as a festival and
+ * not as a loot spray.
+ */
+export const VICTORY_CONFETTI = [
+  "#ffd75a",
+  "#fff3d1",
+  "#3d7be0",
+  "#e8553d",
+] as const;
+
+/** The pale spirit light that a defeated enemy Hero dissolves into. */
+export const VICTORY_MOTE = "#fff2c8";
+
+/**
+ * The light that breaks through over the Player Hero (art direction 5.4: warm
+ * light from the upper left). A wide bloom and two soft beams, in screen blend.
+ */
+export const VICTORY_SUNLIGHT = [
+  "radial-gradient(ellipse 70% 85% at 16% -8%, rgba(255, 236, 170, 0.62) 0%, rgba(255, 220, 140, 0.22) 38%, rgba(255, 220, 140, 0) 70%)",
+  "linear-gradient(112deg, rgba(255, 244, 205, 0) 18%, rgba(255, 244, 205, 0.2) 25%, rgba(255, 244, 205, 0) 33%)",
+  "linear-gradient(104deg, rgba(255, 244, 205, 0) 31%, rgba(255, 244, 205, 0.13) 37%, rgba(255, 244, 205, 0) 44%)",
+].join(", ");
+
+/** The flash of the last hit of a won Battle: a warm white, never pure white. */
+export const VICTORY_FLASH = "rgba(255, 246, 222, 1)";
+
+/**
+ * The scrim of a won result: clear over the Player Hero at the left, darker
+ * behind the result panel at the right.
+ */
+export const VICTORY_SCRIM =
+  "linear-gradient(90deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.12) 34%, rgba(0, 0, 0, 0.5) 62%, rgba(0, 0, 0, 0.62) 100%)";
+
+/** The ring of light behind "Victory" when it stamps onto the result panel. */
+export const VICTORY_TITLE_BURST =
+  "radial-gradient(circle, rgba(255, 215, 90, 0) 30%, rgba(255, 215, 90, 0.42) 48%, rgba(255, 236, 170, 0.18) 58%, rgba(255, 215, 90, 0) 70%)";

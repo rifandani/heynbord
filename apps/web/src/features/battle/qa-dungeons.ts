@@ -106,15 +106,20 @@ const before = (
 
 /**
  * Plays Turns until a Turn holds an event that `wanted` accepts, and stops
- * just before it, so that its animation plays next. For 20 Turns at most; a
- * Battle that ends first gives its last state.
+ * just before it, so that its animation plays next. For `maxTurns` Turns at
+ * most; a Battle that ends first gives its last state.
  */
 export const dungeonBefore = (
   session: BattleSession,
-  wanted: (event: BattleEvent) => boolean
+  wanted: (event: BattleEvent) => boolean,
+  maxTurns = 20
 ): BattleSession => {
   let next = session;
-  for (let turn = 0; turn < 20 && next.rules.status !== "finished"; turn += 1) {
+  for (
+    let turn = 0;
+    turn < maxTurns && next.rules.status !== "finished";
+    turn += 1
+  ) {
     const played = autoPlayTurn(next);
     const found = before(played, wanted);
     if (found) {

@@ -9,10 +9,17 @@ import {
   useRef,
   useSyncExternalStore,
 } from "react";
-import type { CanvasTexture, Group, Mesh, Sprite } from "three";
+import type {
+  CanvasTexture,
+  Group,
+  Mesh,
+  MeshBasicMaterial,
+  Sprite,
+} from "three";
 import {
   BoxGeometry,
   CircleGeometry,
+  Color,
   PlaneGeometry,
   RingGeometry,
 } from "three";
@@ -27,6 +34,8 @@ import {
   detailsUnitAtom,
 } from "@/features/battle/battle.atoms";
 import { sourceId } from "@/features/battle/card-art";
+import { SceneHold } from "@/features/battle/scene-load";
+import { unitDroop } from "@/features/battle/scene/defeat";
 import { fxList } from "@/features/battle/scene/fx";
 import {
   fxAtlas,
@@ -34,7 +43,11 @@ import {
   subscribeFxAtlas,
 } from "@/features/battle/scene/fx-atlas";
 import { laneZ, squareX } from "@/features/battle/scene/layout";
-import { playback } from "@/features/battle/scene/playback";
+import {
+  defeatTime,
+  playback,
+  victoryTime,
+} from "@/features/battle/scene/playback";
 import { useReducedMotion } from "@/features/battle/scene/reduced-motion";
 import {
   badgeStatuses,
@@ -65,10 +78,13 @@ import {
 import { buildRig } from "@/features/battle/scene/unit-rig";
 import { shownAttack, summonAttack } from "@/features/battle/scene/unit-stats";
 import { useUnitModel } from "@/features/battle/scene/use-unit-model";
+import { enemyUnitDissolve, unitCheer } from "@/features/battle/scene/victory";
 import {
   FALLEN_RING as FALLEN_RING_COLOR,
   FOCUS_RING as FOCUS_RING_COLOR,
   LOG_RING as LOG_RING_COLOR,
+  DEFEAT_UNIT_TINT,
+  VICTORY_MOTE,
 } from "@/features/battle/tokens";
 import { ModelErrorBoundary } from "@/features/hero/components/model-error-boundary";
 
@@ -89,12 +105,72 @@ const LOG_RING_EDGE = new RingGeometry(0.66, 0.71, 48);
 /** The line sits below the lower edge of the figure, not on the art. */
 const STAT_Y = -0.08;
 
+/** The pale light that a defeated enemy Unit washes into before it fades. */
+const MOTE = new Color(VICTORY_MOTE);
+
+/** The cool grey of a Player Unit whose Hero fell. */
+const DROOP = new Color(DEFEAT_UNIT_TINT);
+
+/**
+ * The defeat sequence on a Unit (`scene/defeat.ts`), on top of its pose: a
+ * Player Unit goes grey and droops after its Hero falls. An enemy Unit
+ * stays as it is: it does not gloat.
+ */
+const mournUnit = (unit: UnitView, pose: Pose, reducedMotion: boolean) => {
+  const t = defeatTime();
+  if (t === null || unit.owner !== "player") {
+    return;
+  }
+  const droop = unitDroop(t, unit.position, reducedMotion);
+  pose.y -= droop.sink;
+  pose.scale *= droop.scale;
+  if (droop.grey > 0) {
+    pose.tint = DROOP;
+    pose.tintAmount = Math.max(pose.tintAmount, droop.grey * 0.55);
+  }
+};
+
+/**
+ * The victory sequence on a Unit (`scene/victory.ts`), on top of its pose: a
+ * Player Unit turns to the camera and cheers, and an enemy Unit washes into
+ * light and sinks away. It returns the Y turn of the Unit.
+ */
+const celebrateUnit = (
+  unit: UnitView,
+  pose: Pose,
+  reducedMotion: boolean
+): number => {
+  const t = victoryTime();
+  if (t === null) {
+    return 0;
+  }
+  if (unit.owner === "player") {
+    const cheer = unitCheer(t, unit.position, reducedMotion);
+    pose.y += cheer.hop;
+    // A player Unit faces +x: a negative Y turn brings its front to the camera.
+    return -cheer.turn;
+  }
+  const gone = enemyUnitDissolve(t, unit.position, reducedMotion);
+  pose.opacity *= gone.opacity;
+  pose.y -= gone.sink;
+  pose.scale *= gone.scale;
+  if (gone.grey > 0) {
+    pose.tint = MOTE;
+    pose.tintAmount = gone.grey * 0.6;
+  }
+  return 0;
+};
+
 const fadeParts = (
   stat: Sprite | null,
   badge: Sprite | null,
   badgeY: number,
-  pose: Pose
+  pose: Pose,
+  shadow: MeshBasicMaterial | null
 ) => {
+  if (shadow) {
+    shadow.opacity = pose.opacity;
+  }
   if (stat) {
     stat.position.y = STAT_Y + pose.y;
     stat.material.opacity = pose.opacity;
@@ -308,7 +384,7 @@ const FigureBody = ({
   readonly reducedMotion: boolean;
 }) => (
   <ModelErrorBoundary fallback={null} onError={ignoreModelFailure}>
-    <Suspense fallback={null}>
+    <Suspense fallback={<SceneHold />}>
       <ModelBody
         unit={unit}
         facing={facing}
@@ -341,6 +417,7 @@ const UnitFigure = ({
   const body = useRef<BodyHandle>(null);
   const stat = useRef<Sprite>(null);
   const badge = useRef<Sprite>(null);
+  const shadowMaterial = useRef<MeshBasicMaterial>(null);
   const badgeTexture = useStatusBadge(unit);
   const pose = useMemo<Pose>(() => emptyPose(), []);
   const stats = useMemo(
@@ -376,16 +453,26 @@ const UnitFigure = ({
         origin: summonOrigin(unit, current, lanes),
       }
     );
+    const turn = celebrateUnit(unit, pose, reducedMotion);
+    mournUnit(unit, pose, reducedMotion);
     const node = group.current;
     if (!node) {
       return;
     }
     node.position.set(pose.x, 0, z + pose.z);
+    node.rotation.y = turn;
+    node.visible = pose.opacity > 0.001;
     body.current?.update(
       pose,
       Math.atan2(camera.position.x - pose.x, camera.position.z - z - pose.z)
     );
-    fadeParts(stat.current, badge.current, badgeY, pose);
+    fadeParts(
+      stat.current,
+      badge.current,
+      badgeY,
+      pose,
+      shadowMaterial.current
+    );
     countStats(stat.current, unit, stats, current, reducedMotion);
   });
 
@@ -406,7 +493,12 @@ const UnitFigure = ({
         position-y={0.09}
         renderOrder={1}
       >
-        <meshBasicMaterial map={shadow} transparent depthWrite={false} />
+        <meshBasicMaterial
+          ref={shadowMaterial}
+          map={shadow}
+          transparent
+          depthWrite={false}
+        />
       </mesh>
       {logMarked ? <LogRing /> : null}
       {inspected ? <FocusRing owner={unit.owner} /> : null}

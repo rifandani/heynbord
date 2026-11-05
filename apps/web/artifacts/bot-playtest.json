@@ -6,28 +6,28 @@
   "cardsPlayed": 10,
   "firstPlayTurn": 1,
   "fps": [
-    24,
-    29,
+    12,
+    21,
+    15,
+    20,
+    15,
     19,
+    16,
     17,
-    11,
-    13,
-    10,
-    14,
     11,
     16
   ],
   "drawCalls": [
-    7,
-    18,
-    25,
-    23,
-    35,
+    9,
+    19,
+    24,
+    19,
+    31,
     39,
-    30,
-    39,
-    39,
-    35
+    36,
+    43,
+    43,
+    39
   ],
   "result": {
     "winner": "player",
@@ -36,7 +36,7 @@
   "finalTurnNumber": 10,
   "playerHp": 31,
   "enemyHp": [
-    6
+    10
   ],
   "consoleErrors": []
 }

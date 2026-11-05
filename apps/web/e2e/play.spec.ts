@@ -1298,7 +1298,7 @@ test.describe("Region 1 rewards (issue #54)", () => {
     await expect(page.getByTestId("town")).toBeVisible({ timeout: 30_000 });
     const shortcut = page.getByTestId("town-shortcut-packs");
     await expect(shortcut).toHaveAttribute("data-locked", "true");
-    await expect(shortcut).toHaveAccessibleName("Packs, opens at level 2");
+    await expect(shortcut).toHaveAccessibleName("Pack, opens at level 2");
     await shortcut.focus();
     await expect(page.getByTestId("town-tooltip-packs")).toContainText(
       "Opens at level 2"
@@ -1308,7 +1308,7 @@ test.describe("Region 1 rewards (issue #54)", () => {
 
     const shop = page.getByTestId("building-cardShop");
     await expect(shop).toHaveAttribute("data-locked", "true");
-    await expect(shop).toHaveAccessibleName("Packs, opens at level 2");
+    await expect(shop).toHaveAccessibleName("Pack, opens at level 2");
     await expect(shop.getByTestId("building-lock-plate")).toHaveText("Level 2");
     await shop.focus();
     await expect(page.getByTestId("building-tooltip-cardShop")).toContainText(

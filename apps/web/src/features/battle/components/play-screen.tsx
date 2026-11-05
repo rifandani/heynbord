@@ -6,31 +6,23 @@ import {
 } from "@effect/atom-react";
 import { absurd } from "effect";
 import type { ReactNode } from "react";
-import {
-  lazy,
-  Suspense,
-  useContext,
-  useEffect,
-  useRef,
-  useSyncExternalStore,
-} from "react";
+import { lazy, Suspense, useContext, useEffect, useRef } from "react";
 
 import { musicTrackFor } from "@/core/audio/music-catalog";
 import type { MusicFeature } from "@/core/audio/music-catalog";
 import { useEverOpened } from "@/core/hooks/use-ever-opened";
 import { useAchievementNotices } from "@/features/achievements/use-achievement-notices";
 import { battleStage } from "@/features/battle/battle-content";
-import { modelProgress } from "@/features/battle/battle-model-progress";
 import {
   dialogOpen,
   isTyping,
 } from "@/features/battle/components/battle-input";
+import { BattleLoading } from "@/features/battle/components/battle-loading";
 import { PortraitGuard } from "@/features/battle/components/portrait-guard";
 import { playMusicSting, playMusicTrack } from "@/features/battle/music-player";
 import { qaEnabled, stateFromSearch } from "@/features/battle/qa";
 import { installQaHooks } from "@/features/battle/qa-hooks";
 import { useBattle } from "@/features/battle/use-battle";
-import { useGameText } from "@/features/battle/use-game-text";
 import {
   campaignRegionAtom,
   chosenRegionAtom,
@@ -128,31 +120,6 @@ const ScreenLoading = () => (
     data-testid="screen-loading"
   />
 );
-
-/** The backdrop while the Battle UI chunk or its Unit Models load. */
-const BattleLoading = () => {
-  const { tr } = useGameText();
-  const progress = useSyncExternalStore(
-    modelProgress.subscribe,
-    modelProgress.get,
-    modelProgress.get
-  );
-  return (
-    <div className="bg-night-plate text-cream fixed inset-0 grid place-items-center">
-      <div className="text-center">
-        <p className="font-display text-xl">{tr("battle.loading")}</p>
-        {progress ? (
-          <p className="text-cream/80 mt-2 text-sm">
-            {tr("battle.modelProgress", {
-              done: progress.done,
-              total: progress.total,
-            })}
-          </p>
-        ) : null}
-      </div>
-    </div>
-  );
-};
 
 /**
  * Esc on a screen other than the Town goes back to the Town (GDD 11.4). While
@@ -371,7 +338,8 @@ export const PlayScreen = () => {
   return (
     <>
       {battle.session ? (
-        <Suspense fallback={<BattleLoading />}>
+        // The loading cover draws over the Battle while it loads.
+        <Suspense fallback={null}>
           <BattleStage battle={battle} />
         </Suspense>
       ) : (
@@ -390,6 +358,7 @@ export const PlayScreen = () => {
           <TownBar screen={screen} onOpen={handleOpen} />
         </>
       )}
+      <BattleLoading session={battle.session} />
       <HintBanner />
       {handbookShown ? (
         <Suspense fallback={null}>
@@ -398,7 +367,7 @@ export const PlayScreen = () => {
       ) : null}
       {objectivesShown ? (
         <Suspense fallback={null}>
-          <ObjectivesDialog />
+          <ObjectivesDialog onOpen={handleOpen} />
         </Suspense>
       ) : null}
       <PortraitGuard />

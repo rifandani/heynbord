@@ -25,6 +25,8 @@ export interface FakeGain {
 
 export interface FakeSource {
   addEventListener: (type: string, listener: () => void) => void;
+  /** The time that `start` asked for, or `undefined` before it. */
+  startedAt: number | undefined;
   buffer: AudioBuffer | null;
   connect: <T>(next: T) => T;
   end: () => void;
@@ -42,7 +44,7 @@ interface FakeOscillator {
   type: string;
 }
 
-interface FakeFilter {
+export interface FakeFilter {
   connect: <T>(next: T) => T;
   frequency: FakeParam;
   type: string;
@@ -86,7 +88,8 @@ const gainNode = (): FakeGain => {
 
 const sourceNode = (): FakeSource => {
   let ended: (() => void) | undefined;
-  return {
+  const source: FakeSource = {
+    startedAt: undefined,
     addEventListener: (type, listener) => {
       if (type === "ended") {
         ended = listener;
@@ -99,13 +102,14 @@ const sourceNode = (): FakeSource => {
       // This fake has no connection graph.
     },
     loop: false,
-    start: () => {
-      // A fake source starts at once.
+    start: (time) => {
+      source.startedAt = time ?? 0;
     },
     stop: () => {
       // A fake source stops at once.
     },
   };
+  return source;
 };
 
 const oscillatorNode = (): FakeOscillator => ({
@@ -134,6 +138,8 @@ const audioBuffer = (length = 8): AudioBuffer =>
 
 export interface FakeAudio {
   readonly context: AudioContext;
+  /** The lowpass filters, in order: the first is the muffle of the music loop. */
+  readonly filters: FakeFilter[];
   readonly gains: FakeGain[];
   readonly sources: FakeSource[];
 }
@@ -152,11 +158,16 @@ export const makeFakeAudio = (
 ): FakeAudio => {
   const gains: FakeGain[] = [];
   const sources: FakeSource[] = [];
+  const filters: FakeFilter[] = [];
   const context = {
     currentTime: 10,
     decodeAudioData: options.decode ?? (() => Promise.resolve(audioBuffer())),
     destination: gainNode(),
-    createBiquadFilter: filterNode,
+    createBiquadFilter: () => {
+      const filter = filterNode();
+      filters.push(filter);
+      return filter;
+    },
     createBuffer: (_channels: number, length: number) => audioBuffer(length),
     createBufferSource: () => {
       const source = sourceNode();
@@ -180,6 +191,7 @@ export const makeFakeAudio = (
   };
   return {
     context: context as unknown as AudioContext,
+    filters,
     gains,
     sources,
   };

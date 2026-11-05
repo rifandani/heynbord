@@ -77,6 +77,52 @@ describe("Audio music", () => {
     })
   );
 
+  it.effect(
+    "muffles and fades the loop slow for a defeat sting, then plays it after a beat",
+    () =>
+      Effect.gen(function* () {
+        const fake = makeFakeAudio();
+        const audio = yield* service.pipe(Effect.provide(withAudio(fake)));
+
+        yield* audio.music("town");
+        yield* audio.sting("defeat");
+
+        const [muffle] = fake.filters;
+        const loop = fake.gains[3]?.gain.calls ?? [];
+        // The context time of the fake is 10.
+        expect(
+          loop.some(
+            (call) =>
+              call.kind === "linear" && call.value === 0 && call.time > 11
+          )
+        ).toBe(true);
+        expect(
+          muffle?.frequency.calls.some(
+            (call) => call.kind === "exponential" && call.value < 1000
+          )
+        ).toBe(true);
+        expect(fake.sources[1]?.startedAt).toBeGreaterThan(10.5);
+
+        fake.sources[1]?.end();
+
+        expect(muffle?.frequency.calls.at(-1)?.value).toBe(20_000);
+        expect(loop.at(-1)).toMatchObject({ kind: "linear", value: 1 });
+      })
+  );
+
+  it.effect("plays a victory sting with no muffle and no wait", () =>
+    Effect.gen(function* () {
+      const fake = makeFakeAudio();
+      const audio = yield* service.pipe(Effect.provide(withAudio(fake)));
+
+      yield* audio.music("town");
+      yield* audio.sting("victory");
+
+      expect(fake.filters[0]?.frequency.calls.at(-1)?.value).toBe(20_000);
+      expect(fake.sources[1]?.startedAt).toBeLessThan(10.5);
+    })
+  );
+
   it.effect("does not start a loop that did not load", () =>
     Effect.gen(function* () {
       const fake = makeFakeAudio();

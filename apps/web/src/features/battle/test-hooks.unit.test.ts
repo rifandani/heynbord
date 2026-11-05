@@ -18,6 +18,14 @@ describe("buildQaState", () => {
     expect(cast?._tag === "CardPlayed" && cast.side).toBe("enemy");
     expect(buildQaState("victory", 42)?.rules.result?.winner).toBe("player");
     expect(buildQaState("defeat", 42)?.rules.result?.winner).toBe("enemy");
+    // The last hit of a loss is next, so a capture shows the defeat sequence.
+    const blow = buildQaState("defeat-blow", 42)?.queue[0];
+    expect(
+      blow?._tag === "DamageDealt" &&
+        blow.target._tag === "Hero" &&
+        blow.target.side === "player" &&
+        blow.hp
+    ).toBe(0);
   });
 });
 

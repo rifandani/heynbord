@@ -4,6 +4,7 @@ import { LANE_LENGTH } from "@workspace/rules";
 import { useEffect, useMemo, useState } from "react";
 import type { CanvasTexture } from "three";
 
+import { useSceneHold } from "@/features/battle/scene-load";
 import { laneZ } from "@/features/battle/scene/layout";
 import {
   closedLaneTexture,
@@ -39,6 +40,9 @@ const LaneRunner = ({
     const loaded = loadedLaneRunner(skin, lane);
     return loaded ? { skin, texture: loaded } : null;
   });
+  // A skin with no Square sheet keeps the Standard ground; it ends the hold.
+  const [missing, setMissing] = useState<CosmeticId | null>(null);
+  useSceneHold(art?.skin !== skin && missing !== skin);
   useEffect(() => {
     if (art?.skin === skin) {
       return;
@@ -46,8 +50,13 @@ const LaneRunner = ({
     let mounted = true;
     const load = async () => {
       const texture = await laneRunnerTexture(skin, lane);
-      if (mounted && texture) {
+      if (!mounted) {
+        return;
+      }
+      if (texture) {
         setArt({ skin, texture });
+      } else {
+        setMissing(skin);
       }
     };
     void load();

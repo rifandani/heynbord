@@ -5,10 +5,26 @@ import type { SoundName } from "@/core/audio/audio-sounds";
 import type { BattleView } from "@/features/battle/battle-view";
 import { hasManyHeroes } from "@/features/battle/battle-view";
 
+/**
+ * True when `event` puts the last Player Hero at 0 HP: the last hit of a lost
+ * Battle (`scene/defeat.ts`). A Side of the Player has 1 Hero.
+ */
+const isLosingHit = (
+  event: Extract<BattleEvent, { readonly _tag: "DamageDealt" }>
+): boolean =>
+  event.target._tag === "Hero" &&
+  event.target.side === "player" &&
+  event.hp <= 0 &&
+  event.amount > 0;
+
 /** The sound of a Battle Event, if it has one. */
 const damageSound = (
   event: Extract<BattleEvent, { readonly _tag: "DamageDealt" }>
 ): SoundName => {
+  // The last hit of a lost Battle sounds heavier than any other hit.
+  if (isLosingHit(event)) {
+    return "finalHit";
+  }
   if (event.source === "burn") {
     return "fire";
   }

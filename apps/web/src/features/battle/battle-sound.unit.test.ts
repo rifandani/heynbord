@@ -49,6 +49,16 @@ describe("eventSound", () => {
       hp: 3,
     } as const;
     expect(eventSound(damage)).toBe("hit");
+    // The last hit of a lost Battle sounds heavier than any other hit.
+    expect(
+      eventSound({
+        ...damage,
+        target: { _tag: "Hero", side: "player", hero: 0 },
+        crit: true,
+        hp: 0,
+      })
+    ).toBe("finalHit");
+    expect(eventSound({ ...damage, hp: 0 })).toBe("hit");
     expect(eventSound({ ...damage, crit: true })).toBe("crit");
     expect(eventSound({ ...damage, blocked: true })).toBe("block");
     expect(eventSound({ ...damage, damageType: "frost" })).toBe("frost");

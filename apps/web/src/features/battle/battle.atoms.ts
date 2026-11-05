@@ -47,6 +47,13 @@ export const controlsGuideAtom = Atom.make<{
  */
 export const leaveConfirmAtom = Atom.make(false);
 
+/**
+ * The options of the lost Battle whose result panel may open (`scene/defeat.ts`).
+ * The panel of a loss waits until the defeat sequence has played, or until a
+ * key or a click asks for it. A new Battle has new options, so it waits again.
+ */
+export const defeatPanelAtom = Atom.make<BattleSession["options"] | null>(null);
+
 /** The connected Battle pad; the guide must not name buttons after it goes. */
 export const padIdAtom = Atom.make<string | null>(null).pipe(Atom.keepAlive);
 

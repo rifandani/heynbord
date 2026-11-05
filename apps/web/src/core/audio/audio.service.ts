@@ -65,6 +65,18 @@ const FULL_GAIN = 0.35;
 const FADE_SECONDS = 1.25;
 const DUCK_SECONDS = 0.18;
 const STING_GAIN = 0.72;
+/** The lowpass on the music loop: open at rest, nearly shut in a loss. */
+const MUFFLE = { open: 20_000, shut: 420 } as const;
+/**
+ * The defeat sting (web `scene/defeat.ts`): the loop goes muffled and fades
+ * slow, a ring stays in the silence, and the sting starts after the beat.
+ */
+const DEFEAT_STING = {
+  fade: 1.5,
+  muffle: 0.6,
+  delay: 1.05,
+  back: 1.2,
+} as const;
 const CACHE_CAPACITY = 32;
 
 /** A volume, from 0 to 100, as a part of 1. */
@@ -138,6 +150,8 @@ const makeAudio = (options: AudioOptions): AudioService => {
   const master = context?.createGain() ?? null;
   const effectsChannel = context?.createGain() ?? null;
   const musicChannel = context?.createGain() ?? null;
+  // Only the loop goes through the muffle: a sting and a presentation stay clear.
+  const loopMuffle = context?.createBiquadFilter() ?? null;
   const sounds =
     context && effectsChannel
       ? makeSounds({ context, destination: effectsChannel })
@@ -150,6 +164,11 @@ const makeAudio = (options: AudioOptions): AudioService => {
     effectsChannel.connect(master);
     musicChannel.connect(master);
     master.connect(context.destination);
+    if (loopMuffle) {
+      loopMuffle.type = "lowpass";
+      loopMuffle.frequency.value = MUFFLE.open;
+      loopMuffle.connect(musicChannel);
+    }
   }
 
   let mix = DEFAULT_MIX;
@@ -176,6 +195,17 @@ const makeAudio = (options: AudioOptions): AudioService => {
     setChannel(master, masterGainOf(mix));
     setChannel(effectsChannel, gainOf(partOf(mix.effectsVolume)));
     setChannel(musicChannel, mix.musicOn ? gainOf(partOf(mix.musicVolume)) : 0);
+  };
+
+  /** Moves the muffle of the loop to `frequency` in `seconds`. */
+  const muffleTo = (frequency: number, now: number, seconds: number): void => {
+    if (!loopMuffle) {
+      return;
+    }
+    const { frequency: cutoff } = loopMuffle;
+    cutoff.cancelScheduledValues(now);
+    cutoff.setValueAtTime(Math.max(1, cutoff.value), now);
+    cutoff.exponentialRampToValueAtTime(frequency, now + seconds);
   };
 
   const fadeOut = (loop: ActiveLoop, now: number): void => {
@@ -219,8 +249,12 @@ const makeAudio = (options: AudioOptions): AudioService => {
         stingPlaying ? 0 : 1,
         now + FADE_SECONDS
       );
-      source.connect(gain).connect(musicChannel);
+      source.connect(gain).connect(loopMuffle ?? musicChannel);
       source.start(now);
+      // A new loop is never muffled, unless a defeat sting plays now.
+      if (!stingPlaying) {
+        muffleTo(MUFFLE.open, now, 0.3);
+      }
 
       const previous = active;
       active = { gain, source, track };
@@ -405,12 +439,22 @@ const makeAudio = (options: AudioOptions): AudioService => {
 
     const now = context.currentTime;
     const loop = active;
+    const lost = result === "defeat";
     stingPlaying = true;
     if (loop) {
       loop.gain.gain.cancelScheduledValues(now);
       loop.gain.gain.setValueAtTime(loop.gain.gain.value, now);
-      loop.gain.gain.linearRampToValueAtTime(0, now + DUCK_SECONDS);
+      loop.gain.gain.linearRampToValueAtTime(
+        0,
+        now + (lost ? DEFEAT_STING.fade : DUCK_SECONDS)
+      );
     }
+    // A loss muffles the loop as it fades, as if the ears ring after the hit.
+    muffleTo(
+      lost ? MUFFLE.shut : MUFFLE.open,
+      now,
+      lost ? DEFEAT_STING.muffle : DUCK_SECONDS
+    );
 
     if (activeSting) {
       try {
@@ -432,14 +476,17 @@ const makeAudio = (options: AudioOptions): AudioService => {
       }
       activeSting = null;
       stingPlaying = false;
+      const endedAt = context.currentTime;
+      // After a loss, the music comes back slow.
+      const back = lost ? DEFEAT_STING.back : DUCK_SECONDS;
+      muffleTo(MUFFLE.open, endedAt, back);
       if (active) {
-        const endedAt = context.currentTime;
         active.gain.gain.cancelScheduledValues(endedAt);
         active.gain.gain.setValueAtTime(0, endedAt);
-        active.gain.gain.linearRampToValueAtTime(1, endedAt + DUCK_SECONDS);
+        active.gain.gain.linearRampToValueAtTime(1, endedAt + back);
       }
     });
-    source.start(now + DUCK_SECONDS);
+    source.start(now + (lost ? DEFEAT_STING.delay : DUCK_SECONDS));
   });
 
   const setMix = Effect.fn("Audio.setMix")((next: Mix) =>

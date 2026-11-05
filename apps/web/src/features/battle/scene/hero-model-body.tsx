@@ -9,9 +9,14 @@ import {
   battleLogAtom,
   shownSessionAtom,
 } from "@/features/battle/battle.atoms";
+import { useSceneHold } from "@/features/battle/scene-load";
 import { heroAnimation } from "@/features/battle/scene/hero-animation";
 import { buildHeroRig } from "@/features/battle/scene/hero-rig";
-import { playback } from "@/features/battle/scene/playback";
+import {
+  defeatTime,
+  playback,
+  victoryTime,
+} from "@/features/battle/scene/playback";
 import { useReducedMotion } from "@/features/battle/scene/reduced-motion";
 import { ModelErrorBoundary } from "@/features/hero/components/model-error-boundary";
 import { heroModelUrl } from "@/features/hero/hero-model-assets";
@@ -39,7 +44,9 @@ const Figure = ({ model }: { readonly model: GLTF }) => {
           playback.progress,
           clock.current,
           rig.loopSeconds,
-          reduced
+          reduced,
+          victoryTime(),
+          defeatTime()
         )
       );
     }
@@ -64,6 +71,8 @@ export default function HeroModelBody({
     readonly key: string;
     readonly model: GLTF;
   } | null>(null);
+  const [failed, setFailed] = useState<string | null>(null);
+  useSceneHold(loaded?.key !== requestKey && failed !== requestKey);
   useEffect(() => {
     let active = true;
     const run = async () => {
@@ -75,6 +84,7 @@ export default function HeroModelBody({
         }
       } catch {
         if (active) {
+          setFailed(requestKey);
           setFailure(key);
         }
       }

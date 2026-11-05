@@ -282,7 +282,7 @@ describe("recordBattleResult with Quests (24 — Quests 1.3)", () => {
   const profile = withDailies([
     { templateId: "daily.win", param: null, progress: 2, claimed: false },
     {
-      templateId: "daily.bossOrDungeon",
+      templateId: "daily.boss",
       param: null,
       progress: 0,
       claimed: false,
