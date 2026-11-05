@@ -78,6 +78,8 @@ React app on TanStack Start. The server renders and streams each page.
 
 **Source Contract**: The committed record of the bounds, the skeleton and the animation of a Raw Export. A Published Model must match its Source Contract. _Avoid_: manifest, checksum, metadata file
 
+**Body Region**: One of the 9 named areas of a Unit Model that a Review Gate can check: head, torso, arm.L, arm.R, leg.L, leg.R, prop, base and effect. Each part has one Body Region. A Raw Export keeps it on each vertex, and a Published Model does not. It is not a **Region** of the Campaign. _Avoid_: zone, part group
+
 **Body Plan**: The shared skeleton, proportions, IK and clip slots that a group of Unit Models uses. A Unit Model belongs to one Body Plan and changes only its own parts, palette and overrides. _Avoid_: rig family, archetype (a rules term), model type, base rig
 
 **Unit Spec**: The per-unit record that a Body Plan and the model kit read to build one Unit Model. It names the Body Plan, the height, the palette, the parts, the props and the clip overrides. _Avoid_: config, manifest, model data

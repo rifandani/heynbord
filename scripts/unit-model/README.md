@@ -46,3 +46,18 @@ CI uses committed source contracts in `source-contracts.json`; it does not need 
 rtk proxy bun scripts/unit-model/record-contracts.ts
 rtk bunx ultracite fix scripts/unit-model/source-contracts.json
 ```
+
+## Body Regions
+
+`unit_model_kit.py` gives each part one Body Region before the join, so a Review Gate can name an area of the one joined mesh. The fixed list is `head`, `torso`, `arm.L`, `arm.R`, `leg.L`, `leg.R`, `prop`, `base` and `effect`. The list is in `regions.json`, and the Python and TypeScript code read it. An id is a position in the list + 1, so an id of 0 means that a vertex has no region. `unit_regions.py` finds the region of a part, and it does not need Blender.
+
+A part gets its region from the words of its name, then from the words of its main bone, and then it gets `torso`. A part with a wrong result sets it: `Part("club", CLUB, "tail.4", region="torso")`.
+
+The export writes the id in the `_REGION` vertex attribute. The packer stops if a Raw Export has a vertex with no region, and it removes the attribute before compression. `checkUnitModel` rejects a Published Model that has the attribute. After a change to the kit, run the build scripts in Blender again.
+
+```sh
+rtk bun test scripts/unit-model/region.test.ts
+python3 -m unittest discover -s scripts/unit-model -p 'test_*.py'
+```
+
+CI has no Raw Exports, so it skips the tests that read them. On 2026-11-05 the 98 Raw Exports grew from 35,765,700 to 36,914,896 bytes (3.21%), and their packed total changed from 18,738,980 to 18,738,092 bytes (-0.005%). The largest change for one model was 0.32%. The 98 Published Models were not published again, because their vertex data and rig do not change. Blender writes the vertices in a different order on each build, so a Raw Export does not repeat byte for byte. The clips and the Source Contracts do repeat.

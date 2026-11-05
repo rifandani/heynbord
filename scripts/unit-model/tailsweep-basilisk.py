@@ -205,7 +205,7 @@ def body_parts():
     parts.append(tail)
 
     # The club: a heavy knot of rock-hard scale with spikes all round.
-    club = Part("club", CLUB, "tail.4", smooth=False, shade=0.15)
+    club = Part("club", CLUB, "tail.4", smooth=False, shade=0.15, region="torso")
     kit.sphere(club.bm, CLUB_C, (0.075, 0.07, 0.07), 9, 6)
     golden = math.pi * (3 - math.sqrt(5))
     for index in range(16):

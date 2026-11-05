@@ -338,7 +338,7 @@ def pipe_parts():
     pipe.paint(faces_of(tassel), SAP_DARK)
 
     # The puff of green sap at the mouth when the dart leaves.
-    puff = Part("puff", SAP, "puff", shade=0.0)
+    puff = Part("puff", SAP, "puff", shade=0.0, region="effect")
     side = PIPE.cross(Y).normalized()
     up = side.cross(PIPE).normalized()
     kit.sphere(puff.bm, muzzle + PIPE * 0.04, (0.03, 0.03, 0.03), 8, 6)

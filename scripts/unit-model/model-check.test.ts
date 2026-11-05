@@ -130,6 +130,27 @@ describe("published Unit Model checks", () => {
     );
   });
 
+  describe("with Body Region data", () => {
+    const tagged = editJson(packed, (gltf) => {
+      gltf.meshes = gltf.meshes.map((mesh) => ({
+        primitives: mesh.primitives.map((primitive) => ({
+          ...primitive,
+          attributes: { ...primitive.attributes, _REGION: 0 },
+        })),
+      }));
+    });
+
+    test("rejects a Published Model", () => {
+      expect(checkUnitModel(tagged).problems).toContain(
+        "primitive has a _REGION attribute"
+      );
+    });
+
+    test("accepts a Raw Export", () => {
+      expect(checkUnitModel(tagged, false).problems).toEqual([]);
+    });
+  });
+
   test("rejects a truncated GLB", () => {
     expect(() => checkUnitModel(raw.subarray(0, 24))).toThrow("Invalid GLB");
   });

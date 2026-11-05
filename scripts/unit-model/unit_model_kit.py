@@ -13,10 +13,12 @@ figure is +X.
 """
 
 import math
+from collections import Counter
 
 import bmesh
 import bpy
 from mathutils import Matrix, Quaternion, Vector
+from unit_regions import REGION_ATTRIBUTE, part_region, region_id
 
 FPS = 24
 
@@ -263,11 +265,13 @@ class Part:
     """
     One piece of the figure. `color` is an RGB tuple or a function
     (face, center) -> RGB. `weights` is a bone name or a function
-    (co) -> {bone: weight}.
+    (co) -> {bone: weight}. `region` is a name from `regions.json`, or None to
+    get it from `part_region` when the part is made. `self.region` keeps its id.
     """
 
-    def __init__(self, name, color, weights, smooth=True, shade=0.18):
+    def __init__(self, name, color, weights, smooth=True, shade=0.18, region=None):
         self.name = name
+        self.region = None if region is None else region_id(region)
         self.bm = bmesh.new()
         self.color = color
         self.weights = weights
@@ -316,6 +320,7 @@ def part_object(part):
     obj = bpy.data.objects.new(part.name, mesh)
     bpy.context.scene.collection.objects.link(obj)
 
+    bones = Counter()
     for vertex in mesh.vertices:
         rule = part.weights
         weights = rule(vertex.co) if callable(rule) else {rule: 1.0}
@@ -325,6 +330,15 @@ def part_object(part):
                 continue
             group = obj.vertex_groups.get(bone) or obj.vertex_groups.new(name=bone)
             group.add([vertex.index], weight / total, "REPLACE")
+            bones[bone] += weight / total
+
+    if part.region is None:
+        main_bone = bones.most_common(1)[0][0]
+        center_x = sum(v.co.x for v in mesh.vertices) / len(mesh.vertices)
+        part.region = region_id(part_region(part.name, main_bone, center_x))
+    # The join keeps this attribute, so the review can name a region of the mesh.
+    regions = mesh.attributes.new(REGION_ATTRIBUTE, "INT", "POINT")
+    regions.data.foreach_set("value", [part.region] * len(mesh.vertices))
     return obj
 
 
@@ -596,6 +610,7 @@ def export_glb(rig, mesh, path):
         export_apply=True,
         export_yup=True,
         export_vertex_color="MATERIAL",
+        export_attributes=True,
         export_normals=True,
         export_texcoords=False,
         export_materials="EXPORT",

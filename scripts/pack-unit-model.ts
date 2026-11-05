@@ -9,13 +9,14 @@ import path from "node:path";
 
 import { NodeIO } from "@gltf-transform/core";
 import { ALL_EXTENSIONS } from "@gltf-transform/extensions";
-import { meshopt } from "@gltf-transform/functions";
 import { MeshoptDecoder, MeshoptEncoder } from "meshoptimizer";
 
 import { modelContract } from "../apps/web/scripts/model-contract.ts";
 import type { ModelContract } from "../apps/web/scripts/model-contract.ts";
 import { readContracts, readRawModel } from "./model-files.ts";
+import { compressUnitModel } from "./unit-model/compress.ts";
 import { checkUnitModel } from "./unit-model/model-check.ts";
+import { regionProblems } from "./unit-model/region.ts";
 
 const ROOT = path.join(import.meta.dirname, "..");
 const RAW = path.join(ROOT, "apps/web/art/units/raw");
@@ -63,9 +64,13 @@ const pack = async (
   );
   const before = assertModel(raw, false);
   const document = await io.readBinary(raw);
-  await document.transform(
-    meshopt({ encoder: MeshoptEncoder, level: "medium" })
-  );
+  const problems = regionProblems(document);
+  if (problems.length > 0) {
+    throw new Error(
+      `${name}: run scripts/unit-model/${name}.py in Blender again.\n${problems.map((problem) => `- ${problem}`).join("\n")}`
+    );
+  }
+  await compressUnitModel(document);
   const packed = await io.writeBinary(document);
   const report = assertModel(packed, true);
   // Decode the exact published bytes; malformed compressed data must fail before publication.
