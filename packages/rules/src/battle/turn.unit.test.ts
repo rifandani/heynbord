@@ -366,10 +366,10 @@ describe("Start Phase (GDD 4.3)", () => {
         cardId: "warrior.warDrums",
         countdown: 3,
       });
-      // At Rare, War Drums lowered 2 of the 3 Halberdiers to 4. The enemy Turn, then the player Start Phase.
+      // At Rare, War Drums lowered the 3 Halberdiers to 4. The enemy Turn, then the player Start Phase.
       const enemyTurn = run(played.state, endTurn).state;
       const { state: next } = run(enemyTurn, endTurn);
-      expect(countdownsOf(next).toSorted()).toEqual([2, 3, 3, 5]);
+      expect(countdownsOf(next).toSorted()).toEqual([2, 3, 3, 3]);
       expect(heroOf(next, "player").hand.at(-1)).toMatchObject({
         cardId: "warrior.warDrums",
         countdown: 2,

@@ -14,6 +14,8 @@ import {
   recallMultiplier,
   SKILL_BUDGET_CAP,
   SKILL_RATES,
+  rankGrowth,
+  rankGrowthRange,
   skillBudgetCheck,
   skillPower,
   tokenPower,
@@ -60,6 +62,7 @@ import type {
   RaceId,
   RankId,
   SkillAmount,
+  SkillCardDefinition,
   TokenId,
 } from "./schema";
 import { getStage, STAGES } from "./stages";
@@ -184,6 +187,55 @@ const skill = (id: string) => {
   }
   return card;
 };
+
+const SCALED_EFFECT_KEYS: ReadonlySet<string> = new Set([
+  "amount",
+  "heal",
+  "ward",
+]);
+
+/** The number values of a Skill Card effect at a Rank, in a fixed order. */
+const effectValues = (card: SkillCardDefinition, rank: RankId): number[] =>
+  Object.entries(card.effect).flatMap(([key, value]: [string, unknown]) => {
+    if (value instanceof Object) {
+      // SAFETY: an object value of a Skill effect is always a Rank table.
+      return [(value as Record<RankId, number>)[rank]];
+    }
+    if (!Number.isFinite(value)) {
+      return [];
+    }
+    // SAFETY: `Number.isFinite` above is true only for a number.
+    const amount = value as number;
+    // A number amount scales with the Stat scale. Other numbers are fixed.
+    return SCALED_EFFECT_KEYS.has(key)
+      ? [skillAmountForRank(amount, rank)]
+      : [amount];
+  });
+
+/**
+ * The Common to Uncommon steps with no effect change. The Common and Uncommon
+ * values did not change with ADR-0057, because the sim checks are sensitive to
+ * them. A separate issue fixes these steps.
+ */
+const FLAT_FIRST_COMBINE: ReadonlySet<string> = new Set([
+  "mage.fireball:uncommon",
+  "mage.frostBolt:uncommon",
+  "mage.frostShards:uncommon",
+  "mage.spark:uncommon",
+]);
+
+/**
+ * The cards above the maximum Rank Growth, because no smaller rising line of
+ * whole numbers exists (ADR-0057).
+ */
+const NEAREST_STEP_CARDS: ReadonlySet<string> = new Set([
+  "warrior.warDrums",
+  "warrior.shieldWall",
+  "warrior.groundSlam",
+  "warrior.exposeWeakness",
+  "mage.flameWave",
+  "mage.frostWave",
+]);
 
 /** The power of a card copy at a Rank (ADR-0020, ADR-0055). */
 const powerAtRank = (card: CardDefinition, rank: RankId): number =>
@@ -317,7 +369,7 @@ describe("card content (CRD-01, technical design 3.5)", () => {
       target: "enemyUnit",
       effect: { type: "damageUnit", damageType: "lightning" },
     });
-    expect(skillAmounts("mage.spark")).toEqual([2, 2, 3, 4, 4]);
+    expect(skillAmounts("mage.spark")).toEqual([2, 2, 3, 5, 6]);
     expect(getCard("mage.arcLightning")).toMatchObject({
       target: "enemyUnit",
       effect: { type: "damageArc", damageType: "lightning" },
@@ -336,7 +388,7 @@ describe("card content (CRD-01, technical design 3.5)", () => {
         turns: 2,
       },
     });
-    expect(skillAmounts("mage.blizzard")).toEqual([5, 5, 5, 5, 7]);
+    expect(skillAmounts("mage.blizzard")).toEqual([5, 5, 5, 5, 6]);
     expect(getCard("mage.blizzard")).toMatchObject({
       baseRank: "epic",
       target: "area",
@@ -361,7 +413,7 @@ describe("card content (CRD-01, technical design 3.5)", () => {
   });
 
   it("gives the Common and Uncommon Skill Cards of #57 their effects and values", () => {
-    expect(skillAmounts("warrior.shoulderCharge")).toEqual([7, 9, 10, 10, 10]);
+    expect(skillAmounts("warrior.shoulderCharge")).toEqual([7, 9, 10, 11, 12]);
     expect(skillAmounts("ranger.quickShot")).toEqual([6, 7, 8, 10, 11]);
     expect(skillAmounts("priest.blessingOfLight")).toEqual([7, 9, 11, 12, 14]);
     expect(skillAmounts("priest.prayerOfHealing")).toEqual([
@@ -382,14 +434,14 @@ describe("card content (CRD-01, technical design 3.5)", () => {
       effect: {
         type: "damageUnitHero",
         amount: { common: 4, uncommon: 5, rare: 6, epic: 7, legendary: 8 },
-        heroAmount: { common: 4, uncommon: 4, rare: 4, epic: 5, legendary: 4 },
+        heroAmount: { common: 4, uncommon: 4, rare: 4, epic: 5, legendary: 5 },
         damageType: "physical",
       },
     });
   });
 
   it("gives Skybreaker its Base Rank, Countdown, effect and values", () => {
-    expect(skillAmounts("ranger.skybreaker")).toEqual([10, 10, 13, 16, 20]);
+    expect(skillAmounts("ranger.skybreaker")).toEqual([10, 10, 13, 15, 17]);
     expect(getCard("ranger.skybreaker")).toMatchObject({
       class: "ranger",
       baseRank: "uncommon",
@@ -401,7 +453,7 @@ describe("card content (CRD-01, technical design 3.5)", () => {
 
   it("gives the Rare and Epic Ranger Skill Cards their effects and values", () => {
     expect(skillAmounts("ranger.venomArrow")).toEqual([4, 4, 4, 5, 6]);
-    expect(skillAmounts("ranger.rainOfArrows")).toEqual([6, 6, 6, 6, 10]);
+    expect(skillAmounts("ranger.rainOfArrows")).toEqual([6, 6, 6, 6, 7]);
     expect(getCard("ranger.venomArrow")).toMatchObject({
       baseRank: "rare",
       countdown: 4,
@@ -418,7 +470,7 @@ describe("card content (CRD-01, technical design 3.5)", () => {
       target: "friendlyUnit",
       effect: {
         type: "unitAttackRange",
-        attack: { common: 8, uncommon: 8, rare: 8, epic: 10, legendary: 12 },
+        attack: { common: 8, uncommon: 8, rare: 8, epic: 10, legendary: 11 },
         range: 1,
       },
     });
@@ -428,14 +480,14 @@ describe("card content (CRD-01, technical design 3.5)", () => {
       target: "enemyLane",
       effect: {
         type: "damageLaneEntangle",
-        amount: { common: 6, uncommon: 6, rare: 6, epic: 6, legendary: 10 },
+        amount: { common: 6, uncommon: 6, rare: 6, epic: 6, legendary: 7 },
       },
     });
   });
 
   it("gives the Rare and Epic Priest Skill Cards of #61 their effects and values", () => {
     expect(skillAmounts("priest.cleanse")).toEqual([15, 15, 15, 17, 19]);
-    expect(skillAmounts("priest.aegisOfDawn")).toEqual([11, 13, 16, 19, 23]);
+    expect(skillAmounts("priest.aegisOfDawn")).toEqual([19, 19, 19, 19, 22]);
     expect(getCard("priest.cleanse")).toMatchObject({
       baseRank: "rare",
       countdown: 3,
@@ -457,14 +509,14 @@ describe("card content (CRD-01, technical design 3.5)", () => {
   });
 
   it("gives the Rare and Epic Warrior Skill Cards of #63 their effects and values", () => {
-    expect(skillAmounts("warrior.exposeWeakness")).toEqual([4, 4, 4, 4, 8]);
+    expect(skillAmounts("warrior.exposeWeakness")).toEqual([4, 4, 4, 5, 6]);
     expect(getCard("warrior.callToArms")).toMatchObject({
       baseRank: "rare",
       countdown: 3,
       target: "friendlyLane",
       effect: {
         type: "laneAttack",
-        attack: { common: 7, uncommon: 7, rare: 7, epic: 9, legendary: 11 },
+        attack: { common: 7, uncommon: 7, rare: 7, epic: 9, legendary: 10 },
       },
     });
     expect(getCard("warrior.exposeWeakness")).toMatchObject({
@@ -482,8 +534,8 @@ describe("card content (CRD-01, technical design 3.5)", () => {
   });
 
   it("scales the Priest heal, damage and Ward with Rank, and targets a friendly Unit with Mend and Sanctuary", () => {
-    expect(skillAmounts("priest.mend")).toEqual([9, 11, 12, 13, 13]);
-    expect(skillAmounts("priest.smite")).toEqual([4, 5, 6, 6, 6]);
+    expect(skillAmounts("priest.mend")).toEqual([9, 11, 12, 13, 15]);
+    expect(skillAmounts("priest.smite")).toEqual([4, 5, 6, 7, 9]);
     expect(skillAmounts("priest.sanctuary")).toEqual([13, 13, 16, 19, 22]);
     expect(getCard("priest.mend")).toMatchObject({
       target: "friendlyUnit",
@@ -503,7 +555,7 @@ describe("card content (CRD-01, technical design 3.5)", () => {
   });
 
   it("scales the Ranger Skill damage with Rank, but not the push", () => {
-    expect(skillAmounts("ranger.pinningShot")).toEqual([6, 7, 8, 9, 9]);
+    expect(skillAmounts("ranger.pinningShot")).toEqual([6, 7, 8, 9, 10]);
     expect(skillAmounts("ranger.warningShot")).toEqual([8, 9, 10, 11, 14]);
     expect(skillAmounts("ranger.longShot")).toEqual([14, 16, 18, 21, 25]);
     expect(getCard("ranger.warningShot")).toMatchObject({
@@ -561,6 +613,45 @@ describe("card content (CRD-01, technical design 3.5)", () => {
         `${card.id} pairwise`
       ).toBe(false);
     }
+  });
+
+  it("changes the effect of each Skill Card with each Combine, and no value goes down (ADR-0057)", () => {
+    for (const card of CARDS) {
+      if (card.kind !== "skill") {
+        continue;
+      }
+      const ranks = ranksOf(card);
+      for (const [index, rank] of ranks.slice(1).entries()) {
+        const lower = effectValues(card, ranks[index] ?? rank);
+        const higher = effectValues(card, rank);
+        const rises = higher.some((value, at) => value > (lower[at] ?? 0));
+        expect(
+          rises || FLAT_FIRST_COMBINE.has(`${card.id}:${rank}`),
+          `${card.id} at ${rank}`
+        ).toBe(true);
+        for (const [at, value] of higher.entries()) {
+          expect(value, `${card.id} at ${rank}`).toBeGreaterThanOrEqual(
+            lower[at] ?? 0
+          );
+        }
+      }
+    }
+  });
+
+  it("keeps each Skill Card in the Rank Growth range, or the nearest step (ADR-0057)", () => {
+    const over: string[] = [];
+    for (const card of CARDS) {
+      if (card.kind !== "skill") {
+        continue;
+      }
+      const growth = rankGrowth(card);
+      const { minimum, maximum } = rankGrowthRange(card.baseRank);
+      expect(growth, card.id).toBeGreaterThanOrEqual(minimum);
+      if (growth > maximum) {
+        over.push(card.id);
+      }
+    }
+    expect(over.toSorted()).toEqual([...NEAREST_STEP_CARDS].toSorted());
   });
 
   it("gives each higher Base Rank copy at least the power of the strongest Common copy at the same Rank (ADR-0055)", () => {

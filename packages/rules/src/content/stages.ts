@@ -1221,7 +1221,8 @@ export const STAGES: readonly StageDefinition[] = [
       classId: "priest",
       gear: { weapon: 0, armor: 0, trinket: 0, banner: 2 },
       deck: [
-        ...copies(2, "priest.penance", "rare"),
+        ...copies(1, "priest.penance", "rare"),
+        ...copies(1, "priest.penance", "uncommon"),
         ...copies(2, "feral.caveBear", "uncommon"),
         ...copies(1, "feral.cragRhino", "epic"),
         ...copies(1, "feral.cragRhino", "rare"),

@@ -327,7 +327,7 @@ describe("chooseCommand: Hold Rules (GDD 9)", () => {
 
   it("keeps War Drums until 2 other cards are not Ready", () => {
     const state = emptyBattle();
-    // At Rare, War Drums lowers 2 cards, so it waits for 2 cards that are not Ready.
+    // At Rare, War Drums lowers 3 cards, but it waits for only 2 that are not Ready.
     giveHand(state, "player", [
       ["warrior.warDrums", 0, "rare"],
       ["human.militiaRecruit", 3],

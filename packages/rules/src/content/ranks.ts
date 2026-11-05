@@ -1,4 +1,10 @@
-import type { RankId, SkillAmount, SkillCount, SkillSquares } from "./schema";
+import type {
+  RankId,
+  SkillAmount,
+  SkillCount,
+  SkillSquares,
+  SkillTurns,
+} from "./schema";
 
 /** The Ranks in order, from the lowest (GDD 5.3). */
 export const RANKS: readonly RankId[] = [
@@ -10,7 +16,7 @@ export const RANKS: readonly RankId[] = [
 ];
 
 /** Attack and HP scale for each Rank, in basis points (×1.0 is 10000). */
-const STAT_SCALE: Record<RankId, number> = {
+export const STAT_SCALE: Record<RankId, number> = {
   common: 10_000,
   uncommon: 12_000,
   rare: 14_500,
@@ -71,6 +77,17 @@ export const skillSquaresForRank = (
     return squares;
   }
   return squares[rank];
+};
+
+const isScalarSkillTurns = (turns: SkillTurns): turns is number =>
+  Number.isFinite(turns);
+
+/** The enemy Turns of bonus Bulwark at a Rank: one value or an exact Rank table. */
+export const skillTurnsForRank = (turns: SkillTurns, rank: RankId): number => {
+  if (isScalarSkillTurns(turns)) {
+    return turns;
+  }
+  return turns[rank];
 };
 
 export const recallChance = (rank: RankId): number => RECALL[rank];

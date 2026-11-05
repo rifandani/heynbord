@@ -2522,6 +2522,8 @@ export default {
       "Beri {amount} damage {damageType} ke semua Unit musuh dalam satu Jalur. Tiap Unit yang terkena damage dan bertahan hidup menjadi Terjerat.",
     damageByAttack:
       "Beri damage {damageType} ke satu Unit musuh, sebesar Serangan Unit itu.",
+    damageByAttackBonus:
+      "Beri damage {damageType} ke satu Unit musuh, sebesar Serangan Unit itu +{bonus}.",
     damageLaneBulwark:
       "{hit} Unit kawan dalam Jalurnya mendapat Benteng {bulwark} selama {turns}.",
     damageLaneHeal:
@@ -2539,6 +2541,8 @@ export default {
       "Setiap Unit kawan dalam satu Jalur mendapat Pelindung {ward}: ia menyerap {ward} damage berikutnya.",
     steadfastUnit:
       "Satu Unit kawan mendapat Teguh: saat damage akan membawanya ke 0 HP, ia tetap pada 1 HP.",
+    steadfastUnitWard:
+      "Satu Unit kawan mendapat Teguh: saat damage akan membawanya ke 0 HP, ia tetap pada 1 HP. Ia juga mendapat Pelindung {ward}: ia menyerap {ward} damage berikutnya.",
     cleanseUnit:
       "Hapus semua Debuff dari satu Unit kawan. Lalu sembuhkan {heal} HP padanya.",
     exposeUnit:
@@ -2548,8 +2552,6 @@ export default {
     unitAttackRange:
       "Satu Unit kawan mendapat +{attack} Serangan dan +{range} Jangkauan sampai akhir Giliranmu berikutnya. Unit jarak dekat menyerang sebagai Unit jarak jauh.",
     laneExtraAction:
-      "Setiap Unit kawan dalam satu Jalur mendapat satu aksi lagi sekarang: ia bergerak dan menyerang, dari Unit terdepan ke Unit paling belakang.",
-    laneExtraActionLegendary:
       "Setiap Unit kawan dalam satu Jalur mendapat +{attack} Serangan sampai akhir Giliranmu berikutnya, lalu mendapat satu aksi lagi sekarang: ia bergerak dan menyerang, dari Unit terdepan ke Unit paling belakang.",
     damageArc:
       "Beri {amount} damage {damageType} ke satu Unit musuh dan ke Unit musuh di Kolom yang sama pada Jalur di sebelahnya.",

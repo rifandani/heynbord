@@ -2475,6 +2475,8 @@ export default {
       "Deal {amount} {damageType} damage to all enemy Units in a Lane. Each Unit that takes damage and survives becomes Entangled.",
     damageByAttack:
       "Deal {damageType} damage to an enemy Unit, equal to the Attack of that Unit.",
+    damageByAttackBonus:
+      "Deal {damageType} damage to an enemy Unit, equal to the Attack of that Unit +{bonus}.",
     damageLaneBulwark:
       "{hit} Friendly Units in its Lane get Bulwark {bulwark} for {turns}.",
     damageLaneHeal: "{hit} Heal {heal} HP to each friendly Unit in its Lane.",
@@ -2491,6 +2493,8 @@ export default {
       "Each friendly Unit in a Lane gets Ward {ward}: it absorbs the next {ward} damage.",
     steadfastUnit:
       "A friendly Unit gets Steadfast: when damage would bring it to 0 HP, it stays at 1 HP.",
+    steadfastUnitWard:
+      "A friendly Unit gets Steadfast: when damage would bring it to 0 HP, it stays at 1 HP. It also gets Ward {ward}: it absorbs the next {ward} damage.",
     cleanseUnit:
       "Remove all Debuffs from a friendly Unit. Then heal {heal} HP to it.",
     exposeUnit:
@@ -2500,8 +2504,6 @@ export default {
     unitAttackRange:
       "A friendly Unit gets +{attack} Attack and +{range} Range until the end of your next Turn. A Melee Unit attacks as a Ranged Unit.",
     laneExtraAction:
-      "Each friendly Unit in a Lane takes one more action now: it moves and attacks, from the front Unit to the back Unit.",
-    laneExtraActionLegendary:
       "Each friendly Unit in a Lane gets +{attack} Attack until the end of your next Turn, then takes one more action now: it moves and attacks, from the front Unit to the back Unit.",
     damageArc:
       "Deal {amount} {damageType} damage to an enemy Unit and to the enemy Units in the same Column in the Lanes next to it.",

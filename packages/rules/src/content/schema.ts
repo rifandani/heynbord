@@ -309,6 +309,31 @@ const SkillSquares = Schema.Union([
 ]);
 export type SkillSquares = typeof SkillSquares.Type;
 
+/** The enemy Turns of bonus Bulwark: fixed or set by Rank. */
+const SkillTurns = Schema.Union([
+  between(1, 5),
+  Schema.Struct({
+    common: between(1, 5),
+    uncommon: between(1, 5),
+    rare: between(1, 5),
+    epic: between(1, 5),
+    legendary: between(1, 5),
+  }),
+]);
+export type SkillTurns = typeof SkillTurns.Type;
+
+/**
+ * A value for each Rank that can be 0: a part of an effect that starts at a
+ * Rank above the Base Rank (ADR-0057).
+ */
+const SkillBonus = Schema.Struct({
+  common: between(0, 30),
+  uncommon: between(0, 30),
+  rare: between(0, 30),
+  epic: between(0, 30),
+  legendary: between(0, 30),
+});
+
 /** The Countdown reduction from a Skill Card. */
 const SkillReduction = Schema.Union([
   between(1, 3),
@@ -432,11 +457,12 @@ const SkillEffect = Schema.Union([
   Schema.Struct({
     /**
      * Damage to one enemy Unit equal to its Attack at the moment of the hit,
-     * with the Rally and Swarm bonuses. A Unit with Attack 0, and a Wall,
-     * take 0 damage. The Rank does not change the damage.
+     * with the Rally and Swarm bonuses, plus `bonus`. A Unit with Attack 0, and
+     * a Wall, take only the bonus.
      */
     type: Schema.Literal("damageByAttack"),
     damageType: DamageType,
+    bonus: SkillBonus,
   }),
   Schema.Struct({
     /**
@@ -540,9 +566,12 @@ const SkillEffect = Schema.Union([
     /**
      * One friendly Unit gets Steadfast (GDD 4.7): when damage would bring it
      * to 0 HP, it stays at 1 HP and Steadfast ends. A new Steadfast on a
-     * Steadfast Unit has no effect.
+     * Steadfast Unit has no effect. The Unit also gets Ward `ward`, as with
+     * `wardUnit`, when the value is above 0. The Ward has its own rule, so it
+     * also applies to a Steadfast Unit.
      */
     type: Schema.Literal("steadfastUnit"),
+    ward: SkillBonus,
   }),
   Schema.Struct({
     /**
@@ -585,21 +614,21 @@ const SkillEffect = Schema.Union([
   Schema.Struct({
     /**
      * Each friendly Unit in one Lane does one more action now: Movement and
-     * attack, from the front Unit to the back Unit (GDD 4.4).
+     * attack, from the front Unit to the back Unit (GDD 4.4). First, they get
+     * bonus Attack `attack`, until the end of the caster's next Turn.
      */
     type: Schema.Literal("laneExtraAction"),
-    /** Optional bonus Attack at Legendary Rank, until the end of the next Turn. */
-    legendaryAttack: Schema.optionalKey(between(1, 5)),
+    attack: SkillAmount,
   }),
   Schema.Struct({
     /**
      * Friendly Units in one Lane get bonus Bulwark for `turns` enemy Turns. The
-     * Bulwark can scale with the Skill Card Rank. A Unit keeps the higher bonus.
-     * For the same bonus, it keeps the longer duration.
+     * Bulwark and the Turns can scale with the Skill Card Rank. A Unit keeps the
+     * higher bonus. For the same bonus, it keeps the longer duration.
      */
     type: Schema.Literal("laneBulwark"),
     bulwark: SkillBulwark,
-    turns: between(1, 5),
+    turns: SkillTurns,
   }),
   Schema.Struct({
     /** Lowers the Countdown of random cards in the caster's Hand that are not Ready. */

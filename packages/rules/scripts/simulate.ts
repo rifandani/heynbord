@@ -1,7 +1,7 @@
 /**
  * Headless Battle simulation (GDD 13). The AI plays both Sides.
  *
- * Usage: `bun run sim [stage | dungeon | floor | matchup | packs | economy | skill-swap] [battles] [--level N] [--gear N] [--packs N] [--check] [--shard i/n] [--parallel]`.
+ * Usage: `bun run sim [stage | dungeon | floor | matchup | packs | economy | skill-swap] [battles] [--level N] [--gear N] [--packs N] [--rank R] [--check] [--shard i/n] [--parallel]`.
  * With no mode, it runs `stage`, `dungeon`, `floor`, `matchup` and `packs`, and
  * with `--check` also `economy`. `battles` is 200 by default. With `--check`,
  * it exits with code 1 when a win rate is not on its GDD 13 target or a Pacing
@@ -91,9 +91,13 @@ import { DUNGEONS } from "../src/content/dungeons";
 import { FLOORS } from "../src/content/floors";
 import { FORGE_STONE_TIERS } from "../src/content/forge-stones";
 import { PACK_SIZE, PACKS } from "../src/content/packs";
-import { RANKS } from "../src/content/ranks";
+import { isRankAtLeast, RANKS } from "../src/content/ranks";
+import type {
+  RankId,
+  GearLevels,
+  StageDefinition,
+} from "../src/content/schema";
 import { ClassId } from "../src/content/schema";
-import type { GearLevels, StageDefinition } from "../src/content/schema";
 import { STAGES } from "../src/content/stages";
 import { packPool } from "../src/packs/open-pack";
 import type { PackPool } from "../src/packs/open-pack";
@@ -153,7 +157,7 @@ import type {
 import { SWAP_LIMIT, simulateSkillSwap } from "../src/simulation/skill-swap";
 
 const USAGE =
-  "Usage: bun run sim [stage | dungeon | floor | matchup | packs | economy | skill-swap] [battles] [--level N] [--gear N] [--packs N] [--check] [--shard i/n] [--parallel]";
+  "Usage: bun run sim [stage | dungeon | floor | matchup | packs | economy | skill-swap] [battles] [--level N] [--gear N] [--packs N] [--rank R] [--check] [--shard i/n] [--parallel]";
 
 const MODES = [
   "stage",
@@ -181,6 +185,10 @@ const integer = (value: string | undefined, name: string, minimum: number) => {
   }
   return number;
 };
+
+const rankOf = (value: string | undefined): RankId =>
+  RANKS.find((rank) => rank === value) ??
+  fail(`--rank must be one of ${RANKS.join(", ")}: ${value}`);
 
 /**
  * The economy sim and the swap report are slow, so they run only on request.
@@ -320,6 +328,8 @@ interface Flags {
   level: number | undefined;
   gear: number | undefined;
   packs: number;
+  /** `skill-swap` only: the Rank of all copies of both sides (ADR-0057). */
+  swapRank: RankId | undefined;
   check: boolean;
   shard: Shard;
   parallel: boolean;
@@ -336,6 +346,10 @@ const readFlag = (arg: string, rest: string[], parsed: Flags): boolean => {
   }
   if (arg === "--packs") {
     parsed.packs = integer(rest.shift(), "--packs", 1);
+    return true;
+  }
+  if (arg === "--rank") {
+    parsed.swapRank = rankOf(rest.shift());
     return true;
   }
   if (arg === "--shard") {
@@ -360,6 +374,7 @@ const parseArgs = (args: readonly string[]) => {
     level: undefined,
     gear: undefined,
     packs: 10_000,
+    swapRank: undefined,
     check: false,
     shard: NO_SHARD,
     parallel: false,
@@ -381,6 +396,7 @@ const parseArgs = (args: readonly string[]) => {
     level: parsed.level,
     gear: parsed.gear,
     packs: parsed.packs,
+    swapRank: parsed.swapRank,
     check: parsed.check,
     shard: parsed.shard,
     parallel: parsed.parallel,
@@ -390,7 +406,7 @@ const parseArgs = (args: readonly string[]) => {
 const percent = (rate: number, digits = 0) =>
   `${(rate * 100).toFixed(digits)}%`;
 
-const { modes, battles, level, gear, packs, check, shard, parallel } =
+const { modes, battles, level, gear, packs, swapRank, check, shard, parallel } =
   parseArgs(process.argv.slice(2));
 
 // `--parallel` is only the launcher. A child gets `--shard`, so it does not
@@ -1133,14 +1149,20 @@ if (modes.includes("skill-swap")) {
   }
   const options = { seeds: battles, level: matchupLevel, gear: gearOf(gear) };
   console.log(
-    `Skill swap: ${battles * 2} Battles each, level ${matchupLevel}, Gear ${gear ?? 0}. Pass: each change is ±${(SWAP_LIMIT * 100).toFixed(1)} points or less`
+    `Skill swap: ${battles * 2} Battles each, level ${matchupLevel}, Gear ${gear ?? 0}, ${swapRank === undefined ? "the Ranks of the Decks" : `all copies at ${swapRank} or higher`}. Pass: each change is ±${(SWAP_LIMIT * 100).toFixed(1)} points or less`
   );
   const cache = new Map<string, MatchupReport>();
   const reports = shardItems(
-    CARDS.filter((card) => card.kind === "skill"),
+    CARDS.filter(
+      (card) =>
+        card.kind === "skill" &&
+        (swapRank === undefined || isRankAtLeast(swapRank, card.baseRank))
+    ),
     shard
   ).flatMap((card) =>
-    card.kind === "skill" ? [simulateSkillSwap(card, options, cache)] : []
+    card.kind === "skill"
+      ? [simulateSkillSwap(card, options, cache, swapRank)]
+      : []
   );
   console.table(
     reports.flatMap((report) =>

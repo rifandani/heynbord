@@ -236,7 +236,9 @@ describe("effectColor", () => {
 
   it("uses the war gold for a Warrior bonus and the extra action, and rose for Exposed", () => {
     expect(effectColor({ type: "laneAttack", attack: 3 })).toBe(RALLY_TINT);
-    expect(effectColor({ type: "laneExtraAction" })).toBe(RALLY_TINT);
+    expect(effectColor({ type: "laneExtraAction", attack: 1 })).toBe(
+      RALLY_TINT
+    );
     expect(effectColor({ type: "exposeUnit", exposed: 2 })).toBe(
       FX_ANCHORS.iconExposed
     );
@@ -286,12 +288,21 @@ describe("effectColor", () => {
   it("gives the Priest cards the Holy gold", () => {
     expect(effectColor({ type: "healUnit", heal: 6 })).toBe(DAMAGE_COLORS.holy);
     expect(effectColor({ type: "healLane", heal: 8 })).toBe(DAMAGE_COLORS.holy);
-    expect(effectColor({ type: "damageByAttack", damageType: "holy" })).toBe(
-      DAMAGE_COLORS.holy
-    );
+    expect(
+      effectColor({
+        type: "damageByAttack",
+        damageType: "holy",
+        bonus: { common: 0, uncommon: 0, rare: 2, epic: 4, legendary: 6 },
+      })
+    ).toBe(DAMAGE_COLORS.holy);
     expect(effectColor({ type: "wardUnit", ward: 5 })).toBe(DAMAGE_COLORS.holy);
     expect(effectColor({ type: "wardLane", ward: 6 })).toBe(DAMAGE_COLORS.holy);
-    expect(effectColor({ type: "steadfastUnit" })).toBe(DAMAGE_COLORS.holy);
+    expect(
+      effectColor({
+        type: "steadfastUnit",
+        ward: { common: 0, uncommon: 0, rare: 0, epic: 3, legendary: 6 },
+      })
+    ).toBe(DAMAGE_COLORS.holy);
     expect(effectColor({ type: "cleanseUnit", heal: 6 })).toBe(
       DAMAGE_COLORS.holy
     );
