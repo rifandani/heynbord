@@ -61,8 +61,15 @@ const CLIP = { crouch: 8 / 36, raised: 16 / 36, held: 22 / 36, end: 35 / 36 };
 const clamp01 = (value: number): number => Math.max(0, Math.min(1, value));
 
 /** 0 to 1 in the window from `start` to `end`. */
-const within = (t: number, start: number, end: number): number =>
-  clamp01((t - start) / Math.max(1e-6, end - start));
+const within = (t: number, start: number, end: number): number => {
+  if (t <= start) {
+    return 0;
+  }
+  if (t >= end) {
+    return 1;
+  }
+  return (t - start) / (end - start);
+};
 
 const easeOut = (u: number): number => 1 - (1 - u) ** 3;
 const easeInOut = (u: number): number =>

@@ -61,8 +61,15 @@ const CLIP = { recoil: 6 / 36, down: 24 / 36 };
 const clamp01 = (value: number): number => Math.max(0, Math.min(1, value));
 
 /** 0 to 1 in the window from `start` to `end`. */
-const within = (t: number, start: number, end: number): number =>
-  clamp01((t - start) / Math.max(1e-6, end - start));
+const within = (t: number, start: number, end: number): number => {
+  if (t <= start) {
+    return 0;
+  }
+  if (t >= end) {
+    return 1;
+  }
+  return (t - start) / (end - start);
+};
 
 const easeOut = (u: number): number => 1 - (1 - u) ** 3;
 const easeIn = (u: number): number => u ** 2.4;
