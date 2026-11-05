@@ -8,7 +8,6 @@ import { Color, ShaderMaterial } from "three";
 import { SIDE_COLORS } from "@/core/components/game/tokens";
 import { hasManyHeroes } from "@/features/battle/battle-view";
 import { shownSessionAtom } from "@/features/battle/battle.atoms";
-import { SceneHold, useSceneHold } from "@/features/battle/scene-load";
 import { heroSlump, ringLightAt } from "@/features/battle/scene/defeat";
 import {
   BRACKET_WIDTH,
@@ -42,6 +41,7 @@ import {
   SCENE_WHITE,
   VICTORY_FADE_TINT,
 } from "@/features/battle/tokens";
+import { SceneHold, useSceneHold } from "@/features/battle/use-scene-hold";
 
 const HeroModelBody = lazy(
   () => import("@/features/battle/scene/hero-model-body")

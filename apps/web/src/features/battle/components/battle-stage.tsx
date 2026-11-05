@@ -54,7 +54,7 @@ import { padBattleCommand } from "@/features/battle/components/pad-battle";
 import { TopBar } from "@/features/battle/components/top-bar";
 import { TutorialPanel } from "@/features/battle/components/tutorial-panel";
 import { UnitDetails } from "@/features/battle/components/unit-details";
-import { SceneHold, sceneLoad } from "@/features/battle/scene-load";
+import { sceneLoad } from "@/features/battle/scene-load";
 import {
   DEFEAT_DESATURATE,
   DEFEAT_PULSE,
@@ -68,6 +68,7 @@ import {
   useBattleModels,
 } from "@/features/battle/use-battle-models";
 import { useGameText } from "@/features/battle/use-game-text";
+import { SceneHold } from "@/features/battle/use-scene-hold";
 import { useHandbook } from "@/features/handbook/use-handbook";
 import { useBattleHints } from "@/features/hint/use-hints";
 

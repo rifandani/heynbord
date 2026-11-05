@@ -4,7 +4,6 @@ import { LANE_LENGTH } from "@workspace/rules";
 import { useEffect, useMemo, useState } from "react";
 import type { CanvasTexture } from "three";
 
-import { useSceneHold } from "@/features/battle/scene-load";
 import { laneZ } from "@/features/battle/scene/layout";
 import {
   closedLaneTexture,
@@ -13,6 +12,7 @@ import {
   RUNNER_MARGIN_PX,
   RUNNER_SQUARE_PX,
 } from "@/features/battle/scene/textures";
+import { useSceneHold } from "@/features/battle/use-scene-hold";
 import { activeBoardSkinAtom } from "@/features/profile/profile.atoms";
 
 /** The size of a Lane runner plane with its shade margin, in Squares. */

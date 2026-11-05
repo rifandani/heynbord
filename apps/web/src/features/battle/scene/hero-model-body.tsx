@@ -9,7 +9,6 @@ import {
   battleLogAtom,
   shownSessionAtom,
 } from "@/features/battle/battle.atoms";
-import { useSceneHold } from "@/features/battle/scene-load";
 import { heroAnimation } from "@/features/battle/scene/hero-animation";
 import { buildHeroRig } from "@/features/battle/scene/hero-rig";
 import {
@@ -18,6 +17,7 @@ import {
   victoryTime,
 } from "@/features/battle/scene/playback";
 import { useReducedMotion } from "@/features/battle/scene/reduced-motion";
+import { useSceneHold } from "@/features/battle/use-scene-hold";
 import { ModelErrorBoundary } from "@/features/hero/components/model-error-boundary";
 import { heroModelUrl } from "@/features/hero/hero-model-assets";
 import { loadHeroAppearance } from "@/features/hero/hero-model-loader";

@@ -34,7 +34,6 @@ import {
   detailsUnitAtom,
 } from "@/features/battle/battle.atoms";
 import { sourceId } from "@/features/battle/card-art";
-import { SceneHold } from "@/features/battle/scene-load";
 import { unitDroop } from "@/features/battle/scene/defeat";
 import { fxList } from "@/features/battle/scene/fx";
 import {
@@ -86,6 +85,7 @@ import {
   DEFEAT_UNIT_TINT,
   VICTORY_MOTE,
 } from "@/features/battle/tokens";
+import { SceneHold } from "@/features/battle/use-scene-hold";
 import { ModelErrorBoundary } from "@/features/hero/components/model-error-boundary";
 
 // Shared geometry for all Units: fewer GPU uploads.
