@@ -5,8 +5,8 @@ import { FittedPainting } from "@/features/town/components/fitted-painting";
 const BAZAAR_IMAGE = "/town/bazaar-inside.webp";
 
 /**
- * The darker edges and the dim center over the scene, so that the item plates,
- * the Heynstone prices and the Town Bar stay easy to read (as the Hall inside).
+ * The tint over the scene, so that the shop panel stands in front of the
+ * painting and the Town Bar stays easy to read. The shopkeepers stay bright.
  */
 const SHADE = BAZAAR_CSS.shade;
 
@@ -29,7 +29,9 @@ const LANTERNS: readonly {
 /**
  * The painted Bazaar inside, in full above the Town Bar (`FittedPainting`), so
  * that a point in painting percent stays on the same thing in the painting at
- * all screen sizes. The lanterns breathe; with reduced motion they are still.
+ * all screen sizes. A second copy of the painting is out of focus behind the
+ * shop panel, as the far side of a square behind 2 sharp shopkeepers. The
+ * lanterns breathe; with reduced motion they are still.
  */
 export const BazaarScene = () => (
   <div
@@ -39,6 +41,17 @@ export const BazaarScene = () => (
     data-testid="bazaar-scene"
   >
     <FittedPainting src={BAZAAR_IMAGE} width={1536} height={1024}>
+      <img
+        src={BAZAAR_IMAGE}
+        alt=""
+        draggable={false}
+        className="absolute inset-0 size-full blur-[7px] saturate-[0.8] select-none"
+        style={{
+          maskImage: BAZAAR_CSS.focusMask,
+          WebkitMaskImage: BAZAAR_CSS.focusMask,
+        }}
+        data-testid="bazaar-focus"
+      />
       {LANTERNS.map((lantern) => (
         <span
           key={`${lantern.x}:${lantern.y}`}

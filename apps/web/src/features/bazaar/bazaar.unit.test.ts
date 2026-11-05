@@ -10,8 +10,7 @@ import {
   bazaarGroups,
   canBuyCosmetic,
   cosmeticItemKey,
-  isLookFamily,
-  LOOK_FAMILIES,
+  inspectorAction,
   shelfPreviewLook,
 } from "@/features/bazaar/bazaar";
 import { hasGearLookArt } from "@/features/hero/gear-look-art";
@@ -85,14 +84,41 @@ describe("bazaarGroups", () => {
   });
 });
 
-describe("isLookFamily", () => {
-  it("is true for the families that the game draws", () => {
-    expect(COSMETIC_FAMILIES.filter(isLookFamily)).toEqual([
-      "cardBack",
-      "heroPortrait",
-      "gearLook",
-      "boardSkin",
-    ]);
+describe("inspectorAction", () => {
+  const item = BAZAAR_COSMETICS.find(
+    (entry) => entry.id === "cardBack.seaChart"
+  );
+  if (item === undefined) {
+    throw new Error("The catalog has no Sea Chart.");
+  }
+
+  it("says In use for the Active look and the active Standard look", () => {
+    expect(inspectorAction(item, item.id, [item.id], 0)).toEqual({
+      kind: "inUse",
+    });
+    expect(inspectorAction(null, null, [], 0)).toEqual({ kind: "inUse" });
+  });
+
+  it("offers Use for an owned look and for the Standard look", () => {
+    expect(inspectorAction(item, null, [item.id], 0)).toEqual({ kind: "use" });
+    expect(inspectorAction(null, item.id, [item.id], 0)).toEqual({
+      kind: "use",
+    });
+  });
+
+  it("offers Buy when the Player can pay, also at the exact price", () => {
+    expect(inspectorAction(item, null, [], 60)).toEqual({
+      kind: "buy",
+      price: 60,
+    });
+  });
+
+  it("tells how many Heynstones are missing", () => {
+    expect(inspectorAction(item, null, [], 20)).toEqual({
+      kind: "needMore",
+      price: 60,
+      missing: 40,
+    });
   });
 });
 
@@ -114,8 +140,24 @@ describe("cosmeticItemKey", () => {
     }
   });
 
+  it("gives every look its flavor text in both locales", () => {
+    const keys = BAZAAR_COSMETICS.map((item) => cosmeticItemKey(item.id));
+    expect(Object.keys(enUS.bazaar.flavor)).toEqual(
+      expect.arrayContaining(keys)
+    );
+    expect(Object.keys(idID.bazaar.flavor)).toEqual(
+      expect.arrayContaining(keys)
+    );
+    for (const family of COSMETIC_FAMILIES) {
+      expect(enUS.bazaar.standardFlavor[family]).toBeTruthy();
+      expect(idID.bazaar.standardFlavor[family]).toBeTruthy();
+      expect(enUS.bazaar.effect[family]).toBeTruthy();
+      expect(idID.bazaar.effect[family]).toBeTruthy();
+    }
+  });
+
   it("has the shelf, Standard and Use text of each look family", () => {
-    for (const family of LOOK_FAMILIES) {
+    for (const family of COSMETIC_FAMILIES) {
       for (const key of [
         `bazaar.shelf.${family}`,
         `bazaar.standard.${family}`,

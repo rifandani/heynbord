@@ -79,9 +79,10 @@ export const BoardSkinThumb = ({
 };
 
 /**
- * The Board skin on the shelf (web ADR-0012): the Lane runners of 3 Lanes on
- * the meadow of the Battle Painting, at the angle of the Battle camera. The
- * Standard ground shows the meadow with no runner.
+ * The Board skin in the Inspector (web ADR-0012): the Lane runners of 3 Lanes
+ * on the meadow of the Battle Painting, at the angle of the Battle camera. It
+ * takes its size from the stage (a size container). The Standard ground shows
+ * the meadow with no runner.
  */
 export const BoardSkinShelfLook = ({
   skin,
@@ -92,7 +93,7 @@ export const BoardSkinShelfLook = ({
   return (
     <span
       aria-hidden
-      className="border-gold-trim/70 relative block h-[112px] w-[168px] overflow-hidden rounded-lg border-2 [perspective:320px] [@media(max-height:500px)]:h-[78px] [@media(max-height:500px)]:w-[116px]"
+      className="border-gold-trim/70 relative block aspect-[10/9] w-[min(94cqw,84cqh)] overflow-hidden rounded-lg border-2 [perspective:min(190cqw,170cqh)]"
       style={groundStyle}
       data-testid="board-skin-shelf-look"
       data-look={skin ?? "standard"}

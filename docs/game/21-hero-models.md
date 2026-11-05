@@ -93,10 +93,10 @@ The portrait and Gear selections remain separate.
     and Armor below. HP and Forge Stones are above. A compact form
     supports landscape phones. Drag and arrow buttons rotate the model;
     Reset View returns to its initial angle.
-12. **Bazaar:** a shared 3D preview stands at the right of the Hero
-    portrait shelf and of the Gear looks shelf. It shows a candidate
-    portrait with active Gear, or candidate Gear with the active person.
-    Preview and Buy keep the current selection. Use changes it.
+12. **Bazaar:** the Inspector shows a shared 3D preview on the Hero
+    portrait tab and the Gear looks tab. It shows a candidate portrait
+    with active Gear, or candidate Gear with the active person. Preview
+    and Buy keep the current selection. Use changes it.
 13. **Loading:** load only the needed appearance and cache it for reuse.
     A matching 2D portrait shows during loading or after failure. Retry
     is available, and Battle remains playable.
@@ -272,7 +272,7 @@ accepted decisions above specify the changes.
 
 Sources: `battle-timeline.ts`, `scene/playback-driver.tsx`,
 `scene/heroes.tsx` and `scene/units.tsx` in the Battle feature;
-`hero/components/hero-screen.tsx`, the Bazaar shelf components,
+`hero/components/hero-screen.tsx`, the Bazaar Inspector,
 `replay/replay.ts` and `replay/replay-link.ts` in the web features;
 `apps/web/src/sw.ts`; and `scripts/unit-model/unit_model_kit.py`.
 

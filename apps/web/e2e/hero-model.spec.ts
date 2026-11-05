@@ -147,25 +147,34 @@ test.describe("Hero Models", () => {
     await page.goto("/play");
     await expect(page.getByTestId("town")).toBeVisible({ timeout: 30_000 });
     await page.getByTestId("town-shortcut-bazaar").click();
-    await expect(page.getByTestId("bazaar-shelf-preview")).toHaveCount(2);
+    // One Inspector shows the Hero Model, on the tab of each family.
+    await expect(page.getByTestId("bazaar-inspector-preview")).toHaveCount(0);
+    await page.getByTestId("bazaar-family-heroPortrait").click();
     const portraitPreview = page.locator(
-      '[data-testid="bazaar-shelf-preview"][data-family="heroPortrait"]'
-    );
-    const gearPreview = page.locator(
-      '[data-testid="bazaar-shelf-preview"][data-family="gearLook"]'
+      '[data-testid="bazaar-inspector-preview"][data-family="heroPortrait"]'
     );
     const portrait = page.locator(
       '[data-cosmetic-id="heroPortrait.tentRings"]'
     );
-    await portrait.getByTestId("bazaar-preview").click();
+    await portrait.click();
     await expect
       .poll(() => requested)
       .toContain("/models/heroes/tent-rings-standard.glb");
     await expect(
       portraitPreview.getByTestId("hero-model-preview")
     ).toHaveAttribute("data-model", "/models/heroes/tent-rings-standard.glb");
+    await expect(
+      page.locator(
+        '[data-testid="cosmetic-standard"][data-family="heroPortrait"]'
+      )
+    ).toHaveAttribute("data-active", "true");
+    await expect(portrait).not.toHaveAttribute("data-active", "true");
+    await page.getByTestId("bazaar-family-gearLook").click();
+    const gearPreview = page.locator(
+      '[data-testid="bazaar-inspector-preview"][data-family="gearLook"]'
+    );
     const gear = page.locator('[data-cosmetic-id="gearLook.goldInlay"]');
-    await gear.getByTestId("bazaar-preview").click();
+    await gear.click();
     await expect
       .poll(() => requested)
       .toContain("/models/heroes/standard-gold-inlay.glb");
@@ -174,14 +183,8 @@ test.describe("Hero Models", () => {
       "/models/heroes/standard-gold-inlay.glb"
     );
     await expect(
-      page.locator(
-        '[data-testid="cosmetic-standard"][data-family="heroPortrait"]'
-      )
-    ).toHaveAttribute("data-active", "true");
-    await expect(
       page.locator('[data-testid="cosmetic-standard"][data-family="gearLook"]')
     ).toHaveAttribute("data-active", "true");
-    await expect(portrait).not.toHaveAttribute("data-active", "true");
     await expect(gear).not.toHaveAttribute("data-active", "true");
   });
 });
