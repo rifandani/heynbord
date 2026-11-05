@@ -5,24 +5,49 @@ import {
   makeImageCache,
   preloadStageBattle,
   stagePreloadUrls,
+  waitForImage,
 } from "@/features/battle/battle-preload";
 import { FX_ATLAS_URL } from "@/features/battle/scene/fx-slots";
 
 /** A browser image that decodes everything except one broken painting. */
+const decodeFile = (src: string): Promise<void> =>
+  src === "/battle/hearthvale.webp"
+    ? Promise.reject(new Error("offline"))
+    : Promise.resolve();
+
+/** How the file load of a `FakeImage` ends, and how its decode ends. */
+let fileEnd: "load" | "error" = "load";
+let decodeImage = vi.fn(decodeFile);
+
 class FakeImage {
   public decoding = "";
-  public src = "";
   public naturalWidth = 1536;
   public naturalHeight = 1024;
+  private file = "";
+  private readonly listeners = new Map<string, () => void>();
+
+  public addEventListener(type: string, listener: () => void): void {
+    this.listeners.set(type, listener);
+  }
+
+  public get src(): string {
+    return this.file;
+  }
+
+  public set src(url: string) {
+    this.file = url;
+    this.listeners.get(fileEnd)?.();
+  }
 
   public decode(): Promise<void> {
-    return this.src === "/battle/hearthvale.webp"
-      ? Promise.reject(new Error("offline"))
-      : Promise.resolve();
+    return decodeImage(this.src);
   }
 }
 
 afterEach(() => {
+  fileEnd = "load";
+  decodeImage = vi.fn(decodeFile);
+  vi.useRealTimers();
   vi.unstubAllGlobals();
 });
 
@@ -67,5 +92,42 @@ describe("Battle image preload", () => {
     await expect(loadBattleImage("/battle/hearthvale.webp")).rejects.toThrow(
       "offline"
     );
+  });
+});
+
+describe("waitForImage", () => {
+  const URL = "/battle/hollow-marches.webp";
+
+  it("decodes the image after its file loads", async () => {
+    vi.stubGlobal("Image", FakeImage);
+    await waitForImage(URL, 1000);
+    expect(decodeImage).toHaveBeenCalledExactlyOnceWith(URL);
+  });
+
+  it("resolves with no decode when the file fails", async () => {
+    vi.stubGlobal("Image", FakeImage);
+    fileEnd = "error";
+    await expect(waitForImage(URL, 1000)).resolves.toBeUndefined();
+    expect(decodeImage).not.toHaveBeenCalled();
+  });
+
+  it("resolves when the decode fails", async () => {
+    vi.stubGlobal("Image", FakeImage);
+    decodeImage = vi.fn(() => Promise.reject(new Error("corrupt")));
+    await expect(waitForImage(URL, 1000)).resolves.toBeUndefined();
+    expect(decodeImage).toHaveBeenCalledOnce();
+  });
+
+  it("stops at the time limit when a hidden page holds the decode back", async () => {
+    vi.useFakeTimers();
+    vi.stubGlobal("Image", FakeImage);
+    decodeImage = vi.fn(() => Promise.withResolvers<undefined>().promise);
+    const ended = vi.fn();
+    const wait = waitForImage(URL, 500).then(ended);
+    await vi.advanceTimersByTimeAsync(499);
+    expect(ended).not.toHaveBeenCalled();
+    await vi.advanceTimersByTimeAsync(1);
+    await wait;
+    expect(ended).toHaveBeenCalledOnce();
   });
 });
