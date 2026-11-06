@@ -27,6 +27,7 @@ const IMAGE_RULES = [
   "- One subject with a clean silhouette. It fills at least three quarters of the height or the width of the image.",
   "- No text, no letters, no arrows, no logo, no signature, no frame, no border and no gore.",
   "- The same palette, the same costume and the same proportions in every image. Do not add a prop.",
+  "- A tabletop miniature with a large head. A humanoid is about 4 to 6 heads tall.",
 ].join("\n");
 
 /** The camera of each view. Only the three-quarter view uses the card camera. */

@@ -1,6 +1,6 @@
 # Warden Saelith pilot report
 
-Issue #179. Date: 2026-11-06. Status: **sign-off of a person is pending**.
+Issue #179. Date: 2026-11-06. Status: **go decision recorded. The sign-off of the render, the Turnaround, the report and the `regions` boxes is pending**.
 
 ## Result
 
@@ -161,11 +161,11 @@ From the baseline, the Published Model grew by 6.68% and the triangles by 11.8%.
 
 The kit fix cost nothing for each model. All 98 scripts build with it, and all 98 Raw Exports matched their Source Contracts before the art pass. A model gets the fix when it is built and packed again.
 
-Not measured: the time of a person for 5 Turnaround images and their approval, and the tokens of the agent. One pilot gives no defect rate for the other 97 models. If each model grows by 6.68%, the Published Models grow by about 1.25 MB in total, and I did not run the Battle budget for this.
+Not measured: the time of a person for 5 Turnaround images and their approval, and the tokens of the agent. One pilot gives no defect rate for the other 97 models. If each model grows by 6.68%, the Published Models grow by about 1.25 MB in total. See condition 5.
 
 ## Go/no-go decision
 
-**Recommendation: go, with the limits below. A person must make this decision.**
+**Decision: go, with the limits below.** rifandani accepted this recommendation on 2026-11-06.
 
 Go with this target: the defect loop, then one art pass on the parts that give the silhouette and that the card names. The pilot measured this target, and the cost was small: 26 s for each loop, 6.68% more bytes, and one line in the Source Contract.
 
@@ -173,11 +173,11 @@ No-go for "matches the Turnaround" as a result. This model passes 9 of 9 and has
 
 Conditions before the other 97 models move:
 
-1. A person signs off below.
-2. Add the miniature proportions to the Turnaround prompts, or accept the difference.
+1. A person signs off the items that are open below.
+2. Done: the Turnaround prompts now ask for a miniature, about 4 to 6 heads tall. The 3 approved pilot Turnarounds came from the old prompts, so they keep this difference.
 3. Add a check for a reversed open sheet. The `skirt` passed each Review Gate with this defect.
 4. Add a Review Gate that compares the silhouette with the Turnaround. A person found each difference in this report that needed the art pass.
-5. Run the Battle budget with the new size.
+5. Partly done: the Battle budget passes. The largest Battle has 12,404,345 asset bytes, and the limit is 50,000,000. The 3 budget decks do not have Warden Saelith, so this run does not measure her new size. It is a projection: if all of those bytes grew by 6.68%, the total would be about 13.2 MB. Run the budget again after a Migration.
 6. #184 must block a failed model from `main`. `unit-model:pack` does not read `gates.json`, because a capture needs a packed model (`52a9b079`). Now only the exit code of `unit-model:gates` reports a failure.
 
 ## Sign-off
@@ -186,7 +186,8 @@ A pass on a metric alone is not sign-off.
 
 - [ ] Render (`compare-views.png`, `compare-attack-20.png`, `art-pass-poses.png`, `art-pass/`)
 - [ ] Turnaround (`apps/web/art/units/reference/warden-saelith/`)
-- [ ] Report and go/no-go decision
+- [x] Go/no-go decision: go, with the limits (rifandani, 2026-11-06, by a message to the agent)
+- [ ] Report
 - [ ] The `regions` boxes of the Unit Spec
 
 Name: ________ Date: ________

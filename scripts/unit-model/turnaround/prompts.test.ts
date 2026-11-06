@@ -46,6 +46,12 @@ describe("the Turnaround prompts", () => {
     );
   });
 
+  test("ask for the proportions of a miniature, not of a painted figure", () => {
+    expect(setupPromptOf(unit("warden-saelith"))).toContain(
+      "- A tabletop miniature with a large head. A humanoid is about 4 to 6 heads tall."
+    );
+  });
+
   test("define the front of a fortification", () => {
     expect(viewPromptOf("front")).toContain(
       "A fortification shows its blocking face to the viewer, and its base is on the ground."
