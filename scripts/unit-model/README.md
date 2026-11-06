@@ -135,7 +135,11 @@ Each Review Gate exits 0 clean, 1 fail or 2 error. A fail blocks publication. An
 
 The kit writes the id of each part in the `_PART` vertex attribute, and the part names in the `unitParts` extra of the mesh node. The packer removes both, and `checkUnitModel` rejects a Published Model with `_PART`. A Raw Export from before this data gives an error: run its build script again.
 
-The Review Gates of the mesh read the Raw Export, because only it has the part and region data. The cutouts show the Published Model. So the run also checks the manifest and the Source Contract, and a difference gives exit code 2. The Source Contract compares bounds, bones and clips, and not colors. So pack a Raw Export before the capture. CI has no Raw Exports, so #184 must build them or supply them.
+The Review Gates of the mesh read the Raw Export, because only it has the part and region data. The cutouts show the Published Model. So the run also checks that they are one model, and a difference gives exit code 2. The manifest gives the hashes. The Source Contract gives the bounds, bones and clips. The run also compares the triangles, the vertices and the mean vertex color of the 2 files, with a limit of 0.001 on each color channel. So it finds a new color on a large part, and not always on a very small part. CI has no Raw Exports, so #184 must build them or supply them.
+
+`unit-model:pack` does not read `gates.json`. A capture reads the Published Model, so a model must be packed before its Review Gates can run. #184 uses the exit code of this command to stop a failed model before it gets to `main`.
+
+No Review Gate has the four-tier review of `divine_eye_microscope.md`. It needs ID, depth and zoom passes that the Review Scene does not have. Its main rule does apply here: there is no global score, so a fail of one Review Gate fails the run.
 
 The Unit Spec gives 3 inputs:
 
@@ -143,7 +147,7 @@ The Unit Spec gives 3 inputs:
 - `regions` is a box from 0 to 1 for each region in the frame of the model, with y0 at the top. With no `regions`, `region-coverage` gives an error.
 - `holedParts` lists the parts with a hole by design, such as the tiara.
 
-Only Warden Saelith has `regions` now. Her values are rounded measures of the current model, and her Body Plan table agrees with them. They find a change, as a Source Contract does. They do not prove that the first value is good, so a person must approve them.
+Only Warden Saelith has `regions` now. Her values are rounded measures of the model. `test_unit_spec.py` compares the heights of her head, arms and legs with her Body Plan table, and the sides of her arms and legs. The table does not give the other edges, for example the braid in the `head` box. They find a change, as a Source Contract does. They do not prove that the first value is good, so a person must approve them.
 
 What each Review Gate cannot see:
 

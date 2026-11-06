@@ -8,6 +8,7 @@ import sys
 import tempfile
 import unittest
 
+import body_plans
 from unit_spec import load_spec, validate_spec
 
 
@@ -27,10 +28,12 @@ class UnitSpecChecks(unittest.TestCase):
         )
         self.assertEqual(specs[0]["palette"]["coat"], "#5a6434")
         self.assertEqual(specs[0]["clips"]["attack"], {"override": "bow-draw"})
+        self.assertNotIn("quiver", specs[0]["parts"])
+        self.assertIn("mantle", specs[0]["parts"])
+        self.assertIn("cape", specs[0]["parts"])
         self.assertEqual(specs[0]["props"], [
             {"id": "bow", "hand": "left", "cameraSide": False, "bone": "hand.L"},
             {"id": "arrow", "hand": "right", "cameraSide": True, "bone": "hand.R"},
-            {"id": "quiver", "hand": "none", "cameraSide": True, "bone": "hips"},
         ])
 
     def test_a_prop_needs_the_bone_that_it_is_on(self):
@@ -61,6 +64,37 @@ class UnitSpecChecks(unittest.TestCase):
         for box, expected in cases:
             with self.subTest(box=box):
                 self.assertIn(expected, validate_spec({**valid, "regions": {"head": box}}))
+
+    def test_the_warden_regions_agree_with_her_body_plan(self):
+        """The Body Plan is a source that does not read the model."""
+        plan = body_plans.BODY_PLANS["biped-medium"]
+        # As `TABLE` of `warden-saelith.py`, which needs Blender.
+        table = plan.Proportions(arm_angle=25, shoulder_root_x=0.02)
+        spec = load_spec(DIRECTORY / "specs/warden-saelith.json")
+        regions = spec["regions"]
+
+        def from_top(height):
+            return 1 - height / spec["height"]
+
+        fingertip = plan.arm_points(table, 1)[3]
+        landmarks = [
+            ("head", "y0", from_top(table.head_top_z)),
+            ("leg.L", "y0", from_top(table.hip_z)),
+            ("leg.R", "y0", from_top(table.hip_z)),
+            ("leg.L", "y1", 1),
+            ("leg.R", "y1", 1),
+            ("arm.L", "y0", from_top(table.shoulder_z)),
+            ("arm.R", "y0", from_top(table.shoulder_z)),
+            ("arm.L", "y1", from_top(fingertip[2])),
+            ("arm.R", "y1", from_top(fingertip[2])),
+        ]
+        for region, edge, expected in landmarks:
+            with self.subTest(region=region, edge=edge):
+                # The tolerance of `vertex_region_gate.py`.
+                self.assertAlmostEqual(regions[region][edge], expected, delta=0.04)
+        # The left side of the figure is on the right of the viewer.
+        self.assertGreater(regions["arm.L"]["x0"], regions["arm.R"]["x1"])
+        self.assertGreater(regions["leg.L"]["x0"], regions["leg.R"]["x1"])
 
     def test_a_holed_part_must_be_a_part_of_the_unit(self):
         valid = load_spec(DIRECTORY / "specs/warden-saelith.json")

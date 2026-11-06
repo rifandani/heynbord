@@ -297,3 +297,76 @@ export const exportMeshes = (document: Document): MeshExport => {
     bones: bonesOf(document),
   };
 };
+
+/**
+ * The largest difference of one mean color channel. Published Warden Saelith
+ * is at 0.00028 from her Raw Export, because the packer stores 8-bit colors.
+ */
+const MEAN_COLOR_TOLERANCE = 0.001;
+
+interface ModelSummary {
+  readonly triangles: number;
+  readonly vertices: number;
+  readonly meanColor: Vector3;
+}
+
+/** A summary that does not change with the vertex order of a build. */
+const summaryOf = (document: Document): ModelSummary => {
+  const primitives = document
+    .getRoot()
+    .listMeshes()
+    .flatMap((mesh) => mesh.listPrimitives());
+  const sum: [number, number, number] = [0, 0, 0];
+  let vertices = 0;
+  let triangles = 0;
+  for (const primitive of primitives) {
+    const colors = primitive.getAttribute("COLOR_0");
+    const count = colors?.getCount() ?? 0;
+    vertices += count;
+    triangles += (primitive.getIndices()?.getCount() ?? count) / 3;
+    for (let index = 0; index < count; index += 1) {
+      // `getElement` gives 0 to 1 for the 8-bit colors of a Published Model.
+      const [red = 0, green = 0, blue = 0] =
+        colors?.getElement(index, []) ?? [];
+      sum[0] += red;
+      sum[1] += green;
+      sum[2] += blue;
+    }
+  }
+  const total = Math.max(vertices, 1);
+  return {
+    triangles,
+    vertices,
+    meanColor: [sum[0] / total, sum[1] / total, sum[2] / total],
+  };
+};
+
+const colorText = (color: Vector3): string =>
+  color.map((channel) => channel.toFixed(4)).join(",");
+
+/**
+ * Each sign that a Raw Export is not the model that the Published file shows.
+ * The Source Contract compares bounds, bones and clips, and not these.
+ */
+export const publishedProblems = (
+  raw: Document,
+  published: Document
+): readonly string[] => {
+  const one = summaryOf(raw);
+  const other = summaryOf(published);
+  const counts = (["triangles", "vertices"] as const).flatMap((field) =>
+    one[field] === other[field]
+      ? []
+      : [`${field}: Raw Export ${one[field]}, Published Model ${other[field]}`]
+  );
+  const close = one.meanColor.every(
+    (channel, index) =>
+      Math.abs(channel - (other.meanColor[index] ?? 0)) <= MEAN_COLOR_TOLERANCE
+  );
+  return close
+    ? counts
+    : [
+        ...counts,
+        `mean color: Raw Export ${colorText(one.meanColor)}, Published Model ${colorText(other.meanColor)}`,
+      ];
+};

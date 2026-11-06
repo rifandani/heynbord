@@ -3,7 +3,7 @@ import { describe, expect, test } from "bun:test";
 import { Document } from "@gltf-transform/core";
 
 import { PART_ATTRIBUTE, PARTS_EXTRA, REGION_ATTRIBUTE } from "../region.ts";
-import { exportMeshes } from "./mesh-export.ts";
+import { exportMeshes, publishedProblems } from "./mesh-export.ts";
 
 const TETRAHEDRON = [
   [0, 0, 0],
@@ -24,10 +24,13 @@ interface Fixture {
   readonly names?: readonly string[];
   /** The bone of each vertex. */
   readonly bones?: readonly number[];
+  /** The red, green and blue of each vertex. */
+  readonly color?: number;
 }
 
 const skinned = ({
   bones,
+  color = 0.5,
   names = ["head", "cape"],
   parts,
   positions,
@@ -57,7 +60,7 @@ const skinned = ({
     )
     .setAttribute(
       "COLOR_0",
-      accessor("VEC3", new Float32Array(count * 3).fill(0.5))
+      accessor("VEC3", new Float32Array(count * 3).fill(color))
     )
     .setAttribute(PART_ATTRIBUTE, accessor("SCALAR", new Float32Array(parts)))
     .setAttribute(
@@ -196,5 +199,34 @@ describe("exportMeshes", () => {
     expect(() => exportMeshes(document)).toThrow(
       "2 vertices have no valid part"
     );
+  });
+});
+
+const triangleOf = (color: number) =>
+  skinned({ positions: openPart, parts: [1, 1, 1], regions: [1, 1, 1], color });
+
+describe("publishedProblems", () => {
+  test("accepts the 8-bit colors of a Published Model", () => {
+    const published = triangleOf(0.2);
+    const [primitive] =
+      published.getRoot().listMeshes()[0]?.listPrimitives() ?? [];
+    primitive
+      ?.getAttribute("COLOR_0")
+      ?.setArray(new Uint8Array(9).fill(51))
+      .setNormalized(true);
+    expect(publishedProblems(triangleOf(0.2), published)).toEqual([]);
+  });
+
+  test("finds a Raw Export with a new color", () => {
+    expect(publishedProblems(triangleOf(0.3), triangleOf(0.2))).toEqual([
+      "mean color: Raw Export 0.3000,0.3000,0.3000, Published Model 0.2000,0.2000,0.2000",
+    ]);
+  });
+
+  test("finds a Raw Export with new geometry", () => {
+    expect(publishedProblems(fixture(), triangleOf(0.5))).toEqual([
+      "triangles: Raw Export 5, Published Model 1",
+      "vertices: Raw Export 15, Published Model 3",
+    ]);
   });
 });

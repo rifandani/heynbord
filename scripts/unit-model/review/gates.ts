@@ -18,6 +18,7 @@ import { parseArgs } from "node:util";
 
 import { NodeIO } from "@gltf-transform/core";
 import { ALL_EXTENSIONS } from "@gltf-transform/extensions";
+import { MeshoptDecoder } from "meshoptimizer";
 import sharp from "sharp";
 
 import { modelContract } from "../../../apps/web/scripts/model-contract.ts";
@@ -25,7 +26,7 @@ import { readContracts, readRawModel } from "../../model-files.ts";
 import REGIONS from "../regions.json";
 import { contractProblems } from "../source-contract.ts";
 import { TURNTABLE_VIEWS, cutoutId, validateManifest } from "./manifest.ts";
-import { exportMeshes } from "./mesh-export.ts";
+import { exportMeshes, publishedProblems } from "./mesh-export.ts";
 import type { ExportedBone, ExportedMesh, MeshExport } from "./mesh-export.ts";
 
 const ROOT = path.resolve(import.meta.dirname, "../../..");
@@ -823,13 +824,16 @@ const loadSources = async (
     rawFile,
     `Run scripts/unit-model/${name}.py in Blender first.`
   );
-  const io = new NodeIO().registerExtensions(ALL_EXTENSIONS);
+  await MeshoptDecoder.ready;
+  const io = new NodeIO()
+    .registerExtensions(ALL_EXTENSIONS)
+    .registerDependencies({ "meshopt.decoder": MeshoptDecoder });
   const capture = await validateManifest(manifestPath);
   const recorded = readContracts(CONTRACTS)[`${name}.glb`];
   // SAFETY: `writeManifest` writes this shape, and `validateManifest` read it above.
   const manifest = JSON.parse(await readFile(manifestPath, "utf-8")) as {
     readonly reference: { readonly path: string };
-    readonly model: { readonly sha256: string };
+    readonly model: { readonly path: string; readonly sha256: string };
   };
   // SAFETY: `specProblems` reports a spec that does not match the schema.
   const spec = JSON.parse(await readFile(specFile, "utf-8")) as UnitSpec;
@@ -837,19 +841,23 @@ const loadSources = async (
   const { commit } = JSON.parse(
     await readFile(path.join(VENDOR, "SOURCE.json"), "utf-8")
   ) as { readonly commit: string };
+  const rawDocument = await io.readBinary(raw);
+  const published = await io.read(path.join(directory, manifest.model.path));
   return {
     name,
     directory,
     spec,
-    meshes: exportMeshes(await io.readBinary(raw)),
+    meshes: exportMeshes(rawDocument),
     painting: path.join(directory, manifest.reference.path),
     turnaround: turnaroundOf(name),
     inputProblems: [
       ...capture.errors.map((error) => `capture: ${error}`),
       ...specProblems(specFile),
       // The cutouts show the Published Model, and the mesh checks read the Raw
-      // Export. The Source Contract compares their bounds, bones and clips. It
-      // does not compare colors, so pack a recolored Raw Export before this run.
+      // Export. These 2 checks show that they are one model.
+      ...publishedProblems(rawDocument, published).map(
+        (problem) => `published model: ${problem}`
+      ),
       ...(recorded
         ? contractProblems(recorded, await modelContract(raw)).map(
             (problem) => `source contract: ${problem}`
