@@ -412,10 +412,8 @@ class Poses(clips.machine.Poses):
         }
 
     def rolling(self, base, frame, bump=0.0):
-        """The crew holds on. The gear turns at half of the speed of the wheels."""
-        t = self.t
-        angle = plan.rolling_angle(self.table, frame, clips.machine.WALK)
-        return {**super().rolling(base, frame, bump), "gear": t("gear", (X, angle * 0.5)), "flag": t("flag", (Z, 20))}
+        """The crew holds on."""
+        return {**super().rolling(base, frame, bump), "flag": self.t("flag", (Z, 20))}
 
     def aim(self, base):
         """The gunner takes aim: the cannon tips up a little."""

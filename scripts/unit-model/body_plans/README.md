@@ -612,6 +612,8 @@ The Source Contract did not change. After the move, `bun unit-model:contract:che
 | Keyframe digests        | 8, 0 changes     | 8, 0 changes  |
 | `source-contracts.json` | no change        | no change     |
 
+This table is the result of the Body Plan move. The later move to the Clip Library changed the `walk` digest of Grand Gearjammer, because its gear made a half turn in a loop. See `clips/README.md`.
+
 We also compared the data of a new Raw Export with an export of the old script. Positions, colors, joints, weights, parts, regions and bind matrices are the same. The triangle index bytes are different, as for Crag Rhino. 2 of 5,230 normals can also change, by 0.00009 at most, but this also occurs when you run the old script two times. An export of the old script can have the same normals as an export of the new script.
 
 ### Scripts that can move

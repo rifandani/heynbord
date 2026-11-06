@@ -70,7 +70,7 @@ No script gives a pose where the count is 0 of 0. The biped-small `call` is the 
 
 ## Override record
 
-Each moved unit keeps its clip durations and its keyframe digests. On 2026-11-06, after a new build of each Raw Export, `bun unit-model:contract:check` passed for all 7 units. We did not pack the Published Models again.
+Each moved unit keeps its clip durations and its keyframe digests, with one approved exception: the `walk` of Grand Gearjammer. On 2026-11-06, after a new build of each Raw Export, `bun unit-model:contract:check` passed for all 7 units. We packed only Grand Gearjammer again.
 
 "Base timing" is the count of clips that use the beats of the plan. "Lines" compares `build_clips` before the move with `PATCHES`, `Poses` and `build_clips` after the move.
 
@@ -81,10 +81,10 @@ Each moved unit keeps its clip durations and its keyframe digests. On 2026-11-06
 | Tusk Brute | biped-large | 8 | 4 | `idle`, `walk`, `attack`, `death` | 293 to 231 |
 | Crag Rhino | quadruped | 7 | 6 | `walk`, of 20 frames | 219 to 58 |
 | Amberwing Dart | flyer | 7 | 7 | none | 200 to 136 |
-| Grand Gearjammer | machine | 8 | 8 | none | 200 to 137 |
+| Grand Gearjammer | machine | 8 | 8 | none | 200 to 135 |
 | Bone Rampart | structure | 8 | 8 | none | 202 to 152 |
 
-The 7 scripts have 483 fewer lines (1,687 to 1,204), and the library has 1,492 lines. So the line count goes down only when more units move. Amberwing Dart and Grand Gearjammer have 0 changes of timing. The survey took their values for ties, so they do not test the base timing.
+The 7 scripts have 485 fewer lines (1,687 to 1,202), and the library has 1,492 lines. So the line count goes down only when more units move. Amberwing Dart and Grand Gearjammer have 0 changes of timing. The survey took their values for ties, so they do not test the base timing.
 
 These are the `Patch` names:
 
@@ -128,7 +128,7 @@ Issue #183 says that a unit overrides only the prop path, the effect bone or the
 
 `binding` is G1 of the img2threejs rig gates, and `poseReturn` and `hipReturn` are its loop rule. The game puts the lowest point of the rest pose on the ground, so `ground` uses that height.
 
-The `ground` limit comes from the moved units, because their digests must not change. The deepest value is 0.053 of the height. It is not a value that a person saw and approved. At 0.01 of the height, 6 of the 7 moved units fail. Tighten the limit when these clips change:
+The `ground` limit comes from the moved units, because their digests must not change. The deepest value is 0.053 of the height. The owner of the project accepted this limit for now on 2026-11-06. At 0.01 of the height, 6 of the 7 moved units fail. Tighten the limit when these clips change:
 
 | Unit | Deepest part | Depth (share of the height) | Vertices below 0.01 |
 | --- | --- | --- | --- |
@@ -144,9 +144,11 @@ The head of Warden Saelith is the one visible fault in this table. The fix chang
 
 ### Result on 2026-11-06
 
-6 of the 7 moved units pass. **Grand Gearjammer fails, and the digest rule stops the fix.** Its `walk` ends with the `gear` bone at 180 degrees, because its `rolling` turns the gear by half of the wheel angle. The base `rolling` gives a full turn, so a new machine does not get this fault. The gear has 12 teeth and 5 spokes, so a turn of 180 degrees is not a symmetry. So the spokes jump when the loop starts again. To fix it, turn the gear by a full wheel angle and refresh its Source Contract. We did not add an exception to the check.
+All 7 moved units pass.
 
-Of the 98 models, 62 pass. The failures in the other units are for #185 to #187:
+The `walk` of Grand Gearjammer failed `poseReturn` after the move. It ended with the `gear` bone at 180 degrees, because the script turned the gear by half of the wheel angle. The gear has 12 teeth and 5 spokes, so a turn of 180 degrees is not a symmetry. So the spokes jumped when the loop started again. The owner of the project approved the fix: the gear now makes a full turn in `walk`. The Source Contract and the Published Model of Grand Gearjammer are new. Only the `walk` digest changed. Its bounds, its bones and its 7 other digests did not change.
+
+Of the 98 models, 63 pass. The failures in the other units are for #185 to #187:
 
 - `ground` in `death`: 35 models, with Tunnel Saboteur the deepest at 1.18 of the height and Thornline Archer at 0.30.
 - `ground` in `hurt`: Coffin Lancer at 0.066.
