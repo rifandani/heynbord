@@ -34,13 +34,18 @@ sys.path.insert(0, os.path.join(REPO, "scripts", "unit-model"))
 import importlib  # noqa: E402
 
 import body_plans  # noqa: E402
+import clips  # noqa: E402
 import unit_model_kit as kit  # noqa: E402
 
 importlib.reload(kit)
 importlib.reload(body_plans.shared)
 importlib.reload(body_plans.quadruped)
+importlib.reload(clips.base)
+importlib.reload(clips.overrides)
+importlib.reload(clips.quadruped)
 
-from unit_model_kit import X, Y, Z, Clip, Part, blend, clamp01, faces_of, hex_color, lerp, turn  # noqa: E402
+from clips.overrides import Patch  # noqa: E402
+from unit_model_kit import X, Y, Z, Part, blend, clamp01, faces_of, hex_color  # noqa: E402
 
 plan = body_plans.BODY_PLANS["quadruped"]
 
@@ -351,225 +356,64 @@ def build_figure():
 # --- Clips -----------------------------------------------------------------------
 
 
-def build_clips(rig):
-    def slot(name):
-        return Clip(*plan.CLIP_SLOTS[name])
+PATCHES = (
+    Patch("walk", "heavy-trot", beats=clips.quadruped.walk_beats(20), frames=20),
+    Patch("attack", "horn-charge"),
+    Patch("death", "fall-left"),
+)
 
-    def t(bone, *rotations):
-        return turn(rig, bone, *rotations)
 
-    def at(bone, offset):
-        return kit.shift(rig, bone, offset)
-
-    def pose(base, **changes):
-        result = dict(base)
-        for key, value in changes.items():
-            result[key.replace("__", ".").replace("_at_", "@")] = value
-        return result
-
-    def legs(**angles):
-        """Leg swings: `FL=(upper, lower, foot)` in degrees about X. A negative upper swings forward."""
-        result = {}
-        for leg, (upper, lower, foot) in angles.items():
-            result[f"upper__{leg}"] = t(f"upper.{leg}", (X, upper))
-            result[f"lower__{leg}"] = t(f"lower.{leg}", (X, lower))
-            result[f"foot__{leg}"] = t(f"foot.{leg}", (X, foot))
-        return result
-
-    def ears(flick=0.0):
+class Poses(clips.quadruped.Poses):
+    def ears(self, flick=0.0):
         return {
-            "ear.L": t("ear.L", (Z, 25 * flick)),
-            "ear.R": t("ear.R", (Z, -25 * flick)),
+            "ear.L": self.t("ear.L", (Z, 25 * flick)),
+            "ear.R": self.t("ear.R", (Z, -25 * flick)),
         }
 
-    def stand(breath=0.0, sway=0.0):
+    def stance(self, breath=0.0, sway=0.0):
         """The idle stance: turned a little to the camera, the head low, it snorts and the ears flick."""
-        return {
-            "hips@loc": at("hips", (0, 0, -breath * 0.004)),
-            "hips": t("hips", (Z, -8)),
-            "spine": t("spine", (X, -breath * 1.5)),
-            "chest": t("chest", (X, breath * 1.5), (Z, sway * 2)),
-            "head": t("head", (Z, -6 + sway * 5), (X, -2 + breath * 4), (Y, sway * 3)),
-            **ears(0.2 + 0.6 * max(0.0, sway)),
-            "tail": t("tail", (Z, sway * 25), (X, -breath * 6)),
-        }
-
-    def gasp(breath=0.0):
-        """Low HP: the legs give a little, and the heavy head hangs to the ground."""
-        return pose(
-            stand(),
-            hips_at_loc=at("hips", (0, 0, -0.003 - breath * 0.003)),
-            spine=t("spine", (X, 3)),
-            chest=t("chest", (X, 4 + breath * 2)),
-            head=t("head", (X, 8 + breath * 3), (Y, -6)),
-            **ears(-0.4),
-            tail=t("tail", (X, 10)),
-            **legs(FL=(-4, 14, -10), FR=(4, 12, -16), BL=(-6, 12, -6), BR=(-6, 12, -6)),
+        return self.pose(
+            super().stance(breath, sway),
+            tail=self.t("tail", (Z, sway * 25), (X, -breath * 6)),
+            **self.ears(0.2 + 0.6 * max(0.0, sway)),
         )
 
-    def recoil(base, amount=1.0):
-        """The hit throws the head up and the body back."""
-        return pose(
-            base,
-            hips_at_loc=at("hips", (0, 0.03 * amount, 0.0)),
-            chest=t("chest", (X, -6 * amount), (Z, 6 * amount)),
-            head=t("head", (X, -16 * amount), (Z, 10 * amount)),
-            **ears(amount),
-            tail=t("tail", (X, -20 * amount)),
-        )
+    def gasp(self, base, breath=0.0):
+        return self.pose(super().gasp(base, breath), tail=self.t("tail", (X, 10)), **self.ears(-0.4))
 
-    def buckle(base):
-        """The front legs give way first."""
-        return pose(
-            base,
-            hips_at_loc=at("hips", (0, 0, -0.005)),
-            chest=t("chest", (X, 10)),
-            head=t("head", (X, 6)),
-            **ears(0.5),
-            **legs(FL=(-20, 50, -30), FR=(-10, 44, -30), BL=(-24, 36, -10), BR=(-20, 36, -10)),
-        )
+    def recoil(self, base, amount=1.0):
+        return self.pose(super().recoil(base, amount), tail=self.t("tail", (X, -20 * amount)), **self.ears(amount))
 
-    def fallen(base, bounce=0.0):
-        """
-        On its left side, the legs stiff and out. The Battle camera sees the
-        right side of a player Unit (-X), so it sees the legs and the belly.
-        """
-        return pose(
-            base,
-            root=t("root", (Y, 84 - bounce)),
-            root_at_loc=at("root", (-0.36, 0, 0.2)),
-            chest=t("chest", (X, 4)),
-            head=t("head", (X, 8), (Y, 10)),
-            **ears(-0.4),
-            tail=t("tail", (X, -10)),
-            **legs(FL=(-30, 10, -10), FR=(-12, 8, -10), BL=(30, 6, 0), BR=(8, 8, 0)),
-        )
+    def buckle(self, base):
+        return self.pose(super().buckle(base), **self.ears(0.5))
 
-    def low(base):
-        """Down low with the legs folded, as a summon starts."""
-        return pose(
-            base,
-            hips_at_loc=at("hips", (0, 0, -0.06)),
-            chest=t("chest", (X, 2)),
-            head=t("head", (X, -6)),
-            **ears(-0.4),
-            **legs(FL=(-50, 100, -50), FR=(-50, 100, -50), BL=(-60, 90, -30), BR=(-60, 90, -30)),
-        )
+    def fallen(self, base, bounce=0.0):
+        return self.pose(super().fallen(base, bounce), tail=self.t("tail", (X, -10)), **self.ears(-0.4))
 
-    def snort(base, rear=1.0):
-        """The head tossed up: a snort. The front lifts a little with `rear`."""
-        return pose(
-            base,
-            hips=t("hips", (Z, -8), (X, -8 * rear)),
-            hips_at_loc=at("hips", (0, 0.02 * rear, 0.0)),
-            chest=t("chest", (X, -4 * rear)),
-            head=t("head", (Z, -4), (X, -24)),
-            **ears(1.0),
-            tail=t("tail", (X, -24)),
-            **legs(FL=(-20 * rear, 36 * rear, -14 * rear), FR=(-6 * rear, 20 * rear, -14 * rear), BL=(6 * rear, 0, 0), BR=(8 * rear, 0, 0)),
-        )
+    def low(self, base):
+        t = self.t
+        return self.pose(super().low(base), chest=t("chest", (X, 2)), head=t("head", (X, -6)), **self.ears(-0.4))
 
-    def stride(phase):
-        """
-        The trot: the legs move in diagonal pairs, FL with BR and FR with BL.
-        `phase` 0 to 1 is one cycle. The body bobs at each step.
-        """
-        result = pose(
-            stand(),
-            hips_at_loc=at("hips", (0, 0, 0.012 * abs(math.sin(phase * 2 * math.pi)) - 0.006)),
-            chest=t("chest", (Y, 2 * math.sin(phase * 2 * math.pi))),
-            head=t("head", (Z, -6), (X, 2 + 4 * math.sin(phase * 4 * math.pi))),
-            tail=t("tail", (Z, 16 * math.sin(phase * 2 * math.pi)), (X, -10)),
-        )
-        for leg, offset in (("FL", 0.0), ("BR", 0.0), ("FR", 0.5), ("BL", 0.5)):
-            local = (phase - offset) % 1.0
-            # The first 40% of the cycle in the air, the rest on the ground, pushed back.
-            if local < 0.4:
-                u = local / 0.4
-                swing = lerp(20, -20, u)
-                lift = math.sin(u * math.pi)
-            else:
-                u = (local - 0.4) / 0.6
-                swing = lerp(-20, 20, u)
-                lift = 0.0
-            back = leg.startswith("B")
-            bend = (36 if back else 48) * lift
-            result = pose(result, **legs(**{leg: (swing - 10 * lift, bend, 10 * lift - swing - bend)}))
-        return result
+    def snort(self, base, rear=1.0):
+        return self.pose(super().snort(base, rear), tail=self.t("tail", (X, -24)), **self.ears(1.0))
 
-    # The attack (Trample): it paws, lowers its head and charges, then tosses
-    # the horn up through the enemy. The slash effect starts at 50% of the
-    # attack (`MELEE_IMPACT` in fx.ts), so the horn hooks up at frame 15 of 30.
-    def paw(base):
-        return pose(
-            base,
-            hips_at_loc=at("hips", (0, 0.04, 0.0)),
-            chest=t("chest", (X, 4)),
-            head=t("head", (Z, -4), (X, 10)),
-            **ears(1.0),
-            tail=t("tail", (X, -20)),
-            **legs(FL=(-10, 16, -6), FR=(-30, 60, -10), BL=(-12, 18, -6), BR=(-10, 16, -6)),
-        )
+    def stride(self, base, phase):
+        wave = math.sin(phase * 2 * math.pi)
+        return self.pose(super().stride(base, phase), tail=self.t("tail", (Z, 16 * wave), (X, -10)))
 
-    def charge(base):
-        return pose(
-            base,
-            hips_at_loc=at("hips", (0, -0.1, 0.02)),
-            hips=t("hips", (Z, -8), (X, 2)),
-            chest=t("chest", (X, 4)),
-            head=t("head", (Z, -4), (X, 12)),
-            **ears(1.0),
-            tail=t("tail", (X, -40)),
-            **legs(FL=(-34, 30, 0), FR=(-20, 24, -4), BL=(30, 0, -26), BR=(24, -4, -24)),
-        )
+    def paw(self, base):
+        return self.pose(super().paw(base), tail=self.t("tail", (X, -20)), **self.ears(1.0))
 
-    def toss(base, follow=0.0):
-        return pose(
-            base,
-            hips_at_loc=at("hips", (0, -0.17 - 0.02 * follow, 0.04)),
-            hips=t("hips", (Z, -8), (X, -6)),
-            chest=t("chest", (X, -6)),
-            head=t("head", (Z, -4), (X, -28 - 6 * follow)),
-            **ears(1.0),
-            tail=t("tail", (X, -30)),
-            **legs(FL=(-30, 30, 0), FR=(-16, 20, -4), BL=(24, 0, -24), BR=(30, -4, -26)),
-        )
+    def charge(self, base):
+        return self.pose(super().charge(base), tail=self.t("tail", (X, -40)), **self.ears(1.0))
 
-    clips = []
-    idle = slot("idle")
-    for frame, breath, sway in ((0, 0, 0), (12, 0.5, 1), (24, 1, 0), (36, 0.5, -1), (48, 0, 0)):
-        idle.key(frame, stand(breath, sway))
-    clips.append(idle)
+    def toss(self, base, follow=0.0):
+        return self.pose(super().toss(base, follow), tail=self.t("tail", (X, -30)), **self.ears(1.0))
 
-    low_hp = slot("lowHp")
-    for frame, breath in ((0, 0), (24, 1), (48, 0)):
-        low_hp.key(frame, gasp(breath))
-    clips.append(low_hp)
 
-    walk = Clip("walk", 20, loop=True)
-    for frame in range(0, 21, 2):
-        walk.key(frame, stride(frame / 20))
-    clips.append(walk)
-
-    attack = slot("attack")
-    attack.key(0, stand()).key(5, paw(stand())).key(10, charge(stand()))
-    attack.key(15, toss(stand())).key(19, toss(stand(), 1)).key(26, stand()).key(30, stand())
-    clips.append(attack)
-
-    hurt = slot("hurt")
-    hurt.key(0, stand()).key(3, recoil(stand())).key(8, recoil(stand(), 0.4)).key(16, stand())
-    clips.append(hurt)
-
-    death = slot("death")
-    death.key(0, stand()).key(5, recoil(stand())).key(14, buckle(stand()))
-    death.key(26, fallen(stand())).key(30, fallen(stand(), 5)).key(36, fallen(stand()))
-    clips.append(death)
-
-    summon = slot("summon")
-    summon.key(0, low(stand())).key(8, low(stand())).key(15, snort(stand())).key(19, snort(stand(), 0.6))
-    summon.key(24, stand())
-    clips.append(summon)
-    return clips
+def build_clips(rig):
+    poses = Poses(*kit.pose_tools(rig))
+    return clips.overrides.build(clips.quadruped.CLIPS, poses, PATCHES, without=("cast", "rebirth"))
 
 
 def build(export=True):

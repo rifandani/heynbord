@@ -18,6 +18,7 @@ from collections import Counter
 
 import bmesh
 import bpy
+from clips.base import Clip
 from mathutils import Matrix, Quaternion, Vector
 from unit_regions import PART_ATTRIBUTE, PARTS_EXTRA, REGION_ATTRIBUTE, part_region, region_id
 
@@ -455,6 +456,18 @@ def shift(rig, bone, offset):
     return rest.inverted() @ Vector(offset)
 
 
+def pose_tools(rig):
+    """The `t` and `at` functions of a `clips.base.Poses`, for one rig."""
+
+    def t(bone, *rotations):
+        return turn(rig, bone, *rotations)
+
+    def at(bone, offset):
+        return shift(rig, bone, offset)
+
+    return t, at
+
+
 def add_empty(name, location=(0, 0, 0)):
     empty = bpy.data.objects.new(name, None)
     empty.empty_display_size = 0.03
@@ -462,25 +475,6 @@ def add_empty(name, location=(0, 0, 0)):
     empty.rotation_mode = "QUATERNION"
     bpy.context.scene.collection.objects.link(empty)
     return empty
-
-
-class Clip:
-    """
-    The keys of one clip. Each key is a frame and a pose: a dict of
-    bone -> quaternion, plus `"<bone>@loc"` -> Vector, plus `"<empty>@pos"` ->
-    Vector for an IK target, plus `"<bone>/<constraint>"` -> influence, plus
-    `"<bone>@scale"` -> float.
-    """
-
-    def __init__(self, name, frames, loop=False):
-        self.name = name
-        self.frames = frames
-        self.loop = loop
-        self.keys = []
-
-    def key(self, frame, pose):
-        self.keys.append((frame, pose))
-        return self
 
 
 def _key_pose(rig, empties, frame, pose):

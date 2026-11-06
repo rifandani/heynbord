@@ -36,14 +36,21 @@ sys.path.insert(0, os.path.join(REPO, "scripts", "unit-model"))
 import importlib  # noqa: E402
 
 import body_plans  # noqa: E402
+import clips  # noqa: E402
 import unit_model_kit as kit  # noqa: E402
 
 importlib.reload(kit)
 importlib.reload(body_plans.shared)
 importlib.reload(body_plans.biped)
 importlib.reload(body_plans.biped_small)
+importlib.reload(clips.base)
+importlib.reload(clips.overrides)
+importlib.reload(clips.biped)
+importlib.reload(clips.biped_small)
 
-from unit_model_kit import X, Y, Z, Clip, Part, blend, faces_of, hex_color, turn  # noqa: E402
+from clips.base import Beat  # noqa: E402
+from clips.overrides import Fall, Patch  # noqa: E402
+from unit_model_kit import X, Y, Z, Part, blend, faces_of, hex_color  # noqa: E402
 
 plan = body_plans.BODY_PLANS["biped-small"]
 
@@ -382,28 +389,89 @@ def build_figure():
 # --- Clips -----------------------------------------------------------------------
 
 
-def build_clips(rig):
-    def slot(name):
-        return Clip(*plan.CLIP_SLOTS[name])
+# Two fast strides in each cycle.
+SWIFT_WALK = tuple(
+    beat
+    for start in (0, 12)
+    for beat in (
+        Beat(start, "stride", (1,)),
+        Beat(start + 3, "stride", (1, 1)),
+        Beat(start + 6, "stride", (-1,)),
+        Beat(start + 9, "stride", (-1, 1)),
+    )
+) + (Beat(24, "stride", (1,)),)
 
-    def t(bone, *rotations):
-        return turn(rig, bone, *rotations)
+PATCHES = (
+    Patch(
+        "idle",
+        "spark-flicker",
+        beats=tuple(
+            Beat(frame, "stance", args)
+            for frame, *args in ((0, 0, 1, 1, 0), (6, 0.5, 1, 0.6, 1), (12, 1, 1, 1.3, 0), (18, 0.5, 0.2, 0.7, 1), (24, 0, 0, 1.2, 0), (30, 0.5, 0.1, 0.6, 1), (36, 1, 1, 1.4, 0), (42, 0.5, 1, 0.7, 1), (48, 0, 1, 1, 0))
+        ),
+    ),
+    Patch(
+        "lowHp",
+        "short-fuse",
+        beats=tuple(
+            Beat(frame, "slump", args)
+            for frame, *args in ((0, 0, 1.4), (6, 0.25, 0.9), (12, 0.5, 1.7), (18, 0.75, 1.0), (24, 1, 1.6), (30, 0.75, 0.9), (36, 0.5, 1.7), (42, 0.25, 1.0), (48, 0, 1.4))
+        ),
+    ),
+    Patch("walk", "swift-stride", beats=SWIFT_WALK),
+    Patch(
+        "attack",
+        "bomb-bonk",
+        beats=(Beat(0), Beat(8, "windup"), Beat(13, "strike"), Beat(16, "strike"), Beat(21, "startled"), Beat(25, "startled"), Beat(30)),
+    ),
+    # The death is the Last Breath: the spark flares, the bomb blows up at
+    # frame 10, and the blast throws him onto his back.
+    Patch(
+        "death",
+        "last-breath-blast",
+        beats=(
+            Beat(0),
+            Beat(4, "recoil"),
+            Beat(8, "flare", (2.2,)),
+            Beat(9, "flare", (2.4,)),
+            Beat(10, "bang"),
+            Beat(14, "blown", (1.7, 30, 0.12)),
+            Beat(19, "blown", (1.2, 10, 0.04)),
+            Beat(23, "blown", (0.01,)),
+            Beat(27, "blown", (0.01, 6)),
+            Beat(36, "blown", (0.01,)),
+        ),
+    ),
+    # Rebirth: the Unit falls (45% of the event, `REBORN_FALL`), then gets up.
+    # The fuse goes out with no blast, and lights again at the end.
+    Patch(
+        "rebirth",
+        "fuse-out",
+        beats=(
+            Beat(0),
+            Beat(4, "recoil"),
+            Beat(8, "flare", (0.01,)),
+            Beat(20, "fainted"),
+            Beat(22, "fainted", (3,)),
+            Beat(30, "fainted"),
+            Beat(36, "crouch"),
+            Beat(42, "heroic"),
+            Beat(48),
+        ),
+    ),
+)
 
-    def at(bone, offset):
-        return kit.shift(rig, bone, offset)
 
-    def pose(base, **changes):
-        result = dict(base)
-        for key, value in changes.items():
-            result[key.replace("__", ".").replace("_at_", "@")] = value
-        return result
+class Poses(clips.biped_small.Poses):
+    fall = Fall(X, -86, (0, 0.04, 0.07))
 
-    def stand(breath=0.0, look=1.0, spark=1.0, tap=0.0):
+    def stance(self, breath=0.0, look=1.0, spark=1.0, tap=0.0):
         """
         The idle stance: on his toes, hugging the bomb. `look` is 1 when he
         looks down at the fuse and 0 when he looks ahead, `spark` is the size
         of the spark, and `tap` lifts the right heel.
         """
+        t, at = self.t, self.at
         return {
             "hips@loc": at("hips", (0, 0.01, -0.012 - breath * 0.003)),
             "hips": t("hips", (Z, -6)),
@@ -422,10 +490,11 @@ def build_clips(rig):
             "blast@scale": 0.01,
         }
 
-    def slump(breath=0.0, spark=1.4):
+    def slump(self, base, breath=0.0, spark=1.4):
         """Low HP: the fuse is short. He sits down hard and stares at it, and the spark flares."""
-        return pose(
-            stand(look=1.0, spark=spark),
+        t, at = self.t, self.at
+        return self.pose(
+            self.stance(look=1.0, spark=spark),
             hips_at_loc=at("hips", (0, 0.05, -0.16 - breath * 0.004)),
             hips=t("hips", (Z, -6), (X, -20)),
             spine=t("spine", (X, 28 + breath * 3)),
@@ -441,32 +510,28 @@ def build_clips(rig):
             foot__R=t("foot.R", (X, 0)),
         )
 
-    def recoil(base, amount=1.0):
+    def recoil(self, base, amount=1.0):
         """The hit pushes the upper body back, and the spark jumps."""
-        return pose(
-            base,
+        t, at = self.t, self.at
+        return self.pose(
+            self.unchanged(super().recoil(base, amount), base, "upperarm.R"),
             hips_at_loc=at("hips", (0, 0.015 * amount, -0.016)),
-            spine=t("spine", (X, -6 * amount)),
             chest=t("chest", (X, -12 * amount), (Z, 6 * amount)),
             head=t("head", (Z, 8), (X, -20 * amount)),
             scarf=t("scarf", (X, 30 * amount)),
             spark_at_scale=1 + 0.8 * amount,
         )
 
-    def flung(base, bounce=0.0, rise=0.0):
+    def fallen(self, base, bounce=0.0, rise=0.0):
         """
         Flat on the back with the arms and legs out. `rise` lifts him in the
         air, as the blast throws him.
         """
-        return pose(
-            base,
-            root=t("root", (X, -86 + bounce)),
+        t, at = self.t, self.at
+        return self.pose(
+            super().fallen(base, bounce),
             root_at_loc=at("root", (0, 0.04, 0.07 + rise)),
             hips_at_loc=at("hips", (0, 0, 0)),
-            hips=t("hips", (Z, 0)),
-            spine=t("spine", (X, 4)),
-            chest=t("chest", (X, 0)),
-            neck=t("neck", (X, 10)),
             head=t("head", (X, 20), (Z, -30)),
             scarf=t("scarf", (X, 120)),
             upperarm__R=t("upperarm.R", (Y, -70), (X, 20)),
@@ -475,16 +540,15 @@ def build_clips(rig):
             forearm__L=t("forearm.L", (X, -20)),
             thigh__L=t("thigh.L", (X, -40), (Y, -16)),
             shin__L=t("shin.L", (X, 30)),
-            foot__L=t("foot.L", (X, 0)),
             thigh__R=t("thigh.R", (X, -24), (Y, 16)),
             shin__R=t("shin.R", (X, 50)),
-            foot__R=t("foot.R", (X, 0)),
         )
 
-    def fainted(base, bounce=0.0):
+    def fainted(self, base, bounce=0.0):
         """Flat on the back, still with the bomb: the fuse is out."""
-        return pose(
-            flung(base, bounce),
+        t = self.t
+        return self.pose(
+            self.fallen(base, bounce),
             upperarm__R=t("upperarm.R", (X, 0)),
             forearm__R=t("forearm.R", (X, 0)),
             upperarm__L=t("upperarm.L", (X, 0)),
@@ -492,44 +556,52 @@ def build_clips(rig):
             spark_at_scale=0.01,
         )
 
-    def crouch(base):
-        """Low on both knees, as a summon starts and a Rebirth gets up."""
-        return pose(
-            base,
-            hips_at_loc=at("hips", (0, 0.02, -0.1)),
-            spine=t("spine", (X, 26)),
+    def flare(self, base, spark):
+        return self.pose(base, spark_at_scale=spark)
+
+    def bang(self, base):
+        return self.pose(base, bomb_at_scale=0.01, spark_at_scale=0.01, blast_at_scale=1.0)
+
+    def blown(self, base, blast, bounce=0.0, rise=0.0):
+        return self.pose(self.fallen(base, bounce, rise), bomb_at_scale=0.01, spark_at_scale=0.01, blast_at_scale=blast)
+
+    def crouch(self, base):
+        t = self.t
+        return self.pose(
+            super().crouch(base),
             head=t("head", (X, 20)),
             thigh__L=t("thigh.L", (X, -64), (Y, -8)),
             shin__L=t("shin.L", (X, 104)),
-            foot__L=t("foot.L", (X, -40)),
             thigh__R=t("thigh.R", (X, -54), (Y, 8)),
             shin__R=t("shin.R", (X, 104)),
-            foot__R=t("foot.R", (X, -50)),
             spark_at_scale=0.3,
         )
 
-    def proud(base):
+    def rising(self, base):
+        return self.pose(self.crouch(base), hips_at_loc=self.at("hips", (0, 0.02, -0.08)))
+
+    def heroic(self, base):
         """Up again on his toes, the spark bright: the end of a summon and a Rebirth."""
-        return pose(
-            base,
+        t, at = self.t, self.at
+        return self.pose(
+            self.unchanged(super().heroic(base), base, "upperarm.R", "forearm.R", "thigh.L", "shin.L", "thigh.R", "shin.R"),
             hips_at_loc=at("hips", (0, 0, 0.01)),
-            spine=t("spine", (X, -4)),
-            chest=t("chest", (X, -10)),
             head=t("head", (Z, 4), (X, -12)),
             foot__L=t("foot.L", (X, -30)),
             foot__R=t("foot.R", (X, -30)),
             spark_at_scale=1.6,
         )
 
-    def stride(front, lift=0.0):
+    def stride(self, base, front, lift=0.0):
         """
         A fast run on his toes, leaned forward, his eyes on the fuse. `front`
         is 1 for the left foot, -1 for the right; `lift` is 1 as the back
         foot passes.
         """
+        t, at = self.t, self.at
         lead, back = ("L", "R") if front == 1 else ("R", "L")
-        return pose(
-            stand(look=1.0, spark=1.0 + 0.3 * lift),
+        return self.pose(
+            self.stance(look=1.0, spark=1.0 + 0.3 * lift),
             hips_at_loc=at("hips", (0, -0.01, -0.03 + lift * 0.02)),
             hips=t("hips", (X, 14), (Z, -6 + 6 * front)),
             spine=t("spine", (X, 14)),
@@ -550,8 +622,9 @@ def build_clips(rig):
     # The attack: he leans back with the bomb, then bonks the target with it.
     # The hit lands at 50% of the clip (frame 15). Then he sees what he hit
     # with, and jumps back.
-    def wind(base):
-        return pose(
+    def windup(self, base):
+        t, at = self.t, self.at
+        return self.pose(
             base,
             hips_at_loc=at("hips", (0, 0.03, -0.02)),
             spine=t("spine", (X, -8)),
@@ -566,8 +639,9 @@ def build_clips(rig):
             foot__R=t("foot.R", (X, -30)),
         )
 
-    def bonk(base):
-        return pose(
+    def strike(self, base):
+        t, at = self.t, self.at
+        return self.pose(
             base,
             hips_at_loc=at("hips", (0, -0.08, -0.03)),
             hips=t("hips", (X, 6)),
@@ -585,9 +659,10 @@ def build_clips(rig):
             spark_at_scale=1.5,
         )
 
-    def startled(base):
+    def startled(self, base):
         """He sees what he hit with: he jumps back, the bomb held out."""
-        return pose(
+        t, at = self.t, self.at
+        return self.pose(
             base,
             hips_at_loc=at("hips", (0, 0.03, 0.02)),
             spine=t("spine", (X, -10)),
@@ -604,59 +679,10 @@ def build_clips(rig):
             spark_at_scale=1.3,
         )
 
-    clips = []
-    idle = slot("idle")
-    for frame, breath, look, spark, tap in ((0, 0, 1, 1, 0), (6, 0.5, 1, 0.6, 1), (12, 1, 1, 1.3, 0), (18, 0.5, 0.2, 0.7, 1), (24, 0, 0, 1.2, 0), (30, 0.5, 0.1, 0.6, 1), (36, 1, 1, 1.4, 0), (42, 0.5, 1, 0.7, 1), (48, 0, 1, 1, 0)):
-        idle.key(frame, stand(breath, look, spark, tap))
-    clips.append(idle)
 
-    low = slot("lowHp")
-    for frame, breath, spark in ((0, 0, 1.4), (6, 0.25, 0.9), (12, 0.5, 1.7), (18, 0.75, 1.0), (24, 1, 1.6), (30, 0.75, 0.9), (36, 0.5, 1.7), (42, 0.25, 1.0), (48, 0, 1.4)):
-        low.key(frame, slump(breath, spark))
-    clips.append(low)
-
-    # Swift: two fast strides in each cycle.
-    walk = slot("walk")
-    for start in (0, 12):
-        walk.key(start, stride(1)).key(start + 3, stride(1, 1)).key(start + 6, stride(-1)).key(start + 9, stride(-1, 1))
-    walk.key(24, stride(1))
-    clips.append(walk)
-
-    attack = slot("attack")
-    attack.key(0, stand()).key(8, wind(stand())).key(13, bonk(stand())).key(16, bonk(stand()))
-    attack.key(21, startled(stand())).key(25, startled(stand())).key(30, stand())
-    clips.append(attack)
-
-    hurt = slot("hurt")
-    hurt.key(0, stand()).key(3, recoil(stand())).key(8, recoil(stand(), 0.4)).key(16, stand())
-    clips.append(hurt)
-
-    # The death is the Last Breath: the spark flares, the bomb blows up at
-    # frame 10, and the blast throws him onto his back.
-    death = slot("death")
-    death.key(0, stand()).key(4, recoil(stand())).key(8, pose(stand(look=1.0), spark_at_scale=2.2))
-    death.key(9, pose(stand(look=1.0), spark_at_scale=2.4, blast_at_scale=0.01))
-    death.key(10, pose(stand(look=1.0), bomb_at_scale=0.01, spark_at_scale=0.01, blast_at_scale=1.0))
-    death.key(14, pose(flung(stand(), 30, 0.12), bomb_at_scale=0.01, spark_at_scale=0.01, blast_at_scale=1.7))
-    death.key(19, pose(flung(stand(), 10, 0.04), bomb_at_scale=0.01, spark_at_scale=0.01, blast_at_scale=1.2))
-    death.key(23, pose(flung(stand()), bomb_at_scale=0.01, spark_at_scale=0.01, blast_at_scale=0.01))
-    death.key(27, pose(flung(stand(), 6), bomb_at_scale=0.01, spark_at_scale=0.01, blast_at_scale=0.01))
-    death.key(36, pose(flung(stand()), bomb_at_scale=0.01, spark_at_scale=0.01, blast_at_scale=0.01))
-    clips.append(death)
-
-    # Rebirth: the Unit falls (45% of the event, `REBORN_FALL`), then gets up.
-    # The fuse goes out with no blast, and lights again at the end.
-    rebirth = slot("rebirth")
-    rebirth.key(0, stand()).key(4, recoil(stand())).key(8, pose(stand(), spark_at_scale=0.01))
-    rebirth.key(20, fainted(stand())).key(22, fainted(stand(), 3)).key(30, fainted(stand()))
-    rebirth.key(36, crouch(stand())).key(42, proud(stand())).key(48, stand())
-    clips.append(rebirth)
-
-    summon = slot("summon")
-    summon.key(0, crouch(stand())).key(10, pose(crouch(stand()), hips_at_loc=at("hips", (0, 0.02, -0.08))))
-    summon.key(17, proud(stand())).key(24, stand())
-    clips.append(summon)
-    return clips
+def build_clips(rig):
+    poses = Poses(*kit.pose_tools(rig))
+    return clips.overrides.build(clips.biped_small.CLIPS, poses, PATCHES, without=("cast",))
 
 
 def build(export=True):

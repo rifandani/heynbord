@@ -345,7 +345,7 @@ No script of the survey has a constraint, so this plan has no IK.
 
 ### Crag Rhino
 
-The Source Contract did not change. After the move, `bun unit-model:contract:check crag-rhino` passes: the bounds, 20 bones, 7 clip durations and 7 keyframe digests are the same to the last bit. We did not pack the Published Model again. Its walk has 20 frames, so it keeps a plain `Clip`.
+The Source Contract did not change. After the move, `bun unit-model:contract:check crag-rhino` passes: the bounds, 20 bones, 7 clip durations and 7 keyframe digests are the same to the last bit. We did not pack the Published Model again. Its walk has 20 frames, so its `Patch` gives `frames`.
 
 We also compared the data of a new Raw Export with an export of the old script. Positions, normals, colors, joints, weights, parts, regions and bind matrices are the same. Only the triangle index bytes are different, and they also change when you run one script two times. So the bytes of a Raw Export are not a useful check.
 
@@ -353,7 +353,7 @@ We also compared the data of a new Raw Export with an export of the old script. 
 
 The survey put each script's own values in the proportion table, then compared the bones with its `BONES`. All 11 scripts give the same bones, so 10 more scripts can move now: bristleback-boar, cave-bear, crag-lizard, frost-elk-matriarch, frostfang-lynx, gorehorn-red-maw, old-frostmaw, tailsweep-basilisk, winter-maw and woolly-mammoth.
 
-A script with a different clip length keeps a plain `Clip` for that clip.
+A script with a different clip length gives `frames` in a `Patch` when it moves to the Clip Library.
 
 These beast scripts are not on this plan, because they do not have this skeleton:
 
@@ -403,7 +403,7 @@ The other poses are not in the rule, because they do not agree:
 - A `lowHp` pose of a creature drops the root by 0.05 or 0.06.
 - A summon of a figure starts at a height of 0 or lower.
 
-The Clip Library issue #183 owns these poses.
+The `droop` and `folded` roles of `clips/flyer.py` have the root drop of a creature. Each figure overrides its own poses. See `clips/README.md`.
 
 | Unit | Lift | `float_z` | `bob_z` | Lowest part | Lowest Z | Parts below 0 |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -512,7 +512,7 @@ The survey put each script's own values in the table, then compared the bones wi
 
 - Boss Snikkit needs 10 overrides, with `wheel_turns=2`.
 - Junk Walker uses `walker_poles`, `walker_leg` and `crew_bones` in `trunk`, and it keeps its IK.
-- Rocket Barrel Rider sets `carrier="barrel"` and `wheels=False`, and it gives its rider in `trunk`. It keeps a plain `Clip` for `walk`.
+- Rocket Barrel Rider sets `carrier="barrel"` and `wheels=False`, and it gives its rider in `trunk`. It gives `frames` for `walk` in a `Patch`.
 
 ## structure
 

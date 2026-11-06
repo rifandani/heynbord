@@ -31,13 +31,18 @@ sys.path.insert(0, os.path.join(REPO, "scripts", "unit-model"))
 import importlib  # noqa: E402
 
 import body_plans  # noqa: E402
+import clips  # noqa: E402
 import unit_model_kit as kit  # noqa: E402
 
 importlib.reload(kit)
 importlib.reload(body_plans.shared)
 importlib.reload(body_plans.structure)
+importlib.reload(clips.base)
+importlib.reload(clips.overrides)
+importlib.reload(clips.structure)
 
-from unit_model_kit import X, Y, Z, Clip, Part, blend, faces_of, hex_color, lerp, panel, turn  # noqa: E402
+from clips.overrides import Patch  # noqa: E402
+from unit_model_kit import X, Y, Z, Part, blend, faces_of, hex_color, lerp, panel  # noqa: E402
 
 plan = body_plans.BODY_PLANS["structure"]
 
@@ -359,26 +364,26 @@ def build_figure():
 # --- Clips -----------------------------------------------------------------------
 
 
-def build_clips(rig):
-    def slot(name):
-        return Clip(*plan.CLIP_SLOTS[name])
+PATCHES = (
+    Patch("walk", "wall-heave"),
+    Patch("attack", "hammer-smash"),
+    Patch("death", "wall-collapse"),
+    Patch("rebirth", "wall-rebuild"),
+)
 
-    def t(bone, *rotations):
-        return turn(rig, bone, *rotations)
 
-    def at(bone, offset):
-        return kit.shift(rig, bone, offset)
-
-    def lean(index, degrees, side=0.0):
+class Poses(clips.structure.Poses):
+    def lean(self, index, degrees, side=0.0):
         """A shield leans out (positive) or in, and turns a little along the wall."""
         n = outward(SHIELD_ANGLES[index])
-        return t(f"shield.{index}", (Z.cross(n), degrees), (n, side))
+        return self.t(f"shield.{index}", (Z.cross(n), degrees), (n, side))
 
-    def rest(sway=0.0, rattle=0.0):
+    def stance(self, sway=0.0, rattle=0.0):
         """
         The wall stands. The skeletons look about over the top, the flag moves
         and the shields rattle a little.
         """
+        t = self.t
         result = {
             "skel.A": t("skel.A", (Y, -3 * sway)),
             "skel.A.head": t("skel.A.head", (Z, 20 * sway), (X, 6)),
@@ -390,42 +395,34 @@ def build_clips(rig):
         }
         for index in range(len(SHIELD_ANGLES)):
             phase = (index * 0.37) % 1
-            result[f"shield.{index}"] = lean(index, 1.5 * rattle * math.sin((phase + sway) * math.pi), 0)
+            result[f"shield.{index}"] = self.lean(index, 1.5 * rattle * math.sin((phase + sway) * math.pi), 0)
         return result
 
-    def pose(base, changes):
-        result = dict(base)
-        result.update(changes)
-        return result
+    def battered(self, base, breath=0.0):
+        """Two shields lean out, the skeletons slump and the flag hangs."""
+        t = self.t
+        return {
+            **super().battered(base),
+            "shield.0": self.lean(0, 18, -8),
+            "shield.1": self.lean(1, -6, 4),
+            "shield.3": self.lean(3, 24 + breath * 3, 6),
+            "shield.4": self.lean(4, 6),
+            "skel.A": t("skel.A", (X, 14), (Y, 6)),
+            "skel.A.head": t("skel.A.head", (X, 22 + breath * 6), (Y, 14)),
+            "skel.A.arm": t("skel.A.arm", (X, 70)),
+            "skel.B": t("skel.B", (X, 10), (Y, -8)),
+            "skel.B.head": t("skel.B.head", (X, 20), (Y, -16 - breath * 6)),
+            "banner": t("banner", (Y, 12)),
+            "banner.cloth": t("banner.cloth", (Y, -8)),
+            "sign": t("sign", (Y, 14)),
+        }
 
-    def battered(breath=0.0):
-        """Low HP: two shields lean out, the wall sags, the skeletons slump and the flag hangs."""
-        return pose(
-            rest(),
-            {
-                "base@loc": at("base", (0, 0, 0.014)),
-                "base": t("base", (Y, -2), (X, 1)),
-                "shield.0": lean(0, 18, -8),
-                "shield.1": lean(1, -6, 4),
-                "shield.3": lean(3, 24 + breath * 3, 6),
-                "shield.4": lean(4, 6),
-                "skel.A": t("skel.A", (X, 14), (Y, 6)),
-                "skel.A.head": t("skel.A.head", (X, 22 + breath * 6), (Y, 14)),
-                "skel.A.arm": t("skel.A.arm", (X, 70)),
-                "skel.B": t("skel.B", (X, 10), (Y, -8)),
-                "skel.B.head": t("skel.B.head", (X, 20), (Y, -16 - breath * 6)),
-                "banner": t("banner", (Y, 12)),
-                "banner.cloth": t("banner.cloth", (Y, -8)),
-                "sign": t("sign", (Y, 14)),
-            },
-        )
-
-    def jolt(base, amount=1.0, forward=False):
-        """A blow shakes the wall: the shields knock, the skeletons duck."""
+    def jolt(self, base, amount=1.0, forward=False):
+        """The shields knock, and the skeletons duck."""
+        t = self.t
         direction = -1 if forward else 1
-        changes = {
-            "base@loc": at("base", (0, 0.02 * amount * direction, 0.016 * amount)),
-            "base": t("base", (X, -4 * amount * direction)),
+        result = {
+            **super().jolt(base, amount, forward),
             "skel.A.head": t("skel.A.head", (X, 24 * amount), (Z, 10 * amount)),
             "skel.B.head": t("skel.B.head", (X, 24 * amount), (Z, -10 * amount)),
             "skel.A": t("skel.A", (X, 10 * amount)),
@@ -434,18 +431,18 @@ def build_clips(rig):
             "sign": t("sign", (Y, 10 * amount)),
         }
         for index in range(len(SHIELD_ANGLES)):
-            changes[f"shield.{index}"] = lean(index, (-8 if index % 2 else 6) * amount * direction, 3 * amount)
-        return pose(base, changes)
+            result[f"shield.{index}"] = self.lean(index, (-8 if index % 2 else 6) * amount * direction, 3 * amount)
+        return result
 
-    def fallen(base, bounce=0.0, rise=0.0):
+    def fallen(self, base, bounce=0.0, rise=0.0):
         """
-        The wall falls apart: each shield falls flat out, the skeletons fall
-        back, the flag and the sign go down. `rise` (0 to 1 for each shield,
-        in turn) stands the shields up again, for a Rebirth.
+        Each shield falls flat out, the skeletons fall back, the flag and the
+        sign go down. `rise` (0 to 1 for each shield, in turn) stands the
+        shields up again, for a Rebirth.
         """
-        changes = {
-            "base@loc": at("base", (0, 0, 0.012)),
-            "base": t("base", (X, 2), (Y, -2)),
+        t = self.t
+        result = {
+            **super().fallen(base),
             "skel.A": t("skel.A", (X, -80 + bounce), (Y, 10)),
             "skel.A.head": t("skel.A.head", (X, -20), (Z, 30)),
             "skel.A.arm": t("skel.A.arm", (X, -40)),
@@ -459,12 +456,14 @@ def build_clips(rig):
         for index in range(len(SHIELD_ANGLES)):
             # The end shields fall first in a death and stand up last in a Rebirth.
             up = max(0.0, min(1.0, rise * len(SHIELD_ANGLES) - index))
-            changes[f"shield.{index}"] = lean(index, lerp(78 - bounce * (index % 2), 0, up), 0)
-        return pose(base, changes)
+            result[f"shield.{index}"] = self.lean(index, lerp(78 - bounce * (index % 2), 0, up), 0)
+        return result
 
-    def falling(base, at_index):
+    def falling(self, base, down):
         """The first shields are down and the others lean, part way into the death."""
-        changes = {
+        t = self.t
+        result = {
+            **base,
             "skel.A": t("skel.A", (X, -30)),
             "skel.B": t("skel.B", (X, -30)),
             "skel.A.head": t("skel.A.head", (X, 20)),
@@ -473,94 +472,50 @@ def build_clips(rig):
             "sign": t("sign", (Y, -20)),
         }
         for index in range(len(SHIELD_ANGLES)):
-            changes[f"shield.{index}"] = lean(index, 50 if index in at_index else 14, 4)
-        return pose(base, changes)
+            result[f"shield.{index}"] = self.lean(index, 50 if index in down else 14, 4)
+        return result
 
-    def heave(lift, tilt):
-        """A walk pose: the skeletons push and the whole wall hops and rocks."""
-        return pose(
-            rest(),
-            {
-                "base@loc": at("base", (0, 0, 0.03 * lift)),
-                "base": t("base", (X, 4 * tilt), (Y, 3 * tilt)),
-                "skel.A": t("skel.A", (X, 24)),
-                "skel.B": t("skel.B", (X, 24)),
-                "skel.A.head": t("skel.A.head", (X, -10)),
-                "skel.B.head": t("skel.B.head", (X, -10)),
-                "banner.cloth": t("banner.cloth", (X, -14 * lift), (Y, 10 * tilt)),
-                "sign": t("sign", (Y, 6 * tilt)),
-                **{f"shield.{i}": lean(i, 3 * tilt * (1 if i % 2 else -1)) for i in range(len(SHIELD_ANGLES))},
-            },
-        )
+    def heave(self, base, lift, tilt):
+        """The skeletons push the wall on."""
+        t = self.t
+        return {
+            **super().heave(base, lift, tilt),
+            "skel.A": t("skel.A", (X, 24)),
+            "skel.B": t("skel.B", (X, 24)),
+            "skel.A.head": t("skel.A.head", (X, -10)),
+            "skel.B.head": t("skel.B.head", (X, -10)),
+            "banner.cloth": t("banner.cloth", (X, -14 * lift), (Y, 10 * tilt)),
+            "sign": t("sign", (Y, 6 * tilt)),
+            **{f"shield.{i}": self.lean(i, 3 * tilt * (1 if i % 2 else -1)) for i in range(len(SHIELD_ANGLES))},
+        }
 
     # The attack: the skeleton with the hammer lifts it, then smashes it down
     # over the wall, and the wall shoves forward. The slash effect starts at
     # 50% of the attack (`MELEE_IMPACT` in fx.ts), so the blow lands at frame 15 of 30.
-    def windup(base):
-        return pose(
-            base,
-            {
-                "skel.A": t("skel.A", (X, -12)),
-                "skel.A.head": t("skel.A.head", (X, -10)),
-                "skel.A.arm": t("skel.A.arm", (X, 40)),
-                "skel.B.head": t("skel.B.head", (Z, 30)),
-            },
-        )
+    def windup(self, base):
+        t = self.t
+        return {
+            **base,
+            "skel.A": t("skel.A", (X, -12)),
+            "skel.A.head": t("skel.A.head", (X, -10)),
+            "skel.A.arm": t("skel.A.arm", (X, 40)),
+            "skel.B.head": t("skel.B.head", (Z, 30)),
+        }
 
-    def smash(base):
-        return pose(
-            jolt(base, 0.8, forward=True),
-            {
-                "base@loc": at("base", (0, -0.04, 0.016)),
-                "skel.A": t("skel.A", (X, 30)),
-                "skel.A.head": t("skel.A.head", (X, 10)),
-                "skel.A.arm": t("skel.A.arm", (X, -110)),
-                "skel.B": t("skel.B", (X, 20)),
-            },
-        )
+    def smash(self, base):
+        t = self.t
+        return {
+            **super().smash(base),
+            "skel.A": t("skel.A", (X, 30)),
+            "skel.A.head": t("skel.A.head", (X, 10)),
+            "skel.A.arm": t("skel.A.arm", (X, -110)),
+            "skel.B": t("skel.B", (X, 20)),
+        }
 
-    clips = []
-    idle = slot("idle")
-    for frame, sway, rattle in ((0, 0, 0), (12, 1, 1), (24, 0, 0), (36, -1, 1), (48, 0, 0)):
-        idle.key(frame, rest(sway, rattle))
-    clips.append(idle)
 
-    low = slot("lowHp")
-    for frame, breath in ((0, 0), (24, 1), (48, 0)):
-        low.key(frame, battered(breath))
-    clips.append(low)
-
-    # A Wall does not walk, but it can shuffle: the skeletons heave it on.
-    walk = slot("walk")
-    walk.key(0, heave(0, 0)).key(6, heave(1, 1)).key(12, heave(0, 0)).key(18, heave(1, -1)).key(24, heave(0, 0))
-    clips.append(walk)
-
-    attack = slot("attack")
-    attack.key(0, rest()).key(10, windup(rest())).key(15, smash(rest())).key(19, smash(rest()))
-    attack.key(26, rest()).key(30, rest())
-    clips.append(attack)
-
-    hurt = slot("hurt")
-    hurt.key(0, rest()).key(3, jolt(rest())).key(8, jolt(rest(), 0.4)).key(16, rest())
-    clips.append(hurt)
-
-    death = slot("death")
-    death.key(0, rest()).key(4, jolt(rest())).key(12, falling(rest(), (0, 4))).key(18, falling(rest(), (0, 1, 3, 4)))
-    death.key(26, fallen(rest())).key(30, fallen(rest(), 6)).key(36, fallen(rest()))
-    clips.append(death)
-
-    # Rebirth: the wall falls (45% of the event, `REBORN_FALL`), then the
-    # shields stand up one by one and the skeletons climb back.
-    rebirth = slot("rebirth")
-    rebirth.key(0, rest()).key(4, jolt(rest())).key(12, falling(rest(), (0, 4))).key(20, fallen(rest())).key(24, fallen(rest(), 3))
-    rebirth.key(30, fallen(rest(), 0, 0.35)).key(36, fallen(rest(), 0, 0.7)).key(41, jolt(rest(), 0.6)).key(48, rest())
-    clips.append(rebirth)
-
-    # The summon: the wall comes up out of the ground, shield by shield.
-    summon = slot("summon")
-    summon.key(0, fallen(rest())).key(8, fallen(rest(), 0, 0.5)).key(14, jolt(rest(), 0.7)).key(24, rest())
-    clips.append(summon)
-    return clips
+def build_clips(rig):
+    poses = Poses(*kit.pose_tools(rig))
+    return clips.overrides.build(clips.structure.CLIPS, poses, PATCHES, without=("cast",))
 
 
 def build(export=True):

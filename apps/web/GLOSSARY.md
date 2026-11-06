@@ -82,6 +82,12 @@ React app on TanStack Start. The server renders and streams each page.
 
 **Body Plan**: The shared skeleton, proportions, IK and clip slots that a group of Unit Models uses. A Unit Model belongs to one Body Plan and changes only its own parts, palette and overrides. _Avoid_: rig family, archetype (a rules term), model type, base rig
 
+**Clip Library**: The set of **Base Clips** of each **Body Plan**, and the override layer of each Unit Model. _Avoid_: animation pack, clip bank
+
+**Base Clip**: One of the 9 clips of a **Body Plan**. It has the timing, the weight and the ground contact. _Avoid_: template clip, default animation
+
+**Patch**: The record that a Unit Model changes one **Base Clip**. It names the clip and the override of the **Unit Spec**, and it can replace the timing. _Avoid_: mod, variant
+
 **Unit Spec**: The per-unit record that a Body Plan and the model kit read to build one Unit Model. It names the Body Plan, the height, the palette, the parts, the props and the clip overrides. _Avoid_: config, manifest, model data
 
 **Turnaround**: The approved four-view drawing of one Unit Model: front, three-quarter, side and back, with a detail sheet. It is the target for every side of the model. _Avoid_: reference sheet, model sheet, concept sheet

@@ -32,13 +32,18 @@ sys.path.insert(0, os.path.join(REPO, "scripts", "unit-model"))
 import importlib  # noqa: E402
 
 import body_plans  # noqa: E402
+import clips  # noqa: E402
 import unit_model_kit as kit  # noqa: E402
 
 importlib.reload(kit)
 importlib.reload(body_plans.shared)
 importlib.reload(body_plans.machine)
+importlib.reload(clips.base)
+importlib.reload(clips.overrides)
+importlib.reload(clips.machine)
 
-from unit_model_kit import X, Y, Z, Clip, Part, faces_of, hex_color, turn  # noqa: E402
+from clips.overrides import Patch  # noqa: E402
+from unit_model_kit import X, Y, Z, Part, faces_of, hex_color  # noqa: E402
 
 plan = body_plans.BODY_PLANS["machine"]
 
@@ -350,18 +355,18 @@ def build_figure():
 # --- Clips -----------------------------------------------------------------------
 
 
-def build_clips(rig):
-    def slot(name):
-        return Clip(*plan.CLIP_SLOTS[name])
+PATCHES = (
+    Patch("attack", "cannon-shot"),
+    Patch("death", "tip-right"),
+)
 
-    def t(bone, *rotations):
-        return turn(rig, bone, *rotations)
 
-    def at(bone, offset):
-        return kit.shift(rig, bone, offset)
+class Poses(clips.machine.Poses):
+    table = TABLE
 
-    def crew(bob=0.0, look=0.0, arms=0.0):
+    def crew(self, bob=0.0, look=0.0, arms=0.0):
         """The goblins: a small bob, the heads turn about, the arms move a little."""
+        t, at = self.t, self.at
         result = {}
         for index, name in enumerate(GOBLINS):
             phase = (index * 0.7) % 1
@@ -373,105 +378,89 @@ def build_clips(rig):
             result[f"{name}.arm.R"] = t(f"{name}.arm.R", (X, -10 * arms))
         return result
 
-    def rest(rumble=0.0, gear=0.0, bob=0.0, look=0.0):
-        """The cart at rest: the engine rumbles, the gear turns, the crew looks about."""
-        result = {
-            "cart@loc": at("cart", (0, 0, 0.003 * rumble)),
-            "cart": t("cart", (X, 0.6 * rumble)),
+    def goblins(self, body, head, left, right):
+        """One pose for each goblin: the rotations of its body, head and arms."""
+        t = self.t
+        result = {}
+        for name in GOBLINS:
+            result[f"{name}.body"] = t(f"{name}.body", *body)
+            result[f"{name}.head"] = t(f"{name}.head", *head)
+            result[f"{name}.arm.L"] = t(f"{name}.arm.L", *left)
+            result[f"{name}.arm.R"] = t(f"{name}.arm.R", *right)
+        return result
+
+    def stance(self, rumble=0.0, gear=0.0, bob=0.0, look=0.0):
+        """The gear turns, the flag moves and the crew looks about."""
+        t = self.t
+        return {
+            **super().stance(rumble, gear, bob, look),
             "gear": t("gear", (X, gear)),
             "flag": t("flag", (Z, 6 * look)),
             "flash@scale": 0.0,
+            **self.crew(bob, look),
         }
-        result.update(plan.wheel_pose(t, 0))
-        result.update(crew(bob, look))
-        return result
 
-    def broken(rumble=0.0):
-        """Low HP: the cart sags on a loose wheel, and the crew slumps."""
-        result = rest(rumble)
-        result.update(
-            {
-                "cart": t("cart", (Y, -6), (X, 2)),
-                "wheel.FR": t("wheel.FR", (Y, 12)),
-                "cannon": t("cannon", (X, 10)),
-                "flag": t("flag", (X, 30)),
-            }
-        )
-        for name in GOBLINS:
-            result[f"{name}.body"] = t(f"{name}.body", (X, 24))
-            result[f"{name}.head"] = t(f"{name}.head", (X, 20 + 4 * rumble), (Y, -10))
-            result[f"{name}.arm.L"] = t(f"{name}.arm.L", (X, 20))
-            result[f"{name}.arm.R"] = t(f"{name}.arm.R", (X, 20))
-        return result
+    def broken(self, base, rumble=0.0):
+        """A loose wheel, and the crew slumps."""
+        t = self.t
+        return {
+            **super().broken(base, rumble),
+            "wheel.FR": t("wheel.FR", (Y, 12)),
+            "cannon": t("cannon", (X, 10)),
+            "flag": t("flag", (X, 30)),
+            **self.goblins(((X, 24),), ((X, 20 + 4 * rumble), (Y, -10)), ((X, 20),), ((X, 20),)),
+        }
 
-    def rolling(angle, bump=0.0):
-        """The cart rolls: the wheels turn, the cart bumps, the crew holds on."""
-        result = rest(0, angle * 0.5, bump, 0)
-        result.update(plan.wheel_pose(t, angle))
-        result["cart@loc"] = at("cart", (0, 0, 0.012 * abs(bump)))
-        result["cart"] = t("cart", (X, 2 * bump))
-        result["flag"] = t("flag", (Z, 20))
-        return result
+    def rolling(self, base, frame, bump=0.0):
+        """The crew holds on. The gear turns at half of the speed of the wheels."""
+        t = self.t
+        angle = plan.rolling_angle(self.table, frame, clips.machine.WALK)
+        return {**super().rolling(base, frame, bump), "gear": t("gear", (X, angle * 0.5)), "flag": t("flag", (Z, 20))}
 
-    def fire(kick=0.0, flash=0.0):
-        """The cannon fires: it kicks back, the cart rocks, the crew covers its ears."""
-        result = rest()
-        result.update(
-            {
-                "cannon@loc": at("cannon", (0, 0.07 * kick, 0)),
-                "cannon": t("cannon", (X, -8 * kick)),
-                "cart": t("cart", (X, -4 * kick)),
-                "flash@scale": flash,
-                "flag": t("flag", (Z, 30 * kick)),
-            }
-        )
-        for name in GOBLINS:
-            result[f"{name}.body"] = t(f"{name}.body", (X, -12 * kick))
-            result[f"{name}.head"] = t(f"{name}.head", (X, -16 * kick))
-            result[f"{name}.arm.L"] = t(f"{name}.arm.L", (X, -110 * min(kick * 2, 1)), (Y, 30 * min(kick * 2, 1)))
-            result[f"{name}.arm.R"] = t(f"{name}.arm.R", (X, -110 * min(kick * 2, 1)), (Y, -30 * min(kick * 2, 1)))
-        return result
-
-    def aim():
+    def aim(self, base):
         """The gunner takes aim: the cannon tips up a little."""
-        result = rest()
-        result["cannon"] = t("cannon", (X, -4))
-        result["gunner.body"] = t("gunner.body", (X, 12))
-        result["gunner.head"] = t("gunner.head", (X, -10))
-        return result
+        t = self.t
+        return {
+            **base,
+            "cannon": t("cannon", (X, -4)),
+            "gunner.body": t("gunner.body", (X, 12)),
+            "gunner.head": t("gunner.head", (X, -10)),
+        }
 
-    def jolt(amount=1.0):
-        """A hit shakes the cart, and the crew jumps."""
-        result = rest()
-        result.update(
-            {
-                "cart": t("cart", (Y, 6 * amount), (X, -3 * amount)),
-                "cart@loc": at("cart", (0, 0.02 * amount, 0.01 * amount)),
-                "flag": t("flag", (X, -20 * amount)),
-            }
-        )
-        for name in GOBLINS:
-            result[f"{name}.body@loc"] = at(f"{name}.body", (0, 0, 0.02 * amount))
-            result[f"{name}.body"] = t(f"{name}.body", (X, -14 * amount))
-            result[f"{name}.head"] = t(f"{name}.head", (X, -20 * amount))
-            result[f"{name}.arm.L"] = t(f"{name}.arm.L", (X, -60 * amount), (Y, 30 * amount))
-            result[f"{name}.arm.R"] = t(f"{name}.arm.R", (X, -60 * amount), (Y, -30 * amount))
-        return result
+    def fire(self, base, kick=0.0, flash=0.0):
+        """The cannon kicks back, and the crew covers its ears."""
+        t, at = self.t, self.at
+        cover = min(kick * 2, 1)
+        return {
+            **super().fire(base, kick, flash),
+            "cannon@loc": at("cannon", (0, 0.07 * kick, 0)),
+            "cannon": t("cannon", (X, -8 * kick)),
+            "flash@scale": flash,
+            "flag": t("flag", (Z, 30 * kick)),
+            **self.goblins(((X, -12 * kick),), ((X, -16 * kick),), ((X, -110 * cover), (Y, 30 * cover)), ((X, -110 * cover), (Y, -30 * cover))),
+        }
 
-    def tipped(bounce=0.0):
-        """The cart falls on its right side, toward the camera, and the crew tumbles out."""
-        result = rest()
-        result.update(
-            {
-                "root": t("root", (Y, -84 + bounce)),
-                "root@loc": at("root", (-0.04, 0, 0.33)),
-                "wheel.FR": t("wheel.FR", (X, 40)),
-                "wheel.BL": t("wheel.BL", (X, -30)),
-                "cannon": t("cannon", (Z, 14)),
-                "gear": t("gear", (X, 40)),
-                "flag": t("flag", (X, 40)),
-            }
-        )
+    def jolt(self, base, amount=1.0):
+        """The crew jumps."""
+        t, at = self.t, self.at
+        return {
+            **super().jolt(base, amount),
+            "flag": t("flag", (X, -20 * amount)),
+            **{f"{name}.body@loc": at(f"{name}.body", (0, 0, 0.02 * amount)) for name in GOBLINS},
+            **self.goblins(((X, -14 * amount),), ((X, -20 * amount),), ((X, -60 * amount), (Y, 30 * amount)), ((X, -60 * amount), (Y, -30 * amount))),
+        }
+
+    def tipped(self, base, bounce=0.0):
+        """The crew tumbles out."""
+        t = self.t
+        result = {
+            **super().tipped(base, bounce),
+            "wheel.FR": t("wheel.FR", (X, 40)),
+            "wheel.BL": t("wheel.BL", (X, -30)),
+            "cannon": t("cannon", (Z, 14)),
+            "gear": t("gear", (X, 40)),
+            "flag": t("flag", (X, 40)),
+        }
         for index, name in enumerate(GOBLINS):
             result[f"{name}.body"] = t(f"{name}.body", (Y, -50 - 10 * index), (X, 20))
             result[f"{name}.head"] = t(f"{name}.head", (X, -20), (Z, 30))
@@ -479,25 +468,18 @@ def build_clips(rig):
             result[f"{name}.arm.R"] = t(f"{name}.arm.R", (X, -100), (Y, -40))
         return result
 
-    def tilting():
-        """Halfway over, on two wheels."""
-        result = rest()
-        result.update({"root": t("root", (Y, -30)), "root@loc": at("root", (-0.06, 0, 0.12)), "flag": t("flag", (X, -20))})
+    def tilting(self, base):
+        t = self.t
+        result = {**super().tilting(base), "flag": t("flag", (X, -20))}
         for name in GOBLINS:
             result[f"{name}.body"] = t(f"{name}.body", (Y, 20))
             result[f"{name}.arm.L"] = t(f"{name}.arm.L", (X, -120))
             result[f"{name}.arm.R"] = t(f"{name}.arm.R", (X, -120))
         return result
 
-    def landing(height=0.0, squash=0.0):
-        """A summon: the cart drops onto the Square, bounces, and the crew cheers."""
-        result = rest()
-        result["root@loc"] = at("root", (0, 0, height))
-        result["cart@loc"] = at("cart", (0, 0, -0.02 * squash))
-        result["cart"] = t("cart", (X, 3 * squash))
-        return result
-
-    def cheer(base):
+    def cheer(self, base):
+        """The crew cheers."""
+        t, at = self.t, self.at
         result = dict(base)
         for name in GOBLINS:
             result[f"{name}.body@loc"] = at(f"{name}.body", (0, 0, 0.015))
@@ -506,50 +488,10 @@ def build_clips(rig):
             result[f"{name}.arm.R"] = t(f"{name}.arm.R", (X, -160), (Y, -20))
         return result
 
-    clips = []
-    idle = slot("idle")
-    for frame in range(0, 49, 4):
-        rumble = 1 if (frame // 4) % 2 else -1
-        idle.key(frame, rest(rumble if frame not in (0, 48) else 0, frame / 48 * 360, math.sin(frame / 48 * 2 * math.pi), math.sin(frame / 48 * 2 * math.pi)))
-    clips.append(idle)
 
-    low = slot("lowHp")
-    for frame in range(0, 49, 6):
-        low.key(frame, broken(math.sin(frame / 48 * 2 * math.pi)))
-    clips.append(low)
-
-    # One turn of the wheels for each Square (`STEPS_PER_SQUARE`), with four bumps.
-    walk = slot("walk")
-    for frame in range(0, 25, 3):
-        walk.key(frame, rolling(plan.rolling_angle(TABLE, frame, 24), math.sin(frame / 24 * 4 * math.pi)))
-    clips.append(walk)
-
-    # The shot leaves at 20% of the attack (`FLIGHT_START` in fx.ts): frame 6 of 30.
-    attack = slot("attack")
-    attack.key(0, rest()).key(4, aim()).key(5, aim()).key(6, fire(0.3, 1.4)).key(8, fire(1.0, 0.8))
-    attack.key(11, fire(0.7, 0.0)).key(18, fire(0.2, 0.0)).key(24, rest()).key(30, rest())
-    clips.append(attack)
-
-    hurt = slot("hurt")
-    hurt.key(0, rest()).key(3, jolt()).key(8, jolt(0.4)).key(16, rest())
-    clips.append(hurt)
-
-    death = slot("death")
-    death.key(0, rest()).key(5, jolt()).key(14, tilting())
-    death.key(24, tipped()).key(28, tipped(6)).key(36, tipped())
-    clips.append(death)
-
-    # Rebirth: the Unit falls (45% of the event, `REBORN_FALL`), then rights itself.
-    rebirth = slot("rebirth")
-    rebirth.key(0, rest()).key(4, jolt()).key(12, tilting()).key(20, tipped()).key(22, tipped(3))
-    rebirth.key(32, tilting()).key(38, landing(0.0, 1.0)).key(42, cheer(rest())).key(48, rest())
-    clips.append(rebirth)
-
-    summon = slot("summon")
-    summon.key(0, landing(0.16)).key(8, landing(0.0, 1.0)).key(12, landing(0.03)).key(15, landing(0.0, 0.5))
-    summon.key(19, cheer(rest())).key(24, rest())
-    clips.append(summon)
-    return clips
+def build_clips(rig):
+    poses = Poses(*kit.pose_tools(rig))
+    return clips.overrides.build(clips.machine.CLIPS, poses, PATCHES, without=("cast",))
 
 
 def build(export=True):

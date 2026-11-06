@@ -17,7 +17,7 @@ The default command checks every `specs/*.json` file and exits with code 0 when 
 
 The Body Plan names are `biped-small`, `biped-medium`, `biped-large`, `quadruped`, `flyer`, `machine` and `structure`. Each plan has its shared builder in `body_plans/`. The part names match the existing scripts, including suffixes such as `.L`, `.FR` and `.0`. A prop ID must name a listed part. `hand` is `left`, `right` or `none` for a mounted prop. The left side is Blender +X. `cameraSide` identifies a prop on the right side that the player Unit camera sees.
 
-The five required clips match `BASE_UNIT_CLIPS` in `apps/web/src/features/battle/scene/unit-clips.ts`: `idle`, `walk`, `attack`, `hurt` and `death`. The optional clips are `lowHp`, `cast`, `rebirth` and `summon`. Each pilot lists only the clips that its script builds. An empty clip object uses the Body Plan slot. An `override` names the unit's specific action for the future Clip Library.
+The five required clips match `BASE_UNIT_CLIPS` in `apps/web/src/features/battle/scene/unit-clips.ts`: `idle`, `walk`, `attack`, `hurt` and `death`. The optional clips are `lowHp`, `cast`, `rebirth` and `summon`. Each pilot lists only the clips that its script builds. An empty clip object uses the Body Plan slot. An `override` names the unit's specific action, and it is the name of a `Patch` of the Clip Library.
 
 The palettes and parts come from the build scripts. Warden Saelith includes the inline belt and arrow colors, and #179 changed her coat to the olive of the card painting. Bone Rampart's hammer is part of `skel.A.arm`. Heights include props in the rest pose: 0.985 for Warden Saelith, 0.7280354 for Crag Rhino, 1.13 for Bone Rampart and 0.6598878 for Amberwing Dart. These values agree with the bounds in `source-contracts.json`. The specs record the current models.
 
@@ -58,6 +58,15 @@ rtk proxy /Applications/Blender.app/Contents/MacOS/Blender --background --factor
 rtk bun unit-model:contract:check warden-saelith
 rtk bun unit-model:contract:check --all
 rtk bun test scripts/unit-model/source-contract.test.ts
+```
+
+## Clip Library
+
+`clips/` holds the 9 base clips of each Body Plan and the override layer. A unit subclasses the `Poses` of its plan and names each change in a `Patch`. See `clips/README.md`. One unit of each plan has moved: Warden Saelith, Fuse Runner, Tusk Brute, Crag Rhino, Amberwing Dart, Grand Gearjammer and Bone Rampart.
+
+```sh
+bun unit-model:clips:check warden-saelith [name...]  # loop closure, pose return, hip return, ground and binding
+bun unit-model:clips:check --all
 ```
 
 ## Turnarounds

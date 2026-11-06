@@ -23,14 +23,21 @@ sys.path.insert(0, os.path.join(REPO, "scripts", "unit-model"))
 import importlib  # noqa: E402
 
 import body_plans  # noqa: E402
+import clips  # noqa: E402
 import unit_model_kit as kit  # noqa: E402
 
 importlib.reload(kit)
 importlib.reload(body_plans.shared)
 importlib.reload(body_plans.biped)
 importlib.reload(body_plans.biped_medium)
+importlib.reload(clips.base)
+importlib.reload(clips.overrides)
+importlib.reload(clips.biped)
+importlib.reload(clips.biped_medium)
 
-from unit_model_kit import X, Y, Z, Clip, Part, clamp01, hex_color, lerp, turn  # noqa: E402
+from clips.base import Beat  # noqa: E402
+from clips.overrides import Fall, Patch  # noqa: E402
+from unit_model_kit import X, Y, Z, Part, clamp01, hex_color, lerp  # noqa: E402
 
 plan = body_plans.BODY_PLANS["biped-medium"]
 
@@ -496,22 +503,41 @@ def add_controls(rig):
 # --- Clips -----------------------------------------------------------------------
 
 
-def build_clips(rig):
-    def slot(name):
-        return Clip(*plan.CLIP_SLOTS[name])
+NOCKED = (0.03, -0.3, 0.78)
+DRAWN = (0.035, -0.06, 0.8)
+LOOSE = (0.04, 0.0, 0.82)
+BOW_WRIST = Vector((0.03, -0.34, 0.78))
 
-    def t(bone, *rotations):
-        return turn(rig, bone, *rotations)
+# The attack: the figure turns side-on, aims, draws and shoots. The arrow
+# effect leaves at 20% of the attack (`FLIGHT_START` in fx.ts), so the
+# string is released at frame 6 of 30.
+PATCHES = (
+    Patch(
+        "attack",
+        "bow-draw",
+        beats=(
+            Beat(0),
+            Beat(2, "aiming", (NOCKED, 1.0)),
+            Beat(6, "aiming", (DRAWN, 1.0)),
+            Beat(7, "aiming", (LOOSE, 0.0)),
+            Beat(14, "aiming", ((0.045, 0.02, 0.8), 0.0)),
+            Beat(22),
+            Beat(30),
+        ),
+    ),
+)
 
-    def at(bone, offset):
-        return kit.shift(rig, bone, offset)
 
-    bow_rest = rig.data.bones["bow"].matrix_local.to_quaternion()
-    # At rest the bow stands nearly upright, its top a little forward.
-    rest_aim = Quaternion(X, math.radians(10)) @ bow_rest
+class Poses(clips.biped_medium.Poses):
+    fall = Fall(X, -86, (0, 0, 0.045))
 
-    def stand(breath=0.0, sway=0.0):
+    def __init__(self, rig):
+        super().__init__(*kit.pose_tools(rig))
+        self.bow_rest = rig.data.bones["bow"].matrix_local.to_quaternion()
+
+    def stance(self, breath=0.0, sway=0.0):
         """The idle stance: the bow low and a little forward in the left hand."""
+        t = self.t
         return {
             "spine": t("spine", (X, 2 + breath * 0.5)),
             "chest": t("chest", (X, -2 - breath * 2)),
@@ -531,86 +557,40 @@ def build_clips(rig):
             "arrow@scale": 0.0,
             "arrow/Nock": 1.0,
             "bow/Aim": 1.0,
-            "bow_aim@rot": rest_aim,
+            # At rest the bow stands nearly upright, its top a little forward.
+            "bow_aim@rot": Quaternion(X, math.radians(10)) @ self.bow_rest,
         }
 
-    def pose(base, **changes):
-        result = dict(base)
-        for key, value in changes.items():
-            result[key.replace("__", ".").replace("_at_", "@").replace("_slash_", "/")] = value
-        return result
-
-    def crouch(base):
-        """Down on both knees bent, as a summon starts and a Rebirth gets up."""
-        return pose(
-            base,
-            hips_at_loc=at("hips", (0, 0, -0.135)),
-            thigh__L=t("thigh.L", (X, -50), (Y, -4)),
-            shin__L=t("shin.L", (X, 95)),
-            foot__L=t("foot.L", (X, -45)),
-            thigh__R=t("thigh.R", (X, -50), (Y, 4)),
-            shin__R=t("shin.R", (X, 95)),
-            foot__R=t("foot.R", (X, -45)),
-            spine=t("spine", (X, 24)),
-            chest=t("chest", (X, 8)),
-            head=t("head", (X, 22)),
-            braid1=t("braid1", (X, -48)),
-            braid2=t("braid2", (X, -12)),
-            upperarm__L=t("upperarm.L", (Y, 18), (X, -20)),
-            upperarm__R=t("upperarm.R", (Y, -10), (X, -20)),
-            forearm__R=t("forearm.R", (X, -30)),
-            tail1=t("tail1", (X, -25)),
-            tail2=t("tail2", (X, -20)),
-        )
-
-    def slump(breath=0.0):
-        """Low HP: bent over, the right hand on the side, the bow low."""
-        return pose(
-            stand(),
+    def slump(self, base, breath=0.0):
+        """Low HP: the right hand on the side, the bow low."""
+        t = self.t
+        return self.pose(
+            self.unchanged(super().slump(base, breath), base, "hips"),
             bow_slash_Aim=0.0,
-            hips_at_loc=at("hips", (0, 0, -0.02)),
-            spine=t("spine", (X, 12 + breath * 3)),
             chest=t("chest", (X, 8 + breath * 2), (Z, 6)),
-            neck=t("neck", (X, 8)),
-            head=t("head", (X, 4 + breath * 4), (Y, -6)),
-            upperarm__L=t("upperarm.L", (Y, 16), (X, 6)),
-            forearm__L=t("forearm.L", (X, -8)),
             hand__L=t("hand.L", (X, 30)),
-            upperarm__R=t("upperarm.R", (X, -12), (Y, -22)),
             forearm__R=t("forearm.R", (X, -85), (Z, 65)),
-            thigh__L=t("thigh.L", (X, -14), (Y, -4)),
-            shin__L=t("shin.L", (X, 26)),
-            foot__L=t("foot.L", (X, -12)),
-            thigh__R=t("thigh.R", (X, -8), (Y, 4)),
-            shin__R=t("shin.R", (X, 18)),
-            foot__R=t("foot.R", (X, -10)),
             braid1=t("braid1", (X, -28)),
             braid2=t("braid2", (X, -8)),
         )
 
-    def recoil(base, amount=1.0):
-        """The hit pushes the upper body back."""
-        return pose(
-            base,
-            hips_at_loc=at("hips", (0, 0.015 * amount, -0.005 * amount)),
-            spine=t("spine", (X, -10 * amount)),
+    def recoil(self, base, amount=1.0):
+        t = self.t
+        return self.pose(
+            super().recoil(base, amount),
             chest=t("chest", (X, -8 * amount), (Z, 8 * amount)),
-            head=t("head", (X, -14 * amount), (Z, 8 * amount)),
-            upperarm__L=t("upperarm.L", (Y, -10 * amount), (X, 10 * amount)),
-            upperarm__R=t("upperarm.R", (Y, 18 * amount), (X, 10 * amount)),
             forearm__R=t("forearm.R", (X, -40 * amount)),
             braid1=t("braid1", (X, 14 * amount)),
             tail1=t("tail1", (X, 10 * amount)),
         )
 
-    def fallen(base, bounce=0.0):
+    def fallen(self, base, bounce=0.0):
         """Flat on the back, the bow flat on the ground beside her."""
-        return pose(
-            base,
+        t = self.t
+        return self.pose(
+            self.unchanged(super().fallen(base, bounce), base, "hips@loc", "hips", "chest", "neck", "forearm.L", "foot.L", "foot.R"),
             bow_slash_Aim=1.0,
-            bow_aim_at_rot=Quaternion(X, math.radians(-90)) @ bow_rest,
-            root=t("root", (X, -86 + bounce)),
-            root_at_loc=at("root", (0, 0, 0.045)),
+            bow_aim_at_rot=Quaternion(X, math.radians(-90)) @ self.bow_rest,
             spine=t("spine", (X, -6)),
             head=t("head", (X, -12), (Z, 25)),
             upperarm__L=t("upperarm.L", (Y, -35), (X, 20)),
@@ -624,9 +604,10 @@ def build_clips(rig):
             tail1=t("tail1", (X, -50)),
         )
 
-    def stagger(base):
-        return pose(
-            base,
+    def stagger(self, base):
+        t, at = self.t, self.at
+        return self.pose(
+            super().stagger(base),
             bow_slash_Aim=0.0,
             hips_at_loc=at("hips", (0, 0.01, -0.03)),
             thigh__L=t("thigh.L", (X, -18)),
@@ -639,71 +620,79 @@ def build_clips(rig):
             head=t("head", (X, 20)),
             braid1=t("braid1", (X, -34)),
             braid2=t("braid2", (X, -10)),
-            upperarm__L=t("upperarm.L", (Y, 10)),
             upperarm__R=t("upperarm.R", (Y, -10)),
             hand__L=t("hand.L", (X, 30)),
         )
 
-    def heroic(base):
+    def crouch(self, base):
+        t, at = self.t, self.at
+        return self.pose(
+            super().crouch(base),
+            hips_at_loc=at("hips", (0, 0, -0.135)),
+            thigh__L=t("thigh.L", (X, -50), (Y, -4)),
+            shin__L=t("shin.L", (X, 95)),
+            foot__L=t("foot.L", (X, -45)),
+            thigh__R=t("thigh.R", (X, -50), (Y, 4)),
+            shin__R=t("shin.R", (X, 95)),
+            foot__R=t("foot.R", (X, -45)),
+            spine=t("spine", (X, 24)),
+            braid1=t("braid1", (X, -48)),
+            braid2=t("braid2", (X, -12)),
+            upperarm__L=t("upperarm.L", (Y, 18), (X, -20)),
+            upperarm__R=t("upperarm.R", (Y, -10), (X, -20)),
+            forearm__R=t("forearm.R", (X, -30)),
+            tail1=t("tail1", (X, -25)),
+            tail2=t("tail2", (X, -20)),
+        )
+
+    def rising(self, base):
+        return self.pose(self.crouch(base), hips_at_loc=self.at("hips", (0, 0, -0.06)))
+
+    def heroic(self, base):
         """Up again, the bow high: the end of a summon and a Rebirth."""
-        return pose(
-            base,
+        t, at = self.t, self.at
+        return self.pose(
+            self.unchanged(super().heroic(base), base, "spine"),
             hips_at_loc=at("hips", (0, 0, 0.008)),
             chest=t("chest", (X, -12)),
             head=t("head", (X, -12)),
-            upperarm__L=t("upperarm.L", (X, -70), (Y, 6)),
             forearm__L=t("forearm.L", (X, -20)),
             upperarm__R=t("upperarm.R", (Y, -30)),
             braid1=t("braid1", (X, 12)),
             tail1=t("tail1", (X, 12)),
         )
 
-    def step(front):
-        """A heel touches the ground. `front` is 1 for the left foot, -1 for the right."""
+    def step(self, base, front):
+        t = self.t
         lead, back = ("L", "R") if front == 1 else ("R", "L")
-        return pose(
-            stand(),
-            hips_at_loc=at("hips", (0, 0, -0.012)),
-            spine=t("spine", (X, 6)),
+        return self.pose(
+            super().step(base, front),
             chest=t("chest", (Z, -5 * front)),
-            **{
-                f"thigh__{lead}": t(f"thigh.{lead}", (X, -24)),
-                f"shin__{lead}": t(f"shin.{lead}", (X, 4)),
-                f"foot__{lead}": t(f"foot.{lead}", (X, -8)),
-                f"thigh__{back}": t(f"thigh.{back}", (X, 18)),
-                f"shin__{back}": t(f"shin.{back}", (X, 14)),
-                f"foot__{back}": t(f"foot.{back}", (X, 14)),
-                "upperarm__R": t("upperarm.R", (Y, -12), (X, -14 * front)),
-                "upperarm__L": t("upperarm.L", (Y, 12), (X, -8 + 6 * front)),
-                "braid1": t("braid1", (X, -6), (Y, 4 * front)),
-                "tail1": t("tail1", (X, -8)),
-            },
+            upperarm__R=t("upperarm.R", (Y, -12), (X, -14 * front)),
+            upperarm__L=t("upperarm.L", (Y, 12), (X, -8 + 6 * front)),
+            braid1=t("braid1", (X, -6), (Y, 4 * front)),
+            tail1=t("tail1", (X, -8)),
+            **{f"foot__{lead}": t(f"foot.{lead}", (X, -8)), f"foot__{back}": t(f"foot.{back}", (X, 14))},
         )
 
-    def passing(lifted):
-        """One foot passes the other. `lifted` is the side of the foot in the air."""
+    def passing(self, base, lifted):
+        t, at = self.t, self.at
         planted = "R" if lifted == "L" else "L"
         sign = 1 if lifted == "L" else -1
-        return pose(
-            stand(),
+        return self.pose(
+            self.unchanged(super().passing(base, lifted), base, f"foot.{planted}"),
             hips_at_loc=at("hips", (0, 0, 0.008)),
-            spine=t("spine", (X, 6)),
-            **{
-                f"thigh__{lifted}": t(f"thigh.{lifted}", (X, -10)),
-                f"shin__{lifted}": t(f"shin.{lifted}", (X, 40)),
-                f"foot__{lifted}": t(f"foot.{lifted}", (X, -10)),
-                f"thigh__{planted}": t(f"thigh.{planted}", (X, 4)),
-                f"shin__{planted}": t(f"shin.{planted}", (X, 4)),
-                "braid1": t("braid1", (X, -4), (Y, -2 * sign)),
-                "tail1": t("tail1", (X, -4)),
-            },
+            braid1=t("braid1", (X, -4), (Y, -2 * sign)),
+            tail1=t("tail1", (X, -4)),
+            **{f"thigh__{planted}": t(f"thigh.{planted}", (X, 4))},
         )
 
-    # The attack: the figure turns side-on, aims, draws and shoots. The arrow
-    # effect leaves at 20% of the attack (`FLIGHT_START` in fx.ts), so the
-    # string is released at frame 6 of 30.
-    def stance(base):
-        return pose(
+    def call(self, base, rise=0.006):
+        return self.pose(super().call(base, rise), braid1=self.t("braid1", (X, 8)))
+
+    def side_on(self, base):
+        t = self.t
+        return self.pose(
             base,
             hips=t("hips", (Z, -40)),
             spine=t("spine", (Z, -20)),
@@ -714,86 +703,22 @@ def build_clips(rig):
             braid1=t("braid1", (Y, -10)),
         )
 
-    aim_q = Quaternion(Y, math.radians(-8)) @ bow_rest
-    bow_wrist = Vector((0.03, -0.34, 0.78))
-
-    def aiming(base, right, draw):
-        return pose(
-            stance(base),
-            **{
-                "forearm__L_slash_IK": 1.0,
-                "forearm__R_slash_IK": 1.0,
-                "bow_slash_Aim": 1.0,
-                "string_slash_Draw": draw,
-                "arrow_at_scale": 1.0 if draw > 0 else 0.0,
-                "ik_hand__L_at_pos": bow_wrist,
-                "ik_hand__R_at_pos": Vector(right),
-                "bow_aim_at_rot": aim_q,
-            },
+    def aiming(self, base, right, draw):
+        return self.pose(
+            self.side_on(base),
+            forearm__L_slash_IK=1.0,
+            forearm__R_slash_IK=1.0,
+            bow_slash_Aim=1.0,
+            string_slash_Draw=draw,
+            arrow_at_scale=1.0 if draw > 0 else 0.0,
+            ik_hand__L_at_pos=BOW_WRIST,
+            ik_hand__R_at_pos=Vector(right),
+            bow_aim_at_rot=Quaternion(Y, math.radians(-8)) @ self.bow_rest,
         )
 
-    clips = []
-    idle = slot("idle")
-    for frame, breath, sway in ((0, 0, 0), (12, 0.5, 1), (24, 1, 0), (36, 0.5, -1), (48, 0, 0)):
-        idle.key(frame, stand(breath, sway))
-    clips.append(idle)
 
-    low = slot("lowHp")
-    for frame, breath in ((0, 0), (24, 1), (48, 0)):
-        low.key(frame, slump(breath))
-    clips.append(low)
-
-    walk = slot("walk")
-    walk.key(0, step(1)).key(6, passing("R")).key(12, step(-1)).key(18, passing("L")).key(24, step(1))
-    clips.append(walk)
-
-    attack = slot("attack")
-    nocked = (0.03, -0.3, 0.78)
-    drawn = (0.035, -0.06, 0.8)
-    loose = (0.04, 0.0, 0.82)
-    attack.key(0, stand())
-    attack.key(2, aiming(stand(), nocked, 1.0))
-    attack.key(6, aiming(stand(), drawn, 1.0))
-    attack.key(7, aiming(stand(), loose, 0.0))
-    attack.key(14, aiming(stand(), (0.045, 0.02, 0.8), 0.0))
-    attack.key(22, stand())
-    attack.key(30, stand())
-    clips.append(attack)
-
-    cast = slot("cast")
-    call = pose(
-        stand(),
-        hips_at_loc=at("hips", (0, 0, 0.006)),
-        chest=t("chest", (X, -10)),
-        head=t("head", (X, -18)),
-        upperarm__R=t("upperarm.R", (X, -160), (Y, -8)),
-        forearm__R=t("forearm.R", (X, -10)),
-        upperarm__L=t("upperarm.L", (Y, -20)),
-        braid1=t("braid1", (X, 8)),
-    )
-    cast.key(0, stand()).key(6, call).key(10, pose(call, hips_at_loc=at("hips", (0, 0, 0.014)))).key(16, call).key(24, stand())
-    clips.append(cast)
-
-    hurt = slot("hurt")
-    hurt.key(0, stand()).key(3, recoil(stand())).key(8, recoil(stand(), 0.4)).key(16, stand())
-    clips.append(hurt)
-
-    death = slot("death")
-    death.key(0, stand()).key(5, recoil(stand())).key(12, stagger(stand()))
-    death.key(26, fallen(stand())).key(30, fallen(stand(), 6)).key(36, fallen(stand()))
-    clips.append(death)
-
-    # Rebirth: the Unit falls (45% of the event, `REBORN_FALL`), then gets up.
-    rebirth = slot("rebirth")
-    rebirth.key(0, stand()).key(4, recoil(stand())).key(20, fallen(stand())).key(22, fallen(stand(), 3))
-    rebirth.key(32, crouch(stand())).key(41, heroic(stand())).key(48, stand())
-    clips.append(rebirth)
-
-    summon = slot("summon")
-    summon.key(0, crouch(stand())).key(10, pose(crouch(stand()), hips_at_loc=at("hips", (0, 0, -0.06))))
-    summon.key(17, heroic(stand())).key(24, stand())
-    clips.append(summon)
-    return clips
+def build_clips(rig):
+    return clips.overrides.build(clips.biped_medium.CLIPS, Poses(rig), PATCHES)
 
 
 def build(export=True):

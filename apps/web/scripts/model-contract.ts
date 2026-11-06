@@ -3,6 +3,7 @@ import { createHash } from "node:crypto";
 import { Box3, SkinnedMesh } from "three";
 import { MeshoptDecoder } from "three/addons/libs/meshopt_decoder.module.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+import type { GLTF } from "three/addons/loaders/GLTFLoader.js";
 
 /** The published properties that a compressed model must keep from its raw export. */
 export interface ModelContract {
@@ -39,12 +40,17 @@ const withoutMaterialImages = (data: Uint8Array): ArrayBuffer => {
   return new Uint8Array(Buffer.concat([header, padded, tail])).buffer;
 };
 
+/** A model with its skin and clips, in Bun or Node: there is no browser to decode images. */
+export const parseModel = (data: Uint8Array): Promise<GLTF> =>
+  new GLTFLoader()
+    .setMeshoptDecoder(MeshoptDecoder)
+    .parseAsync(withoutMaterialImages(data), "");
+
 /** Capture source properties once, so CI does not need the private Blender exports. */
 export const modelContract = async (
   data: Uint8Array
 ): Promise<ModelContract> => {
-  const loader = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder);
-  const model = await loader.parseAsync(withoutMaterialImages(data), "");
+  const model = await parseModel(data);
   const bounds = new Box3().setFromObject(model.scene);
   const bones: number[] = [];
   model.scene.traverse((node) => {
