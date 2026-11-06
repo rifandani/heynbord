@@ -1,16 +1,7 @@
 {
   "id": "old-frostmaw",
-  "passed": false,
-  "problems": [
-    {
-      "code": "approval",
-      "detail": "The approval is pending, by \"\", on \"\". A person must approve."
-    },
-    {
-      "code": "props",
-      "detail": "The person who approves must list the props."
-    }
-  ],
+  "passed": true,
+  "problems": [],
   "measures": {
     "front": {
       "backgroundEdge": 0.955,

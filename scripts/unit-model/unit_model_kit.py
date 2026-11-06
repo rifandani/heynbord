@@ -305,6 +305,22 @@ class Part:
             self.face_colors[face] = color
 
 
+def mirror_part_geometry(source, target):
+    """Reflect the painted mesh across X; keep the target's skin rule and region."""
+    source.bm.normal_update()
+    colors = [_face_color(source, face) for face in source.bm.faces]
+    target.bm.free()
+    target.bm = source.bm.copy()
+    target.face_colors = dict(zip(target.bm.faces, colors))
+    target.smooth = source.smooth
+    target.shade = source.shade
+    bmesh.ops.transform(
+        target.bm, matrix=Matrix.Diagonal((-1, 1, 1, 1)), verts=list(target.bm.verts)
+    )
+    bmesh.ops.reverse_faces(target.bm, faces=list(target.bm.faces))
+    target.bm.normal_update()
+
+
 def _face_color(part, face):
     if face in part.face_colors:
         return part.face_colors[face]

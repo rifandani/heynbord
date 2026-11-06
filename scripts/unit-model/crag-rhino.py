@@ -346,6 +346,7 @@ def build_figure():
     kit.reset_scene()
     rig, _ = plan.build_rig("CragRhino", TABLE, TRUNK_BONES)
     parts = body_parts() + head_parts() + leg_parts()
+    plan.mirror_parts(parts)
     objects = [kit.part_object(part) for part in parts]
     plan.check_skin(parts, rig)
     mesh = kit.join_parts(objects, "CragRhinoMesh")

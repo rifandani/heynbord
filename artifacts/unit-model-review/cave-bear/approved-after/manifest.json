@@ -1,0 +1,581 @@
+{
+  "schemaVersion": 1,
+  "createdAt": "2026-11-06T15:08:25.875Z",
+  "runtime": {
+    "url": "http://localhost:4102/master-design?review=cave-bear",
+    "route": "/master-design",
+    "viewport": [960, 540],
+    "devicePixelRatio": 2,
+    "renderer": "WebGLRenderer",
+    "threeVersion": "186",
+    "readySignal": "window.__IMG2THREEJS_READY__",
+    "captureContract": "window.__IMG2THREEJS_CAPTURE__"
+  },
+  "reference": {
+    "kind": "image",
+    "path": "../../../../apps/web/public/creature/feral/cave-bear.webp",
+    "sha256": "6c599cfb914e983357691e7b801acb93b2ff89ee25aee47566f51e1d2d9247ec",
+    "comparisonBasis": "source-image",
+    "renderRequired": false
+  },
+  "model": {
+    "name": "cave-bear",
+    "path": "../../../../apps/web/public/models/units/cave-bear.glb",
+    "sha256": "31db88d805d0da3df98c98f01b74101af2203c387f14a5269926addd7e13ae46",
+    "identity": {
+      "feature": "honey at the mouth and the right-shoulder wound",
+      "azimuthDegrees": 30
+    }
+  },
+  "captures": [
+    {
+      "id": "front",
+      "role": "view",
+      "azimuthDegrees": 0,
+      "elevationDegrees": 0,
+      "target": [0, 0.7, 0],
+      "distance": 4.2,
+      "fovDegrees": 30,
+      "near": 0.5,
+      "far": 160,
+      "path": "front.png",
+      "status": "recorded",
+      "screenshotSha256": "7b5dca43c579957be87375dad2806f5966dab2b8ba4a7deb9f5d2a2448e05aa9",
+      "consoleErrors": [],
+      "passes": {
+        "beauty": {
+          "path": "front.png",
+          "status": "recorded",
+          "image": {
+            "type": "png",
+            "width": 1920,
+            "height": 1080
+          },
+          "sha256": "7b5dca43c579957be87375dad2806f5966dab2b8ba4a7deb9f5d2a2448e05aa9"
+        }
+      }
+    },
+    {
+      "id": "right",
+      "role": "view",
+      "azimuthDegrees": 90,
+      "elevationDegrees": 0,
+      "target": [0, 0.7, 0],
+      "distance": 4.2,
+      "fovDegrees": 30,
+      "near": 0.5,
+      "far": 160,
+      "path": "right.png",
+      "status": "recorded",
+      "screenshotSha256": "e18c76b557a719642075e1a28ec2ac753a4671864ac6192d297eb54729fd91e0",
+      "consoleErrors": [],
+      "passes": {
+        "beauty": {
+          "path": "right.png",
+          "status": "recorded",
+          "image": {
+            "type": "png",
+            "width": 1920,
+            "height": 1080
+          },
+          "sha256": "e18c76b557a719642075e1a28ec2ac753a4671864ac6192d297eb54729fd91e0"
+        }
+      }
+    },
+    {
+      "id": "back",
+      "role": "view",
+      "azimuthDegrees": 180,
+      "elevationDegrees": 0,
+      "target": [0, 0.7, 0],
+      "distance": 4.2,
+      "fovDegrees": 30,
+      "near": 0.5,
+      "far": 160,
+      "path": "back.png",
+      "status": "recorded",
+      "screenshotSha256": "94e152655b0193a38765283d3415b655dd4e46b5f1d0f8d9cbb85de7d3ce0d50",
+      "consoleErrors": [],
+      "passes": {
+        "beauty": {
+          "path": "back.png",
+          "status": "recorded",
+          "image": {
+            "type": "png",
+            "width": 1920,
+            "height": 1080
+          },
+          "sha256": "94e152655b0193a38765283d3415b655dd4e46b5f1d0f8d9cbb85de7d3ce0d50"
+        }
+      }
+    },
+    {
+      "id": "left",
+      "role": "view",
+      "azimuthDegrees": 270,
+      "elevationDegrees": 0,
+      "target": [0, 0.7, 0],
+      "distance": 4.2,
+      "fovDegrees": 30,
+      "near": 0.5,
+      "far": 160,
+      "path": "left.png",
+      "status": "recorded",
+      "screenshotSha256": "aaea5aee1c5c33140808a7edfa75b186769065c1ee6e55a3232608c333ec1636",
+      "consoleErrors": [],
+      "passes": {
+        "beauty": {
+          "path": "left.png",
+          "status": "recorded",
+          "image": {
+            "type": "png",
+            "width": 1920,
+            "height": 1080
+          },
+          "sha256": "aaea5aee1c5c33140808a7edfa75b186769065c1ee6e55a3232608c333ec1636"
+        }
+      }
+    },
+    {
+      "id": "battle",
+      "role": "view",
+      "azimuthDegrees": 292.9183118052329,
+      "elevationDegrees": 45,
+      "target": [0, 0.7, 0],
+      "distance": 20.378037025530894,
+      "fovDegrees": 30,
+      "near": 0.5,
+      "far": 160,
+      "path": "battle.png",
+      "status": "recorded",
+      "screenshotSha256": "e31dbb9697121c7d12c2a59dde76cb7de2ad623825cc9e87aef44336c64fb120",
+      "consoleErrors": [],
+      "passes": {
+        "beauty": {
+          "path": "battle.png",
+          "status": "recorded",
+          "image": {
+            "type": "png",
+            "width": 1920,
+            "height": 1080
+          },
+          "sha256": "e31dbb9697121c7d12c2a59dde76cb7de2ad623825cc9e87aef44336c64fb120"
+        }
+      }
+    },
+    {
+      "id": "close-up",
+      "role": "view",
+      "azimuthDegrees": 30,
+      "elevationDegrees": 45,
+      "target": [0, 0.7, 0],
+      "distance": 2.6,
+      "fovDegrees": 30,
+      "near": 0.5,
+      "far": 160,
+      "path": "close-up.png",
+      "status": "recorded",
+      "screenshotSha256": "eb10fb51d6165bcb6659cf55c5842440b4194649a4f229fcd66586efd61f8198",
+      "consoleErrors": [],
+      "passes": {
+        "beauty": {
+          "path": "close-up.png",
+          "status": "recorded",
+          "image": {
+            "type": "png",
+            "width": 1920,
+            "height": 1080
+          },
+          "sha256": "eb10fb51d6165bcb6659cf55c5842440b4194649a4f229fcd66586efd61f8198"
+        }
+      }
+    },
+    {
+      "id": "idle-0",
+      "role": "clip-frame",
+      "azimuthDegrees": 0,
+      "elevationDegrees": 0,
+      "target": [0, 0.7, 0],
+      "distance": 4.2,
+      "fovDegrees": 30,
+      "near": 0.5,
+      "far": 160,
+      "clip": {
+        "name": "idle",
+        "percent": 0
+      },
+      "path": "idle-0.png",
+      "status": "recorded",
+      "screenshotSha256": "7b5dca43c579957be87375dad2806f5966dab2b8ba4a7deb9f5d2a2448e05aa9",
+      "consoleErrors": [],
+      "passes": {
+        "beauty": {
+          "path": "idle-0.png",
+          "status": "recorded",
+          "image": {
+            "type": "png",
+            "width": 1920,
+            "height": 1080
+          },
+          "sha256": "7b5dca43c579957be87375dad2806f5966dab2b8ba4a7deb9f5d2a2448e05aa9"
+        }
+      }
+    },
+    {
+      "id": "idle-50",
+      "role": "clip-frame",
+      "azimuthDegrees": 0,
+      "elevationDegrees": 0,
+      "target": [0, 0.7, 0],
+      "distance": 4.2,
+      "fovDegrees": 30,
+      "near": 0.5,
+      "far": 160,
+      "clip": {
+        "name": "idle",
+        "percent": 50
+      },
+      "path": "idle-50.png",
+      "status": "recorded",
+      "screenshotSha256": "aa0904305b9204d3718cc3b872e4d28d2ea32631d27bf71c4d9f82f80115cf5c",
+      "consoleErrors": [],
+      "passes": {
+        "beauty": {
+          "path": "idle-50.png",
+          "status": "recorded",
+          "image": {
+            "type": "png",
+            "width": 1920,
+            "height": 1080
+          },
+          "sha256": "aa0904305b9204d3718cc3b872e4d28d2ea32631d27bf71c4d9f82f80115cf5c"
+        }
+      }
+    },
+    {
+      "id": "idle-100",
+      "role": "clip-frame",
+      "azimuthDegrees": 0,
+      "elevationDegrees": 0,
+      "target": [0, 0.7, 0],
+      "distance": 4.2,
+      "fovDegrees": 30,
+      "near": 0.5,
+      "far": 160,
+      "clip": {
+        "name": "idle",
+        "percent": 100
+      },
+      "path": "idle-100.png",
+      "status": "recorded",
+      "screenshotSha256": "81e6bfd59a6493e47926659cc8e460e3355bc21285528d891556196a658c835f",
+      "consoleErrors": [],
+      "passes": {
+        "beauty": {
+          "path": "idle-100.png",
+          "status": "recorded",
+          "image": {
+            "type": "png",
+            "width": 1920,
+            "height": 1080
+          },
+          "sha256": "81e6bfd59a6493e47926659cc8e460e3355bc21285528d891556196a658c835f"
+        }
+      }
+    },
+    {
+      "id": "attack-0",
+      "role": "clip-frame",
+      "azimuthDegrees": 0,
+      "elevationDegrees": 0,
+      "target": [0, 0.7, 0],
+      "distance": 4.2,
+      "fovDegrees": 30,
+      "near": 0.5,
+      "far": 160,
+      "clip": {
+        "name": "attack",
+        "percent": 0
+      },
+      "path": "attack-0.png",
+      "status": "recorded",
+      "screenshotSha256": "5d438496d579f4e3c9face9b2c2e71fcb9a79a8e88530ca7ed3836f356a4045d",
+      "consoleErrors": [],
+      "passes": {
+        "beauty": {
+          "path": "attack-0.png",
+          "status": "recorded",
+          "image": {
+            "type": "png",
+            "width": 1920,
+            "height": 1080
+          },
+          "sha256": "5d438496d579f4e3c9face9b2c2e71fcb9a79a8e88530ca7ed3836f356a4045d"
+        }
+      }
+    },
+    {
+      "id": "attack-50",
+      "role": "clip-frame",
+      "azimuthDegrees": 0,
+      "elevationDegrees": 0,
+      "target": [0, 0.7, 0],
+      "distance": 4.2,
+      "fovDegrees": 30,
+      "near": 0.5,
+      "far": 160,
+      "clip": {
+        "name": "attack",
+        "percent": 50
+      },
+      "path": "attack-50.png",
+      "status": "recorded",
+      "screenshotSha256": "0fe1b7abe9a9fc201261239204ce45276d7e8603f1e210d9c239d055f469abc8",
+      "consoleErrors": [],
+      "passes": {
+        "beauty": {
+          "path": "attack-50.png",
+          "status": "recorded",
+          "image": {
+            "type": "png",
+            "width": 1920,
+            "height": 1080
+          },
+          "sha256": "0fe1b7abe9a9fc201261239204ce45276d7e8603f1e210d9c239d055f469abc8"
+        }
+      }
+    },
+    {
+      "id": "attack-100",
+      "role": "clip-frame",
+      "azimuthDegrees": 0,
+      "elevationDegrees": 0,
+      "target": [0, 0.7, 0],
+      "distance": 4.2,
+      "fovDegrees": 30,
+      "near": 0.5,
+      "far": 160,
+      "clip": {
+        "name": "attack",
+        "percent": 100
+      },
+      "path": "attack-100.png",
+      "status": "recorded",
+      "screenshotSha256": "486211dec8c88ae2bbb44e0b3ac8c20f1f210c0caa80a13cd1564c0b79d75f16",
+      "consoleErrors": [],
+      "passes": {
+        "beauty": {
+          "path": "attack-100.png",
+          "status": "recorded",
+          "image": {
+            "type": "png",
+            "width": 1920,
+            "height": 1080
+          },
+          "sha256": "486211dec8c88ae2bbb44e0b3ac8c20f1f210c0caa80a13cd1564c0b79d75f16"
+        }
+      }
+    },
+    {
+      "id": "death-0",
+      "role": "clip-frame",
+      "azimuthDegrees": 0,
+      "elevationDegrees": 0,
+      "target": [0, 0.7, 0],
+      "distance": 4.2,
+      "fovDegrees": 30,
+      "near": 0.5,
+      "far": 160,
+      "clip": {
+        "name": "death",
+        "percent": 0
+      },
+      "path": "death-0.png",
+      "status": "recorded",
+      "screenshotSha256": "486211dec8c88ae2bbb44e0b3ac8c20f1f210c0caa80a13cd1564c0b79d75f16",
+      "consoleErrors": [],
+      "passes": {
+        "beauty": {
+          "path": "death-0.png",
+          "status": "recorded",
+          "image": {
+            "type": "png",
+            "width": 1920,
+            "height": 1080
+          },
+          "sha256": "486211dec8c88ae2bbb44e0b3ac8c20f1f210c0caa80a13cd1564c0b79d75f16"
+        }
+      }
+    },
+    {
+      "id": "death-50",
+      "role": "clip-frame",
+      "azimuthDegrees": 0,
+      "elevationDegrees": 0,
+      "target": [0, 0.7, 0],
+      "distance": 4.2,
+      "fovDegrees": 30,
+      "near": 0.5,
+      "far": 160,
+      "clip": {
+        "name": "death",
+        "percent": 50
+      },
+      "path": "death-50.png",
+      "status": "recorded",
+      "screenshotSha256": "571696353d5dd6bd20b27af861b7a7ca772cf3147b5bf995c1a6b065b37b6374",
+      "consoleErrors": [],
+      "passes": {
+        "beauty": {
+          "path": "death-50.png",
+          "status": "recorded",
+          "image": {
+            "type": "png",
+            "width": 1920,
+            "height": 1080
+          },
+          "sha256": "571696353d5dd6bd20b27af861b7a7ca772cf3147b5bf995c1a6b065b37b6374"
+        }
+      }
+    },
+    {
+      "id": "death-100",
+      "role": "clip-frame",
+      "azimuthDegrees": 0,
+      "elevationDegrees": 0,
+      "target": [0, 0.7, 0],
+      "distance": 4.2,
+      "fovDegrees": 30,
+      "near": 0.5,
+      "far": 160,
+      "clip": {
+        "name": "death",
+        "percent": 100
+      },
+      "path": "death-100.png",
+      "status": "recorded",
+      "screenshotSha256": "66a3a6059e3aa945e65387171b722ea990a26e0c01dd363a9a01168353efdd41",
+      "consoleErrors": [],
+      "passes": {
+        "beauty": {
+          "path": "death-100.png",
+          "status": "recorded",
+          "image": {
+            "type": "png",
+            "width": 1920,
+            "height": 1080
+          },
+          "sha256": "66a3a6059e3aa945e65387171b722ea990a26e0c01dd363a9a01168353efdd41"
+        }
+      }
+    },
+    {
+      "id": "front-cutout",
+      "role": "view",
+      "azimuthDegrees": 0,
+      "elevationDegrees": 0,
+      "target": [0, 0.7, 0],
+      "distance": 4.2,
+      "fovDegrees": 30,
+      "near": 0.5,
+      "far": 160,
+      "path": "front-cutout.png",
+      "status": "recorded",
+      "screenshotSha256": "a7ea85e2ec774744bd94e3c5c860f6f0d43318a5c75f49aa935df0d85bf3dcbf",
+      "consoleErrors": [],
+      "passes": {
+        "cutout": {
+          "path": "front-cutout.png",
+          "status": "recorded",
+          "image": {
+            "type": "png",
+            "width": 1920,
+            "height": 1080
+          },
+          "sha256": "a7ea85e2ec774744bd94e3c5c860f6f0d43318a5c75f49aa935df0d85bf3dcbf"
+        }
+      }
+    },
+    {
+      "id": "right-cutout",
+      "role": "view",
+      "azimuthDegrees": 90,
+      "elevationDegrees": 0,
+      "target": [0, 0.7, 0],
+      "distance": 4.2,
+      "fovDegrees": 30,
+      "near": 0.5,
+      "far": 160,
+      "path": "right-cutout.png",
+      "status": "recorded",
+      "screenshotSha256": "082bec90a659f1bf02547aaf6440d36fe74e907151480a0ca565f0059483088c",
+      "consoleErrors": [],
+      "passes": {
+        "cutout": {
+          "path": "right-cutout.png",
+          "status": "recorded",
+          "image": {
+            "type": "png",
+            "width": 1920,
+            "height": 1080
+          },
+          "sha256": "082bec90a659f1bf02547aaf6440d36fe74e907151480a0ca565f0059483088c"
+        }
+      }
+    },
+    {
+      "id": "back-cutout",
+      "role": "view",
+      "azimuthDegrees": 180,
+      "elevationDegrees": 0,
+      "target": [0, 0.7, 0],
+      "distance": 4.2,
+      "fovDegrees": 30,
+      "near": 0.5,
+      "far": 160,
+      "path": "back-cutout.png",
+      "status": "recorded",
+      "screenshotSha256": "1a52e5aab2b559e1c059419c6b1062131440ee8a98a65988a853a7759bac0a72",
+      "consoleErrors": [],
+      "passes": {
+        "cutout": {
+          "path": "back-cutout.png",
+          "status": "recorded",
+          "image": {
+            "type": "png",
+            "width": 1920,
+            "height": 1080
+          },
+          "sha256": "1a52e5aab2b559e1c059419c6b1062131440ee8a98a65988a853a7759bac0a72"
+        }
+      }
+    },
+    {
+      "id": "left-cutout",
+      "role": "view",
+      "azimuthDegrees": 270,
+      "elevationDegrees": 0,
+      "target": [0, 0.7, 0],
+      "distance": 4.2,
+      "fovDegrees": 30,
+      "near": 0.5,
+      "far": 160,
+      "path": "left-cutout.png",
+      "status": "recorded",
+      "screenshotSha256": "affc6c2fc1c7bbb710696bc6c87f34cb7796e9b659433e9d1805d85ea7d8e444",
+      "consoleErrors": [],
+      "passes": {
+        "cutout": {
+          "path": "left-cutout.png",
+          "status": "recorded",
+          "image": {
+            "type": "png",
+            "width": 1920,
+            "height": 1080
+          },
+          "sha256": "affc6c2fc1c7bbb710696bc6c87f34cb7796e9b659433e9d1805d85ea7d8e444"
+        }
+      }
+    }
+  ]
+}

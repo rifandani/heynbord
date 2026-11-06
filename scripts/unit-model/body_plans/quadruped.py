@@ -154,3 +154,15 @@ def build_rig(name, table, trunk=(), props=(), foot="foot"):
     import unit_model_kit as kit
 
     return kit.build_armature(name, bones(table, trunk, props, foot)), table
+
+
+def mirror_parts(parts):
+    """Make each paired right part an exact reflection; retain its right-side skin rule."""
+    import unit_model_kit as kit
+
+    by_name = {part.name: part for part in parts}
+    for part in parts:
+        if part.name.endswith((".L", ".FL", ".BL")):
+            other = by_name.get(part.name[:-1] + "R")
+            if other is not None:
+                kit.mirror_part_geometry(part, other)

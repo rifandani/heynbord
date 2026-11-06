@@ -8,11 +8,11 @@
     "back": "back.webp",
     "details": "details.webp"
   },
-  "props": [],
+  "props": ["honeycomb"],
   "approval": {
-    "status": "pending",
-    "by": "",
-    "date": "",
-    "notes": "Draft generated from the card painting for issue 186. Hidden sides are inferred. A person must check all five views and list the visible props before approval."
+    "status": "approved",
+    "by": "rifandani",
+    "date": "2026-11-06",
+    "notes": "Approved all five views and this prop list by a message to the agent. Hidden sides are inferred from the card painting."
   }
 }

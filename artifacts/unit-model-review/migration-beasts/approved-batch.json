@@ -1,0 +1,152 @@
+{
+  "issue": 186,
+  "status": "stopped",
+  "turnarounds": "approved",
+  "units": [
+    {
+      "unit": "crag-rhino",
+      "before": {
+        "turntable": "fail",
+        "interior-difference": "pass",
+        "self-intersection": "pass",
+        "joint-loops": "pass",
+        "attachment-anchor": "fail",
+        "region-coverage": "pass",
+        "chirality": "fail",
+        "palette": "fail",
+        "part-coverage": "pass",
+        "ground-contact": "pass",
+        "foot-bones": "pass"
+      },
+      "after": {
+        "turntable": "fail",
+        "interior-difference": "pass",
+        "self-intersection": "pass",
+        "joint-loops": "pass",
+        "attachment-anchor": "fail",
+        "region-coverage": "pass",
+        "chirality": "pass",
+        "palette": "fail",
+        "part-coverage": "pass",
+        "ground-contact": "pass",
+        "foot-bones": "pass"
+      }
+    },
+    {
+      "unit": "gorehorn-red-maw",
+      "before": {
+        "turntable": "pass",
+        "interior-difference": "pass",
+        "self-intersection": "pass",
+        "joint-loops": "fail",
+        "attachment-anchor": "pass",
+        "region-coverage": "pass",
+        "chirality": "fail",
+        "palette": "fail",
+        "part-coverage": "pass",
+        "ground-contact": "pass",
+        "foot-bones": "pass"
+      },
+      "after": {
+        "turntable": "pass",
+        "interior-difference": "pass",
+        "self-intersection": "pass",
+        "joint-loops": "fail",
+        "attachment-anchor": "pass",
+        "region-coverage": "pass",
+        "chirality": "pass",
+        "palette": "fail",
+        "part-coverage": "pass",
+        "ground-contact": "pass",
+        "foot-bones": "pass"
+      }
+    },
+    {
+      "unit": "old-frostmaw",
+      "before": {
+        "turntable": "pass",
+        "interior-difference": "fail",
+        "self-intersection": "pass",
+        "joint-loops": "fail",
+        "attachment-anchor": "fail",
+        "region-coverage": "pass",
+        "chirality": "pass",
+        "palette": "fail",
+        "part-coverage": "pass",
+        "ground-contact": "pass",
+        "foot-bones": "pass"
+      },
+      "after": {
+        "turntable": "pass",
+        "interior-difference": "fail",
+        "self-intersection": "pass",
+        "joint-loops": "fail",
+        "attachment-anchor": "fail",
+        "region-coverage": "pass",
+        "chirality": "pass",
+        "palette": "fail",
+        "part-coverage": "pass",
+        "ground-contact": "pass",
+        "foot-bones": "pass"
+      }
+    },
+    {
+      "unit": "woolly-mammoth",
+      "before": {
+        "turntable": "pass",
+        "interior-difference": "pass",
+        "self-intersection": "pass",
+        "joint-loops": "pass",
+        "attachment-anchor": "pass",
+        "region-coverage": "pass",
+        "chirality": "fail",
+        "palette": "fail",
+        "part-coverage": "pass",
+        "ground-contact": "pass",
+        "foot-bones": "pass"
+      },
+      "after": {
+        "turntable": "pass",
+        "interior-difference": "pass",
+        "self-intersection": "pass",
+        "joint-loops": "pass",
+        "attachment-anchor": "pass",
+        "region-coverage": "pass",
+        "chirality": "pass",
+        "palette": "fail",
+        "part-coverage": "pass",
+        "ground-contact": "pass",
+        "foot-bones": "pass"
+      }
+    },
+    {
+      "unit": "cave-bear",
+      "before": {
+        "turntable": "pass",
+        "interior-difference": "pass",
+        "self-intersection": "fail",
+        "joint-loops": "pass",
+        "attachment-anchor": "pass",
+        "region-coverage": "pass",
+        "chirality": "fail",
+        "palette": "fail",
+        "part-coverage": "pass",
+        "ground-contact": "pass",
+        "foot-bones": "pass"
+      },
+      "after": {
+        "turntable": "pass",
+        "interior-difference": "pass",
+        "self-intersection": "fail",
+        "joint-loops": "pass",
+        "attachment-anchor": "pass",
+        "region-coverage": "pass",
+        "chirality": "pass",
+        "palette": "fail",
+        "part-coverage": "pass",
+        "ground-contact": "pass",
+        "foot-bones": "pass"
+      }
+    }
+  ]
+}

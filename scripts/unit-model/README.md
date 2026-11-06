@@ -233,4 +233,4 @@ CI runs these tests on the Raw Exports in git. On 2026-11-05 the 98 Raw Exports 
 
 ## Beast Migration
 
-Issue #186 starts with Crag Rhino, Gorehorn Red Maw, Old Frostmaw, Woolly Mammoth and Cave Bear. The [batch report](../../artifacts/unit-model-review/migration-beasts/report.md) has the inventory, before and after gates, intentional clip changes and the [draft Turnarounds](../../artifacts/unit-model-review/migration-beasts/turnarounds.png). The four new Turnarounds need human approval. Model gates still fail, so later batches stay pending.
+Issue #186 starts with Crag Rhino, Gorehorn Red Maw, Old Frostmaw, Woolly Mammoth and Cave Bear. The [batch report](../../artifacts/unit-model-review/migration-beasts/report.md) has the inventory, before and after gates, intentional clip changes and the [draft Turnarounds](../../artifacts/unit-model-review/migration-beasts/turnarounds.png). The four new Turnarounds have human approval and pass intake. Model gates still fail, so later batches stay pending.
