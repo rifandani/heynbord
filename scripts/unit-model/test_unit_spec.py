@@ -25,7 +25,7 @@ class UnitSpecChecks(unittest.TestCase):
              ("crag-rhino", "quadruped", 0.7280354),
              ("bone-rampart", "structure", 1.13)],
         )
-        self.assertEqual(specs[0]["palette"]["coat"], "#2f6a35")
+        self.assertEqual(specs[0]["palette"]["coat"], "#5a6434")
         self.assertEqual(specs[0]["clips"]["attack"], {"override": "bow-draw"})
         self.assertEqual(specs[0]["props"], [
             {"id": "bow", "hand": "left", "cameraSide": False, "bone": "hand.L"},

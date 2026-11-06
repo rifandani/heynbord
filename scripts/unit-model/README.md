@@ -19,7 +19,7 @@ The initial Body Plan names are `biped-medium`, `quadruped` and `structure`. `bi
 
 The five required clips match `BASE_UNIT_CLIPS` in `apps/web/src/features/battle/scene/unit-clips.ts`: `idle`, `walk`, `attack`, `hurt` and `death`. The optional clips are `lowHp`, `cast`, `rebirth` and `summon`. Each pilot lists only the clips that its script builds. An empty clip object uses the Body Plan slot. An `override` names the unit's specific action for the future Clip Library.
 
-The palettes and parts come from the three build scripts. Warden Saelith includes the inline belt and arrow colors. Bone Rampart's hammer is part of `skel.A.arm`. Heights include props in the rest pose: 0.985 for Warden Saelith, 0.7280354 for Crag Rhino and 1.13 for Bone Rampart. These values agree with the bounds in `source-contracts.json`. The specs record the current models; the build scripts and Source Contracts do not change.
+The palettes and parts come from the three build scripts. Warden Saelith includes the inline belt and arrow colors, and #179 changed her coat to the olive of the card painting. Bone Rampart's hammer is part of `skel.A.arm`. Heights include props in the rest pose: 0.985 for Warden Saelith, 0.7280354 for Crag Rhino and 1.13 for Bone Rampart. These values agree with the bounds in `source-contracts.json`. The specs record the current models.
 
 ## Packing
 
@@ -148,12 +148,28 @@ Only Warden Saelith has `regions` now. Her values are rounded measures of the cu
 What each Review Gate cannot see:
 
 - `turntable`: The source hole test reads the full silhouette. It reports correct gaps, such as the space between a bow and its string. So `turntable` tests the silhouette of each part, and the silhouette of the body with no props. It does not find a wrong gap that a prop closes. `gates.json` keeps the source result in `holed`.
-- `interior-difference`: The model is compared with a painted target, not with an earlier render, so the value does not go to 0. The limit is thin: the current model is at 0.273, and a head with no face is at 0.282. It measures luminance only.
+- `interior-difference`: The model is compared with a painted target, not with an earlier render, so the value does not go to 0. The limit is thin: Warden Saelith is at 0.262, and a head with no face is at 0.282. It measures luminance only, and it does not find a missing part of the costume: she passes with no mantle and no cape.
 - `self-intersection`: A ray test needs a closed shape. The record lists the open islands in `openIslandsNotTested`. A reversed surface reads as inside itself, so it also finds this.
 - `joint-loops`: A joint needs a child bone, because a glTF bone has no tail. The record lists the other bones in `bonesWithNoTip`. It counts bands of vertices, not true edge loops.
 - `chirality`: A pair that is wrong the same way on both sides is still a mirror of itself.
 - `palette`: The card painting has a full scene behind the figure, and no region masks. So it asks if each main color of a region is a color of the painting. A main color has at least 10% of the vertices of the region, so a small detail has no test. It finds a wrong coat color. It does not find a correct color in the wrong place. Browns are in most paintings, so only a saturated color separates well.
 - `part-coverage`: It proves that the model has what the Unit Spec lists, and not that the Unit Spec lists enough.
+
+## Warden Saelith rebuild
+
+Warden Saelith is the first model through the full pipeline. `artifacts/unit-model-review/warden-saelith/` has the two captures, `before/` and `after/`, and `report.md` has the defect table and the go/no-go decision.
+
+`unit-model:gates` with no `--date` reads only a folder with a date, so run `unit-model:review` first. Do not run the Review Gates with `--date before`: they read the current Raw Export, so they replace the baseline with data of the current model.
+
+## Kit geometry
+
+`kit.tube` now winds each face outward. An earlier Raw Export has a reversed surface, so its ink outline does not show. Each build script gets the fix when it is built again. A rebuild of the 98 scripts changes no Source Contract.
+
+`kit.cone` has `loops`: a ring at each share of its length. A ring does not change the shape, so it does not change a Source Contract. A ring bends only if its vertices have a blend of two bones. `neck_weights` and `hips_weights` of `warden-saelith.py` are examples. The tests of the kit need Blender:
+
+```sh
+rtk proxy /Applications/Blender.app/Contents/MacOS/Blender --background --factory-startup --python-exit-code 1 --python scripts/unit-model/test_kit_geometry.py
+```
 
 ## Body Regions
 

@@ -89,8 +89,14 @@ def sphere(bm, center, radii, segments=12, rings=8):
     return geom["verts"]
 
 
-def cone(bm, start, end, r_start, r_end, segments=8, caps=True, squash=1.0):
-    """A tapered cylinder from `start` to `end`. `squash` scales its depth (Y)."""
+def cone(bm, start, end, r_start, r_end, segments=8, caps=True, squash=1.0, loops=()):
+    """
+    A tapered cylinder from `start` to `end`. `squash` scales its depth (Y).
+    `loops` adds a ring at each share of the length, so a joint there can bend.
+    The rings are on the old surface, so they do not change the shape.
+    """
+    if any(not 0 < share < 1 for share in loops):
+        raise ValueError(f"a ring must be inside the cone: {loops}")
     start, end = Vector(start), Vector(end)
     axis = end - start
     geom = bmesh.ops.create_cone(
@@ -105,7 +111,18 @@ def cone(bm, start, end, r_start, r_end, segments=8, caps=True, squash=1.0):
     squash_m = Matrix.Diagonal((1.0, squash, 1.0, 1.0))
     place = Matrix.Translation((start + end) / 2) @ _frame(axis)
     bmesh.ops.transform(bm, matrix=place @ squash_m, verts=geom["verts"])
-    return geom["verts"]
+    verts = list(geom["verts"])
+    for share in loops:
+        edges = {edge for vert in verts for edge in vert.link_edges}
+        faces = {face for vert in verts for face in vert.link_faces}
+        cut = bmesh.ops.bisect_plane(
+            bm,
+            geom=verts + list(edges) + list(faces),
+            plane_co=start + axis * share,
+            plane_no=axis,
+        )
+        verts += [item for item in cut["geom_cut"] if isinstance(item, bmesh.types.BMVert)]
+    return verts
 
 
 def box(bm, center, size):
@@ -146,10 +163,10 @@ def tube(bm, points, radii, sides=6, caps=True):
     for a, b in zip(rings, rings[1:]):
         for step in range(sides):
             n = (step + 1) % sides
-            bm.faces.new((a[step], a[n], b[n], b[step]))
+            bm.faces.new((a[step], b[step], b[n], a[n]))
     if caps:
-        bm.faces.new(list(reversed(rings[0])))
-        bm.faces.new(rings[-1])
+        bm.faces.new(rings[0])
+        bm.faces.new(list(reversed(rings[-1])))
     return [vert for ring in rings for vert in ring]
 
 

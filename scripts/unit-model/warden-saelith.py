@@ -37,8 +37,8 @@ plan = body_plans.BODY_PLANS["biped-medium"]
 SKIN = hex_color("#eab68c")
 HAIR = hex_color("#3a2316")
 HAIR_LIGHT = hex_color("#5b3822")
-COAT = hex_color("#2f6a35")
-COAT_DARK = hex_color("#24502a")
+COAT = hex_color("#5a6434")
+COAT_DARK = hex_color("#404a24")
 AMBER = hex_color("#e3a336")
 CREAM = hex_color("#efe1bd")
 LEATHER = hex_color("#5c3921")
@@ -104,6 +104,18 @@ def torso_weights(co):
     return blend("spine", "chest", co.z, 0.6, 0.66)
 
 
+def neck_weights(co):
+    return blend("chest", "neck", co.z, TABLE.neck_z - 0.01, TABLE.neck_z + 0.01)
+
+
+def hips_weights(co):
+    """Below the hip joint, the hips follow the thigh on their side."""
+    below = clamp01((TABLE.hip_z - co.z) / 0.05)
+    side = clamp01(abs(co.x) / TABLE.hip_x)
+    share = below * side * 0.6
+    return {"hips": 1 - share, "thigh.L" if co.x > 0 else "thigh.R": share}
+
+
 def skirt_weights(co):
     t = clamp01((0.53 - co.z) / 0.41)
     back = clamp01((co.y - 0.02) / 0.1)
@@ -130,6 +142,11 @@ def string_weights(co):
     reach = BOW_HALF
     near = 1 - clamp01(abs(co.z - STRING_P.z) / reach)
     return {"string": near, "bow": 1 - near}
+
+
+def shares(low, high, *heights):
+    """Each height as a share of the way from `low` to `high`: the `loops` of a cone."""
+    return tuple((z - low) / (high - low) for z in heights)
 
 
 # --- Parts ---------------------------------------------------------------------
@@ -197,8 +214,9 @@ def head_parts():
     kit.cone(tiara.bm, (0, -0.074, 0.9), (0, -0.07, 0.95), 0.012, 0.001, 4, squash=0.5)
     parts.append(tiara)
 
-    neck = Part("neck", SKIN, "neck")
-    kit.cone(neck.bm, (0, 0, 0.74), (0, 0, 0.81), 0.026, 0.024, 8)
+    neck = Part("neck", SKIN, neck_weights)
+    rings = shares(0.74, 0.81, TABLE.neck_z, TABLE.neck_z + 0.01)
+    kit.cone(neck.bm, (0, 0, 0.74), (0, 0, 0.81), 0.026, 0.024, 8, loops=rings)
     parts.append(neck)
     return parts
 
@@ -206,7 +224,8 @@ def head_parts():
 def body_parts():
     parts = []
     chest = Part("chest", COAT, torso_weights)
-    kit.cone(chest.bm, (0, 0, 0.55), (0, 0, 0.735), 0.062, 0.082, 12, squash=0.72)
+    rings = shares(0.55, 0.735, TABLE.chest_z - 0.025, TABLE.chest_z, TABLE.chest_z + 0.025)
+    kit.cone(chest.bm, (0, 0, 0.55), (0, 0, 0.735), 0.062, 0.082, 12, squash=0.72, loops=rings)
     parts.append(chest)
 
     collar = Part("collar", CREAM, "chest")
@@ -228,8 +247,9 @@ def body_parts():
     belt.paint({f for v in buckle for f in v.link_faces}, GOLD)
     parts.append(belt)
 
-    hips = Part("hips", LEGGINGS, "hips")
-    kit.cone(hips.bm, (0, 0, 0.42), (0, 0, 0.5), 0.07, 0.068, 12, squash=0.8)
+    hips = Part("hips", LEGGINGS, hips_weights)
+    rings = shares(0.42, 0.5, TABLE.hip_z - 0.02, TABLE.hip_z, TABLE.hip_z + 0.02)
+    kit.cone(hips.bm, (0, 0, 0.42), (0, 0, 0.5), 0.07, 0.068, 12, squash=0.8, loops=rings)
     parts.append(hips)
 
     parts.append(skirt())
