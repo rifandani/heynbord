@@ -1,7 +1,7 @@
 """
 Warden Saelith (`elf.wardenSaelith`), the first Unit Model (art direction 2.2).
 
-A tabletop miniature of the card painting: an elf woman with a long dark
+A tabletop miniature of the card painting. It shows an elf woman with a long dark
 braid, a green coat with amber trim and cream lining, and a longbow. Run it
 in Blender (see `unit_model_kit.py`). It writes
 `apps/web/art/units/raw/warden-saelith.glb`; then
