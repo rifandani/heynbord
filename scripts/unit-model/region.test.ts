@@ -8,7 +8,13 @@ import { MeshoptDecoder, MeshoptEncoder } from "meshoptimizer";
 
 import { compressUnitModel } from "./compress.ts";
 import { checkUnitModel, readUnitGltf } from "./model-check.ts";
-import { REGION_ATTRIBUTE, regionProblems, stripRegion } from "./region.ts";
+import {
+  PART_ATTRIBUTE,
+  PARTS_EXTRA,
+  REGION_ATTRIBUTE,
+  regionProblems,
+  stripReviewData,
+} from "./region.ts";
 import REGIONS from "./regions.json";
 
 const ROOT = path.resolve(import.meta.dirname, "../..");
@@ -82,16 +88,38 @@ const triangle = (regions?: readonly number[]): Document => {
   return document;
 };
 
-describe("stripRegion", () => {
-  test("gives the same bytes as a model that never had a region", async () => {
-    const stripped = stripRegion(triangle([1, 1, 2]));
-    await expect(io.writeBinary(stripped)).resolves.toEqual(
-      await io.writeBinary(triangle())
-    );
+/** The triangle as the kit exports it: with its region, its part and the part names. */
+const taggedTriangle = (): Document => {
+  const document = triangle([1, 1, 2]);
+  const root = document.getRoot();
+  const [mesh] = root.listMeshes();
+  const [primitive] = mesh?.listPrimitives() ?? [];
+  primitive?.setAttribute(
+    PART_ATTRIBUTE,
+    document
+      .createAccessor()
+      .setBuffer(root.listBuffers()[0] ?? null)
+      .setType("SCALAR")
+      .setArray(new Float32Array([1, 1, 2]))
+  );
+  document
+    .createNode("Figure")
+    .setMesh(mesh ?? null)
+    .setExtras({ [PARTS_EXTRA]: JSON.stringify(["chest", "bow"]) });
+  return document;
+};
+
+describe("stripReviewData", () => {
+  test("gives the same bytes as a model that never had review data", async () => {
+    const plain = triangle();
+    plain.createNode("Figure").setMesh(plain.getRoot().listMeshes()[0] ?? null);
+    await expect(
+      io.writeBinary(stripReviewData(taggedTriangle()))
+    ).resolves.toEqual(await io.writeBinary(plain));
   });
 
-  test("removes the attribute from the glTF that it writes", async () => {
-    const data = await io.writeBinary(stripRegion(triangle([1, 1, 2])));
+  test("removes the attributes from the glTF that it writes", async () => {
+    const data = await io.writeBinary(stripReviewData(taggedTriangle()));
     expect(readUnitGltf(data).meshes[0]?.primitives[0]?.attributes).toEqual({
       POSITION: 0,
     });
@@ -123,8 +151,8 @@ describe("regionProblems", () => {
 });
 
 describe("compressUnitModel", () => {
-  test("gives a compressed glTF with no Body Region attribute", async () => {
-    const document = triangle([1, 1, 2]);
+  test("gives a compressed glTF with no review data", async () => {
+    const document = taggedTriangle();
     await compressUnitModel(document);
     const data = await io.writeBinary(document);
     expect(
@@ -134,12 +162,14 @@ describe("compressUnitModel", () => {
 });
 
 describe("Published Models", () => {
-  test("have no Body Region attribute", () => {
+  test("have no review data", () => {
     const tagged = modelsIn(PUBLISHED).filter((file) =>
       readUnitGltf(readFileSync(path.join(PUBLISHED, file))).meshes.some(
         (mesh) =>
           mesh.primitives.some(
-            (primitive) => REGION_ATTRIBUTE in primitive.attributes
+            (primitive) =>
+              REGION_ATTRIBUTE in primitive.attributes ||
+              PART_ATTRIBUTE in primitive.attributes
           )
       )
     );

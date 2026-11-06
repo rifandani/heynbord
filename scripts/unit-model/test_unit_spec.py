@@ -28,10 +28,47 @@ class UnitSpecChecks(unittest.TestCase):
         self.assertEqual(specs[0]["palette"]["coat"], "#2f6a35")
         self.assertEqual(specs[0]["clips"]["attack"], {"override": "bow-draw"})
         self.assertEqual(specs[0]["props"], [
-            {"id": "bow", "hand": "left", "cameraSide": False},
-            {"id": "arrow", "hand": "right", "cameraSide": True},
-            {"id": "quiver", "hand": "none", "cameraSide": True},
+            {"id": "bow", "hand": "left", "cameraSide": False, "bone": "hand.L"},
+            {"id": "arrow", "hand": "right", "cameraSide": True, "bone": "hand.R"},
+            {"id": "quiver", "hand": "none", "cameraSide": True, "bone": "hips"},
         ])
+
+    def test_a_prop_needs_the_bone_that_it_is_on(self):
+        valid = load_spec(DIRECTORY / "specs/warden-saelith.json")
+        prop = {"id": "bow", "hand": "left", "cameraSide": False}
+        self.assertIn(
+            "spec.props[0].bone: required",
+            validate_spec({**valid, "props": [prop]}),
+        )
+
+    def test_a_region_box_uses_the_fixed_region_names(self):
+        valid = load_spec(DIRECTORY / "specs/warden-saelith.json")
+        box = {"x0": 0, "x1": 1, "y0": 0, "y1": 1}
+        self.assertEqual(validate_spec({**valid, "regions": {"leg.R": box}}), [])
+        self.assertTrue(any(
+            "spec.regions.wing: unknown value" in error
+            for error in validate_spec({**valid, "regions": {"wing": box}})
+        ))
+
+    def test_a_region_box_stays_in_the_frame_of_the_model(self):
+        valid = load_spec(DIRECTORY / "specs/warden-saelith.json")
+        cases = [
+            ({"x0": 0.6, "x1": 0.5, "y0": 0, "y1": 1}, "spec.regions.head: expected x0 below x1"),
+            ({"x0": 0, "x1": 1, "y0": 1, "y1": 0}, "spec.regions.head: expected y0 below y1"),
+            ({"x0": 0, "x1": 1.2, "y0": 0, "y1": 1}, "spec.regions.head: expected values from 0 to 1"),
+            ({"x0": -0.1, "x1": 1, "y0": 0, "y1": 1}, "spec.regions.head: expected values from 0 to 1"),
+        ]
+        for box, expected in cases:
+            with self.subTest(box=box):
+                self.assertIn(expected, validate_spec({**valid, "regions": {"head": box}}))
+
+    def test_a_holed_part_must_be_a_part_of_the_unit(self):
+        valid = load_spec(DIRECTORY / "specs/warden-saelith.json")
+        self.assertEqual(validate_spec({**valid, "holedParts": ["tiara"]}), [])
+        self.assertIn(
+            "spec.holedParts[0]: part must be listed in parts",
+            validate_spec({**valid, "holedParts": ["shield"]}),
+        )
 
     def test_a_spec_needs_an_identity_for_the_close_up_camera(self):
         valid = load_spec(DIRECTORY / "specs/warden-saelith.json")

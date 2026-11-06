@@ -130,19 +130,19 @@ describe("published Unit Model checks", () => {
     );
   });
 
-  describe("with Body Region data", () => {
+  describe.each(["_REGION", "_PART"])("with %s data", (attribute) => {
     const tagged = editJson(packed, (gltf) => {
       gltf.meshes = gltf.meshes.map((mesh) => ({
         primitives: mesh.primitives.map((primitive) => ({
           ...primitive,
-          attributes: { ...primitive.attributes, _REGION: 0 },
+          attributes: { ...primitive.attributes, [attribute]: 0 },
         })),
       }));
     });
 
     test("rejects a Published Model", () => {
       expect(checkUnitModel(tagged).problems).toContain(
-        "primitive has a _REGION attribute"
+        `primitive has a ${attribute} attribute`
       );
     });
 

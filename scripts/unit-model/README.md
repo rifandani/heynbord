@@ -91,7 +91,7 @@ rtk bun run unit-model:review warden-saelith [name...] # from the repo root, in 
 rtk bun test scripts/unit-model/review
 ```
 
-The command writes `artifacts/unit-model-review/<name>/<date>/`: 15 PNG files of 1920 × 1080, `manifest.json` and the Review Gate record `review-gate.json`. It exits 1 if the Review Gate fails. The Review Gate requires every capture and no browser console error. Each image must decode at the correct size. Each image, the card painting and the GLB must match the hash in the manifest. `render_bridge.py validate` of the img2threejs skill can read the same manifest.
+The command writes `artifacts/unit-model-review/<name>/<date>/`: 19 PNG files of 1920 × 1080, `manifest.json` and the Review Gate record `review-gate.json`. It exits 1 if the Review Gate fails. The Review Gate requires every capture and no browser console error. Each image must decode at the correct size. Each image, the card painting and the GLB must match the hash in the manifest. `render_bridge.py validate` of the img2threejs skill can read the same manifest.
 
 | Capture | Azimuth | Elevation | Distance |
 | --- | --- | --- | --- |
@@ -99,12 +99,61 @@ The command writes `artifacts/unit-model-review/<name>/<date>/`: 15 PNG files of
 | `battle` | the Battle camera | the Battle camera | the Battle camera |
 | `close-up` | `identity.azimuthDegrees` of the Unit Spec | the Battle camera | 2.6 |
 | `idle`, `attack`, `death` at 0, 50 and 100% of the clip | as `front` | as `front` | as `front` |
+| `front-cutout`, `right-cutout`, `back-cutout`, `left-cutout` | as its view | as its view | as its view |
 
 Azimuth 0 is the front of the model, and it does not include the Battle turn of the model. Azimuth 90 is the Blender right view: the camera is on the right side of the viewer, so it sees the left side of the model.
 
 The Unit Spec gives the close-up: `identity.feature` names the feature, and `identity.azimuthDegrees` turns the camera to it. A model needs a Unit Spec and a card painting before it can have a Review Scene. The Unit Spec gives the azimuth as 0 to below 360.
 
-`/master-design?review=<name>` opens the scene with a paused clock. `window.__IMG2THREEJS_CAPTURE__` then has `setCamera` and `capturePass`. Only `beauty` is a pass of this scene, and `capturePass` rejects other passes. The other passes of the render bridge are for a later Review Gate.
+`/master-design?review=<name>` opens the scene with a paused clock. `window.__IMG2THREEJS_CAPTURE__` then has `setCamera` and `capturePass`. This scene has 2 passes, and `capturePass` rejects other passes. `beauty` is the view on the Battle Painting. `cutout` is the same figure with no painting and no shadow, on transparent pixels. A Review Gate cannot find the figure on the painting, because the painting fills the frame.
+
+## Review Gates
+
+A deterministic check blocks a Unit Model from publication. There is one Review Gate for each question, and one record in `gates.json`.
+
+```sh
+rtk bun run unit-model:review warden-saelith  # first, with the dev server
+rtk bun run unit-model:gates warden-saelith [name...] [--date 2026-11-06]
+rtk bun test scripts/unit-model/review
+```
+
+Each Review Gate exits 0 clean, 1 fail or 2 error. A fail blocks publication. An error is not a pass: a missing input gives an error. The command exits with the highest code, and it writes `artifacts/unit-model-review/<name>/<date>/gates.json`. It reads the latest capture, or the capture of `--date`. Python 3.11 or later is necessary, with no packages.
+
+| Review Gate | Question | Reads | Limit |
+| --- | --- | --- | --- |
+| `turntable` | Are all four views present, and is there a hole through a part? | cutouts, parts | no missing view, no collapsed view, no hole through one part or through the body |
+| `interior-difference` | What differs from the Turnaround inside the silhouette, banded by height? | front and back cutouts, Turnaround | 0.28 for the head, the torso and the legs |
+| `self-intersection` | Does a closed island of the mesh cross itself? | closed islands | no vertex inside its own island |
+| `joint-loops` | Is there enough geometry at each joint? | all vertices, bones | 3 bands of vertices, over 0.25 of the search radius |
+| `attachment-anchor` | Is each prop on the bone that the Unit Spec names? | parts, skin, `props[].bone` | 0.15 of the height, and the prop follows the bone |
+| `region-coverage` | Is each Body Region where the Unit Spec says? | `_REGION`, `regions` | 0.04 of the frame of the model, at azimuth 0 |
+| `chirality` | Is each left and right pair a reflection, not a rotation? | parts, bones | exact mirror |
+| `palette` | Is each region within delta-E 5 of the card painting? | vertex colors, card painting | CIEDE2000 of 5 |
+| `part-coverage` | Is every part of the Unit Spec present? | `_PART`, `parts` | no missing part |
+
+`review/vendor/` has the source of the Review Gates from the img2threejs skill, and `SOURCE.json` records the commit. `gates.ts` makes the input of each Review Gate. `unit_gates.py` has the Review Gates that need more than a source command. `mesh-export.ts` splits the Raw Export into parts and islands, and `gates.ts` writes the result in `gate-inputs/meshes.json`. Git ignores `gate-inputs/`.
+
+The kit writes the id of each part in the `_PART` vertex attribute, and the part names in the `unitParts` extra of the mesh node. The packer removes both, and `checkUnitModel` rejects a Published Model with `_PART`. A Raw Export from before this data gives an error: run its build script again.
+
+The Review Gates of the mesh read the Raw Export, because only it has the part and region data. The cutouts show the Published Model. So the run also checks the manifest and the Source Contract, and a difference gives exit code 2. The Source Contract compares bounds, bones and clips, and not colors. So pack a Raw Export before the capture. CI has no Raw Exports, so #184 must build them or supply them.
+
+The Unit Spec gives 3 inputs:
+
+- `props[].bone` is the bone that holds each prop.
+- `regions` is a box from 0 to 1 for each region in the frame of the model, with y0 at the top. With no `regions`, `region-coverage` gives an error.
+- `holedParts` lists the parts with a hole by design, such as the tiara.
+
+Only Warden Saelith has `regions` now. Her values are rounded measures of the current model, and her Body Plan table agrees with them. They find a change, as a Source Contract does. They do not prove that the first value is good, so a person must approve them.
+
+What each Review Gate cannot see:
+
+- `turntable`: The source hole test reads the full silhouette. It reports correct gaps, such as the space between a bow and its string. So `turntable` tests the silhouette of each part, and the silhouette of the body with no props. It does not find a wrong gap that a prop closes. `gates.json` keeps the source result in `holed`.
+- `interior-difference`: The model is compared with a painted target, not with an earlier render, so the value does not go to 0. The limit is thin: the current model is at 0.273, and a head with no face is at 0.282. It measures luminance only.
+- `self-intersection`: A ray test needs a closed shape. The record lists the open islands in `openIslandsNotTested`. A reversed surface reads as inside itself, so it also finds this.
+- `joint-loops`: A joint needs a child bone, because a glTF bone has no tail. The record lists the other bones in `bonesWithNoTip`. It counts bands of vertices, not true edge loops.
+- `chirality`: A pair that is wrong the same way on both sides is still a mirror of itself.
+- `palette`: The card painting has a full scene behind the figure, and no region masks. So it asks if each main color of a region is a color of the painting. A main color has at least 10% of the vertices of the region, so a small detail has no test. It finds a wrong coat color. It does not find a correct color in the wrong place. Browns are in most paintings, so only a saturated color separates well.
+- `part-coverage`: It proves that the model has what the Unit Spec lists, and not that the Unit Spec lists enough.
 
 ## Body Regions
 

@@ -72,7 +72,7 @@ afterEach(async () => {
 });
 
 describe("reviewCaptures", () => {
-  test("plans 6 views and 3 frames of 3 clips", () => {
+  test("plans 6 views, 3 frames of 3 clips and 4 cutouts", () => {
     expect(reviewCaptures(45).map(({ id }) => id)).toEqual([
       "front",
       "right",
@@ -89,7 +89,26 @@ describe("reviewCaptures", () => {
       "death-0",
       "death-50",
       "death-100",
+      "front-cutout",
+      "right-cutout",
+      "back-cutout",
+      "left-cutout",
     ]);
+  });
+
+  test("gives a cutout the camera of its view", () => {
+    const captures = reviewCaptures(45);
+    const cameraOf = (id: string) =>
+      captures.find((capture) => capture.id === id)?.camera;
+    expect(cameraOf("left-cutout")).toEqual(cameraOf("left"));
+  });
+
+  test("uses the cutout pass only for a cutout", () => {
+    const cutouts = reviewCaptures(45).filter(
+      (capture) => capture.pass === "cutout"
+    );
+    expect(cutouts).toHaveLength(4);
+    expect(cutouts.every(({ id }) => id.endsWith("-cutout"))).toBe(true);
   });
 });
 
@@ -100,7 +119,7 @@ describe("validateManifest", () => {
     await expect(validateManifest(manifestPath)).resolves.toEqual({
       passed: true,
       errors: [],
-      recordedCaptures: 15,
+      recordedCaptures: 19,
     });
   });
 
@@ -112,6 +131,16 @@ describe("validateManifest", () => {
     });
 
     await expect(errorsOf()).resolves.toEqual(["missing capture: back"]);
+  });
+
+  test("names a required cutout that the manifest does not have", async () => {
+    const record = recordFor();
+    await writeManifest(manifestPath, {
+      ...record,
+      captures: record.captures.filter(({ id }) => id !== "left-cutout"),
+    });
+
+    await expect(errorsOf()).resolves.toEqual(["missing capture: left-cutout"]);
   });
 
   test("names an image that has no file", async () => {

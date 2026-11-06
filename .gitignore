@@ -25,6 +25,8 @@ repos
 
 # misc
 .DS_Store
+# The Review Gates make these files again from the capture and the Raw Export.
+artifacts/unit-model-review/*/*/gate-inputs/
 **/.env
 **/.env.*
 !**/.env.example

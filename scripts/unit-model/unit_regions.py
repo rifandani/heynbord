@@ -10,6 +10,10 @@ REGIONS = tuple(
     json.loads((Path(__file__).resolve().parent / "regions.json").read_text(encoding="utf-8"))
 )
 REGION_ATTRIBUTE = "_region"
+# The id of a part is its position in the `PARTS_EXTRA` list + 1. The join does
+# not keep part names, and the Review Gates must name a part of the joined mesh.
+PART_ATTRIBUTE = "_part"
+PARTS_EXTRA = "unitParts"
 
 # The words of a part name or a bone name that give a region. The first group
 # with a match gives the region. "arm" and "leg" get a side from `part_region`.

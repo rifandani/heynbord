@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "createdAt": "2026-11-06T03:01:48.124Z",
+  "createdAt": "2026-11-06T03:33:51.881Z",
   "runtime": {
     "url": "http://localhost:4100/master-design?review=warden-saelith",
     "route": "/master-design",
@@ -466,6 +466,114 @@
             "height": 1080
           },
           "sha256": "4b35229ea1f56cca389f5354b95eed7258bbc9b4254b89a6b7ce68ad8067a767"
+        }
+      }
+    },
+    {
+      "id": "front-cutout",
+      "role": "view",
+      "azimuthDegrees": 0,
+      "elevationDegrees": 0,
+      "target": [0, 0.7, 0],
+      "distance": 4.2,
+      "fovDegrees": 30,
+      "near": 0.5,
+      "far": 160,
+      "path": "front-cutout.png",
+      "status": "recorded",
+      "screenshotSha256": "f7477843d3b2851b8097b629482a97d088acbafd36e6b0934f823c243ffbc25d",
+      "consoleErrors": [],
+      "passes": {
+        "cutout": {
+          "path": "front-cutout.png",
+          "status": "recorded",
+          "image": {
+            "type": "png",
+            "width": 1920,
+            "height": 1080
+          },
+          "sha256": "f7477843d3b2851b8097b629482a97d088acbafd36e6b0934f823c243ffbc25d"
+        }
+      }
+    },
+    {
+      "id": "right-cutout",
+      "role": "view",
+      "azimuthDegrees": 90,
+      "elevationDegrees": 0,
+      "target": [0, 0.7, 0],
+      "distance": 4.2,
+      "fovDegrees": 30,
+      "near": 0.5,
+      "far": 160,
+      "path": "right-cutout.png",
+      "status": "recorded",
+      "screenshotSha256": "79ec69bb4de125c308423d9ff787452ee3f05fd4af1b3cf8a0d2f9676a9fc733",
+      "consoleErrors": [],
+      "passes": {
+        "cutout": {
+          "path": "right-cutout.png",
+          "status": "recorded",
+          "image": {
+            "type": "png",
+            "width": 1920,
+            "height": 1080
+          },
+          "sha256": "79ec69bb4de125c308423d9ff787452ee3f05fd4af1b3cf8a0d2f9676a9fc733"
+        }
+      }
+    },
+    {
+      "id": "back-cutout",
+      "role": "view",
+      "azimuthDegrees": 180,
+      "elevationDegrees": 0,
+      "target": [0, 0.7, 0],
+      "distance": 4.2,
+      "fovDegrees": 30,
+      "near": 0.5,
+      "far": 160,
+      "path": "back-cutout.png",
+      "status": "recorded",
+      "screenshotSha256": "f9e1de4ee52cf49c2c315a2af380be033b3246759692c24496db8293ceaa0a1d",
+      "consoleErrors": [],
+      "passes": {
+        "cutout": {
+          "path": "back-cutout.png",
+          "status": "recorded",
+          "image": {
+            "type": "png",
+            "width": 1920,
+            "height": 1080
+          },
+          "sha256": "f9e1de4ee52cf49c2c315a2af380be033b3246759692c24496db8293ceaa0a1d"
+        }
+      }
+    },
+    {
+      "id": "left-cutout",
+      "role": "view",
+      "azimuthDegrees": 270,
+      "elevationDegrees": 0,
+      "target": [0, 0.7, 0],
+      "distance": 4.2,
+      "fovDegrees": 30,
+      "near": 0.5,
+      "far": 160,
+      "path": "left-cutout.png",
+      "status": "recorded",
+      "screenshotSha256": "96b310c277968e9e085f466bd066e4800f125a07f3adfd930117fdf1f74c5bf3",
+      "consoleErrors": [],
+      "passes": {
+        "cutout": {
+          "path": "left-cutout.png",
+          "status": "recorded",
+          "image": {
+            "type": "png",
+            "width": 1920,
+            "height": 1080
+          },
+          "sha256": "96b310c277968e9e085f466bd066e4800f125a07f3adfd930117fdf1f74c5bf3"
         }
       }
     }

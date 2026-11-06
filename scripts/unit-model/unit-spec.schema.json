@@ -46,11 +46,16 @@
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["id", "hand", "cameraSide"],
+        "required": ["id", "hand", "cameraSide", "bone"],
         "properties": {
           "id": { "$ref": "#/$defs/part" },
           "hand": { "type": "string", "enum": ["left", "right", "none"] },
-          "cameraSide": { "type": "boolean" }
+          "cameraSide": { "type": "boolean" },
+          "bone": {
+            "description": "The bone that holds the prop. The prop or its own bone must follow this bone.",
+            "type": "string",
+            "minLength": 1
+          }
         }
       }
     },
@@ -75,6 +80,19 @@
       "type": "array",
       "items": { "type": "string", "minLength": 1 }
     },
+    "regions": {
+      "description": "Where each Body Region is at azimuth 0: a box from 0 to 1 in the frame of the model, with y0 at the top. A Review Gate needs it.",
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": { "$ref": "#/$defs/region" },
+      "additionalProperties": { "$ref": "#/$defs/box" }
+    },
+    "holedParts": {
+      "description": "The parts with a hole by design, for example a ring.",
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/part" }
+    },
     "identity": {
       "description": "The feature that makes this unit easy to identify, and the Review Scene azimuth that shows it.",
       "type": "object",
@@ -92,6 +110,32 @@
   },
   "$defs": {
     "id": { "type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$" },
+    "region": {
+      "type": "string",
+      "enum": [
+        "head",
+        "torso",
+        "arm.L",
+        "arm.R",
+        "leg.L",
+        "leg.R",
+        "prop",
+        "base",
+        "effect"
+      ]
+    },
+    "box": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["x0", "x1", "y0", "y1"],
+      "properties": {
+        "x0": { "$ref": "#/$defs/share" },
+        "x1": { "$ref": "#/$defs/share" },
+        "y0": { "$ref": "#/$defs/share" },
+        "y1": { "$ref": "#/$defs/share" }
+      }
+    },
+    "share": { "type": "number", "exclusiveMinimum": -2 },
     "part": {
       "type": "string",
       "enum": [

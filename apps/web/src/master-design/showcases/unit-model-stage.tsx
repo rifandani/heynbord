@@ -1,7 +1,9 @@
 import { useGLTF } from "@react-three/drei";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { useEffect, useLayoutEffect, useMemo, useRef } from "react";
+import type { RefObject } from "react";
 import { CircleGeometry, PerspectiveCamera } from "three";
+import type { Group } from "three";
 
 import { Environment } from "@/features/battle/scene/environment";
 import {
@@ -175,7 +177,10 @@ interface ReviewClipPose {
 /** The capture contract of the img2threejs render bridge. */
 export interface ReviewCaptureApi {
   readonly setCamera: (camera: ReviewCamera) => Promise<void>;
-  /** Renders one frame. The element at `selector` then shows that frame. */
+  /**
+   * Renders one frame. The element at `selector` then shows that frame. For a
+   * `cutout`, it is the canvas: the figure with no shadow, on transparent pixels.
+   */
   readonly capturePass: (request: {
     readonly passId: string;
     readonly clip: ReviewClipPose | undefined;
@@ -192,6 +197,9 @@ declare global {
 /** The element that a capture of the Review Scene saves. */
 const REVIEW_SELECTOR = "[data-unit-model-review]";
 
+/** The canvas of the Review Scene, with no Battle Painting behind it. */
+const CUTOUT_SELECTOR = `${REVIEW_SELECTOR} canvas`;
+
 const REST_POSE: ReviewClipPose = { name: "idle", phase: 0 };
 
 /** Scene seconds between two rig updates: longer than the blend of two clips. */
@@ -202,7 +210,13 @@ const REVIEW_TICK = 1;
  * scene draws one frame in each `capturePass`, and only the pose of that call
  * is on the rig. The camera starts at the Battle camera.
  */
-const ReviewFigure = ({ cardId }: { readonly cardId: string }) => {
+const ReviewFigure = ({
+  cardId,
+  shadows,
+}: {
+  readonly cardId: string;
+  readonly shadows: RefObject<Group | null>;
+}) => {
   const spec = unitModelOf(cardId);
   if (!spec) {
     throw new Error(`${cardId} has no Unit Model`);
@@ -236,15 +250,21 @@ const ReviewFigure = ({ cardId }: { readonly cardId: string }) => {
       clip = REST_POSE,
       passId,
     }) => {
-      if (passId !== "beauty") {
+      if (passId !== "beauty" && passId !== "cutout") {
         return Promise.reject(new Error(`No "${passId}" pass in this scene`));
+      }
+      if (shadows.current) {
+        shadows.current.visible = passId === "beauty";
       }
       // The second update is after the blend, so no part of the last pose stays.
       rig.update(pose, clip, sceneTime.current);
       sceneTime.current += REVIEW_TICK;
       rig.update(pose, clip, sceneTime.current);
       advance(performance.now());
-      return Promise.resolve({ ok: true, selector: REVIEW_SELECTOR });
+      return Promise.resolve({
+        ok: true,
+        selector: passId === "beauty" ? REVIEW_SELECTOR : CUTOUT_SELECTOR,
+      });
     };
     window.__IMG2THREEJS_CAPTURE__ = { setCamera, capturePass };
     void setCamera(REVIEW_BATTLE_CAMERA);
@@ -253,7 +273,7 @@ const ReviewFigure = ({ cardId }: { readonly cardId: string }) => {
       delete window.__IMG2THREEJS_CAPTURE__;
       delete window.__IMG2THREEJS_READY__;
     };
-  }, [advance, camera, pose, rig]);
+  }, [advance, camera, pose, rig, shadows]);
 
   return <primitive object={rig.root} />;
 };
@@ -267,25 +287,30 @@ export const UnitModelReviewStage = ({
   cardId,
 }: {
   readonly cardId: string;
-}) => (
-  <Canvas
-    frameloop="never"
-    dpr={REVIEW_CANVAS.devicePixelRatio}
-    gl={{
-      alpha: true,
-      antialias: true,
-      stencil: false,
-      preserveDrawingBuffer: true,
-    }}
-    camera={{
-      fov: REVIEW_LENS.fovDegrees,
-      near: REVIEW_LENS.near,
-      far: REVIEW_LENS.far,
-    }}
-    aria-label="Unit Model Review Scene"
-  >
-    <Environment />
-    <Shadows xs={[MODEL_X]} />
-    <ReviewFigure cardId={cardId} />
-  </Canvas>
-);
+}) => {
+  const shadows = useRef<Group>(null);
+  return (
+    <Canvas
+      frameloop="never"
+      dpr={REVIEW_CANVAS.devicePixelRatio}
+      gl={{
+        alpha: true,
+        antialias: true,
+        stencil: false,
+        preserveDrawingBuffer: true,
+      }}
+      camera={{
+        fov: REVIEW_LENS.fovDegrees,
+        near: REVIEW_LENS.near,
+        far: REVIEW_LENS.far,
+      }}
+      aria-label="Unit Model Review Scene"
+    >
+      <Environment />
+      <group ref={shadows}>
+        <Shadows xs={[MODEL_X]} />
+      </group>
+      <ReviewFigure cardId={cardId} shadows={shadows} />
+    </Canvas>
+  );
+};

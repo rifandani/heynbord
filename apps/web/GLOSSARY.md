@@ -88,6 +88,8 @@ React app on TanStack Start. The server renders and streams each page.
 
 **Review Scene**: The fixed camera, light and clip setup that captures a Unit Model for review. It shows the Unit Model as the player sees it. _Avoid_: preview, viewer, render scene
 
+**Cutout**: A capture of the **Review Scene** with the Unit Model on transparent pixels, with no Battle Painting and no shadow. A **Review Gate** reads it to find the silhouette. It is a full 3D render, not a flat cut-out figure. _Avoid_: mask, matte
+
 **Review Gate**: A deterministic check that blocks a Unit Model from publication when it fails. Each Review Gate answers one question and leaves a JSON record. _Avoid_: check, test (test is code), gate (a Town word and a rules word)
 
 **Low HP**: The state of a Unit or Hero with HP at 1/3 of its Max HP or less. Its Unit Model or Hero Model shows a tired pose at rest; it is presentation only and does not change the Battle. _Avoid_: wounded (that word is avoided for Bleeding), badly damaged, critical, dying

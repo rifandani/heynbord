@@ -94,18 +94,27 @@ const captureOne = async (
   file: string
 ): Promise<void> => {
   const { selector } = await page.evaluate(
-    async ({ camera, clip }) => {
+    async ({ camera, clip, passId }) => {
       // SAFETY: `openStage` waited for the ready signal, and the stage installs the API before it sets that signal.
       const api = window.__IMG2THREEJS_CAPTURE__ as ReviewCaptureApi;
       await api.setCamera(camera);
       return api.capturePass({
-        passId: "beauty",
+        passId,
         clip: clip && { name: clip.name, phase: clip.percent / 100 },
       });
     },
-    { camera: capture.camera, clip: capture.clip }
+    { camera: capture.camera, clip: capture.clip, passId: capture.pass }
   );
-  await page.locator(selector).screenshot({ path: file });
+  if (capture.pass === "beauty") {
+    await page.locator(selector).screenshot({ path: file });
+    return;
+  }
+  // A screenshot also shows the page behind the canvas. The canvas pixels do not.
+  const dataUrl = await page
+    .locator(selector)
+    .evaluate((canvas: HTMLCanvasElement) => canvas.toDataURL("image/png"));
+  const [, base64 = ""] = dataUrl.split(",");
+  await writeFile(file, Buffer.from(base64, "base64"));
 };
 
 const captureModel = async (

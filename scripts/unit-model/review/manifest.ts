@@ -25,17 +25,27 @@ const REVIEW_CLIPS = [
 ] as const satisfies readonly UnitClipName[];
 const CLIP_PERCENTS = [0, 50, 100] as const;
 
+/** The views of the turntable. A Review Gate needs them with no background. */
+export const TURNTABLE_VIEWS = ["front", "right", "back", "left"] as const;
+
 interface ClipFrame {
   readonly name: (typeof REVIEW_CLIPS)[number];
   readonly percent: (typeof CLIP_PERCENTS)[number];
 }
 
+export type ReviewPass = "beauty" | "cutout";
+
 export interface ReviewCapture {
   readonly id: string;
   readonly role: "view" | "clip-frame";
+  /** `beauty` is the Battle view. `cutout` is the figure on a transparent background. */
+  readonly pass: ReviewPass;
   readonly camera: ReviewCamera;
   readonly clip?: ClipFrame;
 }
+
+export const cutoutId = (view: (typeof TURNTABLE_VIEWS)[number]): string =>
+  `${view}-cutout`;
 
 /**
  * Every capture of the Review Scene, in capture order. The clip frames use the
@@ -49,16 +59,24 @@ export const reviewCaptures = (
     ...REVIEW_VIEWS.map((view): ReviewCapture => ({
       id: view,
       role: "view",
+      pass: "beauty",
       camera: cameras[view],
     })),
     ...REVIEW_CLIPS.flatMap((name) =>
       CLIP_PERCENTS.map((percent): ReviewCapture => ({
         id: `${name}-${percent}`,
         role: "clip-frame",
+        pass: "beauty",
         camera: cameras.front,
         clip: { name, percent },
       }))
     ),
+    ...TURNTABLE_VIEWS.map((view): ReviewCapture => ({
+      id: cutoutId(view),
+      role: "view",
+      pass: "cutout",
+      camera: cameras[view],
+    })),
   ];
 };
 
@@ -105,7 +123,14 @@ export const imageFile = (id: string): string => `${id}.png`;
 
 const recordCapture = async (
   directory: string,
-  { camera, clip, consoleErrors, id, role }: ReviewRecord["captures"][number]
+  {
+    camera,
+    clip,
+    consoleErrors,
+    id,
+    pass,
+    role,
+  }: ReviewRecord["captures"][number]
 ) => {
   const file = imageFile(id);
   const bytes = await readFile(path.join(directory, file));
@@ -122,7 +147,7 @@ const recordCapture = async (
     screenshotSha256,
     consoleErrors,
     passes: {
-      beauty: {
+      [pass]: {
         path: file,
         status: "recorded",
         image,

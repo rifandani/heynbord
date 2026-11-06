@@ -60,17 +60,20 @@
     {
       "id": "bow",
       "hand": "left",
-      "cameraSide": false
+      "cameraSide": false,
+      "bone": "hand.L"
     },
     {
       "id": "arrow",
       "hand": "right",
-      "cameraSide": true
+      "cameraSide": true,
+      "bone": "hand.R"
     },
     {
       "id": "quiver",
       "hand": "none",
-      "cameraSide": true
+      "cameraSide": true,
+      "bone": "hips"
     }
   ],
   "clips": {
@@ -93,6 +96,16 @@
     "recurved longbow with gold tips",
     "arrow hidden at rest and nocked during attack"
   ],
+  "regions": {
+    "head": { "x0": 0.41, "x1": 0.8, "y0": 0, "y1": 0.58 },
+    "torso": { "x0": 0.34, "x1": 0.87, "y0": 0.21, "y1": 0.88 },
+    "arm.L": { "x0": 0.71, "x1": 1, "y0": 0.23, "y1": 0.58 },
+    "arm.R": { "x0": 0.21, "x1": 0.5, "y0": 0.23, "y1": 0.58 },
+    "leg.L": { "x0": 0.62, "x1": 0.75, "y0": 0.5, "y1": 1 },
+    "leg.R": { "x0": 0.46, "x1": 0.59, "y0": 0.5, "y1": 1 },
+    "prop": { "x0": 0, "x1": 0.99, "y0": 0.25, "y1": 0.88 }
+  },
+  "holedParts": ["tiara"],
   "identity": {
     "feature": "recurved longbow with gold tips",
     "azimuthDegrees": 45

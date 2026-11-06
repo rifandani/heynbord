@@ -51,7 +51,8 @@
     {
       "id": "shield",
       "hand": "none",
-      "cameraSide": true
+      "cameraSide": true,
+      "bone": "head"
     }
   ],
   "clips": {

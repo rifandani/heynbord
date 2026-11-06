@@ -12,13 +12,14 @@ to Y up and +Z forward, which `unit-rig.ts` expects. The left side of the
 figure is +X.
 """
 
+import json
 import math
 from collections import Counter
 
 import bmesh
 import bpy
 from mathutils import Matrix, Quaternion, Vector
-from unit_regions import REGION_ATTRIBUTE, part_region, region_id
+from unit_regions import PART_ATTRIBUTE, PARTS_EXTRA, REGION_ATTRIBUTE, part_region, region_id
 
 FPS = 24
 
@@ -341,6 +342,7 @@ def part_object(part):
     # The join keeps this attribute, so the review can name a region of the mesh.
     regions = mesh.attributes.new(REGION_ATTRIBUTE, "INT", "POINT")
     regions.data.foreach_set("value", [part.region] * len(mesh.vertices))
+    obj[PARTS_EXTRA] = part.name
     return obj
 
 
@@ -361,14 +363,18 @@ def figure_material():
 
 
 def join_parts(objects, name):
+    part_names = [obj[PARTS_EXTRA] for obj in objects]
     bpy.ops.object.select_all(action="DESELECT")
-    for obj in objects:
+    for index, obj in enumerate(objects):
+        ids = obj.data.attributes.new(PART_ATTRIBUTE, "INT", "POINT")
+        ids.data.foreach_set("value", [index + 1] * len(obj.data.vertices))
         obj.select_set(True)
     bpy.context.view_layer.objects.active = objects[0]
     bpy.ops.object.join()
     joined = bpy.context.view_layer.objects.active
     joined.name = name
     joined.data.name = name
+    joined[PARTS_EXTRA] = json.dumps(part_names)
     material = figure_material()
     joined.data.materials.clear()
     joined.data.materials.append(material)
@@ -613,6 +619,7 @@ def export_glb(rig, mesh, path):
         export_yup=True,
         export_vertex_color="MATERIAL",
         export_attributes=True,
+        export_extras=True,
         export_normals=True,
         export_texcoords=False,
         export_materials="EXPORT",

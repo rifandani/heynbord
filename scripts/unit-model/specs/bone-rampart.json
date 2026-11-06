@@ -42,17 +42,20 @@
     {
       "id": "skel.A.arm",
       "hand": "left",
-      "cameraSide": false
+      "cameraSide": false,
+      "bone": "skel.A"
     },
     {
       "id": "banner",
       "hand": "right",
-      "cameraSide": true
+      "cameraSide": true,
+      "bone": "skel.B.arm"
     },
     {
       "id": "sign",
       "hand": "none",
-      "cameraSide": true
+      "cameraSide": true,
+      "bone": "base"
     }
   ],
   "clips": {

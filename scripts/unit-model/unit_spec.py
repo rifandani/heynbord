@@ -17,6 +17,7 @@ class PropSpec(TypedDict):
     id: str
     hand: str
     cameraSide: bool
+    bone: str
 
 
 class ClipSpec(TypedDict):
@@ -26,6 +27,13 @@ class ClipSpec(TypedDict):
 class IdentitySpec(TypedDict):
     feature: str
     azimuthDegrees: float
+
+
+class RegionBox(TypedDict):
+    x0: float
+    x1: float
+    y0: float
+    y1: float
 
 
 class UnitSpec(TypedDict):
@@ -38,6 +46,8 @@ class UnitSpec(TypedDict):
     clips: dict[str, ClipSpec]
     details: list[str]
     identity: IdentitySpec
+    regions: NotRequired[dict[str, RegionBox]]
+    holedParts: NotRequired[list[str]]
 
 
 def _validate(value: Any, rule: dict[str, Any], path: str, errors: list[str]) -> None:
@@ -92,6 +102,17 @@ def _validate(value: Any, rule: dict[str, Any], path: str, errors: list[str]) ->
             errors.append(f"{path}: expected a finite number greater than {rule['exclusiveMinimum']}")
 
 
+def _region_errors(name: str, box: RegionBox) -> list[str]:
+    errors = []
+    if not all(0 <= value <= 1 for value in box.values()):
+        errors.append(f"spec.regions.{name}: expected values from 0 to 1")
+    if box["x0"] >= box["x1"]:
+        errors.append(f"spec.regions.{name}: expected x0 below x1")
+    if box["y0"] >= box["y1"]:
+        errors.append(f"spec.regions.{name}: expected y0 below y1")
+    return errors
+
+
 def validate_spec(value: object) -> list[str]:
     """Return field errors. An empty list means that the spec is valid."""
     errors: list[str] = []
@@ -107,6 +128,11 @@ def validate_spec(value: object) -> list[str]:
             seen.add(prop["id"])
         if not 0 <= spec["identity"]["azimuthDegrees"] < 360:
             errors.append("spec.identity.azimuthDegrees: expected 0 to below 360")
+        for name, box in spec.get("regions", {}).items():
+            errors.extend(_region_errors(name, box))
+        for index, part in enumerate(spec.get("holedParts", [])):
+            if part not in spec["parts"]:
+                errors.append(f"spec.holedParts[{index}]: part must be listed in parts")
     return errors
 
 
