@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, test } from "bun:test";
 import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
-import { mkdtemp, readFile, rm } from "node:fs/promises";
+import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 
@@ -169,6 +169,7 @@ const SKELETON: MeshExport["bones"] = [
 ];
 
 const SPEC: UnitSpec = {
+  bodyPlan: "biped-medium",
   height: 0.9,
   parts: ["chest", "sleeve.L", "sleeve.R", "staff"],
   props: [{ id: "staff", bone: "hand.L" }],
@@ -301,6 +302,90 @@ afterEach(async () => {
   await rm(directory, { recursive: true, force: true });
 });
 
+/** The mesh moves down, so that its lowest vertex is at `lowest`. */
+const lowered =
+  (lowest: number) =>
+  (mesh: ExportedMesh): ExportedMesh => ({
+    ...mesh,
+    vertices: mesh.vertices.map(([x, y, z]) => [x, y - 0.3 + lowest, z]),
+  });
+
+/** Runs this Review Gate alone, because a run of all of them can take longer than the test timeout. */
+const groundRecord = async (
+  overrides: Partial<GateSources>
+): Promise<GateRecord> => {
+  const gate = GATES.find((item) => item.gate === "ground-contact");
+  if (!gate) {
+    throw new Error("no ground-contact Review Gate");
+  }
+  const flyer = sources({ spec: { ...SPEC, bodyPlan: "flyer" }, ...overrides });
+  const meshesFile = path.join(directory, "meshes.json");
+  await writeFile(meshesFile, JSON.stringify(flyer.meshes));
+  return runCommand(
+    gate,
+    await gate.command({
+      sources: flyer,
+      inputs: directory,
+      meshesFile,
+      cutouts: {},
+    })
+  );
+};
+
+describe("ground-contact", () => {
+  test("a flyer with each part above the ground passes", async () => {
+    const record = await groundRecord({});
+    expect(record).toMatchObject({
+      status: "pass",
+      report: { applies: true, failures: [] },
+    });
+  });
+
+  test("names the flyer part that is below the ground", async () => {
+    const record = await groundRecord({
+      meshes: withMesh("staff", lowered(-0.006)),
+    });
+    expect(record.status).toBe("fail");
+    expect(record.report).toMatchObject({
+      failures: ["staff"],
+      lowest: { part: "staff", y: -0.006 },
+    });
+  });
+
+  test("a part on the ground passes with the noise of a 32-bit float", async () => {
+    const record = await groundRecord({
+      meshes: withMesh("staff", lowered(-3e-8)),
+    });
+    expect(record.status).toBe("pass");
+  });
+
+  test("does not apply to a plan that walks on the ground", async () => {
+    const record = await groundRecord({
+      spec: SPEC,
+      meshes: withMesh("staff", lowered(-0.006)),
+    });
+    expect(record).toMatchObject({
+      status: "pass",
+      report: { applies: false },
+    });
+  });
+
+  test("reads a figure on a biped plan that has the flying field", async () => {
+    const record = await groundRecord({
+      spec: { ...SPEC, flying: true },
+      meshes: withMesh("staff", lowered(-0.006)),
+    });
+    expect(record.status).toBe("fail");
+  });
+
+  test("gives an error when a flyer has no mesh", async () => {
+    const record = await groundRecord({
+      meshes: { meshes: [], bones: SKELETON },
+    });
+    expect(record.status).toBe("error");
+  });
+});
+
 describe("runGates", () => {
   test("gives one passed record for each gate of a clean model", async () => {
     const report = await runGates(sources());
@@ -308,7 +393,7 @@ describe("runGates", () => {
     expect(report.gates.map(({ gate }) => gate)).toEqual(
       GATES.map(({ gate }) => gate)
     );
-    expect(report.gates).toHaveLength(9);
+    expect(report.gates).toHaveLength(10);
     expect(report.exitCode).toBe(0);
   });
 

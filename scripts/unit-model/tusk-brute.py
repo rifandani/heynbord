@@ -38,6 +38,7 @@ import body_plans  # noqa: E402
 import unit_model_kit as kit  # noqa: E402
 
 importlib.reload(kit)
+importlib.reload(body_plans.shared)
 importlib.reload(body_plans.biped)
 importlib.reload(body_plans.biped_large)
 

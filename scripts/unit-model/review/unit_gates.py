@@ -2,7 +2,7 @@
 
 `gates.ts` starts this file with a Review Gate name and a request file:
 
-    python3 unit_gates.py <turntable|interior|chirality|palette> <request.json>
+    python3 unit_gates.py <turntable|interior|chirality|palette|ground> <request.json>
 
 Each Review Gate prints one JSON report. The exit code is 0 clean, 1 fail, 2
 error. An error is not a pass. Python 3.11 standard library only.
@@ -55,6 +55,9 @@ PAINTING_CELL = 6
 MIN_REGION_COLOR_SHARE = 0.1
 # A color on less than this share of the painting is noise.
 MIN_PAINTING_COLOR_SHARE = 0.001
+
+# A Raw Export has 32-bit floats, so a part on the ground can be at -3e-8.
+GROUND_TOLERANCE = 1e-6
 
 # The record name of the hole test of the body. It is not a part name.
 BODY = "body"
@@ -310,11 +313,33 @@ def palette(request: dict[str, Any]) -> tuple[int, dict[str, Any]]:
     return (FAILED if failures else CLEAN), report
 
 
+def ground(request: dict[str, Any]) -> tuple[int, dict[str, Any]]:
+    """
+    Is each part of a flyer on or above the ground in the rest pose? The game
+    puts the lowest point of the rest pose on the ground, so a part below the
+    ground lifts the whole model. Blender Z is glTF Y, so Y is the height.
+    """
+    if not request["applies"]:
+        return CLEAN, {"applies": False}
+    meshes = json.loads(Path(request["meshes"]).read_text(encoding="utf-8"))["meshes"]
+    lowest: dict[str, float] = {}
+    for mesh in meshes:
+        height = min(vertex[1] for vertex in mesh["vertices"])
+        lowest[mesh["part"]] = min(height, lowest.get(mesh["part"], height))
+    if not lowest:
+        raise ValueError("the Raw Export has no mesh")
+    parts = sorted(({"part": part, "y": y} for part, y in lowest.items()), key=lambda record: record["y"])
+    failures = [record["part"] for record in parts if record["y"] < -GROUND_TOLERANCE]
+    report = {"applies": True, "tolerance": GROUND_TOLERANCE, "lowest": parts[0], "parts": parts, "failures": failures}
+    return (FAILED if failures else CLEAN), report
+
+
 GATES = {
     "turntable": turntable,
     "interior": interior,
     "chirality": mirror_pairs,
     "palette": palette,
+    "ground": ground,
 }
 
 

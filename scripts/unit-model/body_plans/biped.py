@@ -11,15 +11,12 @@ up, the figure faces -Y, and its left side is +X.
 from dataclasses import dataclass
 import math
 import struct
-from typing import NamedTuple
-
-from unit_regions import region_name
+from .shared import CLIP_SLOTS, ClipSlot, checked_order, skin_checks
 
 __all__ = [
     "ARM_POLES",
     "ARM_POLE_ANGLE",
     "CLIP_SLOTS",
-    "CORE_BONES",
     "SIDES",
     "SKIN_RULES",
     "ClipSlot",
@@ -35,8 +32,6 @@ __all__ = [
 
 SIDES = (("L", 1), ("R", -1))
 
-# The core bones that a part of each Body Region may use. A prop, a base and
-# an effect have no entry, because they may use any bone.
 SKIN_RULES = {
     "head": {"chest", "neck", "head"},
     "torso": {"hips", "spine", "chest", "thigh.L", "thigh.R"},
@@ -46,36 +41,12 @@ SKIN_RULES = {
     },
     **{f"leg.{side}": {"hips", f"thigh.{side}", f"shin.{side}", f"foot.{side}"} for side, _ in SIDES},
 }
-CORE_BONES = {"root"}.union(*SKIN_RULES.values())
 
 # The pole angle that bends each elbow toward its pole, and the poles of the
 # archers, the only scripts of the survey with poles that are empties.
 ARM_POLE_ANGLE = -90
 ARM_POLES = {"L": (0.25, -0.15, 0.7), "R": (-0.05, 0.45, 0.85)}
 
-
-class ClipSlot(NamedTuple):
-    """The arguments of `kit.Clip`."""
-
-    name: str
-    frames: int
-    loop: bool
-
-
-CLIP_SLOTS = {
-    slot.name: slot
-    for slot in (
-        ClipSlot("idle", 48, True),
-        ClipSlot("lowHp", 48, True),
-        ClipSlot("walk", 24, True),
-        ClipSlot("attack", 30, False),
-        ClipSlot("cast", 24, False),
-        ClipSlot("hurt", 16, False),
-        ClipSlot("death", 36, False),
-        ClipSlot("rebirth", 48, False),
-        ClipSlot("summon", 24, False),
-    )
-}
 
 # The landmarks from the ground up. Each one must be below the next one.
 _RISING = (
@@ -219,15 +190,7 @@ def bones(table, trunk=(), props=(), arms=None):
             (f"shin.{side}", knee, ankle, f"thigh.{side}"),
             (f"foot.{side}", ankle, foot_tip, f"shin.{side}"),
         ]
-    result += props
-    seen = set()
-    for name, _, _, parent in result:
-        if name in seen:
-            raise ValueError(f"duplicate bone {name!r}")
-        if parent is not None and parent not in seen:
-            raise ValueError(f"bone {name!r} has no parent {parent!r} before it")
-        seen.add(name)
-    return result
+    return checked_order([*result, *props])
 
 
 def build_rig(name, table, trunk=(), props=(), arms=None):
@@ -257,35 +220,4 @@ def add_arm_ik(rig, table, arms=None):
     return empties
 
 
-def _core_owner(bone, parents):
-    """The nearest core bone at or above `bone`, or None for a separate chain."""
-    while bone is not None and bone not in CORE_BONES:
-        bone = parents[bone]
-    return bone
-
-
-def skin_problems(parts, parents):
-    """
-    Each use of a bone that the skinning rule refuses. `parts` have `name`,
-    `region` and `bones`, as `kit.part_object` leaves them. `parents` maps each
-    bone to its parent. A unit's bone belongs to the core bone that holds it.
-    """
-    problems = []
-    for part in parts:
-        region = region_name(part.region)
-        allowed = SKIN_RULES.get(region)
-        if allowed is None:
-            continue
-        for bone in sorted(part.bones):
-            owner = _core_owner(bone, parents)
-            if owner is not None and owner not in allowed:
-                problems.append(f"{part.name}: {region} part must not use bone {bone!r}")
-    return problems
-
-
-def check_skin(parts, rig):
-    """Stops the build if a part breaks the skinning rule."""
-    parents = {bone.name: bone.parent.name if bone.parent else None for bone in rig.data.bones}
-    problems = skin_problems(parts, parents)
-    if problems:
-        raise ValueError("; ".join(problems))
+skin_problems, check_skin = skin_checks(SKIN_RULES)

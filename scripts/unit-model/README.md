@@ -2,7 +2,7 @@
 
 ## Unit Specs
 
-The three pilot specs are in `specs/`: Warden Saelith, Crag Rhino and Bone Rampart. Check them with Python 3.11 or later. Blender and Python packages are not required.
+The specs are in `specs/`: the three pilots Warden Saelith, Crag Rhino and Bone Rampart, and Amberwing Dart. Check them with Python 3.11 or later. Blender and Python packages are not required.
 
 ```sh
 rtk bun unit-model:spec:check
@@ -15,11 +15,11 @@ The default command checks every `specs/*.json` file and exits with code 0 when 
 
 `unit-spec.schema.json` defines the fields, Body Plan names, part names, colors and clip slots. `unit_spec.py` checks those schema rules and the prop references. `load_spec(path)` returns a `UnitSpec` typed dictionary and raises `ValueError` on invalid data. Use it before building geometry. The loader also rejects duplicate JSON members.
 
-The Body Plan names are `biped-small`, `biped-medium`, `biped-large`, `quadruped` and `structure`. The three biped plans have their shared builders in `body_plans/`. `quadruped` and `structure` classify the pilots; their shared builders will follow in later issues. The part names match the existing scripts, including suffixes such as `.L`, `.FR` and `.0`. A prop ID must name a listed part. `hand` is `left`, `right` or `none` for a mounted prop. The left side is Blender +X. `cameraSide` identifies a prop on the right side that the player Unit camera sees.
+The Body Plan names are `biped-small`, `biped-medium`, `biped-large`, `quadruped`, `flyer` and `structure`. The biped, quadruped and flyer plans have their shared builders in `body_plans/`. `structure` classifies a pilot; its shared builder will follow in a later issue. The part names match the existing scripts, including suffixes such as `.L`, `.FR` and `.0`. A prop ID must name a listed part. `hand` is `left`, `right` or `none` for a mounted prop. The left side is Blender +X. `cameraSide` identifies a prop on the right side that the player Unit camera sees.
 
 The five required clips match `BASE_UNIT_CLIPS` in `apps/web/src/features/battle/scene/unit-clips.ts`: `idle`, `walk`, `attack`, `hurt` and `death`. The optional clips are `lowHp`, `cast`, `rebirth` and `summon`. Each pilot lists only the clips that its script builds. An empty clip object uses the Body Plan slot. An `override` names the unit's specific action for the future Clip Library.
 
-The palettes and parts come from the three build scripts. Warden Saelith includes the inline belt and arrow colors, and #179 changed her coat to the olive of the card painting. Bone Rampart's hammer is part of `skel.A.arm`. Heights include props in the rest pose: 0.985 for Warden Saelith, 0.7280354 for Crag Rhino and 1.13 for Bone Rampart. These values agree with the bounds in `source-contracts.json`. The specs record the current models.
+The palettes and parts come from the build scripts. Warden Saelith includes the inline belt and arrow colors, and #179 changed her coat to the olive of the card painting. Bone Rampart's hammer is part of `skel.A.arm`. Heights include props in the rest pose: 0.985 for Warden Saelith, 0.7280354 for Crag Rhino, 1.13 for Bone Rampart and 0.6598878 for Amberwing Dart. These values agree with the bounds in `source-contracts.json`. The specs record the current models.
 
 ## Packing
 
@@ -49,7 +49,7 @@ rtk bunx ultracite fix scripts/unit-model/source-contracts.json
 
 ## Body Plans
 
-`body_plans/` holds the shared builders. See `body_plans/README.md`. Each biped plan gives the bones, the proportion table, the arm IK, the skinning rule and the clip slots of its figures: `biped-small` for the goblins, `biped-medium` for the human, elf and undead figures, and `biped-large` for the big orcs and trolls. Fuse Runner, Warden Saelith and Tusk Brute use them.
+`body_plans/` holds the shared builders. See `body_plans/README.md`. Each biped plan gives the bones, the proportion table, the arm IK, the skinning rule and the clip slots of its figures: `biped-small` for the goblins, `biped-medium` for the human, elf and undead figures, and `biped-large` for the big orcs and trolls. Fuse Runner, Warden Saelith and Tusk Brute use them. `quadruped` gives the same data for the beasts with four legs on the ground, and Crag Rhino uses it. `flyer` gives the bones of the creatures that float and the root-lift rule, and Amberwing Dart uses it.
 
 Compare a new Raw Export with its Source Contract after a change to a build script, a Body Plan or the kit. Do this before you pack, because the packer refreshes the Source Contract. The check exits with code 1 on a difference.
 
@@ -130,6 +130,9 @@ Each Review Gate exits 0 clean, 1 fail or 2 error. A fail blocks publication. An
 | `chirality` | Is each left and right pair a reflection, not a rotation? | parts, bones | exact mirror |
 | `palette` | Is each region within delta-E 5 of the card painting? | vertex colors, card painting | CIEDE2000 of 5 |
 | `part-coverage` | Is every part of the Unit Spec present? | `_PART`, `parts` | no missing part |
+| `ground-contact` | Is each part of a flyer on or above the ground at rest? | `_PART`, `bodyPlan`, `flying`, rest-pose vertices | no part below 0, with a tolerance of 0.000001 |
+
+`ground-contact` reads a Unit Spec with `bodyPlan` `flyer`, or with `flying` set to true. Set `flying` on a figure that has a biped Body Plan and the Flying Keyword. For other Unit Specs it passes with `applies` set to false, because a foot on the ground can sink a small distance. The game puts the lowest point of the rest pose on the ground, so a part below the ground lifts the whole model.
 
 `review/vendor/` has the source of the Review Gates from the img2threejs skill, and `SOURCE.json` records the commit. `gates.ts` makes the input of each Review Gate. `unit_gates.py` has the Review Gates that need more than a source command. `mesh-export.ts` splits the Raw Export into parts and islands, and `gates.ts` writes the result in `gate-inputs/meshes.json`. Git ignores `gate-inputs/`.
 

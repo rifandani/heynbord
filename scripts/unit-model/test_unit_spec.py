@@ -187,13 +187,14 @@ class UnitSpecChecks(unittest.TestCase):
                     with self.assertRaisesRegex(ValueError, message):
                         load_spec(path)
 
-    def test_default_command_checks_all_three_pilots(self):
+    def test_default_command_checks_every_spec(self):
         result = subprocess.run(
             [sys.executable, str(DIRECTORY / "unit_spec.py")],
             cwd=tempfile.gettempdir(), capture_output=True, text=True, check=False,
         )
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual(result.stdout.splitlines(), [
+            "PASS amberwing-dart.json: amberwing-dart (flyer)",
             "PASS bone-rampart.json: bone-rampart (structure)",
             "PASS crag-rhino.json: crag-rhino (quadruped)",
             "PASS warden-saelith.json: warden-saelith (biped-medium)",

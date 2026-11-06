@@ -64,6 +64,8 @@ interface RegionBox {
 
 /** The fields of `unit-spec.schema.json` that the Review Gates read. */
 export interface UnitSpec {
+  readonly bodyPlan: string;
+  readonly flying?: boolean;
   readonly height: number;
   readonly parts: readonly string[];
   readonly props: readonly { readonly id: string; readonly bone: string }[];
@@ -536,6 +538,23 @@ const palette = async (context: GateContext): Promise<GateCommand> => {
   };
 };
 
+/**
+ * A flyer only. The foot of a beast or a figure on the ground can sink a small
+ * distance, and this Review Gate does not look for this.
+ */
+const groundContact = async (context: GateContext): Promise<GateCommand> => {
+  const { bodyPlan, flying = false } = context.sources.spec;
+  return {
+    args: unitGate(
+      "ground",
+      await writeInput(context, "ground.json", {
+        applies: bodyPlan === "flyer" || flying,
+        meshes: context.meshesFile,
+      })
+    ),
+  };
+};
+
 /** Each Review Gate, in the order of the records of `gates.json`. */
 export const GATES: readonly Gate[] = [
   {
@@ -583,6 +602,11 @@ export const GATES: readonly Gate[] = [
     gate: "part-coverage",
     question: "Is every part of the Unit Spec present?",
     command: partCoverage,
+  },
+  {
+    gate: "ground-contact",
+    question: "Is each part of a flyer on or above the ground at rest?",
+    command: groundContact,
   },
 ];
 

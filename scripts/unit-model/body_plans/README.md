@@ -7,10 +7,14 @@ A Body Plan is the shared skeleton, proportions, IK and clip slots of a group of
 | `biped-small` | `biped_small.py` | goblins | 0.660 to 0.720 |
 | `biped-medium` | `biped_medium.py` | humans, elves and undead | 0.720 to 0.980 |
 | `biped-large` | `biped_large.py` | big orcs and trolls | 0.870 to 1.000 |
+| `quadruped` | `quadruped.py` | beasts with four legs on the ground | 0.470 to 1.455 |
+| `flyer` | `flyer.py` | creatures and figures that float | 0.660 to 1.308 |
 
 ## Shared code
 
-The three plans have the same 20 core bones, the same order and the same parents. `biped.py` holds the shared code. Each plan module gives its name and the defaults of its proportion table, and it exports the shared code. Blender is necessary only for `build_rig` and `add_arm_ik`. The other code runs in plain Python:
+`shared.py` holds the code of all plans: `ClipSlot`, `CLIP_SLOTS`, the bone order check and the skinning check.
+
+The three biped plans have the same 20 core bones, the same order and the same parents. `biped.py` holds the shared code. Each plan module gives its name and the defaults of its proportion table, and it exports the shared code. Blender is necessary only for `build_rig` and `add_arm_ik`. The other code runs in plain Python:
 
 ```sh
 python3 -m unittest discover -s scripts/unit-model -p 'test_*.py'
@@ -252,3 +256,194 @@ The survey put the script's own values in the proportion table and `arms`, then 
 - cave-troll cannot move. Its body bends forward, so its spine, shoulders and legs are off the center line. The table does not have these values. The same is true of avalanche-yeti and mountain-colossus, two feral scripts with the 20 core bones that are not in the survey.
 
 bonestake-palisade is an orc script that does not have the 20 core bones.
+
+## quadruped
+
+`quadruped.py` holds the plan for the beasts with four legs on the ground. The beast faces -Y, so its body lies along Y.
+
+### Bones
+
+The survey read `BONES` from 11 scripts in Blender: Crag Rhino, Gorehorn Red Maw, Old Frostmaw, Woolly Mammoth, Cave Bear, Bristleback Boar, Crag Lizard, Frost Elk Matriarch, Frostfang Lynx, Tailsweep Basilisk and Winter Maw. All 11 have the same skeleton:
+
+- The spine is one chain: `root`, `hips`, `spine`, `chest`, 0 to 2 neck bones, `head`.
+- The hips start at the back. The spine runs forward along -Y.
+- Each leg has 3 bones: `upper.<leg>`, `lower.<leg>` and a foot. `<leg>` is `FL`, `FR`, `BL` or `BR`. The order is always FL, FR, BL, BR.
+- The front legs hang from `chest`, and the back legs hang from `hips`.
+- Each right leg is the exact mirror of its left leg.
+
+`bones(table, trunk, props, foot)` gives this list. `trunk` bones come after the head, for jaws, ears and tails. `props` bones come after the legs.
+
+`foot` names the last bone of a leg. 8 scripts use `foot`, 2 use `paw` (Old Frostmaw, Winter Maw) and 1 uses `hoof` (Gorehorn Red Maw).
+
+`leg_points(table, leg)` gives the joints of one leg, and `leg_parent(leg)` gives its body bone. The geometry and the bones cannot have different positions.
+
+`necks` gives the end of each neck bone as (y, z), and the last one is the base of the head. 5 scripts have 1 neck bone, 4 have none and 2 have 2.
+
+### Proportion table
+
+The table shows values to 3 places. A default is the most common value. "Count" is the number of scripts that have that value. A row for a leg is for the left leg. These values are measurements. The plan does not use a canon table.
+
+| Proportion      | Default | Count | Lowest | Highest | Crag Rhino |
+| --------------- | ------- | ----- | ------ | ------- | ---------- |
+| `root_tip_z`    | 0.100   | 11    | 0.100  | 0.100   | 0.100      |
+| `hip_y`         | 0.240   | 4     | 0.190  | 0.270   | 0.240      |
+| `hip_z`         | 0.400   | 2     | 0.200  | 0.630   | 0.400      |
+| `mid_y`         | 0.050   | 3     | 0.020  | 0.070   | 0.050      |
+| `mid_z`         | 0.420   | 2     | 0.210  | 0.650   | 0.440      |
+| `chest_y`       | -0.120  | 6     | -0.160 | -0.120  | -0.130     |
+| `chest_z`       | 0.450   | 2     | 0.220  | 0.670   | 0.460      |
+| `neck_y`        | -0.260  | 2     | -0.300 | -0.190  | -0.260     |
+| `neck_z`        | 0.440   | 2     | 0.220  | 0.740   | 0.440      |
+| `head_tip_y`    | -0.520  | 3     | -0.698 | -0.406  | -0.611     |
+| `head_tip_z`    | 0.340   | 1     | 0.160  | 0.950   | 0.193      |
+| `front_top_x`   | 0.080   | 3     | 0.070  | 0.150   | 0.120      |
+| `front_top_y`   | -0.130  | 4     | -0.160 | -0.100  | -0.140     |
+| `front_top_z`   | 0.380   | 2     | 0.200  | 0.600   | 0.380      |
+| `front_knee_x`  | 0.120   | 2     | 0.070  | 0.220   | 0.120      |
+| `front_knee_y`  | -0.140  | 3     | -0.180 | -0.110  | -0.150     |
+| `front_knee_z`  | 0.230   | 2     | 0.160  | 0.360   | 0.210      |
+| `front_ankle_x` | 0.120   | 2     | 0.070  | 0.240   | 0.120      |
+| `front_ankle_y` | -0.140  | 3     | -0.210 | -0.130  | -0.150     |
+| `front_ankle_z` | 0.070   | 4     | 0.040  | 0.120   | 0.070      |
+| `front_toe_x`   | 0.120   | 2     | 0.070  | 0.260   | 0.120      |
+| `front_toe_y`   | -0.200  | 3     | -0.290 | -0.190  | -0.220     |
+| `front_toe_z`   | 0.020   | 5     | 0.010  | 0.030   | 0.030      |
+| `back_top_x`    | 0.080   | 4     | 0.075  | 0.140   | 0.110      |
+| `back_top_y`    | 0.250   | 4     | 0.190  | 0.270   | 0.250      |
+| `back_top_z`    | 0.380   | 3     | 0.190  | 0.580   | 0.360      |
+| `back_knee_x`   | 0.110   | 2     | 0.075  | 0.220   | 0.110      |
+| `back_knee_y`   | 0.270   | 2     | 0.130  | 0.330   | 0.270      |
+| `back_knee_z`   | 0.200   | 3     | 0.160  | 0.320   | 0.200      |
+| `back_ankle_x`  | 0.110   | 2     | 0.075  | 0.240   | 0.110      |
+| `back_ankle_y`  | 0.240   | 4     | 0.240  | 0.300   | 0.260      |
+| `back_ankle_z`  | 0.070   | 4     | 0.040  | 0.120   | 0.070      |
+| `back_toe_x`    | 0.110   | 2     | 0.075  | 0.260   | 0.110      |
+| `back_toe_y`    | 0.190   | 2     | 0.160  | 0.240   | 0.190      |
+| `back_toe_z`    | 0.020   | 5     | 0.010  | 0.030   | 0.030      |
+
+The spread is wide because the survey has a lizard of 0.47 and an elk of 1.455. For two values with the same count, the default is the value of Crag Rhino. There are these exceptions:
+
+- `mid_z`, `chest_z`, `front_knee_z` and `front_ankle_y`: Crag Rhino has none of the tied values. The default is the tied value that is nearest to Crag Rhino.
+- `necks`: 1 neck bone is the most common count. The default joint is that of Gorehorn Red Maw, the first script of the survey with 1 neck bone.
+- `head_tip_z`: each script has a different value. The default is that of Gorehorn Red Maw, because the default neck is its neck.
+
+Crag Rhino has no neck bones, so it does not test the default neck. It overrides 19 of the 36 values.
+
+### Skinning rule and clip slots
+
+The skinning rule passes 240 of the 240 parts. A `torso` part may use `head` and the neck bones, because the hide of 14 parts blends into the head. A leg part may use the body bone that holds it. The rule cannot separate a front leg from a back leg, because the Body Regions are `leg.L` and `leg.R`.
+
+The clip lengths agree with the shared slots, with these differences:
+
+- cast: 2 of 2 scripts have 30 frames, so this plan has a cast slot of 30.
+- walk: 24 and 28 have a count of 3 each, 20 has 2, and 14, 18 and 32 have 1 each. The slot stays 24.
+- idle and lowHp: 10 of 11 scripts have 48. Bristleback Boar has 40.
+
+No script of the survey has a constraint, so this plan has no IK.
+
+### Crag Rhino
+
+The Source Contract did not change. After the move, `bun unit-model:contract:check crag-rhino` passes: the bounds, 20 bones, 7 clip durations and 7 keyframe digests are the same to the last bit. We did not pack the Published Model again. Its walk has 20 frames, so it keeps a plain `Clip`.
+
+We also compared the data of a new Raw Export with an export of the old script. Positions, normals, colors, joints, weights, parts, regions and bind matrices are the same. Only the triangle index bytes are different, and they also change when you run one script two times. So the bytes of a Raw Export are not a useful check.
+
+### Scripts that can move
+
+The survey put each script's own values in the proportion table, then compared the bones with its `BONES`. All 11 scripts give the same bones, so 10 more scripts can move now: bristleback-boar, cave-bear, crag-lizard, frost-elk-matriarch, frostfang-lynx, gorehorn-red-maw, old-frostmaw, tailsweep-basilisk, winter-maw and woolly-mammoth.
+
+A script with a different clip length keeps a plain `Clip` for that clip.
+
+These beast scripts are not on this plan, because they do not have this skeleton:
+
+- boulder-tortoise has no `hips`, `spine` or `lower` bones.
+- web-spitter has eight legs.
+- pale-galloper and river-knight are mounts with riders.
+
+## flyer
+
+`flyer.py` holds the bones of the creatures that float, and the root-lift rule of each flyer.
+
+### Bones
+
+The survey read `BONES` from 7 scripts in Blender: Amberwing Dart, Rimebreath Drake, Restless Wisp, Skyreaver, Canopy Skirmisher, Fernwing Courier and Seedwind Shepherd. Fernwing Courier is not in the issue, but it has the Flying Keyword.
+
+These scripts have 2 kinds of skeleton:
+
+- The 3 creatures share only `root` and `body`. Amberwing Dart has 4 wings. Rimebreath Drake has 2 wings with tips, and a chest, a neck and legs. Restless Wisp has no wings and no `head` bone. So `bones(table, trunk, props)` makes only `root` and `body`, and the script adds the rest.
+- The 4 figures have the 20 core bones of a biped, so a biped plan is their Body Plan. See the biped lists of scripts that can move. They read only `ROOT_LIFT` from this module. Their Unit Specs must set `flying`, so that the `ground-contact` Review Gate reads them.
+
+`wing_pair(position, root, tip)` gives a left wing bone and its mirror, so the 2 bones cannot have different positions. Rimebreath Drake does not use it, because its wing tips come between its wings in the bone order. A flight stand goes in `props`. A stand bone with no parent stays on the ground when the root moves, as the helmet of Restless Wisp does.
+
+### Proportion table
+
+The survey of the creature body has 3 scripts and almost no common value, so a default is the value of Amberwing Dart.
+
+| Proportion   | Default | Count | Lowest | Highest | Amberwing Dart |
+| ------------ | ------- | ----- | ------ | ------- | -------------- |
+| Root tip     | 0.120   | 2     | 0.100  | 0.120   | 0.120          |
+| Body back Y  | 0.040   | 1     | 0.000  | 0.080   | 0.040          |
+| Body back Z  | 0.550   | 2     | 0.380  | 0.550   | 0.550          |
+| Body front Y | -0.050  | 1     | -0.100 | 0.000   | -0.050         |
+| Body front Z | 0.550   | 1     | 0.550  | 0.570   | 0.550          |
+
+### Root-lift rule
+
+The game puts the lowest point of the rest pose on the ground (`unit-rig.ts`). So a flyer cannot float in its rest pose, and it gets its height in one of 2 ways:
+
+- `STAND_LIFT`: a flight stand reaches from the body to the ground, and it keeps the body in the air in the rest pose. A hover pose only bobs the root, so `float_z` is 0.
+- `ROOT_LIFT`: the figure stands on the ground in the rest pose, with the toes down. Each clip in the air lifts the root by `float_z`.
+
+Only the `root` bone gets the lift. `Lift.height(bob)` gives the value of the `root@loc` key of a hover pose. `bob` is -1 to 1.
+
+The other poses are not in the rule, because they do not agree:
+
+- A `lowHp` pose of a figure keeps 0.45 to 0.48 of the float on 3 figures, and 0.15 on Seedwind Shepherd. Its bob is different from the hover bob.
+- A `lowHp` pose of a creature drops the root by 0.05 or 0.06.
+- A summon of a figure starts at a height of 0 or lower.
+
+The Clip Library issue #183 owns these poses.
+
+| Unit | Lift | `float_z` | `bob_z` | Lowest part | Lowest Z | Parts below 0 |
+| --- | --- | --- | --- | --- | --- | --- |
+| Amberwing Dart | stand | 0 | 0.012 | `vine` | 0.0082 | 0 of 13 |
+| Rimebreath Drake | stand | 0 | 0.015 | `snow` | -0.0060 | 1 of 17 |
+| Restless Wisp | stand | 0 | 0.018 | `helmet` | 0.0000 | 0 of 9 |
+| Skyreaver | root | 0.14 | 0.025 | `boot.L` | 0.0000 | 0 of 29 |
+| Canopy Skirmisher | root | 0.15 | 0.025 | `foot.L` | 0.0010 | 0 of 25 |
+| Fernwing Courier | root | 0.14 | 0.018 | `foot.L` | 0.0010 | 0 of 25 |
+| Seedwind Shepherd | root | 0.08 | 0.025 | `foot.L` | 0.0000 | 0 of 27 |
+
+`ROOT_LIFT` has the most common values: `float_z` 0.14 (2 of 4) and `bob_z` 0.025 (3 of 4). The 3 stand values have a count of 1 each, so `STAND_LIFT` has the middle value, 0.015. Amberwing Dart overrides it with 0.012.
+
+### Ground-contact record
+
+The table above reads the rest-pose mesh of each script in Blender. Only Amberwing Dart has a Unit Spec, so only it has a record of the Review Gate.
+
+`bun unit-model:gates amberwing-dart` gives `ground-contact` a pass on 2026-11-06. The lowest part is `vine` at 0.0082, and no part is below the ground. `artifacts/unit-model-review/amberwing-dart/2026-11-06/gates.json` is the record.
+
+This run does not pass as a whole:
+
+- `ground-contact`, `joint-loops`, `attachment-anchor` and `part-coverage` pass.
+- `turntable`, `self-intersection`, `chirality` and `palette` fail.
+- `interior-difference` and `region-coverage` give an error, because Amberwing Dart has no Turnaround and no `regions`.
+- The input check reports 2,435 vertices in the Raw Export and 2,427 in the Published Model.
+
+The move did not cause these results, because the mesh data of the Raw Export did not change. #186 owns them.
+
+Rimebreath Drake will fail this Review Gate. Its `snow` mound is 0.006 below the ground, so the game lifts the whole model by this distance. Fix the mound when the script moves.
+
+### Skinning rule and clip slots
+
+The core bones of a creature are `root`, `body` and the wing bones, so the rule separates only the wings. The skinning rule passes 39 of the 39 parts of the 3 creatures.
+
+The plan uses the shared slots. All clips of Amberwing Dart and Rimebreath Drake agree with them. Restless Wisp has a `lowHp` of 40 frames and a `walk` of 20. The figures have a `walk` of 16 frames, except Seedwind Shepherd with 24. Seedwind Shepherd is the only flyer with a cast clip, and it has 36 frames. So one script is not enough to change the slot.
+
+### Amberwing Dart
+
+The Source Contract did not change. After the move, `bun unit-model:contract:check amberwing-dart` passes: the bounds, 16 bones, 7 clip durations and 7 keyframe digests are the same to the last bit. We did not pack the Published Model again. The comparison of the Raw Export data has the same result as for Crag Rhino.
+
+Its `hover` pose uses `Lift.height`. Its `dart` and `droop` poses keep their own root values.
+
+### Scripts that can move
+
+The survey put each script's own values in the table, then compared the bones with its `BONES`. rimebreath-drake and restless-wisp give the same bones, so they can move now. Rimebreath Drake also needs the fix of its `snow` mound.

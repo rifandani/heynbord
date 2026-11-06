@@ -1,0 +1,82 @@
+{
+  "id": "amberwing-dart",
+  "bodyPlan": "flyer",
+  "height": 0.6598878,
+  "palette": {
+    "body": "#6f8a3a",
+    "body_dark": "#4a6128",
+    "body_light": "#9cb455",
+    "amber": "#e8a83a",
+    "amber_light": "#f6cf62",
+    "eye": "#f0a52e",
+    "eye_dark": "#8a4a14",
+    "wing": "#d9c45a",
+    "wing_edge": "#e89a34",
+    "wing_vein": "#8a6a26",
+    "wing_green": "#b8c060",
+    "repair": "#f2e6c4",
+    "bark": "#6b4a2a",
+    "bark_dark": "#4a321c",
+    "vine": "#5d6e2c",
+    "vine_dark": "#3f4c1e",
+    "leaf": "#7da040",
+    "leaf_light": "#a8c45a",
+    "poison": "#9ee04a"
+  },
+  "parts": [
+    "thorax",
+    "collar",
+    "legs",
+    "head",
+    "eyes",
+    "lance",
+    "tail",
+    "wing.FL",
+    "wing.FR",
+    "wing.BL",
+    "wing.BR",
+    "vine",
+    "tendril"
+  ],
+  "props": [
+    {
+      "id": "lance",
+      "hand": "none",
+      "cameraSide": false,
+      "bone": "head"
+    },
+    {
+      "id": "vine",
+      "hand": "none",
+      "cameraSide": false,
+      "bone": "body"
+    }
+  ],
+  "clips": {
+    "idle": {},
+    "lowHp": {},
+    "walk": {
+      "override": "hover-dart"
+    },
+    "attack": {
+      "override": "lance-dive"
+    },
+    "hurt": {},
+    "death": {
+      "override": "fall-left"
+    },
+    "summon": {}
+  },
+  "details": [
+    "green body of leaf scales with big amber eyes",
+    "long banded tail with two leaf fins",
+    "four leaf wings with amber veins and edges",
+    "window-shaped repair on the front right wing",
+    "thorn lance at the head with a drop of poison at the tip",
+    "thorny vine trails to the ground as the flight stand"
+  ],
+  "identity": {
+    "feature": "thorn lance with a drop of poison",
+    "azimuthDegrees": 30
+  }
+}

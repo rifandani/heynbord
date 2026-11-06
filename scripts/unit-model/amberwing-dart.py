@@ -31,11 +31,16 @@ sys.path.insert(0, os.path.join(REPO, "scripts", "unit-model"))
 
 import importlib  # noqa: E402
 
+import body_plans  # noqa: E402
 import unit_model_kit as kit  # noqa: E402
 
 importlib.reload(kit)
+importlib.reload(body_plans.shared)
+importlib.reload(body_plans.flyer)
 
 from unit_model_kit import X, Y, Z, Clip, Part, blend, clamp01, faces_of, hex_color, lerp, turn  # noqa: E402
+
+plan = body_plans.BODY_PLANS["flyer"]
 
 # --- Palette (the card painting) ----------------------------------------------
 
@@ -61,8 +66,11 @@ POISON = hex_color("#9ee04a")
 
 # --- Proportions ---------------------------------------------------------------
 
+TABLE = plan.Proportions()
+# The vine is its flight stand, so the clips only bob the root.
+LIFT = plan.STAND_LIFT._replace(bob_z=0.012)
 # The body hovers at this height, and faces -Y.
-BODY_Z = 0.55
+BODY_Z = TABLE.body_back_z
 THORAX = Vector((0, 0, BODY_Z))
 HEAD_C = Vector((0, -0.088, 0.565))
 LANCE_ROOT = Vector((0, -0.122, 0.56))
@@ -100,21 +108,22 @@ def tendril_path(s):
 VINE_POINTS = [vine_path(index / 3) for index in range(4)]
 TENDRIL_POINTS = [tendril_path(index / 3) for index in range(4)]
 
-BONES = [
-    ("root", (0, 0, 0), (0, 0, 0.12), None),
-    ("body", tuple(THORAX + Vector((0, 0.04, 0))), tuple(THORAX + Vector((0, -0.05, 0))), "root"),
+TRUNK_BONES = [
     ("head", tuple(HEAD_C + Vector((0, 0.03, 0))), tuple(HEAD_C + Vector((0, -0.04, 0))), "body"),
     ("tail", tuple(TAIL[0]), tuple(TAIL[1]), "body"),
     ("tail.2", tuple(TAIL[1]), tuple(TAIL[2]), "tail"),
     ("tail.3", tuple(TAIL[2]), tuple(TAIL[3]), "tail.2"),
 ]
-for name, (root, direction, _length, _width) in WINGS.items():
-    BONES.append((f"wing.{name}", tuple(root), tuple(root + direction.normalized() * 0.1), "body"))
+for position in ("F", "B"):
+    root, direction, _length, _width = WINGS[f"{position}L"]
+    TRUNK_BONES += plan.wing_pair(position, root, root + direction.normalized() * 0.1)
+
+STAND_BONES = []
 for chain, points in (("vine", VINE_POINTS), ("tendril", TENDRIL_POINTS)):
     for index in range(3):
         name = chain if index == 0 else f"{chain}.{index + 1}"
         parent = "body" if index == 0 else (chain if index == 1 else f"{chain}.{index}")
-        BONES.append((name, tuple(points[index]), tuple(points[index + 1]), parent))
+        STAND_BONES.append((name, tuple(points[index]), tuple(points[index + 1]), parent))
 
 # --- Weights -------------------------------------------------------------------
 
@@ -328,12 +337,13 @@ def vine_part(name, curve, points, names, radius, ground):
 
 def build_figure():
     kit.reset_scene()
-    rig = kit.build_armature("AmberwingDart", BONES)
+    rig, _ = plan.build_rig("AmberwingDart", TABLE, TRUNK_BONES, STAND_BONES)
     parts = body_parts()
     parts += [wing_part(name, *spec) for name, spec in WINGS.items()]
     parts.append(vine_part("vine", vine_path, VINE_POINTS, ["vine", "vine.2", "vine.3"], 0.011, True))
     parts.append(vine_part("tendril", tendril_path, TENDRIL_POINTS, ["tendril", "tendril.2", "tendril.3"], 0.007, False))
     objects = [kit.part_object(part) for part in parts]
+    plan.check_skin(parts, rig)
     mesh = kit.join_parts(objects, "AmberwingDartMesh")
     kit.skin(mesh, rig)
     return rig, mesh
@@ -343,6 +353,9 @@ def build_figure():
 
 
 def build_clips(rig):
+    def slot(name):
+        return Clip(*plan.CLIP_SLOTS[name])
+
     def t(bone, *rotations):
         return turn(rig, bone, *rotations)
 
@@ -379,7 +392,7 @@ def build_clips(rig):
         down at 1.
         """
         return {
-            "root@loc": at("root", (0, 0, 0.012 * bob)),
+            "root@loc": at("root", (0, 0, LIFT.height(bob))),
             "body": t("body", (X, -4 + 2 * bob), (Y, 3 * sway)),
             "head": t("head", (X, 4), (Z, 6 * sway)),
             "tail": t("tail", (X, 4 + 3 * bob), (Z, 4 * sway)),
@@ -498,41 +511,41 @@ def build_clips(rig):
 
     clips = []
     # Eight beats in the idle loop: a beat is 6 frames.
-    idle = Clip("idle", 48, loop=True)
+    idle = slot("idle")
     for frame in range(0, 49, 3):
         a = frame / 48 * 2 * math.pi
         idle.key(frame, hover(1 if (frame // 3) % 2 == 0 else -1, math.sin(a), math.sin(a * 2) * 0.6))
     clips.append(idle)
 
-    low = Clip("lowHp", 48, loop=True)
+    low = slot("lowHp")
     for frame in range(0, 49, 4):
         a = frame / 48 * 2 * math.pi
         low.key(frame, droop(1 if (frame // 4) % 2 == 0 else -1, math.sin(a)))
     clips.append(low)
 
-    walk = Clip("walk", 24, loop=True)
+    walk = slot("walk")
     for frame in range(0, 25, 2):
         a = frame / 24 * 2 * math.pi
         walk.key(frame, dart(1 if (frame // 2) % 2 == 0 else -1, math.sin(a * 2), math.sin(a)))
     clips.append(walk)
 
-    attack = Clip("attack", 30)
+    attack = slot("attack")
     attack.key(0, hover(1)).key(3, rear(hover())).key(5, rear(hover(-1)))
     attack.key(8, dive(hover())).key(11, dive(hover(), 0.9)).key(14, pose(hover(1), **wings(50, -10, 0)))
     attack.key(18, hover(-1)).key(21, hover(1)).key(24, hover(-1)).key(27, hover(1)).key(30, hover(1))
     clips.append(attack)
 
-    hurt = Clip("hurt", 16)
+    hurt = slot("hurt")
     hurt.key(0, hover(1)).key(3, knocked(hover())).key(6, knocked(hover(-1), 0.6)).key(9, knocked(hover(1), 0.3))
     hurt.key(12, hover(-1)).key(16, hover(1))
     clips.append(hurt)
 
-    death = Clip("death", 36)
+    death = slot("death")
     death.key(0, hover(1)).key(4, knocked(hover())).key(8, knocked(hover(-1), 0.6)).key(14, falling(hover()))
     death.key(24, fallen(hover())).key(28, fallen(hover(), 8)).key(36, fallen(hover()))
     clips.append(death)
 
-    summon = Clip("summon", 24)
+    summon = slot("summon")
     summon.key(0, folded(hover())).key(9, folded(hover())).key(13, pose(hover(1), **wings(-20, -10, -10)))
     for frame in (15, 18, 21):
         summon.key(frame, hover(-1 if frame % 2 else 1))

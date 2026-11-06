@@ -24,6 +24,7 @@
         "biped-medium",
         "biped-large",
         "quadruped",
+        "flyer",
         "structure"
       ]
     },
@@ -92,6 +93,10 @@
       "minProperties": 1,
       "propertyNames": { "$ref": "#/$defs/region" },
       "additionalProperties": { "$ref": "#/$defs/box" }
+    },
+    "flying": {
+      "description": "True for a figure on a biped Body Plan that has the Flying Keyword. The ground-contact Review Gate then reads it.",
+      "type": "boolean"
     },
     "holedParts": {
       "description": "The parts with a hole by design, for example a ring.",
@@ -216,7 +221,16 @@
         "skel.B.arm",
         "banner",
         "banner.flag",
-        "sign"
+        "sign",
+        "thorax",
+        "legs",
+        "lance",
+        "wing.FL",
+        "wing.FR",
+        "wing.BL",
+        "wing.BR",
+        "vine",
+        "tendril"
       ]
     },
     "clip": {

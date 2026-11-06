@@ -47,6 +47,7 @@ class UnitSpec(TypedDict):
     details: list[str]
     identity: IdentitySpec
     regions: NotRequired[dict[str, RegionBox]]
+    flying: NotRequired[bool]
     holedParts: NotRequired[list[str]]
 
 

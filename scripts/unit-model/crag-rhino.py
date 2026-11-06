@@ -33,11 +33,16 @@ sys.path.insert(0, os.path.join(REPO, "scripts", "unit-model"))
 
 import importlib  # noqa: E402
 
+import body_plans  # noqa: E402
 import unit_model_kit as kit  # noqa: E402
 
 importlib.reload(kit)
+importlib.reload(body_plans.shared)
+importlib.reload(body_plans.quadruped)
 
 from unit_model_kit import X, Y, Z, Clip, Part, blend, clamp01, faces_of, hex_color, lerp, turn  # noqa: E402
+
+plan = body_plans.BODY_PLANS["quadruped"]
 
 # --- Palette (the card painting) ----------------------------------------------
 
@@ -63,9 +68,6 @@ WOOD = hex_color("#8a6440")
 
 # --- Proportions ---------------------------------------------------------------
 
-HIP = Vector((0, 0.24, 0.4))
-MID = Vector((0, 0.05, 0.44))
-CHEST = Vector((0, -0.13, 0.46))
 NECK = Vector((0, -0.26, 0.44))
 # The head hangs low and forward: from the top of the neck down to the snout.
 SNOUT = Vector((0, -0.53, 0.25))
@@ -86,32 +88,41 @@ def grown(point):
     return NECK + (Vector(point) - NECK) * HEAD_SCALE
 
 
+TABLE = plan.Proportions(
+    mid_z=0.44,
+    chest_y=-0.13,
+    chest_z=0.46,
+    neck_y=NECK.y,
+    neck_z=NECK.z,
+    necks=(),
+    head_tip_y=grown(SNOUT).y,
+    head_tip_z=grown(SNOUT).z,
+    front_top_x=0.12,
+    front_top_y=-0.14,
+    front_knee_y=-0.15,
+    front_knee_z=0.21,
+    front_ankle_y=-0.15,
+    front_toe_y=-0.22,
+    front_toe_z=0.03,
+    back_top_x=0.11,
+    back_top_z=0.36,
+    back_ankle_y=0.26,
+    back_toe_z=0.03,
+)
+
 LEGS = {
     # name: (top, joint, ankle, toe, parent)
-    "FL": (Vector((0.12, -0.14, 0.38)), Vector((0.12, -0.15, 0.21)), Vector((0.12, -0.15, 0.07)), Vector((0.12, -0.22, 0.03)), "chest"),
-    "FR": (Vector((-0.12, -0.14, 0.38)), Vector((-0.12, -0.15, 0.21)), Vector((-0.12, -0.15, 0.07)), Vector((-0.12, -0.22, 0.03)), "chest"),
-    "BL": (Vector((0.11, 0.25, 0.36)), Vector((0.11, 0.27, 0.2)), Vector((0.11, 0.26, 0.07)), Vector((0.11, 0.19, 0.03)), "hips"),
-    "BR": (Vector((-0.11, 0.25, 0.36)), Vector((-0.11, 0.27, 0.2)), Vector((-0.11, 0.26, 0.07)), Vector((-0.11, 0.19, 0.03)), "hips"),
+    leg: (*map(Vector, plan.leg_points(TABLE, leg)), plan.leg_parent(leg))
+    for leg in plan.LEGS
 }
 
 TAIL = [Vector((0, 0.41, 0.46)), Vector((0, 0.45, 0.33))]
 
-BONES = [
-    ("root", (0, 0, 0), (0, 0, 0.1), None),
-    ("hips", tuple(HIP), tuple(MID), "root"),
-    ("spine", tuple(MID), tuple(CHEST), "hips"),
-    ("chest", tuple(CHEST), tuple(NECK), "spine"),
-    ("head", tuple(NECK), tuple(grown(SNOUT)), "chest"),
+TRUNK_BONES = [
     ("ear.L", tuple(grown((0.075, -0.29, 0.5))), tuple(grown((0.1, -0.26, 0.56))), "head"),
     ("ear.R", tuple(grown((-0.075, -0.29, 0.5))), tuple(grown((-0.1, -0.26, 0.56))), "head"),
     ("tail", tuple(TAIL[0]), tuple(TAIL[1]), "hips"),
 ]
-for leg, (top, joint, ankle, toe, parent) in LEGS.items():
-    BONES += [
-        (f"upper.{leg}", tuple(top), tuple(joint), parent),
-        (f"lower.{leg}", tuple(joint), tuple(ankle), f"upper.{leg}"),
-        (f"foot.{leg}", tuple(ankle), tuple(toe), f"lower.{leg}"),
-    ]
 
 # --- Weights -------------------------------------------------------------------
 
@@ -328,9 +339,10 @@ def leg_parts():
 
 def build_figure():
     kit.reset_scene()
-    rig = kit.build_armature("CragRhino", BONES)
+    rig, _ = plan.build_rig("CragRhino", TABLE, TRUNK_BONES)
     parts = body_parts() + head_parts() + leg_parts()
     objects = [kit.part_object(part) for part in parts]
+    plan.check_skin(parts, rig)
     mesh = kit.join_parts(objects, "CragRhinoMesh")
     kit.skin(mesh, rig)
     return rig, mesh
@@ -340,6 +352,9 @@ def build_figure():
 
 
 def build_clips(rig):
+    def slot(name):
+        return Clip(*plan.CLIP_SLOTS[name])
+
     def t(bone, *rotations):
         return turn(rig, bone, *rotations)
 
@@ -521,12 +536,12 @@ def build_clips(rig):
         )
 
     clips = []
-    idle = Clip("idle", 48, loop=True)
+    idle = slot("idle")
     for frame, breath, sway in ((0, 0, 0), (12, 0.5, 1), (24, 1, 0), (36, 0.5, -1), (48, 0, 0)):
         idle.key(frame, stand(breath, sway))
     clips.append(idle)
 
-    low_hp = Clip("lowHp", 48, loop=True)
+    low_hp = slot("lowHp")
     for frame, breath in ((0, 0), (24, 1), (48, 0)):
         low_hp.key(frame, gasp(breath))
     clips.append(low_hp)
@@ -536,21 +551,21 @@ def build_clips(rig):
         walk.key(frame, stride(frame / 20))
     clips.append(walk)
 
-    attack = Clip("attack", 30)
+    attack = slot("attack")
     attack.key(0, stand()).key(5, paw(stand())).key(10, charge(stand()))
     attack.key(15, toss(stand())).key(19, toss(stand(), 1)).key(26, stand()).key(30, stand())
     clips.append(attack)
 
-    hurt = Clip("hurt", 16)
+    hurt = slot("hurt")
     hurt.key(0, stand()).key(3, recoil(stand())).key(8, recoil(stand(), 0.4)).key(16, stand())
     clips.append(hurt)
 
-    death = Clip("death", 36)
+    death = slot("death")
     death.key(0, stand()).key(5, recoil(stand())).key(14, buckle(stand()))
     death.key(26, fallen(stand())).key(30, fallen(stand(), 5)).key(36, fallen(stand()))
     clips.append(death)
 
-    summon = Clip("summon", 24)
+    summon = slot("summon")
     summon.key(0, low(stand())).key(8, low(stand())).key(15, snort(stand())).key(19, snort(stand(), 0.6))
     summon.key(24, stand())
     clips.append(summon)
