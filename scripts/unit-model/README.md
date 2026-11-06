@@ -60,6 +60,31 @@ rtk bun unit-model:contract:check --all
 rtk bun test scripts/unit-model/source-contract.test.ts
 ```
 
+## Review Scene
+
+The Review Scene captures a Unit Model from fixed cameras on the Battle light, with the real toon material and ink outline. Every model gets the same distance, FOV, near, far, DPR and canvas size. No camera reads the bounds of a model.
+
+```sh
+cd apps/web && bunx vite --port 4100 --strictPort      # /master-design is only in a dev server
+rtk bun run unit-model:review warden-saelith [name...] # from the repo root, in a second shell
+rtk bun test scripts/unit-model/review
+```
+
+The command writes `artifacts/unit-model-review/<name>/<date>/`: 15 PNG files of 1920 × 1080, `manifest.json` and the Review Gate record `review-gate.json`. It exits 1 if the Review Gate fails. The Review Gate requires every capture and no browser console error. Each image must decode at the correct size. Each image, the card painting and the GLB must match the hash in the manifest. `render_bridge.py validate` of the img2threejs skill can read the same manifest.
+
+| Capture | Azimuth | Elevation | Distance |
+| --- | --- | --- | --- |
+| `front`, `right`, `back`, `left` | 0, 90, 180, 270 | 0 | 4.2 |
+| `battle` | the Battle camera | the Battle camera | the Battle camera |
+| `close-up` | `identity.azimuthDegrees` of the Unit Spec | the Battle camera | 2.6 |
+| `idle`, `attack`, `death` at 0, 50 and 100% of the clip | as `front` | as `front` | as `front` |
+
+Azimuth 0 is the front of the model, and it does not include the Battle turn of the model. Azimuth 90 is the Blender right view: the camera is on the right side of the viewer, so it sees the left side of the model.
+
+The Unit Spec gives the close-up: `identity.feature` names the feature, and `identity.azimuthDegrees` turns the camera to it. A model needs a Unit Spec and a card painting before it can have a Review Scene. The Unit Spec gives the azimuth as 0 to below 360.
+
+`/master-design?review=<name>` opens the scene with a paused clock. `window.__IMG2THREEJS_CAPTURE__` then has `setCamera` and `capturePass`. Only `beauty` is a pass of this scene, and `capturePass` rejects other passes. The other passes of the render bridge are for a later Review Gate.
+
 ## Body Regions
 
 `unit_model_kit.py` gives each part one Body Region before the join, so a Review Gate can name an area of the one joined mesh. The fixed list is `head`, `torso`, `arm.L`, `arm.R`, `leg.L`, `leg.R`, `prop`, `base` and `effect`. The list is in `regions.json`, and the Python and TypeScript code read it. An id is a position in the list + 1, so an id of 0 means that a vertex has no region. `unit_regions.py` finds the region of a part, and it does not need Blender.

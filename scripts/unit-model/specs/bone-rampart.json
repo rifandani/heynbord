@@ -83,5 +83,9 @@
     "teal swallowtail flag with a gold fleur",
     "arrow sign at the side with writing on both faces",
     "rebirth stands the shields up one by one"
-  ]
+  ],
+  "identity": {
+    "feature": "large skull on the middle shield",
+    "azimuthDegrees": 0
+  }
 }

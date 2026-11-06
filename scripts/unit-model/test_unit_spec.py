@@ -33,6 +33,16 @@ class UnitSpecChecks(unittest.TestCase):
             {"id": "quiver", "hand": "none", "cameraSide": True},
         ])
 
+    def test_a_spec_needs_an_identity_for_the_close_up_camera(self):
+        valid = load_spec(DIRECTORY / "specs/warden-saelith.json")
+        spec = {name: value for name, value in valid.items() if name != "identity"}
+        self.assertIn("spec.identity: required", validate_spec(spec))
+
+    def test_azimuth_zero_is_a_valid_identity_view(self):
+        valid = load_spec(DIRECTORY / "specs/warden-saelith.json")
+        identity = {"feature": "the face", "azimuthDegrees": 0}
+        self.assertEqual(validate_spec({**valid, "identity": identity}), [])
+
     def test_rejects_unknown_names_and_malformed_fields(self):
         valid = load_spec(DIRECTORY / "specs/warden-saelith.json")
         cases = [
@@ -61,6 +71,13 @@ class UnitSpecChecks(unittest.TestCase):
             ({"props": [valid["props"][0], valid["props"][0]]}, "spec.props[1].id: duplicate prop"),
             ({"details": [2]}, "spec.details[0]: expected string"),
             ({"details": [""]}, "spec.details[0]: must not be blank"),
+            ({"identity": None}, "spec.identity: expected object"),
+            ({"identity": {"feature": "", "azimuthDegrees": 0}}, "spec.identity.feature: must not be blank"),
+            ({"identity": {"feature": "bow"}}, "spec.identity.azimuthDegrees: required"),
+            ({"identity": {"feature": "bow", "azimuthDegrees": "front"}}, "spec.identity.azimuthDegrees: expected number"),
+            ({"identity": {"feature": "bow", "azimuthDegrees": -90}}, "spec.identity.azimuthDegrees: expected a finite number"),
+            ({"identity": {"feature": "bow", "azimuthDegrees": -0.5}}, "spec.identity.azimuthDegrees: expected 0 to below 360"),
+            ({"identity": {"feature": "bow", "azimuthDegrees": 360}}, "spec.identity.azimuthDegrees: expected 0 to below 360"),
             ({"extra": True}, "spec.extra: unknown field"),
         ]
         for changes, message in cases:

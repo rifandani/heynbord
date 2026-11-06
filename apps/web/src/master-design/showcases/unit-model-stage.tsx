@@ -4,7 +4,18 @@ import { useEffect, useLayoutEffect, useMemo, useRef } from "react";
 import { CircleGeometry, PerspectiveCamera } from "three";
 
 import { Environment } from "@/features/battle/scene/environment";
-import { CAMERA_PITCH, cameraFrame } from "@/features/battle/scene/layout";
+import {
+  CAMERA_PITCH,
+  cameraFrame,
+  toRadians,
+} from "@/features/battle/scene/layout";
+import type { ReviewCamera } from "@/features/battle/scene/review-camera";
+import {
+  cameraPosition,
+  REVIEW_BATTLE_CAMERA,
+  REVIEW_CANVAS,
+  REVIEW_LENS,
+} from "@/features/battle/scene/review-camera";
 import { blobShadowTexture } from "@/features/battle/scene/textures";
 import type { UnitClipName } from "@/features/battle/scene/unit-clips";
 import { unitModelOf } from "@/features/battle/scene/unit-models";
@@ -106,8 +117,6 @@ const Shadows = ({ xs }: { readonly xs: readonly number[] }) => {
   ));
 };
 
-const toRadians = (degrees: number): number => (degrees * Math.PI) / 180;
-
 /** The Battle camera (45° down), at Battle distance or close. */
 const StageCamera = ({ battle }: { readonly battle: boolean }) => {
   const camera = useThree((state) => state.camera);
@@ -155,3 +164,128 @@ const UnitModelStage = ({ options }: { readonly options: StageOptions }) => (
 );
 
 export default UnitModelStage;
+
+/** One pose of a clip for a capture of the Review Scene. */
+interface ReviewClipPose {
+  readonly name: UnitClipName;
+  /** The play position, 0 to 1 of the clip. */
+  readonly phase: number;
+}
+
+/** The capture contract of the img2threejs render bridge. */
+export interface ReviewCaptureApi {
+  readonly setCamera: (camera: ReviewCamera) => Promise<void>;
+  /** Renders one frame. The element at `selector` then shows that frame. */
+  readonly capturePass: (request: {
+    readonly passId: string;
+    readonly clip: ReviewClipPose | undefined;
+  }) => Promise<{ readonly ok: true; readonly selector: string }>;
+}
+
+declare global {
+  interface Window {
+    __IMG2THREEJS_READY__?: boolean;
+    __IMG2THREEJS_CAPTURE__?: ReviewCaptureApi;
+  }
+}
+
+/** The element that a capture of the Review Scene saves. */
+const REVIEW_SELECTOR = "[data-unit-model-review]";
+
+const REST_POSE: ReviewClipPose = { name: "idle", phase: 0 };
+
+/** Scene seconds between two rig updates: longer than the blend of two clips. */
+const REVIEW_TICK = 1;
+
+/**
+ * The Unit Model of a card with the capture API. The clock is paused: the
+ * scene draws one frame in each `capturePass`, and only the pose of that call
+ * is on the rig. The camera starts at the Battle camera.
+ */
+const ReviewFigure = ({ cardId }: { readonly cardId: string }) => {
+  const spec = unitModelOf(cardId);
+  if (!spec) {
+    throw new Error(`${cardId} has no Unit Model`);
+  }
+  const { scene, animations } = useGLTF(spec.url);
+  const rig = useMemo(
+    () => buildRig(scene, animations, spec.height, 1),
+    [scene, animations, spec.height]
+  );
+  useEffect(() => rig.dispose, [rig]);
+  const pose = useMemo(() => emptyPose(), []);
+  const camera = useThree((state) => state.camera);
+  const advance = useThree((state) => state.advance);
+  const sceneTime = useRef(0);
+
+  useLayoutEffect(() => {
+    if (!(camera instanceof PerspectiveCamera)) {
+      return;
+    }
+    const setCamera = (next: ReviewCamera): Promise<void> => {
+      // oxlint-disable-next-line react/immutability -- the R3F camera is a Three.js object; R3F expects direct mutation, and React never renders from it
+      camera.fov = next.fovDegrees;
+      camera.near = next.near;
+      camera.far = next.far;
+      camera.position.set(...cameraPosition(next));
+      camera.lookAt(...next.target);
+      camera.updateProjectionMatrix();
+      return Promise.resolve();
+    };
+    const capturePass: ReviewCaptureApi["capturePass"] = ({
+      clip = REST_POSE,
+      passId,
+    }) => {
+      if (passId !== "beauty") {
+        return Promise.reject(new Error(`No "${passId}" pass in this scene`));
+      }
+      // The second update is after the blend, so no part of the last pose stays.
+      rig.update(pose, clip, sceneTime.current);
+      sceneTime.current += REVIEW_TICK;
+      rig.update(pose, clip, sceneTime.current);
+      advance(performance.now());
+      return Promise.resolve({ ok: true, selector: REVIEW_SELECTOR });
+    };
+    window.__IMG2THREEJS_CAPTURE__ = { setCamera, capturePass };
+    void setCamera(REVIEW_BATTLE_CAMERA);
+    window.__IMG2THREEJS_READY__ = true;
+    return () => {
+      delete window.__IMG2THREEJS_CAPTURE__;
+      delete window.__IMG2THREEJS_READY__;
+    };
+  }, [advance, camera, pose, rig]);
+
+  return <primitive object={rig.root} />;
+};
+
+/**
+ * The Review Scene: one Unit Model on the Battle light, with a fixed canvas and
+ * a paused clock (`frameloop="never"`). The drawing buffer stays after a frame,
+ * so a screenshot cannot see an empty canvas.
+ */
+export const UnitModelReviewStage = ({
+  cardId,
+}: {
+  readonly cardId: string;
+}) => (
+  <Canvas
+    frameloop="never"
+    dpr={REVIEW_CANVAS.devicePixelRatio}
+    gl={{
+      alpha: true,
+      antialias: true,
+      stencil: false,
+      preserveDrawingBuffer: true,
+    }}
+    camera={{
+      fov: REVIEW_LENS.fovDegrees,
+      near: REVIEW_LENS.near,
+      far: REVIEW_LENS.far,
+    }}
+    aria-label="Unit Model Review Scene"
+  >
+    <Environment />
+    <Shadows xs={[MODEL_X]} />
+    <ReviewFigure cardId={cardId} />
+  </Canvas>
+);

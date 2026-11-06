@@ -92,5 +92,9 @@
     "gold tiara and leaf clasps",
     "recurved longbow with gold tips",
     "arrow hidden at rest and nocked during attack"
-  ]
+  ],
+  "identity": {
+    "feature": "recurved longbow with gold tips",
+    "azimuthDegrees": 45
+  }
 }

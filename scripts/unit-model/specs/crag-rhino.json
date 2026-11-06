@@ -76,5 +76,9 @@
     "broken blue shield with a gold boss pierced by the large horn",
     "shield face turns to the camera side",
     "death falls onto the left side with the legs towards the camera"
-  ]
+  ],
+  "identity": {
+    "feature": "large horn through a broken blue shield",
+    "azimuthDegrees": 30
+  }
 }

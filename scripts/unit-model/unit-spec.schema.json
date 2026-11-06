@@ -12,7 +12,8 @@
     "parts",
     "props",
     "clips",
-    "details"
+    "details",
+    "identity"
   ],
   "properties": {
     "id": { "$ref": "#/$defs/id" },
@@ -73,6 +74,20 @@
     "details": {
       "type": "array",
       "items": { "type": "string", "minLength": 1 }
+    },
+    "identity": {
+      "description": "The feature that makes this unit easy to identify, and the Review Scene azimuth that shows it.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["feature", "azimuthDegrees"],
+      "properties": {
+        "feature": { "type": "string", "minLength": 1 },
+        "azimuthDegrees": {
+          "description": "Degrees around the model from its front: 0 to below 360. 90 is the Review Scene right view.",
+          "type": "number",
+          "exclusiveMinimum": -1
+        }
+      }
     }
   },
   "$defs": {

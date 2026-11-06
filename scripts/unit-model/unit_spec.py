@@ -23,6 +23,11 @@ class ClipSpec(TypedDict):
     override: NotRequired[str]
 
 
+class IdentitySpec(TypedDict):
+    feature: str
+    azimuthDegrees: float
+
+
 class UnitSpec(TypedDict):
     id: str
     bodyPlan: str
@@ -32,6 +37,7 @@ class UnitSpec(TypedDict):
     props: list[PropSpec]
     clips: dict[str, ClipSpec]
     details: list[str]
+    identity: IdentitySpec
 
 
 def _validate(value: Any, rule: dict[str, Any], path: str, errors: list[str]) -> None:
@@ -99,6 +105,8 @@ def validate_spec(value: object) -> list[str]:
             if prop["id"] in seen:
                 errors.append(f"spec.props[{index}].id: duplicate prop {prop['id']!r}")
             seen.add(prop["id"])
+        if not 0 <= spec["identity"]["azimuthDegrees"] < 360:
+            errors.append("spec.identity.azimuthDegrees: expected 0 to below 360")
     return errors
 
 
