@@ -25,6 +25,7 @@
         "biped-large",
         "quadruped",
         "flyer",
+        "machine",
         "structure"
       ]
     },
@@ -97,6 +98,13 @@
     "flying": {
       "description": "True for a figure on a biped Body Plan that has the Flying Keyword. The ground-contact Review Gate then reads it.",
       "type": "boolean"
+    },
+    "footBones": {
+      "description": "A structure only: the bone at the foot of each big piece. The foot-bones Review Gate reads them.",
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1 }
     },
     "holedParts": {
       "description": "The parts with a hole by design, for example a ring.",

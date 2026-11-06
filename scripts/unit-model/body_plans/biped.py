@@ -10,8 +10,7 @@ up, the figure faces -Y, and its left side is +X.
 
 from dataclasses import dataclass
 import math
-import struct
-from .shared import CLIP_SLOTS, ClipSlot, checked_order, skin_checks
+from .shared import CLIP_SLOTS, ClipSlot, checked_order, float32, skin_checks
 
 __all__ = [
     "ARM_POLES",
@@ -116,11 +115,6 @@ class Proportions:
         return self.hip_z - self.ankle_z
 
 
-def _float32(value):
-    """`value` as a 32-bit float, as a Blender Vector stores it."""
-    return struct.unpack("f", struct.pack("f", value))[0]
-
-
 def shoulder_point(table, sign):
     """The joint where one arm starts. `sign` is 1 for the left."""
     return (table.shoulder_width / 2 * sign, 0, table.shoulder_z)
@@ -134,8 +128,8 @@ def arm_points(table, sign):
     def along(point, length):
         # Round after each step, as a Blender Vector does. A different last bit
         # changes the keyframe digest of a Source Contract.
-        step = _float32(length)
-        return tuple(_float32(_float32(p) + _float32(_float32(d) * step)) for p, d in zip(point, direction))
+        step = float32(length)
+        return tuple(float32(float32(p) + float32(float32(d) * step)) for p, d in zip(point, direction))
 
     shoulder = shoulder_point(table, sign)
     elbow = along(shoulder, table.upper_arm)

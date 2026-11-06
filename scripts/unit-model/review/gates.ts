@@ -25,6 +25,8 @@ import { modelContract } from "../../../apps/web/scripts/model-contract.ts";
 import { readContracts, readRawModel } from "../../model-files.ts";
 import REGIONS from "../regions.json";
 import { contractProblems } from "../source-contract.ts";
+import { deathPose } from "./death-pose.ts";
+import type { BoneDeathPose } from "./death-pose.ts";
 import { TURNTABLE_VIEWS, cutoutId, validateManifest } from "./manifest.ts";
 import { exportMeshes, publishedProblems } from "./mesh-export.ts";
 import type { ExportedBone, ExportedMesh, MeshExport } from "./mesh-export.ts";
@@ -66,6 +68,7 @@ interface RegionBox {
 export interface UnitSpec {
   readonly bodyPlan: string;
   readonly flying?: boolean;
+  readonly footBones?: readonly string[];
   readonly height: number;
   readonly parts: readonly string[];
   readonly props: readonly { readonly id: string; readonly bone: string }[];
@@ -80,6 +83,8 @@ export interface GateSources {
   readonly directory: string;
   readonly spec: UnitSpec;
   readonly meshes: MeshExport;
+  /** Each bone at rest and at the end of the `death` clip of the Raw Export. */
+  readonly deathPose: readonly BoneDeathPose[];
   /** The path of the card painting. */
   readonly painting: string;
   /** The admitted Turnaround views, or null if the unit has none. */
@@ -555,6 +560,22 @@ const groundContact = async (context: GateContext): Promise<GateCommand> => {
   };
 };
 
+/** A structure only: another plan has no big pieces. */
+const footBones = async (context: GateContext): Promise<GateCommand> => {
+  const { deathPose: bones, spec } = context.sources;
+  return {
+    args: unitGate(
+      "feet",
+      await writeInput(context, "feet.json", {
+        applies: spec.bodyPlan === "structure",
+        footBones: spec.footBones ?? [],
+        bones,
+        meshes: context.meshesFile,
+      })
+    ),
+  };
+};
+
 /** Each Review Gate, in the order of the records of `gates.json`. */
 export const GATES: readonly Gate[] = [
   {
@@ -607,6 +628,12 @@ export const GATES: readonly Gate[] = [
     gate: "ground-contact",
     question: "Is each part of a flyer on or above the ground at rest?",
     command: groundContact,
+  },
+  {
+    gate: "foot-bones",
+    question:
+      "Does each big piece of a structure stand on a foot bone and fall in death?",
+    command: footBones,
   },
 ];
 
@@ -872,6 +899,7 @@ const loadSources = async (
     directory,
     spec,
     meshes: exportMeshes(rawDocument),
+    deathPose: deathPose(rawDocument),
     painting: path.join(directory, manifest.reference.path),
     turnaround: turnaroundOf(name),
     inputProblems: [

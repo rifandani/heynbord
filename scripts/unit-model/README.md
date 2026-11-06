@@ -15,7 +15,7 @@ The default command checks every `specs/*.json` file and exits with code 0 when 
 
 `unit-spec.schema.json` defines the fields, Body Plan names, part names, colors and clip slots. `unit_spec.py` checks those schema rules and the prop references. `load_spec(path)` returns a `UnitSpec` typed dictionary and raises `ValueError` on invalid data. Use it before building geometry. The loader also rejects duplicate JSON members.
 
-The Body Plan names are `biped-small`, `biped-medium`, `biped-large`, `quadruped`, `flyer` and `structure`. The biped, quadruped and flyer plans have their shared builders in `body_plans/`. `structure` classifies a pilot; its shared builder will follow in a later issue. The part names match the existing scripts, including suffixes such as `.L`, `.FR` and `.0`. A prop ID must name a listed part. `hand` is `left`, `right` or `none` for a mounted prop. The left side is Blender +X. `cameraSide` identifies a prop on the right side that the player Unit camera sees.
+The Body Plan names are `biped-small`, `biped-medium`, `biped-large`, `quadruped`, `flyer`, `machine` and `structure`. Each plan has its shared builder in `body_plans/`. The part names match the existing scripts, including suffixes such as `.L`, `.FR` and `.0`. A prop ID must name a listed part. `hand` is `left`, `right` or `none` for a mounted prop. The left side is Blender +X. `cameraSide` identifies a prop on the right side that the player Unit camera sees.
 
 The five required clips match `BASE_UNIT_CLIPS` in `apps/web/src/features/battle/scene/unit-clips.ts`: `idle`, `walk`, `attack`, `hurt` and `death`. The optional clips are `lowHp`, `cast`, `rebirth` and `summon`. Each pilot lists only the clips that its script builds. An empty clip object uses the Body Plan slot. An `override` names the unit's specific action for the future Clip Library.
 
@@ -49,7 +49,7 @@ rtk bunx ultracite fix scripts/unit-model/source-contracts.json
 
 ## Body Plans
 
-`body_plans/` holds the shared builders. See `body_plans/README.md`. Each biped plan gives the bones, the proportion table, the arm IK, the skinning rule and the clip slots of its figures: `biped-small` for the goblins, `biped-medium` for the human, elf and undead figures, and `biped-large` for the big orcs and trolls. Fuse Runner, Warden Saelith and Tusk Brute use them. `quadruped` gives the same data for the beasts with four legs on the ground, and Crag Rhino uses it. `flyer` gives the bones of the creatures that float and the root-lift rule, and Amberwing Dart uses it.
+`body_plans/` holds the shared builders. See `body_plans/README.md`. Each biped plan gives the bones, the proportion table, the arm IK, the skinning rule and the clip slots of its figures: `biped-small` for the goblins, `biped-medium` for the human, elf and undead figures, and `biped-large` for the big orcs and trolls. Fuse Runner, Warden Saelith and Tusk Brute use them. `quadruped` gives the same data for the beasts with four legs on the ground, and Crag Rhino uses it. `flyer` gives the bones of the creatures that float and the root-lift rule, and Amberwing Dart uses it. `machine` gives the layout of the carts and the walkers, and Grand Gearjammer uses it. `structure` gives the layout of the walls and the heaps, and Bone Rampart uses it.
 
 Compare a new Raw Export with its Source Contract after a change to a build script, a Body Plan or the kit. Do this before you pack, because the packer refreshes the Source Contract. The check exits with code 1 on a difference.
 
@@ -131,8 +131,11 @@ Each Review Gate exits 0 clean, 1 fail or 2 error. A fail blocks publication. An
 | `palette` | Is each region within delta-E 5 of the card painting? | vertex colors, card painting | CIEDE2000 of 5 |
 | `part-coverage` | Is every part of the Unit Spec present? | `_PART`, `parts` | no missing part |
 | `ground-contact` | Is each part of a flyer on or above the ground at rest? | `_PART`, `bodyPlan`, `flying`, rest-pose vertices | no part below 0, with a tolerance of 0.000001 |
+| `foot-bones` | Does each big piece of a structure stand on a foot bone and fall in death? | `bodyPlan`, `footBones`, vertices, `death` clip | the bone within 0.03 of the lowest point of its piece, and a tilt of 45 degrees or more |
 
 `ground-contact` reads a Unit Spec with `bodyPlan` `flyer`, or with `flying` set to true. Set `flying` on a figure that has a biped Body Plan and the Flying Keyword. For other Unit Specs it passes with `applies` set to false, because a foot on the ground can sink a small distance. The game puts the lowest point of the rest pose on the ground, so a part below the ground lifts the whole model.
+
+`foot-bones` reads a Unit Spec with `bodyPlan` `structure`. For other Unit Specs it passes with `applies` set to false. `review/death-pose.ts` reads the last key of the `death` clip in the Raw Export. A turn about the bone is not a tilt, so a piece that only spins does not pass. `body_plans/README.md` has the record of each foot bone.
 
 `review/vendor/` has the source of the Review Gates from the img2threejs skill, and `SOURCE.json` records the commit. `gates.ts` makes the input of each Review Gate. `unit_gates.py` has the Review Gates that need more than a source command. `mesh-export.ts` splits the Raw Export into parts and islands, and `gates.ts` writes the result in `gate-inputs/meshes.json`. Git ignores `gate-inputs/`.
 

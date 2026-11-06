@@ -48,6 +48,7 @@ class UnitSpec(TypedDict):
     identity: IdentitySpec
     regions: NotRequired[dict[str, RegionBox]]
     flying: NotRequired[bool]
+    footBones: NotRequired[list[str]]
     holedParts: NotRequired[list[str]]
 
 
@@ -134,6 +135,10 @@ def validate_spec(value: object) -> list[str]:
         for index, part in enumerate(spec.get("holedParts", [])):
             if part not in spec["parts"]:
                 errors.append(f"spec.holedParts[{index}]: part must be listed in parts")
+        if spec["bodyPlan"] == "structure" and "footBones" not in spec:
+            errors.append("spec.footBones: required for a structure")
+        if spec["bodyPlan"] != "structure" and "footBones" in spec:
+            errors.append("spec.footBones: only a structure has foot bones")
     return errors
 
 

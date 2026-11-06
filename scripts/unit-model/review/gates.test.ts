@@ -231,6 +231,7 @@ const sources = (overrides: Partial<GateSources> = {}): GateSources => ({
   directory,
   spec: SPEC,
   meshes: { meshes: FIGURE, bones: SKELETON },
+  deathPose: [],
   painting: path.join(directory, "painting.webp"),
   turnaround: {
     front: path.join(directory, "front.webp"),
@@ -310,27 +311,33 @@ const lowered =
     vertices: mesh.vertices.map(([x, y, z]) => [x, y - 0.3 + lowest, z]),
   });
 
-/** Runs this Review Gate alone, because a run of all of them can take longer than the test timeout. */
-const groundRecord = async (
-  overrides: Partial<GateSources>
+/** Runs one Review Gate alone, because a run of all of them can take longer than the test timeout. */
+const gateRecord = async (
+  name: string,
+  unit: GateSources
 ): Promise<GateRecord> => {
-  const gate = GATES.find((item) => item.gate === "ground-contact");
+  const gate = GATES.find((item) => item.gate === name);
   if (!gate) {
-    throw new Error("no ground-contact Review Gate");
+    throw new Error(`no ${name} Review Gate`);
   }
-  const flyer = sources({ spec: { ...SPEC, bodyPlan: "flyer" }, ...overrides });
   const meshesFile = path.join(directory, "meshes.json");
-  await writeFile(meshesFile, JSON.stringify(flyer.meshes));
+  await writeFile(meshesFile, JSON.stringify(unit.meshes));
   return runCommand(
     gate,
     await gate.command({
-      sources: flyer,
+      sources: unit,
       inputs: directory,
       meshesFile,
       cutouts: {},
     })
   );
 };
+
+const groundRecord = (overrides: Partial<GateSources>): Promise<GateRecord> =>
+  gateRecord(
+    "ground-contact",
+    sources({ spec: { ...SPEC, bodyPlan: "flyer" }, ...overrides })
+  );
 
 describe("ground-contact", () => {
   test("a flyer with each part above the ground passes", async () => {
@@ -386,6 +393,74 @@ describe("ground-contact", () => {
   });
 });
 
+/** `foot-bones` with `staff` as the one big piece. */
+const footRecord = (overrides: Partial<GateSources>): Promise<GateRecord> =>
+  gateRecord(
+    "foot-bones",
+    sources({
+      spec: { ...SPEC, bodyPlan: "structure", footBones: ["staff"] },
+      deathPose: [{ id: "staff", height: 0.3, tiltDegrees: 78, drop: 0 }],
+      ...overrides,
+    })
+  );
+
+describe("foot-bones", () => {
+  test("a piece that stands on its bone and falls in death passes", async () => {
+    const record = await footRecord({});
+    expect(record).toMatchObject({
+      status: "pass",
+      report: {
+        applies: true,
+        failures: [],
+        bones: [{ bone: "staff", tiltDegrees: 78, atFoot: true, fell: true }],
+      },
+    });
+  });
+
+  test("names a piece that stays up in death", async () => {
+    const record = await footRecord({
+      deathPose: [{ id: "staff", height: 0.3, tiltDegrees: 12, drop: 0 }],
+    });
+    expect(record.status).toBe("fail");
+    expect(record.report).toMatchObject({
+      failures: ["staff"],
+      bones: [{ bone: "staff", fell: false }],
+    });
+  });
+
+  test("names a bone that is not at the foot of its piece", async () => {
+    const record = await footRecord({
+      deathPose: [{ id: "staff", height: 0.6, tiltDegrees: 78, drop: 0 }],
+    });
+    expect(record.status).toBe("fail");
+    expect(record.report).toMatchObject({
+      failures: ["staff"],
+      bones: [{ bone: "staff", atFoot: false }],
+    });
+  });
+
+  test("names a foot bone that the model does not have", async () => {
+    const record = await footRecord({ deathPose: [] });
+    expect(record.status).toBe("fail");
+    expect(record.report).toMatchObject({ failures: ["staff"] });
+  });
+
+  test("does not apply to a plan with no big pieces", async () => {
+    const record = await footRecord({ spec: SPEC });
+    expect(record).toMatchObject({
+      status: "pass",
+      report: { applies: false },
+    });
+  });
+
+  test("gives an error when a structure has no foot bones", async () => {
+    const record = await footRecord({
+      spec: { ...SPEC, bodyPlan: "structure", footBones: [] },
+    });
+    expect(record.status).toBe("error");
+  });
+});
+
 describe("runGates", () => {
   test("gives one passed record for each gate of a clean model", async () => {
     const report = await runGates(sources());
@@ -393,7 +468,7 @@ describe("runGates", () => {
     expect(report.gates.map(({ gate }) => gate)).toEqual(
       GATES.map(({ gate }) => gate)
     );
-    expect(report.gates).toHaveLength(10);
+    expect(report.gates).toHaveLength(11);
     expect(report.exitCode).toBe(0);
   });
 

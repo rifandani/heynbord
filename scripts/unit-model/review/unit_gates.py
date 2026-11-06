@@ -2,7 +2,7 @@
 
 `gates.ts` starts this file with a Review Gate name and a request file:
 
-    python3 unit_gates.py <turntable|interior|chirality|palette|ground> <request.json>
+    python3 unit_gates.py <turntable|interior|chirality|palette|ground|feet> <request.json>
 
 Each Review Gate prints one JSON report. The exit code is 0 clean, 1 fail, 2
 error. An error is not a pass. Python 3.11 standard library only.
@@ -58,6 +58,12 @@ MIN_PAINTING_COLOR_SHARE = 0.001
 
 # A Raw Export has 32-bit floats, so a part on the ground can be at -3e-8.
 GROUND_TOLERANCE = 1e-6
+
+# How far a foot bone can be from the lowest point of its piece. The survey of
+# the six walls has a highest value of 0.026.
+FOOT_TOLERANCE = 0.03
+# A piece has fallen when it tilts more than half of the way to the ground.
+MIN_FALL_DEGREES = 45.0
 
 # The record name of the hole test of the body. It is not a part name.
 BODY = "body"
@@ -334,12 +340,58 @@ def ground(request: dict[str, Any]) -> tuple[int, dict[str, Any]]:
     return (FAILED if failures else CLEAN), report
 
 
+def feet(request: dict[str, Any]) -> tuple[int, dict[str, Any]]:
+    """
+    Does each big piece of a structure stand on a foot bone and fall in `death`?
+    A bone gives the lowest point of the meshes that it moves the most. A foot
+    bone that a Unit Spec names and the model does not have is a failure.
+    """
+    if not request["applies"]:
+        return CLEAN, {"applies": False}
+    if not request["footBones"]:
+        raise ValueError("the Unit Spec has no foot bones")
+    poses = {pose["id"]: pose for pose in request["bones"]}
+    lowest: dict[str, float] = {}
+    for mesh in json.loads(Path(request["meshes"]).read_text(encoding="utf-8"))["meshes"]:
+        if mesh["bones"]:
+            bone = mesh["bones"][0]
+            height = min(vertex[1] for vertex in mesh["vertices"])
+            lowest[bone] = min(height, lowest.get(bone, height))
+    records = []
+    for name in request["footBones"]:
+        pose = poses.get(name)
+        if pose is None or name not in lowest:
+            records.append({"bone": name, "atFoot": False, "fell": False})
+            continue
+        records.append(
+            {
+                "bone": name,
+                "height": pose["height"],
+                "lowest": lowest[name],
+                "tiltDegrees": pose["tiltDegrees"],
+                "drop": pose["drop"],
+                "atFoot": abs(pose["height"] - lowest[name]) <= FOOT_TOLERANCE,
+                "fell": pose["tiltDegrees"] >= MIN_FALL_DEGREES,
+            }
+        )
+    failures = [record["bone"] for record in records if not (record["atFoot"] and record["fell"])]
+    report = {
+        "applies": True,
+        "footTolerance": FOOT_TOLERANCE,
+        "minFallDegrees": MIN_FALL_DEGREES,
+        "bones": records,
+        "failures": failures,
+    }
+    return (FAILED if failures else CLEAN), report
+
+
 GATES = {
     "turntable": turntable,
     "interior": interior,
     "chirality": mirror_pairs,
     "palette": palette,
     "ground": ground,
+    "feet": feet,
 }
 
 

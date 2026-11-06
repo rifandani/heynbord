@@ -76,6 +76,14 @@
     },
     "summon": {}
   },
+  "footBones": [
+    "shield.0",
+    "shield.1",
+    "shield.2",
+    "shield.3",
+    "shield.4",
+    "sign"
+  ],
   "details": [
     "five coffin-shaped shields stand on an arc",
     "gold fleurs on the outer shields and a large skull on the middle shield",

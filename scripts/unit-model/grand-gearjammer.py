@@ -31,11 +31,16 @@ sys.path.insert(0, os.path.join(REPO, "scripts", "unit-model"))
 
 import importlib  # noqa: E402
 
+import body_plans  # noqa: E402
 import unit_model_kit as kit  # noqa: E402
 
 importlib.reload(kit)
+importlib.reload(body_plans.shared)
+importlib.reload(body_plans.machine)
 
 from unit_model_kit import X, Y, Z, Clip, Part, faces_of, hex_color, turn  # noqa: E402
+
+plan = body_plans.BODY_PLANS["machine"]
 
 # --- Palette (the card painting) ----------------------------------------------
 
@@ -66,11 +71,10 @@ FLASH_HOT = hex_color("#fff3c4")
 
 # --- Proportions ---------------------------------------------------------------
 
-AXLE_Z = 0.13
-WHEEL_R = 0.13
-WHEEL_X = 0.21
-FRONT_Y = -0.24
-BACK_Y = 0.22
+# The cart pitches about the rear axle.
+TABLE = plan.Proportions()
+# The wheel touches the ground.
+WHEEL_R = TABLE.axle_z
 DECK_Z = 0.34
 CANNON_Z = 0.47
 CANNON_BACK = 0.12
@@ -78,12 +82,7 @@ CANNON_FRONT = -0.44
 GEAR_C = Vector((0.14, 0.26, 0.6))
 GEAR_R = 0.13
 
-WHEELS = {
-    "FL": Vector((WHEEL_X, FRONT_Y, AXLE_Z)),
-    "FR": Vector((-WHEEL_X, FRONT_Y, AXLE_Z)),
-    "BL": Vector((WHEEL_X, BACK_Y, AXLE_Z)),
-    "BR": Vector((-WHEEL_X, BACK_Y, AXLE_Z)),
-}
+WHEELS = {name: Vector(center) for name, center in plan.wheel_centers(TABLE).items()}
 
 # The crew: where each goblin sits on the deck, and which way it looks (degrees to its left).
 GOBLINS = {
@@ -92,26 +91,13 @@ GOBLINS = {
     "scout": (Vector((-0.12, -0.17, DECK_Z)), -20, 1.1),
 }
 
-BONES = [
-    ("root", (0, 0, 0), (0, 0, 0.12), None),
-    # The cart pitches about the rear axle.
-    ("cart", (0, BACK_Y, AXLE_Z), (0, FRONT_Y, AXLE_Z), "root"),
+TRUNK_BONES = [
     ("cannon", (0, CANNON_BACK, CANNON_Z), (0, CANNON_BACK - 0.1, CANNON_Z), "cart"),
     ("flash", (0, CANNON_FRONT, CANNON_Z), (0, CANNON_FRONT - 0.05, CANNON_Z), "cannon"),
     ("gear", tuple(GEAR_C), tuple(GEAR_C + Vector((0, 0, 0.08))), "cart"),
     ("flag", tuple(GEAR_C + Vector((0, 0, GEAR_R))), tuple(GEAR_C + Vector((0, 0, GEAR_R + 0.1))), "cart"),
 ]
-for name, center in WHEELS.items():
-    BONES.append((f"wheel.{name}", tuple(center), tuple(center + Vector((0, 0, 0.06))), "cart"))
-for name, (base, _yaw, size) in GOBLINS.items():
-    neck = base + Vector((0, 0, 0.11 * size))
-    BONES += [
-        (f"{name}.body", tuple(base), tuple(neck), "cart"),
-        (f"{name}.head", tuple(neck), tuple(neck + Vector((0, 0, 0.1 * size))), f"{name}.body"),
-    ]
-    for side, sign in (("L", 1), ("R", -1)):
-        shoulder = base + Vector((0.05 * sign * size, 0, 0.095 * size))
-        BONES.append((f"{name}.arm.{side}", tuple(shoulder), tuple(shoulder + Vector((0.02 * sign, -0.03, -0.07))), f"{name}.body"))
+CREW_BONES = [bone for name, (base, _yaw, size) in GOBLINS.items() for bone in plan.crew_bones(name, base, size, "cart")]
 
 # --- Parts ---------------------------------------------------------------------
 
@@ -165,8 +151,8 @@ def cart_parts():
     patch = kit.box(cart.bm, (-0.205, 0.1, 0.22), (0.01, 0.12, 0.08))
     cart.paint(faces_of(patch), RUST)
     # The axles.
-    for y in (FRONT_Y, BACK_Y):
-        axle = kit.cone(cart.bm, (WHEEL_X, y, AXLE_Z), (-WHEEL_X, y, AXLE_Z), 0.014, 0.014, 6)
+    for y in (TABLE.front_y, TABLE.back_y):
+        axle = kit.cone(cart.bm, (TABLE.wheel_x, y, TABLE.axle_z), (-TABLE.wheel_x, y, TABLE.axle_z), 0.014, 0.014, 6)
         cart.paint(faces_of(axle), IRON_DARK)
 
     # The plow: a row of iron teeth at the front.
@@ -279,7 +265,7 @@ def goblin_parts(name, base, yaw, size):
     s = size
     look = Vector((-math.sin(math.radians(yaw)), -math.cos(math.radians(yaw)), 0))
     side = Vector((-look.y, look.x, 0))
-    neck = base + Vector((0, 0, 0.11 * s))
+    neck = Vector(plan.crew_neck(base, s))
     head_c = neck + Vector((0, 0, 0.055 * s)) + look * 0.006
 
     body = Part(f"{name}.body", VEST, f"{name}.body", shade=0.1)
@@ -320,7 +306,7 @@ def goblin_parts(name, base, yaw, size):
     parts.append(head)
 
     for arm_side, sign in (("L", 1), ("R", -1)):
-        shoulder = base + Vector((0.05 * sign * s, 0, 0.095 * s))
+        shoulder = Vector(plan.crew_shoulder(base, s, sign))
         elbow = shoulder + side * 0.012 * sign + Vector((0, 0, -0.045 * s)) + look * 0.01
         hand = elbow + look * 0.05 * s + Vector((0, 0, 0.005))
         arm = Part(f"{name}.arm.{arm_side}", SKIN, f"{name}.arm.{arm_side}", shade=0.05)
@@ -350,11 +336,12 @@ def goblin_parts(name, base, yaw, size):
 
 def build_figure():
     kit.reset_scene()
-    rig = kit.build_armature("GrandGearjammer", BONES)
+    rig, _ = plan.build_rig("GrandGearjammer", TABLE, TRUNK_BONES, CREW_BONES)
     parts = cart_parts() + wheel_parts() + cannon_parts() + gear_parts()
     for name, (base, yaw, size) in GOBLINS.items():
         parts += goblin_parts(name, base, yaw, size)
     objects = [kit.part_object(part) for part in parts]
+    plan.check_skin(parts, rig)
     mesh = kit.join_parts(objects, "GrandGearjammerMesh")
     kit.skin(mesh, rig)
     return rig, mesh
@@ -364,6 +351,9 @@ def build_figure():
 
 
 def build_clips(rig):
+    def slot(name):
+        return Clip(*plan.CLIP_SLOTS[name])
+
     def t(bone, *rotations):
         return turn(rig, bone, *rotations)
 
@@ -383,10 +373,6 @@ def build_clips(rig):
             result[f"{name}.arm.R"] = t(f"{name}.arm.R", (X, -10 * arms))
         return result
 
-    def wheels(angle):
-        """The wheels turn forward by `angle` degrees."""
-        return {f"wheel.{name}": t(f"wheel.{name}", (X, angle)) for name in WHEELS}
-
     def rest(rumble=0.0, gear=0.0, bob=0.0, look=0.0):
         """The cart at rest: the engine rumbles, the gear turns, the crew looks about."""
         result = {
@@ -396,7 +382,7 @@ def build_clips(rig):
             "flag": t("flag", (Z, 6 * look)),
             "flash@scale": 0.0,
         }
-        result.update(wheels(0))
+        result.update(plan.wheel_pose(t, 0))
         result.update(crew(bob, look))
         return result
 
@@ -421,7 +407,7 @@ def build_clips(rig):
     def rolling(angle, bump=0.0):
         """The cart rolls: the wheels turn, the cart bumps, the crew holds on."""
         result = rest(0, angle * 0.5, bump, 0)
-        result.update(wheels(angle))
+        result.update(plan.wheel_pose(t, angle))
         result["cart@loc"] = at("cart", (0, 0, 0.012 * abs(bump)))
         result["cart"] = t("cart", (X, 2 * bump))
         result["flag"] = t("flag", (Z, 20))
@@ -521,45 +507,45 @@ def build_clips(rig):
         return result
 
     clips = []
-    idle = Clip("idle", 48, loop=True)
+    idle = slot("idle")
     for frame in range(0, 49, 4):
         rumble = 1 if (frame // 4) % 2 else -1
         idle.key(frame, rest(rumble if frame not in (0, 48) else 0, frame / 48 * 360, math.sin(frame / 48 * 2 * math.pi), math.sin(frame / 48 * 2 * math.pi)))
     clips.append(idle)
 
-    low = Clip("lowHp", 48, loop=True)
+    low = slot("lowHp")
     for frame in range(0, 49, 6):
         low.key(frame, broken(math.sin(frame / 48 * 2 * math.pi)))
     clips.append(low)
 
     # One turn of the wheels for each Square (`STEPS_PER_SQUARE`), with four bumps.
-    walk = Clip("walk", 24, loop=True)
+    walk = slot("walk")
     for frame in range(0, 25, 3):
-        walk.key(frame, rolling(frame / 24 * 360, math.sin(frame / 24 * 4 * math.pi)))
+        walk.key(frame, rolling(plan.rolling_angle(TABLE, frame, 24), math.sin(frame / 24 * 4 * math.pi)))
     clips.append(walk)
 
     # The shot leaves at 20% of the attack (`FLIGHT_START` in fx.ts): frame 6 of 30.
-    attack = Clip("attack", 30)
+    attack = slot("attack")
     attack.key(0, rest()).key(4, aim()).key(5, aim()).key(6, fire(0.3, 1.4)).key(8, fire(1.0, 0.8))
     attack.key(11, fire(0.7, 0.0)).key(18, fire(0.2, 0.0)).key(24, rest()).key(30, rest())
     clips.append(attack)
 
-    hurt = Clip("hurt", 16)
+    hurt = slot("hurt")
     hurt.key(0, rest()).key(3, jolt()).key(8, jolt(0.4)).key(16, rest())
     clips.append(hurt)
 
-    death = Clip("death", 36)
+    death = slot("death")
     death.key(0, rest()).key(5, jolt()).key(14, tilting())
     death.key(24, tipped()).key(28, tipped(6)).key(36, tipped())
     clips.append(death)
 
     # Rebirth: the Unit falls (45% of the event, `REBORN_FALL`), then rights itself.
-    rebirth = Clip("rebirth", 48)
+    rebirth = slot("rebirth")
     rebirth.key(0, rest()).key(4, jolt()).key(12, tilting()).key(20, tipped()).key(22, tipped(3))
     rebirth.key(32, tilting()).key(38, landing(0.0, 1.0)).key(42, cheer(rest())).key(48, rest())
     clips.append(rebirth)
 
-    summon = Clip("summon", 24)
+    summon = slot("summon")
     summon.key(0, landing(0.16)).key(8, landing(0.0, 1.0)).key(12, landing(0.03)).key(15, landing(0.0, 0.5))
     summon.key(19, cheer(rest())).key(24, rest())
     clips.append(summon)

@@ -1,8 +1,10 @@
 """
-The code that every Body Plan shares: the clip slots, the bone order check and
-the skinning check. See `README.md`. This module does not need Blender.
+The code that every Body Plan shares: the clip slots, the point math of a Blender
+Vector, the bone order check and the skinning checks. See `README.md`. This
+module does not need Blender.
 """
 
+import struct
 from typing import NamedTuple
 
 from unit_regions import region_name
@@ -30,6 +32,19 @@ CLIP_SLOTS = {
         ClipSlot("summon", 24, False),
     )
 }
+
+
+def float32(value):
+    """`value` as a 32-bit float, as a Blender Vector stores it."""
+    return struct.unpack("f", struct.pack("f", value))[0]
+
+
+def offset_point(point, offset):
+    """
+    `point` + `offset`, rounded as a Blender Vector does. A different last bit
+    changes the keyframe digest of a Source Contract.
+    """
+    return tuple(float32(float32(p) + float32(d)) for p, d in zip(point, offset))
 
 
 def checked_order(bones):
@@ -78,11 +93,16 @@ def skin_checks(rules):
                     problems.append(f"{part.name}: {region} part must not use bone {bone!r}")
         return problems
 
+    return skin_problems, stop_on_problems(skin_problems)
+
+
+def stop_on_problems(skin_problems):
+    """The `check_skin` function of a plan: it stops a build that breaks the rule."""
+
     def check_skin(parts, rig):
-        """Stops the build if a part breaks the skinning rule."""
         parents = {bone.name: bone.parent.name if bone.parent else None for bone in rig.data.bones}
         problems = skin_problems(parts, parents)
         if problems:
             raise ValueError("; ".join(problems))
 
-    return skin_problems, check_skin
+    return check_skin

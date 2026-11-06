@@ -30,11 +30,16 @@ sys.path.insert(0, os.path.join(REPO, "scripts", "unit-model"))
 
 import importlib  # noqa: E402
 
+import body_plans  # noqa: E402
 import unit_model_kit as kit  # noqa: E402
 
 importlib.reload(kit)
+importlib.reload(body_plans.shared)
+importlib.reload(body_plans.structure)
 
 from unit_model_kit import X, Y, Z, Clip, Part, blend, faces_of, hex_color, lerp, panel, turn  # noqa: E402
+
+plan = body_plans.BODY_PLANS["structure"]
 
 # --- Palette (the card painting) ----------------------------------------------
 
@@ -57,8 +62,8 @@ RUST = hex_color("#7a5a3c")
 # --- Proportions ---------------------------------------------------------------
 
 # The shields stand on an arc round the front of the Square.
-RADIUS = 0.3
-ARC_Y = 0.06
+TABLE = plan.Proportions()
+RADIUS = TABLE.radius
 SHIELD_ANGLES = [math.radians(a) for a in (-68, -34, 0, 34, 68)]
 SHIELD_BOTTOM = 0.035
 SHIELD_HEIGHT = 0.52
@@ -66,11 +71,11 @@ SHIELD_THICK = 0.03
 
 
 def arc_point(angle, radius=RADIUS):
-    return Vector((radius * math.sin(angle), -radius * math.cos(angle) + ARC_Y, 0))
+    return Vector(plan.arc_point(TABLE, angle, radius))
 
 
 def outward(angle):
-    return Vector((math.sin(angle), -math.cos(angle), 0))
+    return Vector(plan.outward(angle))
 
 
 # Skeleton A stands behind the left of the wall with a bone hammer; skeleton B
@@ -89,31 +94,25 @@ FLAG_FRONT = -0.13
 
 SIGN_POST = Vector((-0.4, -0.12, 0))
 
-BONES = [
-    ("root", (0, 0, 0), (0, 0, 0.1), None),
-    ("base", (0, 0, 0.02), (0, 0, 0.14), "root"),
-]
-for index, angle in enumerate(SHIELD_ANGLES):
-    foot = arc_point(angle) + Z * SHIELD_BOTTOM
-    BONES.append((f"shield.{index}", tuple(foot), tuple(foot + Z * 0.12), "base"))
+TRUNK_BONES = [plan.foot_bone(f"shield.{index}", arc_point(angle) + Z * SHIELD_BOTTOM) for index, angle in enumerate(SHIELD_ANGLES)]
 for name, spot in SKEL.items():
-    BONES += [
+    TRUNK_BONES += [
         (f"skel.{name}", tuple(spot + Z * 0.3), tuple(spot + Z * 0.58), "base"),
         (f"skel.{name}.head", tuple(spot + Z * 0.6), tuple(spot + Z * 0.8), f"skel.{name}"),
     ]
-BONES += [
+PROP_BONES = [
     ("skel.A.arm", tuple(SHOULDER_A), tuple(HAND_A), "skel.A"),
     ("skel.B.arm", tuple(SHOULDER_B), tuple(HAND_B), "skel.B"),
     ("banner", tuple(HAND_B), tuple(HAND_B + Z * 0.15), "skel.B.arm"),
     ("banner.cloth", (POLE.x, (POLE.y + FLAG_FRONT) / 2, FLAG_TOP), (POLE.x, (POLE.y + FLAG_FRONT) / 2, FLAG_LOW), "banner"),
-    ("sign", tuple(SIGN_POST + Z * 0.02), tuple(SIGN_POST + Z * 0.2), "base"),
+    plan.foot_bone("sign", SIGN_POST + Z * 0.02, 0.18),
 ]
 
 # --- Weights -------------------------------------------------------------------
 
 
 def nearest_shield(co):
-    angle = math.atan2(co.x, -(co.y - ARC_Y))
+    angle = math.atan2(co.x, -(co.y - TABLE.arc_y))
     index = min(range(len(SHIELD_ANGLES)), key=lambda i: abs(SHIELD_ANGLES[i] - angle))
     return f"shield.{index}"
 
@@ -348,9 +347,10 @@ def sign_parts():
 
 def build_figure():
     kit.reset_scene()
-    rig = kit.build_armature("BoneRampart", BONES)
+    rig, _ = plan.build_rig("BoneRampart", TABLE, TRUNK_BONES, PROP_BONES)
     parts = wall_parts() + skeleton_parts("A", True) + skeleton_parts("B", False) + hammer_parts() + banner_parts() + sign_parts()
     objects = [kit.part_object(part) for part in parts]
+    plan.check_skin(parts, rig)
     mesh = kit.join_parts(objects, "BoneRampartMesh")
     kit.skin(mesh, rig)
     return rig, mesh
@@ -360,6 +360,9 @@ def build_figure():
 
 
 def build_clips(rig):
+    def slot(name):
+        return Clip(*plan.CLIP_SLOTS[name])
+
     def t(bone, *rotations):
         return turn(rig, bone, *rotations)
 
@@ -517,44 +520,44 @@ def build_clips(rig):
         )
 
     clips = []
-    idle = Clip("idle", 48, loop=True)
+    idle = slot("idle")
     for frame, sway, rattle in ((0, 0, 0), (12, 1, 1), (24, 0, 0), (36, -1, 1), (48, 0, 0)):
         idle.key(frame, rest(sway, rattle))
     clips.append(idle)
 
-    low = Clip("lowHp", 48, loop=True)
+    low = slot("lowHp")
     for frame, breath in ((0, 0), (24, 1), (48, 0)):
         low.key(frame, battered(breath))
     clips.append(low)
 
     # A Wall does not walk, but it can shuffle: the skeletons heave it on.
-    walk = Clip("walk", 24, loop=True)
+    walk = slot("walk")
     walk.key(0, heave(0, 0)).key(6, heave(1, 1)).key(12, heave(0, 0)).key(18, heave(1, -1)).key(24, heave(0, 0))
     clips.append(walk)
 
-    attack = Clip("attack", 30)
+    attack = slot("attack")
     attack.key(0, rest()).key(10, windup(rest())).key(15, smash(rest())).key(19, smash(rest()))
     attack.key(26, rest()).key(30, rest())
     clips.append(attack)
 
-    hurt = Clip("hurt", 16)
+    hurt = slot("hurt")
     hurt.key(0, rest()).key(3, jolt(rest())).key(8, jolt(rest(), 0.4)).key(16, rest())
     clips.append(hurt)
 
-    death = Clip("death", 36)
+    death = slot("death")
     death.key(0, rest()).key(4, jolt(rest())).key(12, falling(rest(), (0, 4))).key(18, falling(rest(), (0, 1, 3, 4)))
     death.key(26, fallen(rest())).key(30, fallen(rest(), 6)).key(36, fallen(rest()))
     clips.append(death)
 
     # Rebirth: the wall falls (45% of the event, `REBORN_FALL`), then the
     # shields stand up one by one and the skeletons climb back.
-    rebirth = Clip("rebirth", 48)
+    rebirth = slot("rebirth")
     rebirth.key(0, rest()).key(4, jolt(rest())).key(12, falling(rest(), (0, 4))).key(20, fallen(rest())).key(24, fallen(rest(), 3))
     rebirth.key(30, fallen(rest(), 0, 0.35)).key(36, fallen(rest(), 0, 0.7)).key(41, jolt(rest(), 0.6)).key(48, rest())
     clips.append(rebirth)
 
     # The summon: the wall comes up out of the ground, shield by shield.
-    summon = Clip("summon", 24)
+    summon = slot("summon")
     summon.key(0, fallen(rest())).key(8, fallen(rest(), 0, 0.5)).key(14, jolt(rest(), 0.7)).key(24, rest())
     clips.append(summon)
     return clips

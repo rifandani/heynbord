@@ -9,10 +9,12 @@ A Body Plan is the shared skeleton, proportions, IK and clip slots of a group of
 | `biped-large` | `biped_large.py` | big orcs and trolls | 0.870 to 1.000 |
 | `quadruped` | `quadruped.py` | beasts with four legs on the ground | 0.470 to 1.455 |
 | `flyer` | `flyer.py` | creatures and figures that float | 0.660 to 1.308 |
+| `machine` | `machine.py` | carts and walkers | 0.677 to 0.966 |
+| `structure` | `structure.py` | walls and heaps | 0.707 to 1.130 |
 
 ## Shared code
 
-`shared.py` holds the code of all plans: `ClipSlot`, `CLIP_SLOTS`, the bone order check and the skinning check.
+`shared.py` holds the code of all plans: `ClipSlot`, `CLIP_SLOTS`, the bone order check, the skinning checks, and `float32` and `offset_point`, which round as a Blender `Vector` does.
 
 The three biped plans have the same 20 core bones, the same order and the same parents. `biped.py` holds the shared code. Each plan module gives its name and the defaults of its proportion table, and it exports the shared code. Blender is necessary only for `build_rig` and `add_arm_ik`. The other code runs in plain Python:
 
@@ -38,7 +40,7 @@ The table keeps the shoulder, and `shoulder_point` gives it. With `arms`, `arm_a
 
 `neck_y`, `head_base_y` and `head_top_y` give the forward lean of the neck and the head. The chest stays on the center line.
 
-A part has one Body Region, and `SKIN_RULES` lists the core bones of each region. A unit's bone belongs to the nearest core bone above it, so a braid on the head is in the `head` region. A prop, a base and an effect can use any bone. `kit.part_object` keeps the bones of a part in `part.bones`, and `check_skin` stops a build that breaks the rule.
+A part has one Body Region, and `SKIN_RULES` lists the core bones of each region. A unit's bone belongs to the nearest core bone above it, so a braid on the head is in the `head` region. A prop, a base and an effect can use any bone on a biped plan. `kit.part_object` keeps the bones of a part in `part.bones`, and `check_skin` stops a build that breaks the rule.
 
 `arm_points` rounds to 32 bits after each step, as a Blender `Vector` does. If you remove this, the bounds and the keyframe digest of Warden Saelith change. Do not round the points of `arms`. They come from a `Vector`, so they are already 32-bit values.
 
@@ -189,9 +191,9 @@ The survey put the script's own values in the proportion table and `arms`, then 
 
 - 6 scripts can move now: bomb-lobber, junk-slinger, scrap-plate-guard, sidestep-shiv, tunnel-saboteur and badland-runt. Badland Runt is an orc, but it has the size of a goblin, so it is not in the survey. It has a walk clip of 12 frames.
 - 5 scripts need pole bones: ankle-snatcher, grease-trapper, grix-ratwhistle, mine-sapper and spyglass-sniper.
-- rocket-barrel-rider cannot move. Its barrel bones come before the hips, and it sits, so its legs and shoulders do not agree with the plan.
+- rocket-barrel-rider cannot move to this plan. Its barrel bones come before the hips, and it sits, so its legs and shoulders do not agree with the plan. Its plan is `machine`.
 
-The four other goblin scripts do not have the 20 core bones: boss-snikkit, grand-gearjammer, junk-barricade and junk-walker.
+The four other goblin scripts do not have the 20 core bones. boss-snikkit, grand-gearjammer and junk-walker use `machine`, and junk-barricade uses `structure`.
 
 ## biped-large
 
@@ -447,3 +449,174 @@ Its `hover` pose uses `Lift.height`. Its `dart` and `droop` poses keep their own
 ### Scripts that can move
 
 The survey put each script's own values in the table, then compared the bones with its `BONES`. rimebreath-drake and restless-wisp give the same bones, so they can move now. Rimebreath Drake also needs the fix of its `snow` mound.
+
+## machine
+
+`machine.py` holds the plan for the carts and the walkers.
+
+### Layout
+
+The survey read `BONES`, the parts and the clips from 4 scripts in Blender: Grand Gearjammer, Boss Snikkit, Junk Walker and Rocket Barrel Rider. These scripts share one rule: one carrier bone is below `root`, and it carries the machine.
+
+| Layout | Scripts | Carrier | Pivot | Other bones |
+| --- | --- | --- | --- | --- |
+| Cart | Grand Gearjammer, Boss Snikkit | `cart` | rear axle, or the middle of the floor | all bones hang from `cart`, and 4 wheels |
+| Walker | Junk Walker | `body` | the top of the legs | the feet hang from `root` |
+| Barrel | Rocket Barrel Rider | `barrel` | the barrel | the rider hangs from `root` |
+
+`bones(table, trunk, props)` gives `root`, the carrier, `trunk`, the wheels and `props`. On a table with `wheels` set to True, it stops a bone that does not hang from the carrier. Without wheels, a bone can hang from `root`.
+
+- `wheel_centers(table)` gives the center of each wheel, so the geometry and the bones cannot have different positions. A wheel bone starts at the center and points up. The order is always FL, FR, BL, BR.
+- `wheel_pose(turn, angle)` gives the pose of the wheels. Give it the `t` function of a script.
+- `rolling_angle(table, frame, frames)` gives the wheel angle of one frame of `walk`.
+- `crew_bones(name, base, size, parent)` gives a small figure from the waist up: a body, a head and two arms. Grand Gearjammer has 3 and Junk Walker has 1. `crew_neck` and `crew_shoulder` give the joints for the geometry.
+- `walker_poles(legs, parent)` and `walker_leg(legs, side, parent)` give the legs of a walker. The foot hangs from `root`, so it stays on the ground. A walker gives these bones in `trunk`, because the bone order of Junk Walker has its lever bones between the legs.
+
+### Proportion table
+
+The survey has 4 scripts and almost no common value, so a default is the value of Grand Gearjammer. The wheel rows have 2 scripts. "Count" is the number of scripts that have the default.
+
+| Proportion | Default | Count | Lowest | Highest | Boss Snikkit | Junk Walker | Rocket Barrel Rider |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `root_tip_z` | 0.120 | 2 | 0.100 | 0.120 | 0.120 | 0.100 | 0.100 |
+| `carrier_y` | 0.220 | 1 | 0.000 | 0.220 | 0.000 | 0.000 | 0.020 |
+| `carrier_z` | 0.130 | 1 | 0.075 | 0.400 | 0.075 | 0.400 | 0.160 |
+| `carrier_tip_y` | -0.240 | 1 | -0.240 | 0.020 | -0.100 | 0.000 | 0.020 |
+| `carrier_tip_z` | 0.130 | 1 | 0.075 | 0.600 | 0.075 | 0.600 | 0.260 |
+| `axle_z` | 0.130 | 1 | 0.075 | 0.130 | 0.075 | none | none |
+| `wheel_x` | 0.210 | 1 | 0.150 | 0.210 | 0.150 | none | none |
+| `front_y` | -0.240 | 1 | -0.240 | -0.170 | -0.170 | none | none |
+| `back_y` | 0.220 | 1 | 0.170 | 0.220 | 0.170 | none | none |
+| `wheel_tip_z` | 0.060 | 1 | 0.050 | 0.060 | 0.050 | none | none |
+| `wheel_turns` | 1 | 1 | 1 | 2 | 2 | none | none |
+
+In both carts, the wheel radius is the same as `axle_z`, so a wheel touches the ground. `wheel_turns` is 1 for Grand Gearjammer and 2 for the small wheels of Boss Snikkit, for one Square of movement.
+
+`WalkerLegs` has the values of Junk Walker, the only script with these legs: `x` 0.13, `hip_z` 0.38, `knee_y` -0.075, `knee_z` 0.21, `ankle_z` 0.065, `foot_tip_y` -0.1, `pole_y` -0.5 and `pole_tip_z` 0.26.
+
+### Skinning rule and clip slots
+
+The skinning rule passes 81 of the 81 parts of the 4 scripts. A wheel or a leg may use its own side and the carrier. A head, torso or arm part must not use a wheel or a leg. A `leg.L` part must not use a right wheel. A crew member and a rider belong to the carrier, so the rule does not separate them.
+
+The plan uses the shared slots, and all clips of the survey agree with them, with one exception. Rocket Barrel Rider has a `walk` of 16 frames. No script has a cast clip.
+
+The plan has no IK. Junk Walker keeps `add_controls`, the IK of its legs, until it moves.
+
+### Grand Gearjammer
+
+The Source Contract did not change. After the move, `bun unit-model:contract:check grand-gearjammer` passes: the bounds, 22 bones, 8 clip durations and 8 keyframe digests are the same to the last bit. We did not pack the Published Model again. It overrides no value of the table, so it does not test the defaults. The comparison of the Raw Export data has the same result as for Crag Rhino.
+
+### Scripts that can move
+
+The survey put each script's own values in the table, then compared the bones with its `BONES`. All 3 give the same bones after they round to 32 bits, so boss-snikkit, junk-walker and rocket-barrel-rider can move now.
+
+- Boss Snikkit needs 10 overrides, with `wheel_turns=2`.
+- Junk Walker uses `walker_poles`, `walker_leg` and `crew_bones` in `trunk`, and it keeps its IK.
+- Rocket Barrel Rider sets `carrier="barrel"` and `wheels=False`, and it gives its rider in `trunk`. It keeps a plain `Clip` for `walk`.
+
+## structure
+
+`structure.py` holds the plan for the walls and the heaps.
+
+### Layout
+
+The survey read `BONES`, the parts and the clips from 6 scripts in Blender: Bone Rampart, Bramble Nest, Town Barricade, Bonestake Palisade, Junk Barricade and Dawn Reliquary. The death poses come from their Raw Exports. These scripts share one rule: `root` holds `base`, and `base` holds each big piece.
+
+| Script | Layout | Big pieces | Arc radius | Other bones |
+| --- | --- | --- | --- | --- |
+| Bone Rampart | wall | 5 shields on an arc, and a sign | 0.30 | 2 skeleton figures |
+| Bramble Nest | wall | 5 loops on an arc, an arch and a sign | 0.28 | pods and ribbons on the arch |
+| Bonestake Palisade | wall | 5 stake bundles on an arc, and a totem | 0.27 | 2 hanging hides, 2 sausage strings |
+| Town Barricade | heap | 2 beam frames, a crate and a shield | 0.30, and 0.20 for the sandbags | 4 sandbag rows, a log and a paper |
+| Junk Barricade | heap | a sign, crates, barrels, a door and pots | 0.27 | a mine cart on the crates, and a goblin |
+| Dawn Reliquary | shrine | 2 pillars and 2 doors | none | a roof on the pillars, 2 cloths and a candle |
+
+| Proportion       | Default | Count    | Lowest | Highest | Bone Rampart |
+| ---------------- | ------- | -------- | ------ | ------- | ------------ |
+| `root_tip_z`     | 0.100   | 6 of 6   | 0.100  | 0.100   | 0.100        |
+| `base_z`         | 0.020   | 6 of 6   | 0.020  | 0.020   | 0.020        |
+| `base_tip_z`     | 0.140   | 6 of 6   | 0.140  | 0.140   | 0.140        |
+| `radius`         | 0.300   | 2 of 5   | 0.270  | 0.300   | 0.300        |
+| `arc_y`          | 0.060   | 4 of 5   | 0.060  | 0.070   | 0.060        |
+| Foot bone height | 0.120   | 16 of 43 | 0.080  | 0.560   | 0.120        |
+
+Dawn Reliquary has no arc, so the last rows have fewer scripts. `radius` has a tie, with 0.270 in 2 scripts. The default is the value of Bone Rampart. Town Barricade has a second `radius` of 0.2 for its sandbags, so `arc_point(table, angle, radius)` can read another radius.
+
+`bones(table, trunk, props)` gives `root`, `base`, `trunk` and `props`. `arc_point` gives a point on the arc and `outward` gives the direction out of the wall. Angle 0 is the front.
+
+`foot_bone(name, foot, height, parent)` gives the bone of one big piece. It starts at the foot of the piece and points up, and its default parent is `base`. A piece on another piece gives that piece as `parent`, as the cart of Junk Barricade does.
+
+A figure on a wall is not a big piece. The skeletons of Bone Rampart have their first bone at a height of 0.3, so they do not have foot bones. The hide panels of Bonestake Palisade hang from their top, and the roof of Dawn Reliquary turns at the top of its pillars.
+
+### Foot bones
+
+The `foot-bones` Review Gate asks 2 questions about each bone in `footBones` of a Unit Spec:
+
+- Is it at the foot of its piece? The lowest point of the piece must be within 0.03 of the bone head. The highest value of the survey is 0.026.
+- Does the piece fall out in `death`? The bone must tilt 45 degrees or more at the end of the clip, which is more than half of the way to the ground. The measurement keeps `root` and `base` still, so a wall that tips as one block does not pass. The direction of the fall has no limit, because the totem of Bonestake Palisade falls back. A fall straight down does not pass.
+
+`footBones` is necessary on a `structure` Unit Spec, and other Unit Specs must not have it. The Review Gate passes with `applies` set to false on other plans.
+
+`bun unit-model:gates bone-rampart` gives `foot-bones` a pass on 2026-11-06. `artifacts/unit-model-review/bone-rampart/2026-11-06/gates.json` is the record. This is the record of each foot bone in `death`:
+
+| Foot bone  | Bone height | Lowest point | Tilt (degrees) | Drop   |
+| ---------- | ----------- | ------------ | -------------- | ------ |
+| `shield.0` | 0.035       | 0.035        | 78.0           | -0.000 |
+| `shield.1` | 0.035       | 0.035        | 78.0           | 0.000  |
+| `shield.2` | 0.035       | 0.035        | 78.0           | -0.004 |
+| `shield.3` | 0.035       | 0.035        | 78.0           | -0.011 |
+| `shield.4` | 0.035       | 0.035        | 78.0           | -0.020 |
+| `sign`     | 0.020       | 0.000        | 58.0           | 0.006  |
+
+This run does not pass as a whole:
+
+- `interior-difference`, `joint-loops`, `chirality`, `part-coverage`, `ground-contact` and `foot-bones` pass.
+- `turntable`, `self-intersection`, `attachment-anchor` and `palette` fail.
+- `region-coverage` gives an error, because the Unit Spec has no `regions`.
+
+The move did not cause these results, because the mesh data of the Raw Export did not change. #187 owns them.
+
+The same measurement on the other walls:
+
+| Script | Pass | Do not pass |
+| --- | --- | --- |
+| Bramble Nest | `arch`, `loop.0` to `loop.4` and `sign`: 70 to 71 degrees | none |
+| Bonestake Palisade | `stakes.0` to `stakes.4` and `totem`: 70 to 80 degrees | none |
+| Junk Barricade | `barrels`, `crates`, `door`, `pots` and `sign`: 56 to 74 degrees | none |
+| Town Barricade | `beam.L`, `beam.R`, `crate` and `shield`: 46 to 70 degrees | none |
+| Dawn Reliquary | none | `pillar.A`, `pillar.B`: 17 to 22 degrees, `door.A`, `door.B`: 8 to 10 degrees |
+
+The sandbags, the log and the paper of Town Barricade are not big pieces, so they are not in this table. The sandbags lie in rows and fall straight down, by up to 0.2. The paper is flat on the ground, and it tilts 30 degrees.
+
+The death of Dawn Reliquary is a burst: the doors open and the pillars lean apart. So it does not pass this Review Gate today. #187 must change its clip and refresh its Source Contract, or say that a shrine has no big pieces.
+
+The owner of this project has not confirmed the list of big pieces. It comes from the header comment of each script and from the survey.
+
+### Skinning rule and clip slots
+
+The Body Regions cannot separate the pieces, because a wall has no limbs. So the rule is one sentence: a `base` part stays when the pieces fall, so it uses only `root` and `base`. The rule passes 79 of the 79 parts of the 6 scripts.
+
+The plan uses the shared slots, and all clips of the survey agree with them. Bramble Nest is the only structure with a cast clip, and it has 24 frames.
+
+No script of the survey has a constraint, so this plan has no IK.
+
+### Bone Rampart
+
+The Source Contract did not change. After the move, `bun unit-model:contract:check bone-rampart` passes: the bounds, 16 bones, 8 clip durations and 8 keyframe digests are the same to the last bit. We did not pack the Published Model again. It overrides no value of the table.
+
+| Source Contract field   | Grand Gearjammer | Bone Rampart  |
+| ----------------------- | ---------------- | ------------- |
+| Bounds                  | 0 changes        | 0 changes     |
+| Skin bone count         | 22, 0 changes    | 16, 0 changes |
+| Clip durations          | 8, 0 changes     | 8, 0 changes  |
+| Keyframe digests        | 8, 0 changes     | 8, 0 changes  |
+| `source-contracts.json` | no change        | no change     |
+
+We also compared the data of a new Raw Export with an export of the old script. Positions, colors, joints, weights, parts, regions and bind matrices are the same. The triangle index bytes are different, as for Crag Rhino. 2 of 5,230 normals can also change, by 0.00009 at most, but this also occurs when you run the old script two times. An export of the old script can have the same normals as an export of the new script.
+
+### Scripts that can move
+
+The survey put the shared values in the table, then compared the bones with each `BONES`. All 5 give the same bones. A script that moves must set `footBones` in its Unit Spec, and each script needs a Unit Spec before it can run the Review Gates.
+
+- 4 scripts can move now: bonestake-palisade, bramble-nest, junk-barricade and town-barricade.
+- dawn-reliquary can use the bones, but it does not pass `foot-bones`. See above.
