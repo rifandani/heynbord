@@ -38,12 +38,12 @@ INTERIOR_BANDS = {"head": (0.0, 0.19), "torso": (0.19, 0.55), "legs": (0.55, 1.0
 # Fewer cells than this is not evidence. A small figure has about 1,000 in a band.
 MIN_INTERIOR_CELLS = 100
 # The largest mean luminance difference to the Turnaround, as a share of full
-# range. Calibrated on 2026-11-06 on Warden Saelith. The model is at 0.200 to 0.262,
-# and its worst band is the back torso. Seeds of the front view: a head
+# range. Calibrated on 2026-11-06 on Warden Saelith. The model is at 0.175 to 0.270,
+# and its worst band is the front head. Seeds of the front view: a head
 # with no face is at 0.282 in the head band. A figure in flat black, skin or white
 # is at 0.308, 0.392 and 0.623 in its worst band. The margin is thin because the
 # model is much darker than its Turnaround. This limit does not find a missing
-# mantle or cape: the pilot passes with no mantle and no cape.
+# part of the costume: the pilot passed before it had a mantle and a cape.
 MAX_INTERIOR_DIFFERENCE = 0.28
 
 PALETTE_DELTA_E = 5.0

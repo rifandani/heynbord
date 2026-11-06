@@ -34,8 +34,9 @@
     "corset",
     "belt",
     "hips",
-    "quiver",
     "skirt",
+    "cape",
+    "mantle",
     "pauldron.L",
     "sleeve.L",
     "cuff.L",
@@ -68,12 +69,6 @@
       "hand": "right",
       "cameraSide": true,
       "bone": "hand.R"
-    },
-    {
-      "id": "quiver",
-      "hand": "none",
-      "cameraSide": true,
-      "bone": "hips"
     }
   ],
   "clips": {
@@ -91,21 +86,23 @@
   },
   "details": [
     "long dark braid with a light strand and an amber tie",
-    "green coat with amber trim and cream lining",
+    "green coat with amber trim and cream panels",
+    "layered leaf mantle over the shoulders",
+    "long cream cape with a green back panel",
     "gold tiara and leaf clasps",
-    "recurved longbow with gold tips",
+    "recurved longbow with gold tips and amber thorns",
     "arrow hidden at rest and nocked during attack"
   ],
   "regions": {
-    "head": { "x0": 0.41, "x1": 0.8, "y0": 0, "y1": 0.58 },
-    "torso": { "x0": 0.34, "x1": 0.87, "y0": 0.21, "y1": 0.88 },
-    "arm.L": { "x0": 0.71, "x1": 1, "y0": 0.23, "y1": 0.58 },
-    "arm.R": { "x0": 0.21, "x1": 0.5, "y0": 0.23, "y1": 0.58 },
-    "leg.L": { "x0": 0.62, "x1": 0.75, "y0": 0.5, "y1": 1 },
-    "leg.R": { "x0": 0.46, "x1": 0.59, "y0": 0.5, "y1": 1 },
-    "prop": { "x0": 0, "x1": 0.99, "y0": 0.25, "y1": 0.88 }
+    "head": { "x0": 0.38, "x1": 0.76, "y0": 0, "y1": 0.58 },
+    "torso": { "x0": 0.32, "x1": 0.82, "y0": 0.21, "y1": 0.88 },
+    "arm.L": { "x0": 0.68, "x1": 0.94, "y0": 0.24, "y1": 0.58 },
+    "arm.R": { "x0": 0.2, "x1": 0.46, "y0": 0.24, "y1": 0.58 },
+    "leg.L": { "x0": 0.58, "x1": 0.71, "y0": 0.5, "y1": 1 },
+    "leg.R": { "x0": 0.44, "x1": 0.56, "y0": 0.5, "y1": 1 },
+    "prop": { "x0": 0, "x1": 1, "y0": 0.15, "y1": 0.96 }
   },
-  "holedParts": ["tiara"],
+  "holedParts": ["tiara", "mantle"],
   "identity": {
     "feature": "recurved longbow with gold tips",
     "azimuthDegrees": 45

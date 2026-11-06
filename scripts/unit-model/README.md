@@ -152,7 +152,7 @@ Only Warden Saelith has `regions` now. Her values are rounded measures of the mo
 What each Review Gate cannot see:
 
 - `turntable`: The source hole test reads the full silhouette. It reports correct gaps, such as the space between a bow and its string. So `turntable` tests the silhouette of each part, and the silhouette of the body with no props. It does not find a wrong gap that a prop closes. `gates.json` keeps the source result in `holed`.
-- `interior-difference`: The model is compared with a painted target, not with an earlier render, so the value does not go to 0. The limit is thin: Warden Saelith is at 0.262, and a head with no face is at 0.282. It measures luminance only, and it does not find a missing part of the costume: she passes with no mantle and no cape.
+- `interior-difference`: The model is compared with a painted target, not with an earlier render, so the value does not go to 0. The limit is thin: Warden Saelith is at 0.270, and a head with no face is at 0.282. It measures luminance only, and it does not find a missing part of the costume: her model passed before it had a mantle and a cape.
 - `self-intersection`: A ray test needs a closed shape. The record lists the open islands in `openIslandsNotTested`. A reversed surface reads as inside itself, so it also finds this.
 - `joint-loops`: A joint needs a child bone, because a glTF bone has no tail. The record lists the other bones in `bonesWithNoTip`. It counts bands of vertices, not true edge loops.
 - `chirality`: A pair that is wrong the same way on both sides is still a mirror of itself.
@@ -161,13 +161,15 @@ What each Review Gate cannot see:
 
 ## Warden Saelith rebuild
 
-Warden Saelith is the first model through the full pipeline. `artifacts/unit-model-review/warden-saelith/` has the two captures, `before/` and `after/`, and `report.md` has the defect table and the go/no-go decision.
+Warden Saelith is the first model through the full pipeline. `artifacts/unit-model-review/warden-saelith/` has three captures: `before/`, `after/` for the gate pass, and `art-pass/` for the final model. `report.md` has the defect table and the go/no-go decision.
 
 `unit-model:gates` with no `--date` reads only a folder with a date, so run `unit-model:review` first. Do not run the Review Gates with `--date before`: they read the current Raw Export, so they replace the baseline with data of the current model.
 
 ## Kit geometry
 
 `kit.tube` now winds each face outward. An earlier Raw Export has a reversed surface, so its ink outline does not show. Each build script gets the fix when it is built again. A rebuild of the 98 scripts changes no Source Contract.
+
+`kit.sheet` faces the side that its grid order gives, and `self-intersection` does not read an open sheet. A grid with its columns in the wrong order has the same fault as the old `kit.tube`. `warden-saelith.py` reverses the columns of the outer `skirt`.
 
 `kit.cone` has `loops`: a ring at each share of its length. A ring does not change the shape, so it does not change a Source Contract. A ring bends only if its vertices have a blend of two bones. `neck_weights` and `hips_weights` of `warden-saelith.py` are examples. The tests of the kit need Blender:
 

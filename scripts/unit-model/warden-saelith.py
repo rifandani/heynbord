@@ -68,9 +68,9 @@ SR, ER, WR, TR, DR = arm_points(-1)
 GRIP_L = WL + DL * 0.025
 HAND_R = WR + DR * 0.025
 
-BOW_HALF = 0.3
-BOW_SAG = 0.07
-BOW_RECURVE = 0.15
+BOW_HALF = 0.4
+BOW_SAG = 0.11
+BOW_RECURVE = 0.35
 # The string sits behind the grip by the brace height.
 BRACE = BOW_SAG - (1 - 0.8) * BOW_RECURVE
 STRING_P = GRIP_L + Vector((0, BRACE, 0))
@@ -89,6 +89,16 @@ PROP_BONES = [
     # At rest the arrow hangs along the right hand. The attack aims it at the bow.
     ("arrow", tuple(HAND_R), tuple(HAND_R + DR * 0.1), "hand.R"),
 ]
+
+# The tiers of the mantle: height, X radius, Y radius, leaves and leaf length.
+MANTLE_TIERS = (
+    (0.752, 0.072, 0.058, 7, 0.084),
+    (0.708, 0.088, 0.072, 9, 0.09),
+    (0.66, 0.095, 0.078, 9, 0.094),
+)
+# Half of the opening at the front, which shows the chest.
+MANTLE_GAP = math.radians(32)
+LEAF_THICKNESS = 0.005
 
 # --- Weights -------------------------------------------------------------------
 
@@ -253,24 +263,88 @@ def body_parts():
     parts.append(hips)
 
     parts.append(skirt())
-
-    quiver = Part("quiver", LEATHER, "hips")
-    kit.cone(quiver.bm, (-0.09, 0.05, 0.38), (-0.115, 0.1, 0.6), 0.024, 0.028, 8)
-    rim = kit.torus(quiver.bm, (-0.115, 0.1, 0.6), (-0.11, 0.22, 1), 0.028, 0.005, 10, 4)
-    quiver.paint({f for v in rim for f in v.link_faces}, GOLD)
-    for dx, dy, color in ((0.0, 0.0, FLETCH), (0.012, 0.01, CREAM), (-0.01, 0.012, FLETCH)):
-        base = Vector((-0.118 + dx, 0.104 + dy, 0.6))
-        fletch = kit.cone(quiver.bm, base, base + Vector((-0.012, 0.024, 0.06)), 0.009, 0.001, 4)
-        quiver.paint({f for v in fletch for f in v.link_faces}, color)
-    parts.append(quiver)
+    parts.append(cape())
+    parts.append(mantle())
     return parts
 
 
+def leaf(part, base, tip, out, width, color, tip_color=None):
+    """A flat leaf: a thin diamond that faces `out`. `tip_color` paints the half at its tip."""
+    base, tip = Vector(base), Vector(tip)
+    along = tip - base
+    side = along.cross(Vector(out)).normalized() * width
+    back = side.cross(along).normalized() * LEAF_THICKNESS
+    waist = base + along * 0.4
+    root, point = part.bm.verts.new(base), part.bm.verts.new(tip)
+    rim = [part.bm.verts.new(waist + offset) for offset in (side, back, -side, -back)]
+    near = [part.bm.faces.new((root, rim[i], rim[(i + 1) % 4])) for i in range(4)]
+    far = [part.bm.faces.new((point, rim[(i + 1) % 4], rim[i])) for i in range(4)]
+    kit.bmesh.ops.recalc_face_normals(part.bm, faces=near + far)
+    part.paint(near, color)
+    part.paint(far, tip_color or color)
+
+
+def mantle():
+    """The layered leaves over the chest and the back, open at the front."""
+    part = Part("mantle", COAT, "chest", smooth=False)
+    for tier, (z, rx, ry, count, length) in enumerate(MANTLE_TIERS):
+        for index in range(count):
+            theta = lerp(MANTLE_GAP, 2 * math.pi - MANTLE_GAP, index / (count - 1))
+            out = Vector((math.sin(theta), -math.cos(theta), 0))
+            base = Vector((rx * out.x, ry * out.y, z))
+            tip = base + out * 0.024 + Vector((0, 0, -length))
+            color = COAT if (index + tier) % 2 else COAT_DARK
+            leaf(part, base, tip, out, 0.046, color, AMBER if tier == len(MANTLE_TIERS) - 1 else None)
+    return part
+
+
+def pauldron(side, sign, shoulder, elbow):
+    """The leaves of the mantle that follow the upper arm."""
+    part = Part(f"pauldron.{side}", COAT_DARK, f"upperarm.{side}", smooth=False)
+    arm = (elbow - shoulder).normalized()
+    up = Vector((sign * abs(arm.z), 0, abs(arm.x))).normalized()
+    for tier, along in enumerate((-0.012, 0.03)):
+        for index, degrees in enumerate((-100, -50, 0, 50, 100)):
+            angle = math.radians(degrees)
+            out = up * math.cos(angle) + Y * math.sin(angle)
+            base = shoulder + arm * along + out * 0.031
+            color = COAT if (index + tier) % 2 else COAT_DARK
+            leaf(part, base, base + arm * 0.09 + out * 0.014, out, 0.03, color, AMBER if tier else None)
+    return part
+
+
+def cape():
+    """The cream cape from the shoulders to the waist. The skirt continues it."""
+    part = Part("cape", CREAM, torso_weights)
+    columns, rows = 10, 3
+    reach = math.radians(100)
+
+    def point(row, column):
+        v = row / rows
+        theta = lerp(math.pi + reach, math.pi - reach, column / columns)
+        z = lerp(0.71, 0.52, v)
+        return (lerp(0.1, 0.076, v) * math.sin(theta), -lerp(0.08, 0.067, v) * math.cos(theta), z)
+
+    grid = [[point(row, column) for column in range(columns + 1)] for row in range(rows + 1)]
+    kit.sheet(part.bm, grid)
+    return part
+
+
 def skirt():
-    """The coat below the waist: open at the front, long tails at the back."""
+    """The coat below the waist: open at the front, a green panel between two cream panels at the back."""
     part = Part("skirt", COAT, skirt_weights)
-    columns, rows = 16, 6
+    columns, rows = 20, 6
     gap = math.radians(38)
+
+    def panel_color(row, column):
+        """Green at the front and at the center of the back, cream between them, with gold borders."""
+        from_back = abs(lerp(gap, 2 * math.pi - gap, (column + 0.5) / columns) - math.pi)
+        if row == rows - 1 or column in (0, columns - 1):
+            return AMBER
+        for limit, color in ((30, COAT), (44, AMBER), (100, CREAM), (114, AMBER)):
+            if from_back < math.radians(limit):
+                return color
+        return COAT
 
     def grid(inset):
         result = []
@@ -291,11 +365,11 @@ def skirt():
             result.append(line)
         return result
 
-    _, outer = kit.sheet(part.bm, grid(0.0))
+    # `kit.sheet` faces the side that its grid order gives. Each sheet here faces away from the body side.
+    _, outer = kit.sheet(part.bm, [line[::-1] for line in grid(0.0)])
     _, inner = kit.sheet(part.bm, grid(0.006))
     for face, row, column in outer:
-        if row == rows - 1 or column in (0, columns - 1):
-            part.paint([face], AMBER)
+        part.paint([face], panel_color(row, column))
     for face, row, column in inner:
         part.paint([face], CREAM)
     return part
@@ -304,10 +378,7 @@ def skirt():
 def limb_parts():
     parts = []
     for side, sign, (s, e, w, t, d) in (("L", 1, arm_points(1)), ("R", -1, arm_points(-1))):
-        pauldron = Part(f"pauldron.{side}", COAT_DARK, f"upperarm.{side}")
-        verts = kit.sphere(pauldron.bm, s + Vector((0.004 * sign, 0, 0.004)), (0.038, 0.036, 0.032), 10, 7)
-        pauldron.paint({f for v in verts if v.co.z < s.z - 0.008 for f in v.link_faces}, AMBER)
-        parts.append(pauldron)
+        parts.append(pauldron(side, sign, s, e))
 
         sleeve = Part(f"sleeve.{side}", COAT, f"upperarm.{side}")
         kit.cone(sleeve.bm, s, e, 0.028, 0.023, 8)
@@ -353,9 +424,9 @@ def bow_point(s):
 def bow_parts():
     parts = []
     bow = Part("bow", WOOD, "bow", shade=0.05)
-    steps = 14
+    steps = 18
     points = [bow_point(lerp(-1, 1, i / steps)) for i in range(steps + 1)]
-    radii = [lerp(0.014, 0.007, abs(lerp(-1, 1, i / steps)) ** 1.5) for i in range(steps + 1)]
+    radii = [lerp(0.017, 0.007, abs(lerp(-1, 1, i / steps)) ** 1.5) for i in range(steps + 1)]
     verts = kit.tube(bow.bm, points, radii, 6)
     for face in {f for v in verts for f in v.link_faces}:
         s = (face.calc_center_median().z - GRIP_L.z) / BOW_HALF
@@ -363,6 +434,11 @@ def bow_parts():
             bow.paint([face], GRIP)
         elif abs(s) > 0.78:
             bow.paint([face], GOLD)
+    # The amber thorns on the limbs. They stand out to each side, so the front view shows them.
+    for s, side in ((0.3, 1), (0.5, -1), (0.7, 1), (-0.3, -1), (-0.5, 1), (-0.7, -1)):
+        base = bow_point(s)
+        tip = base + Vector((0.055 * side, -0.02, 0.03 if s > 0 else -0.03))
+        leaf(bow, base, tip, (0, -1, 0), 0.012, AMBER)
     parts.append(bow)
 
     string = Part("string", CREAM, string_weights, shade=0)
