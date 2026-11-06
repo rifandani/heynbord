@@ -689,6 +689,13 @@ describe("joint-loops", () => {
 });
 
 describe("attachment-anchor", () => {
+  test("a prop can share its name with the bone that holds it", async () => {
+    const report = await runGates(
+      sources({ spec: { ...SPEC, props: [{ id: "staff", bone: "staff" }] } })
+    );
+    expect(statusOf(report, "attachment-anchor")).toBe("pass");
+  });
+
   test("fails on a prop far from its bone", async () => {
     const report = await runGates(
       sources({

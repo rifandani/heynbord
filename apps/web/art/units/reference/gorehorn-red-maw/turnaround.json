@@ -1,0 +1,18 @@
+{
+  "id": "gorehorn-red-maw",
+  "source": "apps/web/public/creature/feral/gorehorn-red-maw.webp",
+  "views": {
+    "front": "front.webp",
+    "three-quarter": "three-quarter.webp",
+    "side": "side.webp",
+    "back": "back.webp",
+    "details": "details.webp"
+  },
+  "props": [],
+  "approval": {
+    "status": "pending",
+    "by": "",
+    "date": "",
+    "notes": "Draft generated from the card painting for issue 186. Hidden sides are inferred. A person must check all five views and list the visible props before approval."
+  }
+}

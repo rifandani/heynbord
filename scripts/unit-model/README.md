@@ -230,3 +230,7 @@ python3 -m unittest discover -s scripts/unit-model -p 'test_*.py'
 ```
 
 CI runs these tests on the Raw Exports in git. On 2026-11-05 the 98 Raw Exports grew from 35,765,700 to 36,914,896 bytes (3.21%), and their packed total changed from 18,738,980 to 18,738,092 bytes (-0.005%). The largest change for one model was 0.32%. The 98 Published Models were not published again, because their vertex data and rig do not change. Blender writes the vertices in a different order on each build, so a Raw Export does not repeat byte for byte. The clips and the Source Contracts do repeat.
+
+## Beast Migration
+
+Issue #186 starts with Crag Rhino, Gorehorn Red Maw, Old Frostmaw, Woolly Mammoth and Cave Bear. The [batch report](../../artifacts/unit-model-review/migration-beasts/report.md) has the inventory, before and after gates, intentional clip changes and the [draft Turnarounds](../../artifacts/unit-model-review/migration-beasts/turnarounds.png). The four new Turnarounds need human approval. Model gates still fail, so later batches stay pending.

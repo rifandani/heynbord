@@ -1899,7 +1899,7 @@
       {
         "name": "death",
         "duration": 1.5,
-        "keyframes": "3ce00438158200e9cff6af80cf7272a3cd746b328a83830cb701ab1ba4d06df4"
+        "keyframes": "deb89c976b634fabffee9ed8f6b39dbf7471dcde65f5a02b08c0c43037bda3ca"
       },
       {
         "name": "rebirth",
@@ -4504,7 +4504,7 @@
       {
         "name": "walk",
         "duration": 1.3333333730697632,
-        "keyframes": "9d839d960018ff76306f97a26fead19ac1ef3e5c3a4d32c79bf771359a492cd9"
+        "keyframes": "bdcbec9adc9da3364e4d8ca7a1f60ed415e0435a4d5460ad95658c71af13887a"
       },
       {
         "name": "attack",

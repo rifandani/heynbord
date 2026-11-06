@@ -1,0 +1,233 @@
+[
+  {
+    "command": [
+      "/Applications/Blender.app/Contents/MacOS/Blender",
+      "--background",
+      "--factory-startup",
+      "--python-exit-code",
+      "1",
+      "--python",
+      "/tmp/heynbord-186-baseline.py"
+    ],
+    "exitCode": 0,
+    "seconds": 5.65,
+    "output": "INFO Draco is available, use library at /Applications/Blender.app/Contents/Resources/5.2/scripts/addons_core/io_scene_gltf2/libbf_intern_draco_bridge.dylib\nINFO MeshOptimizer is available, use library at /Applications/Blender.app/Contents/Resources/5.2/scripts/addons_core/io_scene_gltf2/libbf_intern_meshopt_bridge.dylib\n21:43:54 | INFO: Starting glTF 2.0 export\n21:43:54 | INFO: Extracting primitive: GorehornRedMawMesh\n21:43:54 | INFO: Primitives created: 1\n21:43:54 | INFO: Finished glTF 2.0 export in 0.27533507347106934 s\n\n21:43:55 | INFO: Starting glTF 2.0 export\n21:43:55 | INFO: Extracting primitive: OldFrostmawMesh\n21:43:55 | INFO: Primitives created: 1\n21:43:55 | INFO: Finished glTF 2.0 export in 0.2573411464691162 s\n\n21:43:55 | INFO: Starting glTF 2.0 export\n21:43:55 | INFO: Extracting primitive: WoollyMammothMesh\n21:43:55 | INFO: Primitives created: 1\n21:43:56 | INFO: Finished glTF 2.0 export in 0.32671308517456055 s\n\n21:43:56 | INFO: Starting glTF 2.0 export\n21:43:56 | INFO: Extracting primitive: CaveBearMesh\n21:43:56 | INFO: Primitives created: 1\n21:43:56 | INFO: Finished glTF 2.0 export in 0.4637119770050049 s\n\nBlender 5.2.2 LTS (hash d13f752e3b9c built 2026-09-15 01:49:19)\n\nBlender quit\n"
+  },
+  {
+    "command": ["bun", "run", "unit-model:contract:check", "gorehorn-red-maw"],
+    "exitCode": 0,
+    "seconds": 0.12,
+    "output": "$ bun scripts/unit-model/check-contract.ts gorehorn-red-maw\nPASS gorehorn-red-maw\n"
+  },
+  {
+    "command": ["bun", "run", "unit-model:pack", "gorehorn-red-maw"],
+    "exitCode": 0,
+    "seconds": 0.31,
+    "output": "$ bun scripts/pack-unit-model.ts gorehorn-red-maw\nprune: Removed types... Accessor (6)\nprune: Removed types... Skin (1), Accessor (5)\ngorehorn-red-maw: 338960 -> 176308 bytes; 3036 triangles, 20 bones, 8 clips\n"
+  },
+  {
+    "command": ["bun", "run", "unit-model:contract:check", "old-frostmaw"],
+    "exitCode": 0,
+    "seconds": 0.11,
+    "output": "$ bun scripts/unit-model/check-contract.ts old-frostmaw\nPASS old-frostmaw\n"
+  },
+  {
+    "command": ["bun", "run", "unit-model:pack", "old-frostmaw"],
+    "exitCode": 0,
+    "seconds": 0.25,
+    "output": "$ bun scripts/pack-unit-model.ts old-frostmaw\nprune: Removed types... Accessor (6)\nprune: Removed types... Skin (1), Accessor (5)\nold-frostmaw: 301044 -> 162268 bytes; 3052 triangles, 22 bones, 7 clips\n"
+  },
+  {
+    "command": ["bun", "run", "unit-model:contract:check", "woolly-mammoth"],
+    "exitCode": 0,
+    "seconds": 0.11,
+    "output": "$ bun scripts/unit-model/check-contract.ts woolly-mammoth\nPASS woolly-mammoth\n"
+  },
+  {
+    "command": ["bun", "run", "unit-model:pack", "woolly-mammoth"],
+    "exitCode": 0,
+    "seconds": 0.29,
+    "output": "$ bun scripts/pack-unit-model.ts woolly-mammoth\nprune: Removed types... Accessor (6)\nprune: Removed types... Skin (1), Accessor (5)\nwoolly-mammoth: 445120 -> 192820 bytes; 5470 triangles, 24 bones, 7 clips\n"
+  },
+  {
+    "command": ["bun", "run", "unit-model:contract:check", "cave-bear"],
+    "exitCode": 0,
+    "seconds": 0.11,
+    "output": "$ bun scripts/unit-model/check-contract.ts cave-bear\nPASS cave-bear\n"
+  },
+  {
+    "command": ["bun", "run", "unit-model:pack", "cave-bear"],
+    "exitCode": 0,
+    "seconds": 0.31,
+    "output": "$ bun scripts/pack-unit-model.ts cave-bear\nprune: Removed types... Accessor (6)\nprune: Removed types... Skin (1), Accessor (5)\ncave-bear: 392320 -> 178832 bytes; 4442 triangles, 21 bones, 8 clips\n"
+  },
+  {
+    "command": [
+      "bun",
+      "run",
+      "unit-model:review",
+      "crag-rhino",
+      "gorehorn-red-maw",
+      "old-frostmaw",
+      "woolly-mammoth",
+      "cave-bear",
+      "--date",
+      "issue-186-before",
+      "--base-url",
+      "http://localhost:4101"
+    ],
+    "exitCode": 0,
+    "seconds": 69.13,
+    "output": "$ bun scripts/unit-model/review/capture.ts crag-rhino gorehorn-red-maw old-frostmaw woolly-mammoth cave-bear --date \"issue-186-before\" --base-url \"http://localhost:4101\"\n/Users/rizeki.rifandani/Desktop/dev/projects/heynbord/artifacts/unit-model-review/crag-rhino/issue-186-before/manifest.json\n{\n  \"passed\": true,\n  \"errors\": [],\n  \"recordedCaptures\": 19\n}\n\n/Users/rizeki.rifandani/Desktop/dev/projects/heynbord/artifacts/unit-model-review/gorehorn-red-maw/issue-186-before/manifest.json\n{\n  \"passed\": true,\n  \"errors\": [],\n  \"recordedCaptures\": 19\n}\n\n/Users/rizeki.rifandani/Desktop/dev/projects/heynbord/artifacts/unit-model-review/old-frostmaw/issue-186-before/manifest.json\n{\n  \"passed\": true,\n  \"errors\": [],\n  \"recordedCaptures\": 19\n}\n\n/Users/rizeki.rifandani/Desktop/dev/projects/heynbord/artifacts/unit-model-review/woolly-mammoth/issue-186-before/manifest.json\n{\n  \"passed\": true,\n  \"errors\": [],\n  \"recordedCaptures\": 19\n}\n\n/Users/rizeki.rifandani/Desktop/dev/projects/heynbord/artifacts/unit-model-review/cave-bear/issue-186-before/manifest.json\n{\n  \"passed\": true,\n  \"errors\": [],\n  \"recordedCaptures\": 19\n}\n\n"
+  },
+  {
+    "command": [
+      "bun",
+      "/Users/rizeki.rifandani/Desktop/dev/projects/heynbord/scripts/unit-model/review/gates-before-186.tmp.ts",
+      "crag-rhino",
+      "gorehorn-red-maw",
+      "old-frostmaw",
+      "woolly-mammoth",
+      "cave-bear",
+      "--date",
+      "issue-186-before"
+    ],
+    "exitCode": 2,
+    "seconds": 52.55,
+    "output": "crag-rhino: exit code 2\n  FAIL  turntable\n  PASS  interior-difference\n  PASS  self-intersection\n  PASS  joint-loops\n  FAIL  attachment-anchor\n  ERROR region-coverage\n        the Unit Spec has no regions\n  FAIL  chirality\n  FAIL  palette\n  PASS  part-coverage\n  PASS  ground-contact\n  PASS  foot-bones\ngorehorn-red-maw: exit code 2\n  PASS  turntable\n  ERROR interior-difference\n        no admitted Turnaround\n  PASS  self-intersection\n  FAIL  joint-loops\n  PASS  attachment-anchor\n  PASS  region-coverage\n  FAIL  chirality\n  FAIL  palette\n  PASS  part-coverage\n  PASS  ground-contact\n  PASS  foot-bones\nold-frostmaw: exit code 2\n  PASS  turntable\n  ERROR interior-difference\n        no admitted Turnaround\n  PASS  self-intersection\n  FAIL  joint-loops\n  FAIL  attachment-anchor\n  PASS  region-coverage\n  PASS  chirality\n  FAIL  palette\n  PASS  part-coverage\n  PASS  ground-contact\n  PASS  foot-bones\nwoolly-mammoth: exit code 2\n  PASS  turntable\n  ERROR interior-difference\n        no admitted Turnaround\n  PASS  self-intersection\n  PASS  joint-loops\n  FAIL  attachment-anchor\n  PASS  region-coverage\n  FAIL  chirality\n  FAIL  palette\n  PASS  part-coverage\n  PASS  ground-contact\n  PASS  foot-bones\ncave-bear: exit code 2\n  PASS  turntable\n  ERROR interior-difference\n        no admitted Turnaround\n  FAIL  self-intersection\n  PASS  joint-loops\n  PASS  attachment-anchor\n  PASS  region-coverage\n  FAIL  chirality\n  FAIL  palette\n  PASS  part-coverage\n  PASS  ground-contact\n  PASS  foot-bones\n"
+  },
+  {
+    "command": [
+      "bun",
+      "run",
+      "unit-model:clips:check",
+      "crag-rhino",
+      "gorehorn-red-maw",
+      "old-frostmaw",
+      "woolly-mammoth",
+      "cave-bear"
+    ],
+    "exitCode": 1,
+    "seconds": 0.31,
+    "output": "$ bun scripts/unit-model/check-clips.ts crag-rhino gorehorn-red-maw old-frostmaw woolly-mammoth cave-bear\nPASS crag-rhino: 17 checks\nFAIL gorehorn-red-maw: 18 checks\n- death ground: 0.18264931925599123 over 0.06 (frame 14)\nPASS cave-bear: 18 checks\nPASS old-frostmaw: 17 checks\nPASS woolly-mammoth: 17 checks\nerror: script \"unit-model:clips:check\" exited with code 1\n"
+  },
+  {
+    "command": [
+      "/Applications/Blender.app/Contents/MacOS/Blender",
+      "--background",
+      "--factory-startup",
+      "--python-exit-code",
+      "1",
+      "--python",
+      "/var/folders/vs/wt7nrtxn4pq6w41q92897d_80000gq/T/heynbord-186-mezcrt1k/migrated.py"
+    ],
+    "exitCode": 0,
+    "seconds": 4.69,
+    "output": "INFO Draco is available, use library at /Applications/Blender.app/Contents/Resources/5.2/scripts/addons_core/io_scene_gltf2/libbf_intern_draco_bridge.dylib\nINFO MeshOptimizer is available, use library at /Applications/Blender.app/Contents/Resources/5.2/scripts/addons_core/io_scene_gltf2/libbf_intern_meshopt_bridge.dylib\n21:46:02 | INFO: Starting glTF 2.0 export\n21:46:02 | INFO: Extracting primitive: GorehornRedMawMesh\n21:46:02 | INFO: Primitives created: 1\n21:46:03 | INFO: Finished glTF 2.0 export in 0.2609109878540039 s\n\n21:46:03 | INFO: Starting glTF 2.0 export\n21:46:03 | INFO: Extracting primitive: OldFrostmawMesh\n21:46:03 | INFO: Primitives created: 1\n21:46:03 | INFO: Finished glTF 2.0 export in 0.2811100482940674 s\n\n21:46:04 | INFO: Starting glTF 2.0 export\n21:46:04 | INFO: Extracting primitive: WoollyMammothMesh\n21:46:04 | INFO: Primitives created: 1\n21:46:04 | INFO: Finished glTF 2.0 export in 0.2814462184906006 s\n\n21:46:04 | INFO: Starting glTF 2.0 export\n21:46:04 | INFO: Extracting primitive: CaveBearMesh\n21:46:04 | INFO: Primitives created: 1\n21:46:05 | INFO: Finished glTF 2.0 export in 0.4970247745513916 s\n\nBlender 5.2.2 LTS (hash d13f752e3b9c built 2026-09-15 01:49:19)\n\nBlender quit\n"
+  },
+  {
+    "command": ["bun", "run", "unit-model:contract:check", "gorehorn-red-maw"],
+    "exitCode": 1,
+    "seconds": 0.11,
+    "output": "$ bun scripts/unit-model/check-contract.ts gorehorn-red-maw\nFAIL gorehorn-red-maw\n- clips.death.keyframes: recorded 3ce00438158200e9cff6af80cf7272a3cd746b328a83830cb701ab1ba4d06df4, now deb89c976b634fabffee9ed8f6b39dbf7471dcde65f5a02b08c0c43037bda3ca\nerror: script \"unit-model:contract:check\" exited with code 1\n"
+  },
+  {
+    "command": ["bun", "run", "unit-model:pack", "gorehorn-red-maw"],
+    "exitCode": 0,
+    "seconds": 0.3,
+    "output": "$ bun scripts/pack-unit-model.ts gorehorn-red-maw\nprune: Removed types... Accessor (6)\nprune: Removed types... Skin (1), Accessor (5)\ngorehorn-red-maw: 338960 -> 176304 bytes; 3036 triangles, 20 bones, 8 clips\n"
+  },
+  {
+    "command": ["bun", "run", "unit-model:contract:check", "old-frostmaw"],
+    "exitCode": 0,
+    "seconds": 0.15,
+    "output": "$ bun scripts/unit-model/check-contract.ts old-frostmaw\nPASS old-frostmaw\n"
+  },
+  {
+    "command": ["bun", "run", "unit-model:pack", "old-frostmaw"],
+    "exitCode": 0,
+    "seconds": 0.24,
+    "output": "$ bun scripts/pack-unit-model.ts old-frostmaw\nprune: Removed types... Accessor (6)\nprune: Removed types... Skin (1), Accessor (5)\nold-frostmaw: 301044 -> 162616 bytes; 3052 triangles, 22 bones, 7 clips\n"
+  },
+  {
+    "command": ["bun", "run", "unit-model:contract:check", "woolly-mammoth"],
+    "exitCode": 1,
+    "seconds": 0.13,
+    "output": "$ bun scripts/unit-model/check-contract.ts woolly-mammoth\nFAIL woolly-mammoth\n- clips.walk.keyframes: recorded 9d839d960018ff76306f97a26fead19ac1ef3e5c3a4d32c79bf771359a492cd9, now bdcbec9adc9da3364e4d8ca7a1f60ed415e0435a4d5460ad95658c71af13887a\nerror: script \"unit-model:contract:check\" exited with code 1\n"
+  },
+  {
+    "command": ["bun", "run", "unit-model:pack", "woolly-mammoth"],
+    "exitCode": 0,
+    "seconds": 0.32,
+    "output": "$ bun scripts/pack-unit-model.ts woolly-mammoth\nprune: Removed types... Accessor (6)\nprune: Removed types... Skin (1), Accessor (5)\nwoolly-mammoth: 454944 -> 200704 bytes; 5470 triangles, 24 bones, 7 clips\n"
+  },
+  {
+    "command": ["bun", "run", "unit-model:contract:check", "cave-bear"],
+    "exitCode": 0,
+    "seconds": 0.16,
+    "output": "$ bun scripts/unit-model/check-contract.ts cave-bear\nPASS cave-bear\n"
+  },
+  {
+    "command": ["bun", "run", "unit-model:pack", "cave-bear"],
+    "exitCode": 0,
+    "seconds": 0.32,
+    "output": "$ bun scripts/pack-unit-model.ts cave-bear\nprune: Removed types... Accessor (6)\nprune: Removed types... Skin (1), Accessor (5)\ncave-bear: 392320 -> 178992 bytes; 4442 triangles, 21 bones, 8 clips\n"
+  },
+  {
+    "command": [
+      "bun",
+      "run",
+      "unit-model:clips:check",
+      "crag-rhino",
+      "gorehorn-red-maw",
+      "old-frostmaw",
+      "woolly-mammoth",
+      "cave-bear"
+    ],
+    "exitCode": 0,
+    "seconds": 0.3,
+    "output": "$ bun scripts/unit-model/check-clips.ts crag-rhino gorehorn-red-maw old-frostmaw woolly-mammoth cave-bear\nPASS crag-rhino: 17 checks\nPASS gorehorn-red-maw: 18 checks\nPASS cave-bear: 18 checks\nPASS old-frostmaw: 17 checks\nPASS woolly-mammoth: 17 checks\n"
+  },
+  {
+    "command": ["bun", "run", "web:test:unit", "unit-model-pack.unit.test.ts"],
+    "exitCode": 0,
+    "seconds": 4.08,
+    "output": "$ vitest run --project web unit-model-pack.unit.test.ts\n\n RUN  v5.0.3 /Users/rizeki.rifandani/Desktop/dev/projects/heynbord\n\n\n Test Files  1 passed (1)\n      Tests  104 passed (104)\n   Start at  21:46:08\n   Duration  3.10s (tests 86%, setup 9%, transform 3%, import 2%)\n\n"
+  },
+  {
+    "command": [
+      "bun",
+      "run",
+      "unit-model:review",
+      "crag-rhino",
+      "gorehorn-red-maw",
+      "old-frostmaw",
+      "woolly-mammoth",
+      "cave-bear",
+      "--date",
+      "issue-186-after",
+      "--base-url",
+      "http://localhost:4102"
+    ],
+    "exitCode": 0,
+    "seconds": 69.81,
+    "output": "$ bun scripts/unit-model/review/capture.ts crag-rhino gorehorn-red-maw old-frostmaw woolly-mammoth cave-bear --date \"issue-186-after\" --base-url \"http://localhost:4102\"\n/Users/rizeki.rifandani/Desktop/dev/projects/heynbord/artifacts/unit-model-review/crag-rhino/issue-186-after/manifest.json\n{\n  \"passed\": true,\n  \"errors\": [],\n  \"recordedCaptures\": 19\n}\n\n/Users/rizeki.rifandani/Desktop/dev/projects/heynbord/artifacts/unit-model-review/gorehorn-red-maw/issue-186-after/manifest.json\n{\n  \"passed\": true,\n  \"errors\": [],\n  \"recordedCaptures\": 19\n}\n\n/Users/rizeki.rifandani/Desktop/dev/projects/heynbord/artifacts/unit-model-review/old-frostmaw/issue-186-after/manifest.json\n{\n  \"passed\": true,\n  \"errors\": [],\n  \"recordedCaptures\": 19\n}\n\n/Users/rizeki.rifandani/Desktop/dev/projects/heynbord/artifacts/unit-model-review/woolly-mammoth/issue-186-after/manifest.json\n{\n  \"passed\": true,\n  \"errors\": [],\n  \"recordedCaptures\": 19\n}\n\n/Users/rizeki.rifandani/Desktop/dev/projects/heynbord/artifacts/unit-model-review/cave-bear/issue-186-after/manifest.json\n{\n  \"passed\": true,\n  \"errors\": [],\n  \"recordedCaptures\": 19\n}\n\n"
+  },
+  {
+    "command": [
+      "bun",
+      "run",
+      "unit-model:gates",
+      "crag-rhino",
+      "gorehorn-red-maw",
+      "old-frostmaw",
+      "woolly-mammoth",
+      "cave-bear",
+      "--date",
+      "issue-186-after"
+    ],
+    "exitCode": 2,
+    "seconds": 70.55,
+    "output": "$ bun scripts/unit-model/review/gates.ts crag-rhino gorehorn-red-maw old-frostmaw woolly-mammoth cave-bear --date \"issue-186-after\"\ncrag-rhino: exit code 1\n  FAIL  turntable\n  PASS  interior-difference\n  PASS  self-intersection\n  PASS  joint-loops\n  FAIL  attachment-anchor\n  PASS  region-coverage\n  FAIL  chirality\n  FAIL  palette\n  PASS  part-coverage\n  PASS  ground-contact\n  PASS  foot-bones\ngorehorn-red-maw: exit code 2\n  PASS  turntable\n  ERROR interior-difference\n        no admitted Turnaround\n  PASS  self-intersection\n  FAIL  joint-loops\n  PASS  attachment-anchor\n  PASS  region-coverage\n  FAIL  chirality\n  FAIL  palette\n  PASS  part-coverage\n  PASS  ground-contact\n  PASS  foot-bones\nold-frostmaw: exit code 2\n  PASS  turntable\n  ERROR interior-difference\n        no admitted Turnaround\n  PASS  self-intersection\n  FAIL  joint-loops\n  FAIL  attachment-anchor\n  PASS  region-coverage\n  PASS  chirality\n  FAIL  palette\n  PASS  part-coverage\n  PASS  ground-contact\n  PASS  foot-bones\nwoolly-mammoth: exit code 2\n  PASS  turntable\n  ERROR interior-difference\n        no admitted Turnaround\n  PASS  self-intersection\n  PASS  joint-loops\n  PASS  attachment-anchor\n  PASS  region-coverage\n  FAIL  chirality\n  FAIL  palette\n  PASS  part-coverage\n  PASS  ground-contact\n  PASS  foot-bones\ncave-bear: exit code 2\n  PASS  turntable\n  ERROR interior-difference\n        no admitted Turnaround\n  FAIL  self-intersection\n  PASS  joint-loops\n  PASS  attachment-anchor\n  PASS  region-coverage\n  FAIL  chirality\n  FAIL  palette\n  PASS  part-coverage\n  PASS  ground-contact\n  PASS  foot-bones\n"
+  }
+]

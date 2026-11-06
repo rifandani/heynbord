@@ -1,0 +1,41 @@
+{
+  "id": "gorehorn-red-maw",
+  "passed": false,
+  "problems": [
+    {
+      "code": "approval",
+      "detail": "The approval is pending, by \"\", on \"\". A person must approve."
+    },
+    {
+      "code": "props",
+      "detail": "The person who approves must list the props."
+    }
+  ],
+  "measures": {
+    "front": {
+      "backgroundEdge": 0.94,
+      "offPalette": 0.08,
+      "fill": 0.947
+    },
+    "three-quarter": {
+      "backgroundEdge": 0.927,
+      "offPalette": 0.115,
+      "fill": 0.967
+    },
+    "side": {
+      "backgroundEdge": 0.938,
+      "offPalette": 0.109,
+      "fill": 0.987
+    },
+    "back": {
+      "backgroundEdge": 0.947,
+      "offPalette": 0.1,
+      "fill": 0.933
+    },
+    "details": {
+      "backgroundEdge": 0.999,
+      "offPalette": 0.053,
+      "fill": 0.887
+    }
+  }
+}

@@ -239,6 +239,9 @@ const skinProblems = ({ meshes, spec }: GateSources): readonly string[] =>
       : [];
   });
 
+/** A part and its bone can have the same name. The source gate has one ID map. */
+const anchorOf = (bone: string): string => `bone:${bone}`;
+
 /** `attachment_anchor.py` reads a sculpt spec and the positions that it measures. */
 const attachmentAnchor = async (context: GateContext): Promise<GateCommand> => {
   const { sources } = context;
@@ -249,11 +252,17 @@ const attachmentAnchor = async (context: GateContext): Promise<GateCommand> => {
       id,
       parent: "model",
       role: "prop",
-      attachment: { anchor: bone, maxOffset: spec.height * PROP_REACH },
+      attachment: {
+        anchor: anchorOf(bone),
+        maxOffset: spec.height * PROP_REACH,
+      },
     })),
   ];
   const rig = {
-    bones: meshes.bones.map(({ id, parent }) => ({ id, parent })),
+    bones: meshes.bones.map(({ id, parent }) => ({
+      id: anchorOf(id),
+      parent: parent === null ? null : anchorOf(parent),
+    })),
   };
   const measured: Record<string, readonly number[]> = {};
   for (const { bone, id } of spec.props) {
@@ -263,7 +272,7 @@ const attachmentAnchor = async (context: GateContext): Promise<GateCommand> => {
         distance(one, joint ?? [0, 0, 0]) - distance(other, joint ?? [0, 0, 0])
     );
     if (joint && nearest) {
-      measured[bone] = joint;
+      measured[anchorOf(bone)] = joint;
       measured[id] = nearest;
     }
   }
