@@ -15,7 +15,7 @@ The default command checks every `specs/*.json` file and exits with code 0 when 
 
 `unit-spec.schema.json` defines the fields, Body Plan names, part names, colors and clip slots. `unit_spec.py` checks those schema rules and the prop references. `load_spec(path)` returns a `UnitSpec` typed dictionary and raises `ValueError` on invalid data. Use it before building geometry. The loader also rejects duplicate JSON members.
 
-The initial Body Plan names are `biped-medium`, `quadruped` and `structure`. `biped-medium` has its shared builder in `body_plans/`. The other two names classify the pilots; their shared builders will follow in later issues. The part names match the existing scripts, including suffixes such as `.L`, `.FR` and `.0`. A prop ID must name a listed part. `hand` is `left`, `right` or `none` for a mounted prop. The left side is Blender +X. `cameraSide` identifies a prop on the right side that the player Unit camera sees.
+The Body Plan names are `biped-small`, `biped-medium`, `biped-large`, `quadruped` and `structure`. The three biped plans have their shared builders in `body_plans/`. `quadruped` and `structure` classify the pilots; their shared builders will follow in later issues. The part names match the existing scripts, including suffixes such as `.L`, `.FR` and `.0`. A prop ID must name a listed part. `hand` is `left`, `right` or `none` for a mounted prop. The left side is Blender +X. `cameraSide` identifies a prop on the right side that the player Unit camera sees.
 
 The five required clips match `BASE_UNIT_CLIPS` in `apps/web/src/features/battle/scene/unit-clips.ts`: `idle`, `walk`, `attack`, `hurt` and `death`. The optional clips are `lowHp`, `cast`, `rebirth` and `summon`. Each pilot lists only the clips that its script builds. An empty clip object uses the Body Plan slot. An `override` names the unit's specific action for the future Clip Library.
 
@@ -49,7 +49,7 @@ rtk bunx ultracite fix scripts/unit-model/source-contracts.json
 
 ## Body Plans
 
-`body_plans/` holds the shared builders. See `body_plans/README.md`. `biped-medium` gives the bones, the proportion table, the arm IK, the skinning rule and the clip slots of the human, elf and undead figures. Warden Saelith uses it.
+`body_plans/` holds the shared builders. See `body_plans/README.md`. Each biped plan gives the bones, the proportion table, the arm IK, the skinning rule and the clip slots of its figures: `biped-small` for the goblins, `biped-medium` for the human, elf and undead figures, and `biped-large` for the big orcs and trolls. Fuse Runner, Warden Saelith and Tusk Brute use them.
 
 Compare a new Raw Export with its Source Contract after a change to a build script, a Body Plan or the kit. Do this before you pack, because the packer refreshes the Source Contract. The check exits with code 1 on a difference.
 

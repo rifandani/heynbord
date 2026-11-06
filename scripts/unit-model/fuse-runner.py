@@ -35,11 +35,16 @@ sys.path.insert(0, os.path.join(REPO, "scripts", "unit-model"))
 
 import importlib  # noqa: E402
 
+import body_plans  # noqa: E402
 import unit_model_kit as kit  # noqa: E402
 
 importlib.reload(kit)
+importlib.reload(body_plans.biped)
+importlib.reload(body_plans.biped_small)
 
 from unit_model_kit import X, Y, Z, Clip, Part, blend, faces_of, hex_color, turn  # noqa: E402
+
+plan = body_plans.BODY_PLANS["biped-small"]
 
 # --- Palette (the card painting) ----------------------------------------------
 
@@ -80,15 +85,16 @@ SMOKE = hex_color("#7a726c")
 # --- Proportions ---------------------------------------------------------------
 
 # He is skinny: narrow hips, and long, thin arms and legs.
-HIP_Z = 0.3
-WAIST_Z = 0.36
-CHEST_Z = 0.42
-SHOULDER_Z = 0.48
-NECK_Z = 0.5
+TABLE = plan.Proportions(shoulder_width=0.16, hip_x=0.042, knee_x=0.042, head_top_y=-0.012)
+HIP_Z = TABLE.hip_z
+WAIST_Z = TABLE.waist_z
+CHEST_Z = TABLE.chest_z
+SHOULDER_Z = TABLE.shoulder_z
+NECK_Z = TABLE.neck_z
 HEAD_C = Vector((0, -0.03, 0.6))
-KNEE_Z = 0.17
-ANKLE_Z = 0.04
-LEG_X = 0.042
+KNEE_Z = TABLE.knee_z
+ANKLE_Z = TABLE.ankle_z
+LEG_X = TABLE.hip_x
 
 # The bomb is in front of his chest, and his arms hug it from the sides.
 BOMB_C = Vector((0, -0.15, 0.38))
@@ -96,40 +102,25 @@ BOMB_R = 0.085
 FUSE_DIR = Vector((0.1, 0.25, 1)).normalized()
 SPARK_C = BOMB_C + FUSE_DIR * (BOMB_R + 0.04)
 
-SR = Vector((-0.08, 0, SHOULDER_Z))
+SR = Vector(plan.shoulder_point(TABLE, -1))
 ER = Vector((-0.13, -0.06, 0.41))
 WR = Vector((-0.084, -0.152, 0.35))
 TR = WR + (WR - ER).normalized() * 0.035
-SL = Vector((0.08, 0, SHOULDER_Z))
+SL = Vector(plan.shoulder_point(TABLE, 1))
 EL = Vector((0.13, -0.06, 0.41))
 WL = Vector((0.084, -0.152, 0.35))
 TL = WL + (WL - EL).normalized() * 0.035
+ARMS = {"L": (EL, WL, TL), "R": (ER, WR, TR)}
 
 SCARF_ROOT = Vector((0, 0.04, 0.5))
 
-BONES = [
-    ("root", (0, 0, 0), (0, 0, 0.1), None),
-    ("hips", (0, 0, HIP_Z), (0, 0, WAIST_Z), "root"),
-    ("spine", (0, 0, WAIST_Z), (0, 0, CHEST_Z), "hips"),
-    ("chest", (0, 0, CHEST_Z), (0, 0, NECK_Z), "spine"),
-    ("neck", (0, 0, NECK_Z), (0, -0.006, 0.51), "chest"),
-    ("head", (0, -0.006, 0.51), (0, -0.012, 0.69), "neck"),
+TRUNK_BONES = [
     ("scarf", tuple(SCARF_ROOT), tuple(SCARF_ROOT + Y * 0.08), "chest"),
     ("bomb", tuple(BOMB_C), tuple(BOMB_C + Z * 0.06), "chest"),
     ("spark", tuple(SPARK_C), tuple(SPARK_C + Z * 0.03), "bomb"),
     # The blast stays where the bomb was: it has no parent.
     ("blast", tuple(BOMB_C), tuple(BOMB_C + Z * 0.08), None),
 ]
-for side, sign, (s, e, w, t) in (("L", 1, (SL, EL, WL, TL)), ("R", -1, (SR, ER, WR, TR))):
-    BONES += [
-        (f"shoulder.{side}", (0.02 * sign, 0, SHOULDER_Z), tuple(s), "chest"),
-        (f"upperarm.{side}", tuple(s), tuple(e), f"shoulder.{side}"),
-        (f"forearm.{side}", tuple(e), tuple(w), f"upperarm.{side}"),
-        (f"hand.{side}", tuple(w), tuple(t), f"forearm.{side}"),
-        (f"thigh.{side}", (LEG_X * sign, 0, HIP_Z), (LEG_X * sign, 0, KNEE_Z), "hips"),
-        (f"shin.{side}", (LEG_X * sign, 0, KNEE_Z), (LEG_X * sign, 0, ANKLE_Z), f"thigh.{side}"),
-        (f"foot.{side}", (LEG_X * sign, 0, ANKLE_Z), (LEG_X * sign, -0.08, 0.016), f"shin.{side}"),
-    ]
 
 # --- Weights -------------------------------------------------------------------
 
@@ -378,9 +369,10 @@ def blast_parts():
 
 def build_figure():
     kit.reset_scene()
-    rig = kit.build_armature("FuseRunner", BONES)
+    rig, _ = plan.build_rig("FuseRunner", TABLE, TRUNK_BONES, arms=ARMS)
     parts = head_parts() + body_parts() + limb_parts() + bomb_parts() + blast_parts()
     objects = [kit.part_object(part) for part in parts]
+    plan.check_skin(parts, rig)
     mesh = kit.join_parts(objects, "FuseRunnerMesh")
     kit.skin(mesh, rig)
     return rig, mesh
@@ -390,6 +382,9 @@ def build_figure():
 
 
 def build_clips(rig):
+    def slot(name):
+        return Clip(*plan.CLIP_SLOTS[name])
+
     def t(bone, *rotations):
         return turn(rig, bone, *rotations)
 
@@ -609,35 +604,35 @@ def build_clips(rig):
         )
 
     clips = []
-    idle = Clip("idle", 48, loop=True)
+    idle = slot("idle")
     for frame, breath, look, spark, tap in ((0, 0, 1, 1, 0), (6, 0.5, 1, 0.6, 1), (12, 1, 1, 1.3, 0), (18, 0.5, 0.2, 0.7, 1), (24, 0, 0, 1.2, 0), (30, 0.5, 0.1, 0.6, 1), (36, 1, 1, 1.4, 0), (42, 0.5, 1, 0.7, 1), (48, 0, 1, 1, 0)):
         idle.key(frame, stand(breath, look, spark, tap))
     clips.append(idle)
 
-    low = Clip("lowHp", 48, loop=True)
+    low = slot("lowHp")
     for frame, breath, spark in ((0, 0, 1.4), (6, 0.25, 0.9), (12, 0.5, 1.7), (18, 0.75, 1.0), (24, 1, 1.6), (30, 0.75, 0.9), (36, 0.5, 1.7), (42, 0.25, 1.0), (48, 0, 1.4)):
         low.key(frame, slump(breath, spark))
     clips.append(low)
 
     # Swift: two fast strides in each cycle.
-    walk = Clip("walk", 24, loop=True)
+    walk = slot("walk")
     for start in (0, 12):
         walk.key(start, stride(1)).key(start + 3, stride(1, 1)).key(start + 6, stride(-1)).key(start + 9, stride(-1, 1))
     walk.key(24, stride(1))
     clips.append(walk)
 
-    attack = Clip("attack", 30)
+    attack = slot("attack")
     attack.key(0, stand()).key(8, wind(stand())).key(13, bonk(stand())).key(16, bonk(stand()))
     attack.key(21, startled(stand())).key(25, startled(stand())).key(30, stand())
     clips.append(attack)
 
-    hurt = Clip("hurt", 16)
+    hurt = slot("hurt")
     hurt.key(0, stand()).key(3, recoil(stand())).key(8, recoil(stand(), 0.4)).key(16, stand())
     clips.append(hurt)
 
     # The death is the Last Breath: the spark flares, the bomb blows up at
     # frame 10, and the blast throws him onto his back.
-    death = Clip("death", 36)
+    death = slot("death")
     death.key(0, stand()).key(4, recoil(stand())).key(8, pose(stand(look=1.0), spark_at_scale=2.2))
     death.key(9, pose(stand(look=1.0), spark_at_scale=2.4, blast_at_scale=0.01))
     death.key(10, pose(stand(look=1.0), bomb_at_scale=0.01, spark_at_scale=0.01, blast_at_scale=1.0))
@@ -650,13 +645,13 @@ def build_clips(rig):
 
     # Rebirth: the Unit falls (45% of the event, `REBORN_FALL`), then gets up.
     # The fuse goes out with no blast, and lights again at the end.
-    rebirth = Clip("rebirth", 48)
+    rebirth = slot("rebirth")
     rebirth.key(0, stand()).key(4, recoil(stand())).key(8, pose(stand(), spark_at_scale=0.01))
     rebirth.key(20, fainted(stand())).key(22, fainted(stand(), 3)).key(30, fainted(stand()))
     rebirth.key(36, crouch(stand())).key(42, proud(stand())).key(48, stand())
     clips.append(rebirth)
 
-    summon = Clip("summon", 24)
+    summon = slot("summon")
     summon.key(0, crouch(stand())).key(10, pose(crouch(stand()), hips_at_loc=at("hips", (0, 0.02, -0.08))))
     summon.key(17, proud(stand())).key(24, stand())
     clips.append(summon)

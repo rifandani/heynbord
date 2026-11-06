@@ -19,7 +19,13 @@
     "id": { "$ref": "#/$defs/id" },
     "bodyPlan": {
       "type": "string",
-      "enum": ["biped-medium", "quadruped", "structure"]
+      "enum": [
+        "biped-small",
+        "biped-medium",
+        "biped-large",
+        "quadruped",
+        "structure"
+      ]
     },
     "height": {
       "description": "Rest-pose height in scene units, including props. Blender Z becomes glTF Y.",

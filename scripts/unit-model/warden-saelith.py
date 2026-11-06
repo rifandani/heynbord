@@ -26,6 +26,7 @@ import body_plans  # noqa: E402
 import unit_model_kit as kit  # noqa: E402
 
 importlib.reload(kit)
+importlib.reload(body_plans.biped)
 importlib.reload(body_plans.biped_medium)
 
 from unit_model_kit import X, Y, Z, Clip, Part, clamp01, hex_color, lerp, turn  # noqa: E402

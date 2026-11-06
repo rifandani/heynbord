@@ -34,11 +34,16 @@ sys.path.insert(0, os.path.join(REPO, "scripts", "unit-model"))
 
 import importlib  # noqa: E402
 
+import body_plans  # noqa: E402
 import unit_model_kit as kit  # noqa: E402
 
 importlib.reload(kit)
+importlib.reload(body_plans.biped)
+importlib.reload(body_plans.biped_large)
 
 from unit_model_kit import X, Y, Z, Clip, Part, blend, faces_of, hex_color, lerp, turn  # noqa: E402
+
+plan = body_plans.BODY_PLANS["biped-large"]
 
 # --- Palette (the card painting) ----------------------------------------------
 
@@ -66,25 +71,45 @@ WOOD_LIGHT = hex_color("#c4a070")
 # --- Proportions ---------------------------------------------------------------
 
 # She is very big: wide shoulders, thick arms and legs, a small head.
-HIP_Z = 0.5
-WAIST_Z = 0.6
-CHEST_Z = 0.7
-SHOULDER_Z = 0.8
-NECK_Z = 0.83
+TABLE = plan.Proportions(
+    ankle_z=0.06,
+    knee_z=0.28,
+    hip_z=0.5,
+    waist_z=0.6,
+    chest_z=0.7,
+    shoulder_z=0.8,
+    neck_z=0.83,
+    head_base_z=0.86,
+    head_top_z=1.0,
+    neck_y=-0.015,
+    head_base_y=-0.025,
+    head_top_y=-0.04,
+    shoulder_width=0.38,
+    shoulder_root_x=0.04,
+    hip_x=0.09,
+    knee_x=0.09,
+    foot_tip_y=-0.11,
+)
+HIP_Z = TABLE.hip_z
+WAIST_Z = TABLE.waist_z
+CHEST_Z = TABLE.chest_z
+SHOULDER_Z = TABLE.shoulder_z
+NECK_Z = TABLE.neck_z
 HEAD_C = Vector((0, -0.045, 0.92))
-KNEE_Z = 0.28
-ANKLE_Z = 0.06
-LEG_X = 0.09
+KNEE_Z = TABLE.knee_z
+ANKLE_Z = TABLE.ankle_z
+LEG_X = TABLE.hip_x
 
 # The arms hang out from the wide shoulders at rest (the bind pose).
-SR = Vector((-0.19, 0, SHOULDER_Z))
+SR = Vector(plan.shoulder_point(TABLE, -1))
 ER = Vector((-0.255, -0.01, 0.63))
 WR = Vector((-0.275, -0.05, 0.48))
 TR = WR + (WR - ER).normalized() * 0.06
-SL = Vector((0.19, 0, SHOULDER_Z))
+SL = Vector(plan.shoulder_point(TABLE, 1))
 EL = Vector((0.255, -0.01, 0.63))
 WL = Vector((0.275, -0.05, 0.48))
 TL = WL + (WL - EL).normalized() * 0.06
+ARMS = {"L": (EL, WL, TL), "R": (ER, WR, TR)}
 
 # The club hangs from the right fist, its head to the front and down.
 GRIP_R = WR + (WR - ER).normalized() * 0.035
@@ -98,30 +123,14 @@ DOOR_U = DOOR_TURN @ X
 DOOR_V = DOOR_TURN @ Z
 DOOR_N = DOOR_TURN @ -Y
 
-BONES = [
-    ("root", (0, 0, 0), (0, 0, 0.12), None),
-    ("hips", (0, 0, HIP_Z), (0, 0, WAIST_Z), "root"),
-    ("spine", (0, 0, WAIST_Z), (0, 0, CHEST_Z), "hips"),
-    ("chest", (0, 0, CHEST_Z), (0, 0, NECK_Z), "spine"),
-    ("neck", (0, -0.015, NECK_Z), (0, -0.025, 0.86), "chest"),
-    ("head", (0, -0.025, 0.86), (0, -0.04, 1.0), "neck"),
+TRUNK_BONES = [
     ("jaw", tuple(HEAD_C + Vector((0, 0.0, -0.025))), tuple(HEAD_C + Vector((0, -0.065, -0.07))), "head"),
     ("hair", tuple(HEAD_C + Vector((0, 0.05, 0.02))), tuple(HEAD_C + Vector((0, 0.12, -0.2))), "head"),
     ("door", tuple(DOOR_C), tuple(DOOR_C + DOOR_V * 0.1), "spine"),
     ("cloth.F", (0, -0.11, 0.5), (0, -0.12, 0.3), "hips"),
     ("cloth.B", (0, 0.11, 0.5), (0, 0.12, 0.3), "hips"),
 ]
-for side, sign, (s, e, w, t) in (("L", 1, (SL, EL, WL, TL)), ("R", -1, (SR, ER, WR, TR))):
-    BONES += [
-        (f"shoulder.{side}", (0.04 * sign, 0, SHOULDER_Z), tuple(s), "chest"),
-        (f"upperarm.{side}", tuple(s), tuple(e), f"shoulder.{side}"),
-        (f"forearm.{side}", tuple(e), tuple(w), f"upperarm.{side}"),
-        (f"hand.{side}", tuple(w), tuple(t), f"forearm.{side}"),
-        (f"thigh.{side}", (LEG_X * sign, 0, HIP_Z), (LEG_X * sign, 0, KNEE_Z), "hips"),
-        (f"shin.{side}", (LEG_X * sign, 0, KNEE_Z), (LEG_X * sign, 0, ANKLE_Z), f"thigh.{side}"),
-        (f"foot.{side}", (LEG_X * sign, 0, ANKLE_Z), (LEG_X * sign, -0.11, 0.02), f"shin.{side}"),
-    ]
-BONES.append(("club", tuple(GRIP_R), tuple(GRIP_R + CLUB * 0.12), "hand.R"))
+PROP_BONES = [("club", tuple(GRIP_R), tuple(GRIP_R + CLUB * 0.12), "hand.R")]
 
 # --- Weights -------------------------------------------------------------------
 
@@ -425,9 +434,10 @@ def door_part():
 
 def build_figure():
     kit.reset_scene()
-    rig = kit.build_armature("TuskBrute", BONES)
+    rig, _ = plan.build_rig("TuskBrute", TABLE, TRUNK_BONES, PROP_BONES, ARMS)
     parts = head_parts() + body_parts() + limb_parts() + club_part() + door_part()
     objects = [kit.part_object(part) for part in parts]
+    plan.check_skin(parts, rig)
     mesh = kit.join_parts(objects, "TuskBruteMesh")
     kit.skin(mesh, rig)
     return rig, mesh
@@ -437,6 +447,9 @@ def build_figure():
 
 
 def build_clips(rig):
+    def slot(name):
+        return Clip(*plan.CLIP_SLOTS[name])
+
     def t(bone, *rotations):
         return turn(rig, bone, *rotations)
 
@@ -686,42 +699,42 @@ def build_clips(rig):
 
     clips = []
     # The idle: heavy breaths, then a roar that shakes the door.
-    idle = Clip("idle", 48, loop=True)
+    idle = slot("idle")
     for frame, breath, roar, sway in ((0, 0, 0, 0), (12, 1, 0, 1), (20, 0.5, 0.6, 0), (26, 0.8, 1, 0), (32, 0.6, 1, -1), (38, 0.3, 0.2, 0), (48, 0, 0, 0)):
         idle.key(frame, stand(breath, roar, sway))
     clips.append(idle)
 
-    low = Clip("lowHp", 48, loop=True)
+    low = slot("lowHp")
     for frame, breath in ((0, 0), (24, 1), (48, 0)):
         low.key(frame, slump(breath))
     clips.append(low)
 
-    walk = Clip("walk", 24, loop=True)
+    walk = slot("walk")
     walk.key(0, step(1)).key(6, step(1, 1)).key(12, step(-1)).key(18, step(-1, 1)).key(24, step(1))
     clips.append(walk)
 
-    attack = Clip("attack", 30)
+    attack = slot("attack")
     attack.key(0, stand()).key(10, lift_club(stand())).key(15, smash(stand())).key(20, smash(stand()))
     attack.key(27, stand()).key(30, stand())
     clips.append(attack)
 
-    hurt = Clip("hurt", 16)
+    hurt = slot("hurt")
     hurt.key(0, stand()).key(3, recoil(stand())).key(8, recoil(stand(), 0.4)).key(16, stand())
     clips.append(hurt)
 
-    death = Clip("death", 36)
+    death = slot("death")
     death.key(0, stand()).key(5, recoil(stand())).key(13, stagger(stand()))
     death.key(26, fallen(stand())).key(30, fallen(stand(), 4)).key(36, fallen(stand()))
     clips.append(death)
 
     # Rebirth: the Unit falls (45% of the event, `REBORN_FALL`), then gets up.
     # The door stays on the ground, so it comes back with her as she rises.
-    rebirth = Clip("rebirth", 48)
+    rebirth = slot("rebirth")
     rebirth.key(0, stand()).key(4, recoil(stand())).key(20, fallen(stand())).key(22, fallen(stand(), 3))
     rebirth.key(32, crouch(stand())).key(41, flex(stand())).key(48, stand())
     clips.append(rebirth)
 
-    summon = Clip("summon", 24)
+    summon = slot("summon")
     summon.key(0, crouch(stand())).key(10, pose(crouch(stand()), hips_at_loc=at("hips", (0, 0.04, -0.16))))
     summon.key(17, flex(stand())).key(24, stand())
     clips.append(summon)
