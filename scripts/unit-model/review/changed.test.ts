@@ -67,6 +67,12 @@ describe("changedUnits", () => {
     expect(changedUnits([file], UNITS)).toEqual([]);
   });
 
+  test("stops on a Published Model with a name that it cannot review", () => {
+    expect(() =>
+      changedUnits(["apps/web/public/models/units/Bad_name.glb"], UNITS)
+    ).toThrow("Bad_name.glb");
+  });
+
   test("does not read a name that a shell could run", () => {
     expect(
       changedUnits(

@@ -48,7 +48,7 @@ jobs:
       - name: Find the changed Unit Models
         id: find
         run: |
-          units="$(bun scripts/unit-model/review/changed.ts --base HEAD^1)"
+          units="$(bun unit-model:changed --base HEAD^1)"
           echo "$units"
           echo "units=$units" >> "$GITHUB_OUTPUT"
 
@@ -98,6 +98,11 @@ jobs:
 
       - name: Check the Source Contract
         run: bun unit-model:contract:check "$UNIT"
+
+      # `admission.json` has no hash of the views, so a new view keeps its old
+      # verdict. This gate replaces the file with a verdict on the current views.
+      - name: Check the Turnaround
+        run: bun unit-model:turnaround:check "$UNIT"
 
       - name: Resolve playwright version
         id: pw

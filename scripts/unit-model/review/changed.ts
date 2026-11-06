@@ -40,12 +40,19 @@ const unitOf = (file: string): string | undefined =>
 /**
  * The names to review, in name order. A unit with no Unit Spec stays in the list,
  * so its review fails on the missing input. A unit that the pull request removes
- * is not in `units`, and it has nothing to review.
+ * is not in `units`, and it has nothing to review. A Published Model goes to the
+ * game, so this stops on one with a name that the pattern does not read.
  */
 export const changedUnits = (
   files: readonly string[],
   units: readonly string[]
 ): readonly string[] => {
+  const unnamed = files.find(
+    (file) => file.startsWith(`${PUBLISHED}/`) && !unitOf(file)
+  );
+  if (unnamed) {
+    throw new Error(`${unnamed} has no valid unit name, so it has no review`);
+  }
   const present = new Set(units);
   const named = files.flatMap((file) => unitOf(file) ?? []);
   return [...new Set(named)].filter((name) => present.has(name)).toSorted();

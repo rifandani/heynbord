@@ -177,7 +177,7 @@ describe("Published Models", () => {
   });
 });
 
-// The Raw Exports are ignored by git, so this block runs only on an artist's machine.
+// Git holds only the Raw Exports of the units with a Unit Spec, so this block reads fewer files in CI.
 describe.skipIf(modelsIn(RAW).length === 0)("Raw Exports", () => {
   test("have a Body Region on every vertex", async () => {
     const reports = await Promise.all(

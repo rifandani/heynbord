@@ -40,7 +40,7 @@ On 2026-10-30 the published models decreased from 35,243,464 to 18,456,628 bytes
 
 The packing API follows the [glTF Transform Meshopt documentation](https://gltf-transform.dev/modules/functions/functions/meshopt).
 
-CI uses committed source contracts in `source-contracts.json`; only the Unit Model Review reads a Raw Export. The packer refreshes the contract of each model it packs. Each contract has source bounds, skin bone counts, clip durations and a SHA-256 digest of animation track names, interpolation and keyframe data. To refresh all source contracts after an intentional art change, run:
+CI uses committed source contracts in `source-contracts.json`, so most checks need no Raw Export. Git has the Raw Exports of the units with a Unit Spec only. The packer refreshes the contract of each model it packs. Each contract has source bounds, skin bone counts, clip durations and a SHA-256 digest of animation track names, interpolation and keyframe data. To refresh all source contracts after an intentional art change, run:
 
 ```sh
 rtk proxy bun scripts/unit-model/record-contracts.ts
@@ -184,13 +184,19 @@ rtk bun run unit-model:pack:check warden-saelith # writes nothing
 rtk bun test scripts/unit-model/review/changed.test.ts
 ```
 
-A unit changes when its build script, Unit Spec, Turnaround, Raw Export or Published Model changes. For each unit, a job runs the Unit Spec check, the pack check, the Source Contract check, the capture and the Review Gates. Any exit code that is not 0 fails the job, so an error is not a pass. The job uploads the `artifacts/unit-model-review/<name>/<date>/` folder of that run as `unit-model-review-<name>`, with no `gate-inputs/`.
+A unit changes when its build script, Unit Spec, Turnaround, Raw Export or Published Model changes. For each unit, one job runs these steps in sequence: the Unit Spec check, the pack check, the Source Contract check, the Turnaround check, the capture and the Review Gates. Any exit code that is not 0 fails the job, so an error is not a pass. The job uploads the `artifacts/unit-model-review/<name>/<date>/` folder of that run as `unit-model-review-<name>`, with no `gate-inputs/`. A step that fails stops the job, so an early failure gives no `gates.json`.
 
-The `Unit Model Review` job gives one result for the full pull request. The workflow has no `paths` filter, so this job also passes when no unit changed. Make it the required status check of `main`: with no required check, a failed run does not block a merge.
+The `Unit Model Review` job gives one result for the full pull request. The workflow has no `paths` filter, so this job also passes when no unit changed. Make this job the required status check of `main`. With no required check, a failed run does not block a merge.
 
-CI does not build a model. A build on Linux gives other float values, about 1e-7 in the bounds, so each clip digest changes. Amberwing Dart also gets another vertex count. So each unit with a Unit Spec has its Raw Export in git, and the Mac of the author makes it. For a new Unit Spec, add its Raw Export to `.gitignore` as an exception. After a change to a build script, the kit, a Body Plan or the Clip Library, build each unit again and commit the Raw Export with the pack. CI does not find a Raw Export that is older than its build script: the Published Model does not change either, so the game does not get the change.
+CI does not build a model. A build on Linux gives other float values, about 1e-7 in the bounds, so each clip digest changes. Amberwing Dart also gets another vertex count. So each unit with a Unit Spec has its Raw Export in git, and the Mac of the author makes that file.
 
-A unit with its own change and no Unit Spec fails, because it has no Review Scene. A unit with a Unit Spec but no `regions` also fails, because `region-coverage` gives an error. Only Warden Saelith passes all the gates now. Each other unit needs its Migration before a pull request can change it.
+- For a new Unit Spec, add an exception for its Raw Export to `.gitignore`.
+- After a change to a build script, the kit, a Body Plan or the Clip Library, build each unit again.
+- Commit the new Raw Export with the pack.
+
+CI does not find a Raw Export that is older than its build script. The Published Model then does not change either, so the game does not get the change.
+
+A unit with its own change and no Unit Spec fails, because it has no Review Scene. A new pack of such a unit also fails. A unit with a Unit Spec but no `regions` fails, because `region-coverage` gives an error. Only Warden Saelith passes all the gates now. Each other unit needs its Migration before a pull request can change it.
 
 ## Warden Saelith rebuild
 
