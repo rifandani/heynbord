@@ -60,6 +60,27 @@ rtk bun unit-model:contract:check --all
 rtk bun test scripts/unit-model/source-contract.test.ts
 ```
 
+## Turnarounds
+
+A Turnaround is the target for every side of a Unit Model: front, three-quarter, side and back views, and a detail sheet. The card painting shows one side only.
+
+```sh
+rtk bun unit-model:turnaround:prompts            # 98 prompt files, or give the names
+rtk bun unit-model:turnaround:export crag-rhino  # 5 PNG files to 5 WebP files
+rtk bun unit-model:turnaround:check              # the reference admission gate
+rtk bun test scripts/unit-model/turnaround
+```
+
+1. Run the prompt command. Each file is in `apps/web/art/units/raw/turnaround/<name>/prompts.md`. Git ignores this folder.
+2. Attach the card painting and send the prompts. Save each image next to its prompt file, with the name in the heading of its prompt.
+3. Run the export command. It writes 600 × 800 WebP files to `apps/web/art/units/reference/<name>/`, and it adds a pending `turnaround.json`. Git keeps this folder. A new export does not change an existing record.
+4. A person looks at the 5 views against the card painting, then edits `turnaround.json`:
+   - Set `approval.status` to `approved` or `rejected`, and set `by`, `date` and `notes`.
+   - List in `props` each prop that the views show. Use the words of the Props row of that card in `docs/game/10-card-concepts.md`.
+5. Run the gate. It writes `admission.json` in the folder and exits 1 on a failure. A unit with no folder passes until its Migration issue.
+
+The gate fails on a missing view, a view that is not 600 × 800, a background that is not flat, a palette outside the card painting, a figure that does not fill the frame, an approval that is not complete, an empty `props` list, and a prop that is not in the Props row. A pixel check cannot find a prop, so the gate checks the list of the person who approves. The palette check measures the full figure, so it finds a large color change and not one small wrong detail. It also cannot separate two muted palettes: the Crag Rhino views pass against the Bone Rampart painting. The person who approves must find these errors.
+
 ## Review Scene
 
 The Review Scene captures a Unit Model from fixed cameras on the Battle light, with the real toon material and ink outline. Every model gets the same distance, FOV, near, far, DPR and canvas size. No camera reads the bounds of a model.

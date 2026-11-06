@@ -64,7 +64,7 @@ export const articleOf = (word: string): string =>
   /^[AEIOU]/u.test(word) ? "an" : "a";
 
 /** The brief rows. A link to a section of the document has no use in a prompt. */
-const rowsOf = (rows: CreatureConcept["brief"]): string =>
+export const rowsOf = (rows: CreatureConcept["brief"]): string =>
   rows
     .map(
       ([field, text]) =>

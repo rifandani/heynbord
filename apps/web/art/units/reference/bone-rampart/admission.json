@@ -1,0 +1,32 @@
+{
+  "id": "bone-rampart",
+  "passed": true,
+  "problems": [],
+  "measures": {
+    "front": {
+      "backgroundEdge": 0.867,
+      "offPalette": 0.047,
+      "fill": 0.98
+    },
+    "three-quarter": {
+      "backgroundEdge": 1,
+      "offPalette": 0.094,
+      "fill": 0.873
+    },
+    "side": {
+      "backgroundEdge": 0.997,
+      "offPalette": 0.054,
+      "fill": 0.925
+    },
+    "back": {
+      "backgroundEdge": 0.917,
+      "offPalette": 0.032,
+      "fill": 0.973
+    },
+    "details": {
+      "backgroundEdge": 0.8,
+      "offPalette": 0.069,
+      "fill": 0.973
+    }
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "id": "warden-saelith",
+  "source": "apps/web/public/creature/elf/warden-saelith.webp",
+  "views": {
+    "front": "front.webp",
+    "three-quarter": "three-quarter.webp",
+    "side": "side.webp",
+    "back": "back.webp",
+    "details": "details.webp"
+  },
+  "props": ["longbow", "green and amber arrow"],
+  "approval": {
+    "status": "approved",
+    "by": "rifandani",
+    "date": "2026-11-06",
+    "notes": "Approved with the known differences: the gold mask at the belt is larger than on the card, and the gold patterns differ. The side and back are inferred."
+  }
+}
