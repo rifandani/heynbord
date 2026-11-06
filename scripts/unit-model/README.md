@@ -23,7 +23,7 @@ The palettes and parts come from the build scripts. Warden Saelith includes the 
 
 ## Packing
 
-Keep Blender exports in `apps/web/art/units/raw`. Publish only the packed files.
+Keep Blender exports in `apps/web/art/units/raw`. Publish only the packed files. Git ignores this folder, except the Raw Export of each unit with a Unit Spec: see [Unit Model Review in CI](#unit-model-review-in-ci).
 
 ```sh
 rtk bun run unit-model:pack warden-saelith
@@ -40,7 +40,7 @@ On 2026-10-30 the published models decreased from 35,243,464 to 18,456,628 bytes
 
 The packing API follows the [glTF Transform Meshopt documentation](https://gltf-transform.dev/modules/functions/functions/meshopt).
 
-CI uses committed source contracts in `source-contracts.json`; it does not need the ignored raw exports. The packer refreshes the contract of each model it packs. Each contract has source bounds, skin bone counts, clip durations and a SHA-256 digest of animation track names, interpolation and keyframe data. To refresh all source contracts after an intentional art change, run:
+CI uses committed source contracts in `source-contracts.json`; only the Unit Model Review reads a Raw Export. The packer refreshes the contract of each model it packs. Each contract has source bounds, skin bone counts, clip durations and a SHA-256 digest of animation track names, interpolation and keyframe data. To refresh all source contracts after an intentional art change, run:
 
 ```sh
 rtk proxy bun scripts/unit-model/record-contracts.ts
@@ -150,9 +150,9 @@ Each Review Gate exits 0 clean, 1 fail or 2 error. A fail blocks publication. An
 
 The kit writes the id of each part in the `_PART` vertex attribute, and the part names in the `unitParts` extra of the mesh node. The packer removes both, and `checkUnitModel` rejects a Published Model with `_PART`. A Raw Export from before this data gives an error: run its build script again.
 
-The Review Gates of the mesh read the Raw Export, because only it has the part and region data. The cutouts show the Published Model. So the run also checks that they are one model, and a difference gives exit code 2. The manifest gives the hashes. The Source Contract gives the bounds, bones and clips. The run also compares the triangles, the vertices and the mean vertex color of the 2 files, with a limit of 0.001 on each color channel. So it finds a new color on a large part, and not always on a very small part. CI has no Raw Exports, so #184 must build them or supply them.
+The Review Gates of the mesh read the Raw Export, because only it has the part and region data. The cutouts show the Published Model. So the run also checks that they are one model, and a difference gives exit code 2. The manifest gives the hashes. The Source Contract gives the bounds, bones and clips. The run also compares the triangles, the vertices and the mean vertex color of the 2 files, with a limit of 0.001 on each color channel. So it finds a new color on a large part, and not always on a very small part.
 
-`unit-model:pack` does not read `gates.json`. A capture reads the Published Model, so a model must be packed before its Review Gates can run. #184 uses the exit code of this command to stop a failed model before it gets to `main`.
+`unit-model:pack` does not read `gates.json`. A capture reads the Published Model, so a model must be packed before its Review Gates can run. The Unit Model Review uses the exit code of this command to stop a failed model before it gets to `main`.
 
 No Review Gate has the four-tier review of `divine_eye_microscope.md`. It needs ID, depth and zoom passes that the Review Scene does not have. Its main rule does apply here: there is no global score, so a fail of one Review Gate fails the run.
 
@@ -173,6 +173,24 @@ What each Review Gate cannot see:
 - `chirality`: A pair that is wrong the same way on both sides is still a mirror of itself.
 - `palette`: The card painting has a full scene behind the figure, and no region masks. So it asks if each main color of a region is a color of the painting. A main color has at least 10% of the vertices of the region, so a small detail has no test. It finds a wrong coat color. It does not find a correct color in the wrong place. Browns are in most paintings, so only a saturated color separates well.
 - `part-coverage`: It proves that the model has what the Unit Spec lists, and not that the Unit Spec lists enough.
+
+## Unit Model Review in CI
+
+`.github/workflows/unit-model-review.yml` reviews each Unit Model that a pull request changes.
+
+```sh
+rtk bun run unit-model:changed --base main       # the names, as a JSON array
+rtk bun run unit-model:pack:check warden-saelith # writes nothing
+rtk bun test scripts/unit-model/review/changed.test.ts
+```
+
+A unit changes when its build script, Unit Spec, Turnaround, Raw Export or Published Model changes. For each unit, a job runs the Unit Spec check, the pack check, the Source Contract check, the capture and the Review Gates. Any exit code that is not 0 fails the job, so an error is not a pass. The job uploads the `artifacts/unit-model-review/<name>/<date>/` folder of that run as `unit-model-review-<name>`, with no `gate-inputs/`.
+
+The `Unit Model Review` job gives one result for the full pull request. The workflow has no `paths` filter, so this job also passes when no unit changed. Make it the required status check of `main`: with no required check, a failed run does not block a merge.
+
+CI does not build a model. A build on Linux gives other float values, about 1e-7 in the bounds, so each clip digest changes. Amberwing Dart also gets another vertex count. So each unit with a Unit Spec has its Raw Export in git, and the Mac of the author makes it. For a new Unit Spec, add its Raw Export to `.gitignore` as an exception. After a change to a build script, the kit, a Body Plan or the Clip Library, build each unit again and commit the Raw Export with the pack. CI does not find a Raw Export that is older than its build script: the Published Model does not change either, so the game does not get the change.
+
+A unit with its own change and no Unit Spec fails, because it has no Review Scene. A unit with a Unit Spec but no `regions` also fails, because `region-coverage` gives an error. Only Warden Saelith passes all the gates now. Each other unit needs its Migration before a pull request can change it.
 
 ## Warden Saelith rebuild
 
@@ -205,4 +223,4 @@ rtk bun test scripts/unit-model/region.test.ts
 python3 -m unittest discover -s scripts/unit-model -p 'test_*.py'
 ```
 
-CI has no Raw Exports, so it skips the tests that read them. On 2026-11-05 the 98 Raw Exports grew from 35,765,700 to 36,914,896 bytes (3.21%), and their packed total changed from 18,738,980 to 18,738,092 bytes (-0.005%). The largest change for one model was 0.32%. The 98 Published Models were not published again, because their vertex data and rig do not change. Blender writes the vertices in a different order on each build, so a Raw Export does not repeat byte for byte. The clips and the Source Contracts do repeat.
+CI runs these tests on the Raw Exports in git. On 2026-11-05 the 98 Raw Exports grew from 35,765,700 to 36,914,896 bytes (3.21%), and their packed total changed from 18,738,980 to 18,738,092 bytes (-0.005%). The largest change for one model was 0.32%. The 98 Published Models were not published again, because their vertex data and rig do not change. Blender writes the vertices in a different order on each build, so a Raw Export does not repeat byte for byte. The clips and the Source Contracts do repeat.

@@ -4,7 +4,7 @@
  * stage, then writes and checks its manifest.
  *
  * Usage:
- *   bun scripts/unit-model/review/capture.ts warden-saelith [name...]
+ *   bun scripts/unit-model/review/capture.ts warden-saelith [name...] [--date 2026-11-06]
  *
  * The dev server must be running, because `/master-design` is only in a
  * development build:
@@ -34,7 +34,10 @@ const READY_TIMEOUT = 60_000;
 
 const { positionals: names, values: options } = parseArgs({
   allowPositionals: true,
-  options: { "base-url": { type: "string", default: "http://localhost:4100" } },
+  options: {
+    "base-url": { type: "string", default: "http://localhost:4100" },
+    date: { type: "string", default: new Date().toISOString().slice(0, 10) },
+  },
 });
 
 interface ReviewSubject {
@@ -172,9 +175,8 @@ const browser = await chromium.launch({
   args: ["--use-angle=swiftshader", "--enable-unsafe-swiftshader"],
 });
 try {
-  const date = new Date().toISOString().slice(0, 10);
   for (const name of names) {
-    await captureModel(browser, name, date);
+    await captureModel(browser, name, options.date);
   }
 } finally {
   await browser.close();

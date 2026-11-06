@@ -93,7 +93,12 @@ prisma/_sqlite/migrations
 .zap-reports/
 
 # ChatGPT output and reference sheets. `public/` holds the exported art.
-apps/web/art/*/raw/
+apps/web/art/*/raw/*
+# The Unit Model Review reads these Raw Exports. Add a line for each new Unit Spec.
+!apps/web/art/units/raw/amberwing-dart.glb
+!apps/web/art/units/raw/bone-rampart.glb
+!apps/web/art/units/raw/crag-rhino.glb
+!apps/web/art/units/raw/warden-saelith.glb
 
 # Python bytecode cache (the Blender build scripts make it)
 __pycache__/
