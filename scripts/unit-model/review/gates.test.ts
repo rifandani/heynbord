@@ -7,7 +7,7 @@ import path from "node:path";
 
 import sharp from "sharp";
 
-import { GATES, runCommand, runGates } from "./gates.ts";
+import { GATES, nearestOnTriangle, runCommand, runGates } from "./gates.ts";
 import type {
   GateRecord,
   GateSources,
@@ -688,11 +688,51 @@ describe("joint-loops", () => {
   });
 });
 
+describe("nearestOnTriangle", () => {
+  const triangle = [
+    [0, 0, 0],
+    [1, 0, 0],
+    [0, 1, 0],
+  ] as const;
+  const near = (
+    point: readonly [number, number, number],
+    expected: readonly number[]
+  ) => {
+    const result = nearestOnTriangle(point, triangle);
+    for (const [index, value] of expected.entries()) {
+      expect(result[index]).toBeCloseTo(value, 9);
+    }
+  };
+
+  test("gives the foot of the normal inside the triangle", () => {
+    near([0.2, 0.2, 5], [0.2, 0.2, 0]);
+  });
+
+  test("gives a point on an edge and a corner outside the triangle", () => {
+    near([0.5, -1, 0], [0.5, 0, 0]);
+    near([-1, 0.5, 0], [0, 0.5, 0]);
+    near([1, 1, 0], [0.5, 0.5, 0]);
+    near([2, -1, 0], [1, 0, 0]);
+    near([-1, -1, 0], [0, 0, 0]);
+    near([-1, 2, 0], [0, 1, 0]);
+  });
+});
+
 describe("attachment-anchor", () => {
   test("a prop can share its name with the bone that holds it", async () => {
     const report = await runGates(
       sources({ spec: { ...SPEC, props: [{ id: "staff", bone: "staff" }] } })
     );
+    expect(statusOf(report, "attachment-anchor")).toBe("pass");
+  });
+
+  test("measures to the surface of a long prop, not only to its vertices", async () => {
+    // A pole ten times as long: no vertex is near the hand, but its side is.
+    const meshes = withMesh("staff", (mesh) => ({
+      ...mesh,
+      vertices: mesh.vertices.map(([x, y, z]) => [x, 0.6 + (y - 0.6) * 10, z]),
+    }));
+    const report = await runGates(sources({ meshes }));
     expect(statusOf(report, "attachment-anchor")).toBe("pass");
   });
 

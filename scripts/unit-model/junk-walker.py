@@ -34,11 +34,22 @@ sys.path.insert(0, os.path.join(REPO, "scripts", "unit-model"))
 
 import importlib  # noqa: E402
 
+import body_plans  # noqa: E402
+import clips  # noqa: E402
 import unit_model_kit as kit  # noqa: E402
 
 importlib.reload(kit)
+importlib.reload(body_plans.shared)
+importlib.reload(body_plans.machine)
+importlib.reload(clips.base)
+importlib.reload(clips.overrides)
+importlib.reload(clips.machine)
 
-from unit_model_kit import X, Y, Z, Clip, Part, faces_of, hex_color, turn  # noqa: E402
+from clips.base import Beat  # noqa: E402
+from clips.overrides import Fall, Patch  # noqa: E402
+from unit_model_kit import X, Y, Z, Part, faces_of, hex_color  # noqa: E402
+
+plan = body_plans.BODY_PLANS["machine"]
 
 # --- Palette (the card painting) ----------------------------------------------
 
@@ -67,12 +78,24 @@ STEAM = hex_color("#e8e4dc")
 
 # --- Proportions ---------------------------------------------------------------
 
+# The body bone is the carrier: the boiler pitches about the top of the legs.
+TABLE = plan.Proportions(
+    root_tip_z=0.1,
+    carrier="body",
+    carrier_y=0.0,
+    carrier_z=0.4,
+    carrier_tip_y=0.0,
+    carrier_tip_z=0.6,
+    wheels=False,
+)
+LEGS = plan.WalkerLegs()
+
 BOILER_C = Vector((0, 0.0, 0.5))
 BOILER_R = Vector((0.2, 0.19, 0.17))
-LEG_X = 0.13
-HIP_Z = 0.38
-KNEE = Vector((0, -0.075, 0.21))
-ANKLE_Z = 0.065
+LEG_X = LEGS.x
+HIP_Z = LEGS.hip_z
+KNEE = Vector((0, LEGS.knee_y, LEGS.knee_z))
+ANKLE_Z = LEGS.ankle_z
 TOP_Z = 0.64
 
 # The claw arm on the right side (-X), the camera side.
@@ -93,12 +116,10 @@ DRIVER = Vector((0, 0.06, 0.62))
 DRIVER_SIZE = 1.3
 DRIVER_YAW = -12
 
-BONES = [
-    ("root", (0, 0, 0), (0, 0, 0.1), None),
-    ("body", (0, 0, 0.4), (0, 0, 0.6), "root"),
-    # The poles that the knees point to: to the front.
-    ("pole.L", (LEG_X, -0.5, 0.21), (LEG_X, -0.5, 0.26), "body"),
-    ("pole.R", (-LEG_X, -0.5, 0.21), (-LEG_X, -0.5, 0.26), "body"),
+# The bones on the body. The lever bones are between the legs, so the legs are
+# here too, and not in the plan.
+TRUNK_BONES = [
+    *plan.walker_poles(LEGS, "body"),
     ("arm.upper", tuple(SHOULDER), tuple(ELBOW), "body"),
     ("arm.fore", tuple(ELBOW), tuple(WRIST), "arm.upper"),
     ("claw.top", tuple(WRIST), tuple(JAW_TOP), "arm.fore"),
@@ -108,24 +129,11 @@ BONES = [
     ("plate", tuple(PLATE_TOP), tuple(PLATE_TOP + Vector((-0.01, 0, -0.14))), "body"),
 ]
 for side, sign in (("L", 1), ("R", -1)):
-    hip = Vector((LEG_X * sign, 0, HIP_Z))
-    knee = Vector((LEG_X * sign, KNEE.y, KNEE.z))
-    ankle = Vector((LEG_X * sign, 0, ANKLE_Z))
-    BONES += [
-        (f"thigh.{side}", tuple(hip), tuple(knee), "body"),
-        (f"shin.{side}", tuple(knee), tuple(ankle), f"thigh.{side}"),
-        # The foot is not a child of the shin: it stays on the ground, and the shin reaches it with IK.
-        (f"foot.{side}", tuple(ankle), tuple(ankle + Vector((0, -0.1, 0))), "root"),
+    TRUNK_BONES += [
+        *plan.walker_leg(LEGS, side, "body"),
         (f"lever.{side}", (0.075 * sign, -0.03, 0.6), (0.077 * sign, -0.02, 0.69), "body"),
     ]
-_d_neck = DRIVER + Vector((0, 0, 0.11 * DRIVER_SIZE))
-BONES += [
-    ("driver.body", tuple(DRIVER), tuple(_d_neck), "body"),
-    ("driver.head", tuple(_d_neck), tuple(_d_neck + Vector((0, 0, 0.1 * DRIVER_SIZE))), "driver.body"),
-]
-for side, sign in (("L", 1), ("R", -1)):
-    shoulder = DRIVER + Vector((0.05 * sign * DRIVER_SIZE, 0, 0.095 * DRIVER_SIZE))
-    BONES.append((f"driver.arm.{side}", tuple(shoulder), tuple(shoulder + Vector((0.02 * sign, -0.03, -0.07))), "driver.body"))
+TRUNK_BONES += plan.crew_bones("driver", DRIVER, DRIVER_SIZE, "body")
 
 # --- Parts ---------------------------------------------------------------------
 
@@ -431,9 +439,10 @@ def driver_parts():
 
 def build_figure():
     kit.reset_scene()
-    rig = kit.build_armature("JunkWalker", BONES)
+    rig, _ = plan.build_rig("JunkWalker", TABLE, TRUNK_BONES)
     parts = boiler_parts() + steam_parts() + leg_parts() + claw_parts() + driver_parts()
     objects = [kit.part_object(part) for part in parts]
+    plan.check_skin(parts, rig)
     mesh = kit.join_parts(objects, "JunkWalkerMesh")
     kit.skin(mesh, rig)
     return rig, mesh
@@ -464,20 +473,77 @@ def add_controls(rig):
 # --- Clips -----------------------------------------------------------------------
 
 
-def build_clips(rig):
-    def t(bone, *rotations):
-        return turn(rig, bone, *rotations)
+def _idle_beat(frame):
+    w = frame / 48 * 2 * math.pi
+    thrum = (1 if (frame // 4) % 2 else -1) if frame not in (0, 48) else 0
+    return Beat(frame, "stance", (thrum, 0.5 + 0.5 * math.sin(w * 2), math.sin(w), max(0.0, math.sin(w * 2))))
 
-    def at(bone, offset):
-        return kit.shift(rig, bone, offset)
 
-    def pose(base, changes):
-        result = dict(base)
-        result.update(changes)
-        return result
+def _low_beat(frame):
+    w = frame / 48 * 2 * math.pi
+    return Beat(frame, "broken", (math.sin(w), 0.5 + 0.5 * math.sin(w * 3)))
 
-    def driver(bob=0.0, look=0.0, pull=0.0):
+
+PATCHES = (
+    # The engine thrums, the chimney puffs, the claw snaps and the driver looks about.
+    Patch("idle", "engine-thrum", beats=tuple(_idle_beat(frame) for frame in range(0, 49, 4))),
+    # Steam hisses from a broken joint.
+    Patch("lowHp", "steam-leak", beats=tuple(_low_beat(frame) for frame in range(0, 49, 6))),
+    # One heavy step of each foot for each Square (`STEPS_PER_SQUARE`).
+    Patch("walk", "pipe-stride", beats=tuple(Beat(frame, "stride", (frame / 24,)) for frame in range(0, 25, 2))),
+    # The attack: the claw goes back and opens wide, then it thrusts forward
+    # and snaps shut. The slash effect starts at 50% of the attack
+    # (`MELEE_IMPACT` in fx.ts), so the claw snaps at frame 15 of 30.
+    Patch(
+        "attack",
+        "claw-snap",
+        beats=(Beat(0), Beat(9, "windup"), Beat(13, "snap"), Beat(15, "snap", (1.0,)), Beat(19, "snap", (1.0,)), Beat(26), Beat(30)),
+    ),
+    # The knees give, then it tips on its right side.
+    Patch(
+        "death",
+        "buckle-tip",
+        beats=(Beat(0), Beat(4, "jolt"), Beat(12, "tilting"), Beat(24, "tipped"), Beat(28, "tipped", (5,)), Beat(36, "tipped")),
+    ),
+    # Rebirth: the Unit falls (45% of the event, `REBORN_FALL`), then gets up.
+    Patch(
+        "rebirth",
+        "buckle-rise",
+        beats=(
+            Beat(0),
+            Beat(4, "jolt"),
+            Beat(10, "tilting"),
+            Beat(20, "tipped"),
+            Beat(22, "tipped", (3,)),
+            Beat(32, "tilting"),
+            Beat(38, "landing", (0.0, 1.0, 2.0)),
+            Beat(42, "cheer"),
+            Beat(48),
+        ),
+    ),
+    # The walker drops onto the Square and steam bursts.
+    Patch(
+        "summon",
+        "steam-drop",
+        beats=(
+            Beat(0, "landing", (0.2, 0.0, 0.0)),
+            Beat(8, "landing", (0.0, 1.0, 2.4)),
+            Beat(12, "landing", (0.0, 0.2, 1.6)),
+            Beat(15, "landing", (0.0, 0.5, 1.0)),
+            Beat(19, "cheer"),
+            Beat(24),
+        ),
+    ),
+)
+
+
+class Poses(clips.machine.Poses):
+    fall = Fall(Y, -84, (-0.06, 0, 0.25))
+    table = TABLE
+
+    def driver(self, bob=0.0, look=0.0, pull=0.0):
         """The driver: a small bob, the head turns about, the hands pull the levers back."""
+        t, at = self.t, self.at
         return {
             "driver.body@loc": at("driver.body", (0, 0, 0.006 * bob)),
             "driver.body": t("driver.body", (X, -3 * bob)),
@@ -488,9 +554,10 @@ def build_clips(rig):
             "lever.R": t("lever.R", (X, -25 * pull)),
         }
 
-    def rest(thrum=0.0, puff=0.0, look=0.0, snap=0.0):
+    def stance(self, thrum=0.0, puff=0.0, look=0.0, snap=0.0):
         """At rest: the engine thrums, the chimney puffs, the claw opens and closes, the driver looks about."""
-        result = {
+        t, at = self.t, self.at
+        return {
             "body@loc": at("body", (0, 0, 0.004 * thrum - 0.01)),
             "body": t("body", (X, 0.8 * thrum)),
             "arm.upper": t("arm.upper", (X, -4 * snap)),
@@ -500,39 +567,37 @@ def build_clips(rig):
             "leak@scale": 0.0,
             "shin.L/IK": 1.0,
             "shin.R/IK": 1.0,
+            **self.driver(thrum, look),
         }
-        result.update(driver(thrum, look))
-        return result
 
-    def broken(thrum=0.0, hiss=0.0):
+    def broken(self, base, thrum=0.0, hiss=0.0):
         """Low HP: it sags on a bent right knee, steam hisses from a joint, a plate hangs loose and the driver slumps."""
-        result = rest(thrum, 0.2)
-        result.update(
-            {
-                "body@loc": at("body", (0.01, 0.01, -0.06 + 0.004 * thrum)),
-                "body": t("body", (Y, -7), (X, 4)),
-                "foot.R@loc": at("foot.R", (0, 0.02, 0)),
-                "arm.upper": t("arm.upper", (X, 20), (Z, 6)),
-                "arm.fore": t("arm.fore", (X, 12)),
-                "claw.top": t("claw.top", (X, -18)),
-                "claw.low": t("claw.low", (X, 22)),
-                "leak@scale": 1.0 + 0.8 * hiss,
-                "plate": t("plate", (Y, -30 - 6 * hiss), (X, 8)),
-                "driver.body": t("driver.body", (X, 22)),
-                "driver.head": t("driver.head", (X, 18 + 4 * thrum), (Y, -10)),
-                "driver.arm.L": t("driver.arm.L", (X, 16)),
-                "driver.arm.R": t("driver.arm.R", (X, 16)),
-            }
-        )
-        return result
+        t, at = self.t, self.at
+        return {
+            **self.stance(thrum, 0.2),
+            "body@loc": at("body", (0.01, 0.01, -0.06 + 0.004 * thrum)),
+            "body": t("body", (Y, -7), (X, 4)),
+            "foot.R@loc": at("foot.R", (0, 0.02, 0)),
+            "arm.upper": t("arm.upper", (X, 20), (Z, 6)),
+            "arm.fore": t("arm.fore", (X, 12)),
+            "claw.top": t("claw.top", (X, -18)),
+            "claw.low": t("claw.low", (X, 22)),
+            "leak@scale": 1.0 + 0.8 * hiss,
+            "plate": t("plate", (Y, -30 - 6 * hiss), (X, 8)),
+            "driver.body": t("driver.body", (X, 22)),
+            "driver.head": t("driver.head", (X, 18 + 4 * thrum), (Y, -10)),
+            "driver.arm.L": t("driver.arm.L", (X, 16)),
+            "driver.arm.R": t("driver.arm.R", (X, 16)),
+        }
 
-    def stride(phase):
+    def stride(self, base, phase):
         """
         The walk in place, by phase 0..1: the left foot steps at 0, the right
         at 0.5. A lifted foot rises and moves forward, a planted foot slides
         back, and the boiler drops at each step and sways over the planted foot.
         """
-        result = rest(0, 0.6 + 0.4 * math.sin(phase * 4 * math.pi))
+        t, at = self.t, self.at
+        result = self.stance(0, 0.6 + 0.4 * math.sin(phase * 4 * math.pi))
         for side, offset in (("L", 0.0), ("R", 0.5)):
             p = (phase - offset) % 1.0
             if p < 0.5:
@@ -553,191 +618,135 @@ def build_clips(rig):
         result["body"] = t("body", (Y, 5 * math.cos(phase * 2 * math.pi)), (X, 3))
         result["arm.upper"] = t("arm.upper", (X, -6 * math.sin(phase * 2 * math.pi)))
         result["plate"] = t("plate", (Y, 6 * math.sin(phase * 4 * math.pi)))
-        result.update(
-            {
-                "driver.body": t("driver.body", (Y, -4 * math.cos(phase * 2 * math.pi))),
-                "driver.head": t("driver.head", (Y, -6 * math.cos(phase * 2 * math.pi))),
-            }
-        )
+        result["driver.body"] = t("driver.body", (Y, -4 * math.cos(phase * 2 * math.pi)))
+        result["driver.head"] = t("driver.head", (Y, -6 * math.cos(phase * 2 * math.pi)))
         return result
 
-    # The attack: the claw goes back and opens wide, then it thrusts forward
-    # and snaps shut. The slash effect starts at 50% of the attack
-    # (`MELEE_IMPACT` in fx.ts), so the claw snaps at frame 15 of 30.
-    def windup():
-        result = rest(0, 1.0)
-        result.update(
-            {
-                "body@loc": at("body", (0, 0.03, -0.01)),
-                "body": t("body", (X, -6), (Z, 8)),
-                "arm.upper": t("arm.upper", (X, -50), (Z, -10)),
-                "arm.fore": t("arm.fore", (X, -40)),
-                "claw.top": t("claw.top", (X, -45)),
-                "claw.low": t("claw.low", (X, 45)),
-            }
-        )
-        result.update(driver(0.5, -0.4, 1.0))
-        return result
+    def windup(self, base):
+        """The claw goes back and opens wide."""
+        t, at = self.t, self.at
+        return {
+            **self.stance(0, 1.0),
+            "body@loc": at("body", (0, 0.03, -0.01)),
+            "body": t("body", (X, -6), (Z, 8)),
+            "arm.upper": t("arm.upper", (X, -50), (Z, -10)),
+            "arm.fore": t("arm.fore", (X, -40)),
+            "claw.top": t("claw.top", (X, -45)),
+            "claw.low": t("claw.low", (X, 45)),
+            **self.driver(0.5, -0.4, 1.0),
+        }
 
-    def snap(hold=0.0):
-        result = rest(0, 1.6)
-        result.update(
-            {
-                "body@loc": at("body", (0, -0.05, -0.03)),
-                "body": t("body", (X, 10), (Z, -6)),
-                "arm.upper": t("arm.upper", (X, -28 - 4 * hold), (Z, 8)),
-                "arm.fore": t("arm.fore", (X, 10)),
-                "claw.top": t("claw.top", (X, 6)),
-                "claw.low": t("claw.low", (X, -6)),
-                "foot.L@loc": at("foot.L", (0, -0.04, 0)),
-            }
-        )
-        result.update(driver(-0.6, -0.2, -1.0))
-        return result
+    def snap(self, base, hold=0.0):
+        """The claw thrusts forward and snaps shut."""
+        t, at = self.t, self.at
+        return {
+            **self.stance(0, 1.6),
+            "body@loc": at("body", (0, -0.05, -0.03)),
+            "body": t("body", (X, 10), (Z, -6)),
+            "arm.upper": t("arm.upper", (X, -28 - 4 * hold), (Z, 8)),
+            "arm.fore": t("arm.fore", (X, 10)),
+            "claw.top": t("claw.top", (X, 6)),
+            "claw.low": t("claw.low", (X, -6)),
+            "foot.L@loc": at("foot.L", (0, -0.04, 0)),
+            **self.driver(-0.6, -0.2, -1.0),
+        }
 
-    def jolt(amount=1.0):
+    def jolt(self, base, amount=1.0):
         """A hit rocks the boiler back, steam hisses, the plates rattle and the driver jumps."""
-        result = rest(0, 1.0)
-        result.update(
-            {
-                "body@loc": at("body", (0, 0.03 * amount, -0.01)),
-                "body": t("body", (X, -7 * amount), (Y, 4 * amount)),
-                "arm.upper": t("arm.upper", (X, -20 * amount)),
-                "claw.top": t("claw.top", (X, -30 * amount)),
-                "claw.low": t("claw.low", (X, 30 * amount)),
-                "leak@scale": 1.6 * amount,
-                "plate": t("plate", (Y, -20 * amount)),
-                "driver.body@loc": at("driver.body", (0, 0, 0.03 * amount)),
-                "driver.body": t("driver.body", (X, -14 * amount)),
-                "driver.head": t("driver.head", (X, -20 * amount)),
-                "driver.arm.L": t("driver.arm.L", (X, -80 * amount), (Y, 30 * amount)),
-                "driver.arm.R": t("driver.arm.R", (X, -80 * amount), (Y, -30 * amount)),
-            }
-        )
-        return result
+        t, at = self.t, self.at
+        return {
+            **self.stance(0, 1.0),
+            "body@loc": at("body", (0, 0.03 * amount, -0.01)),
+            "body": t("body", (X, -7 * amount), (Y, 4 * amount)),
+            "arm.upper": t("arm.upper", (X, -20 * amount)),
+            "claw.top": t("claw.top", (X, -30 * amount)),
+            "claw.low": t("claw.low", (X, 30 * amount)),
+            "leak@scale": 1.6 * amount,
+            "plate": t("plate", (Y, -20 * amount)),
+            "driver.body@loc": at("driver.body", (0, 0, 0.03 * amount)),
+            "driver.body": t("driver.body", (X, -14 * amount)),
+            "driver.head": t("driver.head", (X, -20 * amount)),
+            "driver.arm.L": t("driver.arm.L", (X, -80 * amount), (Y, 30 * amount)),
+            "driver.arm.R": t("driver.arm.R", (X, -80 * amount), (Y, -30 * amount)),
+        }
 
-    def buckle():
+    def tilting(self, base):
         """The knees give: the boiler drops and leans to its right."""
-        result = rest(0, 2.0)
-        result.update(
-            {
-                "body@loc": at("body", (-0.02, 0.02, -0.12)),
-                "body": t("body", (Y, -16), (X, 6)),
-                "foot.L@loc": at("foot.L", (0.02, 0.02, 0)),
-                "foot.R@loc": at("foot.R", (-0.03, -0.02, 0)),
-                "arm.upper": t("arm.upper", (X, 30)),
-                "claw.top": t("claw.top", (X, -30)),
-                "claw.low": t("claw.low", (X, 30)),
-                "leak@scale": 2.2,
-                "plate": t("plate", (Y, -50)),
-                "driver.body": t("driver.body", (Y, 24), (X, -10)),
-                "driver.arm.L": t("driver.arm.L", (X, -140)),
-                "driver.arm.R": t("driver.arm.R", (X, -140)),
-            }
-        )
-        return result
+        t, at = self.t, self.at
+        return {
+            **self.stance(0, 2.0),
+            "body@loc": at("body", (-0.02, 0.02, -0.08)),
+            "body": t("body", (Y, -16), (X, 6)),
+            "foot.L@loc": at("foot.L", (0.02, 0.02, 0)),
+            "foot.R@loc": at("foot.R", (-0.03, -0.02, 0)),
+            "arm.upper": t("arm.upper", (X, 30)),
+            "claw.top": t("claw.top", (X, -30)),
+            "claw.low": t("claw.low", (X, 30)),
+            "leak@scale": 2.2,
+            "plate": t("plate", (Y, -50)),
+            "driver.body": t("driver.body", (Y, 24), (X, -10)),
+            "driver.arm.L": t("driver.arm.L", (X, -140)),
+            "driver.arm.R": t("driver.arm.R", (X, -140)),
+        }
 
-    def tipped(bounce=0.0):
+    def tipped(self, base, bounce=0.0):
         """On its right side, toward the camera: the legs stick out, the claw lies open and the driver tumbles out."""
-        result = rest()
-        result.update(
-            {
-                "root": t("root", (Y, -84 + bounce)),
-                "root@loc": at("root", (-0.06, 0, 0.25)),
-                "body@loc": at("body", (0, 0, -0.02)),
-                "foot.L@loc": at("foot.L", (0.0, -0.04, 0.12)),
-                "foot.R@loc": at("foot.R", (0.0, 0.04, 0.1)),
-                "foot.L": t("foot.L", (X, -30)),
-                "foot.R": t("foot.R", (X, 20)),
-                "arm.upper": t("arm.upper", (X, -20), (Z, 50)),
-                "arm.fore": t("arm.fore", (X, 10)),
-                "claw.top": t("claw.top", (X, -40)),
-                "claw.low": t("claw.low", (X, 40)),
-                "steam@scale": 0.0,
-                "leak@scale": 0.4,
-                "plate": t("plate", (Y, -70)),
-                "driver.body@loc": at("driver.body", (0, -0.04, 0.06)),
-                "driver.body": t("driver.body", (Y, -60), (X, 30)),
-                "driver.head": t("driver.head", (X, -20), (Z, 30)),
-                "driver.arm.L": t("driver.arm.L", (X, -150), (Y, 20)),
-                "driver.arm.R": t("driver.arm.R", (X, -100), (Y, -40)),
-            }
-        )
-        return result
+        t, at = self.t, self.at
+        return {
+            **super().tipped(base, bounce),
+            "body@loc": at("body", (0, 0, -0.02)),
+            "foot.L@loc": at("foot.L", (0.0, -0.04, 0.12)),
+            "foot.R@loc": at("foot.R", (0.0, 0.04, 0.1)),
+            "foot.L": t("foot.L", (X, -30)),
+            "foot.R": t("foot.R", (X, 20)),
+            "arm.upper": t("arm.upper", (X, -20), (Z, 50)),
+            "arm.fore": t("arm.fore", (X, 10)),
+            "claw.top": t("claw.top", (X, -40)),
+            "claw.low": t("claw.low", (X, 40)),
+            "steam@scale": 0.0,
+            "leak@scale": 0.4,
+            "plate": t("plate", (Y, -70)),
+            "driver.body@loc": at("driver.body", (0, -0.04, 0.06)),
+            "driver.body": t("driver.body", (Y, -60), (X, 30)),
+            "driver.head": t("driver.head", (X, -20), (Z, 30)),
+            "driver.arm.L": t("driver.arm.L", (X, -150), (Y, 20)),
+            "driver.arm.R": t("driver.arm.R", (X, -100), (Y, -40)),
+        }
 
-    def landing(height=0.0, squash=0.0, puff=1.0):
+    def landing(self, base, height=0.0, squash=0.0, puff=1.0):
         """A summon: the walker drops onto the Square, the legs take the weight and steam bursts."""
-        result = rest(0, puff)
-        result["root@loc"] = at("root", (0, 0, height))
-        result["body@loc"] = at("body", (0, 0, -0.07 * squash - 0.01))
-        result["body"] = t("body", (X, 3 * squash))
+        t, at = self.t, self.at
+        result = {
+            **self.stance(0, puff),
+            "root@loc": at("root", (0, 0, height)),
+            "body@loc": at("body", (0, 0, -0.07 * squash - 0.01)),
+            "body": t("body", (X, 3 * squash)),
+        }
         if height > 0:
             # In the air, the legs hang down.
             result["foot.L@loc"] = at("foot.L", (0, 0.0, 0.02))
             result["foot.R@loc"] = at("foot.R", (0, 0.0, 0.02))
         return result
 
-    def cheer(base):
-        result = dict(base)
-        result.update(
-            {
-                "driver.body@loc": at("driver.body", (0, 0, 0.02)),
-                "driver.head": t("driver.head", (X, -18)),
-                "driver.arm.L": t("driver.arm.L", (X, -160), (Y, 20)),
-                "driver.arm.R": t("driver.arm.R", (X, -160), (Y, -20)),
-                "claw.top": t("claw.top", (X, -40)),
-                "claw.low": t("claw.low", (X, 40)),
-                "arm.upper": t("arm.upper", (X, -60)),
-                "steam@scale": 2.2,
-            }
-        )
-        return result
+    def cheer(self, base):
+        """The driver cheers, the claw opens wide and the chimney puffs."""
+        t, at = self.t, self.at
+        return {
+            **base,
+            "driver.body@loc": at("driver.body", (0, 0, 0.02)),
+            "driver.head": t("driver.head", (X, -18)),
+            "driver.arm.L": t("driver.arm.L", (X, -160), (Y, 20)),
+            "driver.arm.R": t("driver.arm.R", (X, -160), (Y, -20)),
+            "claw.top": t("claw.top", (X, -40)),
+            "claw.low": t("claw.low", (X, 40)),
+            "arm.upper": t("arm.upper", (X, -60)),
+            "steam@scale": 2.2,
+        }
 
-    clips = []
-    idle = Clip("idle", 48, loop=True)
-    for frame in range(0, 49, 4):
-        w = frame / 48 * 2 * math.pi
-        thrum = (1 if (frame // 4) % 2 else -1) if frame not in (0, 48) else 0
-        idle.key(frame, rest(thrum, 0.5 + 0.5 * math.sin(w * 2), math.sin(w), max(0.0, math.sin(w * 2))))
-    clips.append(idle)
 
-    low = Clip("lowHp", 48, loop=True)
-    for frame in range(0, 49, 6):
-        w = frame / 48 * 2 * math.pi
-        low.key(frame, broken(math.sin(w), 0.5 + 0.5 * math.sin(w * 3)))
-    clips.append(low)
-
-    # One heavy step of each foot for each Square (`STEPS_PER_SQUARE`).
-    walk = Clip("walk", 24, loop=True)
-    for frame in range(0, 25, 2):
-        walk.key(frame, stride(frame / 24))
-    clips.append(walk)
-
-    attack = Clip("attack", 30)
-    attack.key(0, rest()).key(9, windup()).key(13, snap()).key(15, snap(1.0)).key(19, snap(1.0))
-    attack.key(26, rest()).key(30, rest())
-    clips.append(attack)
-
-    hurt = Clip("hurt", 16)
-    hurt.key(0, rest()).key(3, jolt()).key(8, jolt(0.4)).key(16, rest())
-    clips.append(hurt)
-
-    death = Clip("death", 36)
-    death.key(0, rest()).key(4, jolt()).key(12, buckle())
-    death.key(24, tipped()).key(28, tipped(5)).key(36, tipped())
-    clips.append(death)
-
-    # Rebirth: the Unit falls (45% of the event, `REBORN_FALL`), then gets up.
-    rebirth = Clip("rebirth", 48)
-    rebirth.key(0, rest()).key(4, jolt()).key(10, buckle()).key(20, tipped()).key(22, tipped(3))
-    rebirth.key(32, buckle()).key(38, landing(0.0, 1.0, 2.0)).key(42, cheer(rest())).key(48, rest())
-    clips.append(rebirth)
-
-    summon = Clip("summon", 24)
-    summon.key(0, landing(0.2, 0.0, 0.0)).key(8, landing(0.0, 1.0, 2.4)).key(12, landing(0.0, 0.2, 1.6)).key(15, landing(0.0, 0.5, 1.0))
-    summon.key(19, cheer(rest())).key(24, rest())
-    clips.append(summon)
-    return clips
+def build_clips(rig):
+    poses = Poses(*kit.pose_tools(rig))
+    return clips.overrides.build(clips.machine.CLIPS, poses, PATCHES, without=("cast",))
 
 
 def build(export=True):

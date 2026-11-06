@@ -234,3 +234,9 @@ CI runs these tests on the Raw Exports in git. On 2026-11-05 the 98 Raw Exports 
 ## Beast Migration
 
 Issue #186 starts with Crag Rhino, Gorehorn Red Maw, Old Frostmaw, Woolly Mammoth and Cave Bear. The [batch report](../../artifacts/unit-model-review/migration-beasts/report.md) has the inventory, before and after gates, intentional clip changes and the [draft Turnarounds](../../artifacts/unit-model-review/migration-beasts/turnarounds.png). The four new Turnarounds have human approval and pass intake. Model gates still fail, so later batches stay pending.
+
+## Machine and Structure Migration
+
+Issue #187 starts with the four machines and Bone Rampart. Boss Snikkit, Junk Walker and Rocket Barrel Rider moved to the `machine` plan, and `bun unit-model:contract:check` passed after each move. Then their defect fixes changed some clips and the bones of Boss Snikkit, as the report records. Grand Gearjammer got a Unit Spec. The [batch report](../../artifacts/unit-model-review/migration-machines-structures/report.md) has the inventory, the before and after gates, the intentional clip changes and the reason that the batch stops: `palette` fails on all five units, and the four machines have no Turnaround.
+
+`attachment-anchor` measures from the bone to the nearest point on the triangles of the prop, not to the nearest vertex. A long pole has vertices at its ends only, so the old measure failed a banner held at its middle.

@@ -44,8 +44,11 @@ def rounded_tools():
 
 
 DIRECTORY = Path(__file__).resolve().parent
-# The Unit Specs of the moved units. The other 3 moved units have no Unit Spec yet.
-MOVED_WITH_SPECS = ("warden-saelith", "crag-rhino", "amberwing-dart", "bone-rampart")
+# The Unit Specs of the moved units. Fuse Runner and Tusk Brute have no Unit Spec yet.
+MOVED_WITH_SPECS = (
+    "warden-saelith", "crag-rhino", "amberwing-dart", "bone-rampart",
+    "grand-gearjammer", "boss-snikkit", "junk-walker", "rocket-barrel-rider",
+)
 
 
 class BaseClips(unittest.TestCase):

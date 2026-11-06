@@ -83,6 +83,9 @@ Each moved unit keeps its clip durations and its keyframe digests, with one appr
 | Amberwing Dart | flyer | 7 | 7 | none | 200 to 136 |
 | Grand Gearjammer | machine | 8 | 8 | none | 200 to 135 |
 | Bone Rampart | structure | 8 | 8 | none | 202 to 152 |
+| Boss Snikkit | machine | 8 | 4 | `idle`, `lowHp`, `walk`, `attack` | 220 to 184 |
+| Junk Walker | machine | 8 | 1 | `idle`, `lowHp`, `walk`, `attack`, `death`, `rebirth`, `summon` | 279 to 279 |
+| Rocket Barrel Rider | machine | 8 | 1 | `idle`, `lowHp`, `walk`, of 16 frames, `attack`, `death`, `rebirth`, `summon` | 228 to 290 |
 
 The 7 scripts have 485 fewer lines (1,687 to 1,202), and the library has 1,492 lines. So the line count goes down only when more units move. Amberwing Dart and Grand Gearjammer have 0 changes of timing. The survey took their values for ties, so they do not test the base timing.
 
@@ -97,6 +100,9 @@ These are the `Patch` names:
 | Amberwing Dart | `walk` hover-dart, `attack` lance-dive, `death` fall-left |
 | Grand Gearjammer | `attack` cannon-shot, `death` tip-right |
 | Bone Rampart | `walk` wall-heave, `attack` hammer-smash, `death` wall-collapse, `rebirth` wall-rebuild |
+| Boss Snikkit | `idle` cackle, `lowHp` slump, `walk` small-wheels, `attack` torch-strike |
+| Junk Walker | `idle` engine-thrum, `lowHp` steam-leak, `walk` pipe-stride, `attack` claw-snap, `death` buckle-tip, `rebirth` buckle-rise, `summon` steam-drop |
+| Rocket Barrel Rider | `idle` barrel-hover, `lowHp` barrel-sputter, `walk` swift-flight, `attack` barrel-ram, `death` barrel-blast, `rebirth` barrel-crash, `summon` rocket-launch |
 
 These are the roles of each unit. "Fall" is yes if the unit sets its own `fall`:
 

@@ -196,10 +196,14 @@ class UnitSpecChecks(unittest.TestCase):
         self.assertEqual(result.stdout.splitlines(), [
             "PASS amberwing-dart.json: amberwing-dart (flyer)",
             "PASS bone-rampart.json: bone-rampart (structure)",
+            "PASS boss-snikkit.json: boss-snikkit (machine)",
             "PASS cave-bear.json: cave-bear (quadruped)",
             "PASS crag-rhino.json: crag-rhino (quadruped)",
             "PASS gorehorn-red-maw.json: gorehorn-red-maw (quadruped)",
+            "PASS grand-gearjammer.json: grand-gearjammer (machine)",
+            "PASS junk-walker.json: junk-walker (machine)",
             "PASS old-frostmaw.json: old-frostmaw (quadruped)",
+            "PASS rocket-barrel-rider.json: rocket-barrel-rider (machine)",
             "PASS warden-saelith.json: warden-saelith (biped-medium)",
             "PASS woolly-mammoth.json: woolly-mammoth (quadruped)",
         ])

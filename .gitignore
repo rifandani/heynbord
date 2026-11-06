@@ -107,3 +107,8 @@ __pycache__/
 !apps/web/art/units/raw/old-frostmaw.glb
 !apps/web/art/units/raw/woolly-mammoth.glb
 !apps/web/art/units/raw/cave-bear.glb
+# Issue 187: the first machine Migration batch.
+!apps/web/art/units/raw/grand-gearjammer.glb
+!apps/web/art/units/raw/boss-snikkit.glb
+!apps/web/art/units/raw/junk-walker.glb
+!apps/web/art/units/raw/rocket-barrel-rider.glb

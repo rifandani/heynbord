@@ -43,19 +43,19 @@
       "id": "skel.A.arm",
       "hand": "left",
       "cameraSide": false,
-      "bone": "skel.A"
+      "bone": "skel.A.arm"
     },
     {
       "id": "banner",
       "hand": "right",
       "cameraSide": true,
-      "bone": "skel.B.arm"
+      "bone": "banner"
     },
     {
       "id": "sign",
       "hand": "none",
       "cameraSide": true,
-      "bone": "base"
+      "bone": "sign"
     }
   ],
   "clips": {
@@ -95,8 +95,47 @@
     "arrow sign at the side with writing on both faces",
     "rebirth stands the shields up one by one"
   ],
+  "regions": {
+    "arm.L": {
+      "x0": 0.77,
+      "x1": 0.87,
+      "y0": 0.12,
+      "y1": 0.47
+    },
+    "arm.R": {
+      "x0": 0.32,
+      "x1": 0.41,
+      "y0": 0.46,
+      "y1": 0.54
+    },
+    "base": {
+      "x0": 0.19,
+      "x1": 1,
+      "y0": 0.44,
+      "y1": 1
+    },
+    "head": {
+      "x0": 0.41,
+      "x1": 0.78,
+      "y0": 0.33,
+      "y1": 0.45
+    },
+    "prop": {
+      "x0": 0,
+      "x1": 0.93,
+      "y0": 0,
+      "y1": 1
+    },
+    "torso": {
+      "x0": 0.4,
+      "x1": 0.78,
+      "y0": 0.44,
+      "y1": 0.96
+    }
+  },
   "identity": {
     "feature": "large skull on the middle shield",
     "azimuthDegrees": 0
-  }
+  },
+  "holedParts": ["chains"]
 }

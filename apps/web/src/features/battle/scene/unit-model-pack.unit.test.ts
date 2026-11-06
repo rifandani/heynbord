@@ -39,6 +39,20 @@ describe("published compressed Unit Models", () => {
     expect(clipChecks(model).filter((check) => !check.pass)).toEqual([]);
   });
 
+  it.each([
+    "grand-gearjammer",
+    "boss-snikkit",
+    "junk-walker",
+    "rocket-barrel-rider",
+    "bone-rampart",
+  ])(
+    "%s passes the clip checks of the machine and structure migration",
+    async (name) => {
+      const model = await load(path.join(PACKED, `${name}.glb`));
+      expect(clipChecks(model).filter((check) => !check.pass)).toEqual([]);
+    }
+  );
+
   it("Woolly Mammoth moves all four legs during its walk", async () => {
     const model = await load(path.join(PACKED, "woolly-mammoth.glb"));
     const walk = model.animations.find((clip) => clip.name === "walk");

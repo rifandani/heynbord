@@ -29,7 +29,7 @@ import { deathPose } from "./death-pose.ts";
 import type { BoneDeathPose } from "./death-pose.ts";
 import { TURNTABLE_VIEWS, cutoutId, validateManifest } from "./manifest.ts";
 import { exportMeshes, publishedProblems } from "./mesh-export.ts";
-import type { ExportedBone, ExportedMesh, MeshExport } from "./mesh-export.ts";
+import type { ExportedBone, MeshExport } from "./mesh-export.ts";
 
 const ROOT = path.resolve(import.meta.dirname, "../../..");
 const VENDOR = path.join(import.meta.dirname, "vendor");
@@ -208,11 +208,90 @@ const partCoverage = async (context: GateContext): Promise<GateCommand> => {
   };
 };
 
-const verticesOf = (
+type Point = readonly [number, number, number];
+
+const minus = (one: Point, other: Point): Point => [
+  one[0] - other[0],
+  one[1] - other[1],
+  one[2] - other[2],
+];
+
+const along = (start: Point, direction: Point, amount: number): Point => [
+  start[0] + direction[0] * amount,
+  start[1] + direction[1] * amount,
+  start[2] + direction[2] * amount,
+];
+
+const dot3 = (one: Point, other: Point): number =>
+  one[0] * other[0] + one[1] * other[1] + one[2] * other[2];
+
+/** The edge region of the point on the triangle: section 5.1.5 of Ericson, Real-Time Collision Detection. */
+const onEdge = (
+  start: Point,
+  edge: Point,
+  before: number,
+  after: number
+): Point => along(start, edge, before / (before - after));
+
+/** The point of a triangle nearest to `point`. */
+export const nearestOnTriangle = (
+  point: Point,
+  [a, b, c]: readonly [Point, Point, Point]
+): Point => {
+  const ab = minus(b, a);
+  const ac = minus(c, a);
+  const ap = minus(point, a);
+  const d1 = dot3(ab, ap);
+  const d2 = dot3(ac, ap);
+  if (d1 <= 0 && d2 <= 0) {
+    return a;
+  }
+  const bp = minus(point, b);
+  const d3 = dot3(ab, bp);
+  const d4 = dot3(ac, bp);
+  if (d3 >= 0 && d4 <= d3) {
+    return b;
+  }
+  const vc = d1 * d4 - d3 * d2;
+  if (vc <= 0 && d1 >= 0 && d3 <= 0) {
+    return onEdge(a, ab, d1, d3);
+  }
+  const cp = minus(point, c);
+  const d5 = dot3(ab, cp);
+  const d6 = dot3(ac, cp);
+  if (d6 >= 0 && d5 <= d6) {
+    return c;
+  }
+  const vb = d5 * d2 - d1 * d6;
+  if (vb <= 0 && d2 >= 0 && d6 <= 0) {
+    return onEdge(a, ac, d2, d6);
+  }
+  const va = d3 * d6 - d5 * d4;
+  if (va <= 0 && d4 - d3 >= 0 && d5 - d6 >= 0) {
+    return onEdge(b, minus(c, b), d4 - d3, d6 - d5);
+  }
+  const total = va + vb + vc;
+  return along(along(a, ab, vb / total), ac, vc / total);
+};
+
+/** The nearest point of each triangle of a part to `point`. A triangle with a bad index has no point. */
+const nearestPointsOf = (
   { meshes }: MeshExport,
-  part: string
-): readonly ExportedMesh["vertices"][number][] =>
-  meshes.filter((mesh) => mesh.part === part).flatMap((mesh) => mesh.vertices);
+  part: string,
+  point: Point
+): readonly Point[] =>
+  meshes
+    .filter((mesh) => mesh.part === part)
+    .flatMap((mesh) =>
+      mesh.indices.flatMap(([one, two, three]) => {
+        const [a, b, c] = [
+          mesh.vertices[one],
+          mesh.vertices[two],
+          mesh.vertices[three],
+        ];
+        return a && b && c ? [nearestOnTriangle(point, [a, b, c])] : [];
+      })
+    );
 
 const distance = (one: readonly number[], other: readonly number[]): number =>
   Math.hypot(
@@ -267,11 +346,14 @@ const attachmentAnchor = async (context: GateContext): Promise<GateCommand> => {
   const measured: Record<string, readonly number[]> = {};
   for (const { bone, id } of spec.props) {
     const joint = meshes.bones.find((item) => item.id === bone)?.jointPos;
-    const [nearest] = verticesOf(meshes, id).toSorted(
-      (one, other) =>
-        distance(one, joint ?? [0, 0, 0]) - distance(other, joint ?? [0, 0, 0])
+    if (!joint) {
+      continue;
+    }
+    // A long pole can have no vertex near the hand, so measure to its triangles.
+    const [nearest] = nearestPointsOf(meshes, id, joint).toSorted(
+      (one, other) => distance(one, joint) - distance(other, joint)
     );
-    if (joint && nearest) {
+    if (nearest) {
       measured[anchorOf(bone)] = joint;
       measured[id] = nearest;
     }

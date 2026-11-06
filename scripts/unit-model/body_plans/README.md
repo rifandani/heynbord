@@ -508,7 +508,7 @@ The Source Contract did not change. After the move, `bun unit-model:contract:che
 
 ### Scripts that can move
 
-The survey put each script's own values in the table, then compared the bones with its `BONES`. All 3 give the same bones after they round to 32 bits, so boss-snikkit, junk-walker and rocket-barrel-rider can move now.
+The survey put each script's own values in the table, then compared the bones with its `BONES`. All 3 give the same bones after they round to 32 bits. All 3 moved in issue #187, and `bun unit-model:contract:check` passed after each move.
 
 - Boss Snikkit needs 10 overrides, with `wheel_turns=2`.
 - Junk Walker uses `walker_poles`, `walker_leg` and `crew_bones` in `trunk`, and it keeps its IK.
