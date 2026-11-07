@@ -4,7 +4,7 @@
  *   bun unit-model:pack --all
  * Raw sources stay in art/units/raw. Only checked Meshopt output is published.
  */
-import { mkdirSync, readdirSync, writeFileSync } from "node:fs";
+import { mkdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
 
 import { NodeIO } from "@gltf-transform/core";
@@ -13,7 +13,7 @@ import { MeshoptDecoder, MeshoptEncoder } from "meshoptimizer";
 
 import { modelContract } from "../apps/web/scripts/model-contract.ts";
 import type { ModelContract } from "../apps/web/scripts/model-contract.ts";
-import { readContracts, readRawModel } from "./model-files.ts";
+import { rawModelNames, readContracts, readRawModel } from "./model-files.ts";
 import { compressUnitModel } from "./unit-model/compress.ts";
 import { checkUnitModel } from "./unit-model/model-check.ts";
 import { regionProblems } from "./unit-model/region.ts";
@@ -39,13 +39,7 @@ if (
 ) {
   throw new Error("Usage: bun unit-model:pack <model-name|--all>");
 }
-const names =
-  argument === "--all"
-    ? readdirSync(RAW)
-        .filter((file) => file.endsWith(".glb"))
-        .map((file) => file.slice(0, -4))
-        .toSorted()
-    : [argument];
+const names = argument === "--all" ? rawModelNames(RAW) : [argument];
 await Promise.all([MeshoptEncoder.ready, MeshoptDecoder.ready]);
 const io = new NodeIO()
   .registerExtensions(ALL_EXTENSIONS)

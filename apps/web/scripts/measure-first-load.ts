@@ -4,8 +4,6 @@ import { once } from "node:events";
 import { readFile, rm, writeFile } from "node:fs/promises";
 import { createServer as createHttpServer, request } from "node:http";
 import type { IncomingMessage } from "node:http";
-import { createServer } from "node:net";
-import type { AddressInfo } from "node:net";
 import { platform, release } from "node:os";
 import path from "node:path";
 import process from "node:process";
@@ -14,6 +12,8 @@ import { brotliCompressSync, gzipSync } from "node:zlib";
 
 import { chromium } from "@playwright/test";
 import type { Browser, Page } from "@playwright/test";
+
+import { availablePort } from "./available-port";
 
 const webRoot = path.resolve(import.meta.dirname, "..");
 const repoRoot = path.resolve(webRoot, "../..");
@@ -335,19 +335,6 @@ const writeRecord = async (record: string) => {
       ? `${current.trimEnd()}\n\n${record}\n`
       : `${current.slice(0, boundary).trimEnd()}\n\n${record.slice(section.length).trimStart()}\n${current.slice(boundary)}`;
   await writeFile(recordPath, next);
-};
-
-const availablePort = async () => {
-  const server = createServer();
-  const listening = once(server, "listening");
-  server.listen(0, "127.0.0.1");
-  await listening;
-  // SAFETY: listening on an IP address gives AddressInfo, never a pipe name.
-  const address = server.address() as AddressInfo;
-  const closed = once(server, "close");
-  server.close();
-  await closed;
-  return address.port;
 };
 
 interface Bundle {

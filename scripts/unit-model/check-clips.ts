@@ -3,12 +3,11 @@
  *   bun unit-model:clips:check warden-saelith
  *   bun unit-model:clips:check --all
  */
-import { readdirSync } from "node:fs";
 import path from "node:path";
 
 import { clipChecks } from "../../apps/web/scripts/clip-checks.ts";
 import { parseModel } from "../../apps/web/scripts/model-contract.ts";
-import { readRawModel } from "../model-files.ts";
+import { rawModelNames, readRawModel } from "../model-files.ts";
 
 const ROOT = path.resolve(import.meta.dirname, "../..");
 const RAW = path.join(ROOT, "apps/web/art/units/raw");
@@ -19,12 +18,7 @@ const requested = process.argv.slice(2);
 if (requested.length === 0) {
   throw new Error("Usage: bun unit-model:clips:check <model-name...|--all>");
 }
-const names = requested.includes("--all")
-  ? readdirSync(RAW)
-      .filter((file) => file.endsWith(".glb"))
-      .map((file) => file.slice(0, -4))
-      .toSorted()
-  : requested;
+const names = requested.includes("--all") ? rawModelNames(RAW) : requested;
 
 const checkModel = async (name: string): Promise<number> => {
   try {

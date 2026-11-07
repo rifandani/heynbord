@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 
 import type { ModelContract } from "../apps/web/scripts/model-contract.ts";
 
@@ -35,3 +35,10 @@ export const readRawModel = (file: string, hint: string): Uint8Array => {
     throw error;
   }
 };
+
+/** Give the names of the Raw Exports in a folder, in sorted order. */
+export const rawModelNames = (directory: string): string[] =>
+  readdirSync(directory)
+    .filter((file) => file.endsWith(".glb"))
+    .map((file) => file.slice(0, -4))
+    .toSorted();

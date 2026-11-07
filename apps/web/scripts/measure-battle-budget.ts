@@ -1,16 +1,14 @@
 /* oxlint-disable eslint/no-await-in-loop, react-doctor/async-await-in-loop -- the runner reads each asset once, expands GLB dependencies in order, polls one build server, and measures each configuration one at a time */
 import { execFileSync, spawn } from "node:child_process";
 import { createHash } from "node:crypto";
-import { once } from "node:events";
 import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
-import { createServer } from "node:net";
-import type { AddressInfo } from "node:net";
 import path from "node:path";
 import { setTimeout as delay } from "node:timers/promises";
 import { gzipSync } from "node:zlib";
 
 import { Schema } from "effect";
 
+import { availablePort } from "./available-port";
 import { battleBudgetAssets } from "./battle-budget-assets";
 import type { BudgetAsset } from "./battle-budget-assets";
 import { parseBattleBudgetConfig } from "./battle-budget-config";
@@ -149,19 +147,6 @@ const measuredAssets = async (config: BattleBudgetConfig) => {
     heroBytes,
     total: files.reduce((total, file) => total + file.bytes, 0),
   };
-};
-
-const availablePort = async (): Promise<number> => {
-  const server = createServer();
-  const listening = once(server, "listening");
-  server.listen(0, "127.0.0.1");
-  await listening;
-  // SAFETY: listening on an IP address gives AddressInfo, never a pipe name.
-  const address = server.address() as AddressInfo;
-  const closed = once(server, "close");
-  server.close();
-  await closed;
-  return address.port;
 };
 
 const playHtml = async (): Promise<string> => {

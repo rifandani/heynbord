@@ -5,7 +5,6 @@ import { once } from "node:events";
 import { mkdir, writeFile } from "node:fs/promises";
 import { createServer as createHttpServer, request } from "node:http";
 import type { IncomingMessage } from "node:http";
-import type { AddressInfo } from "node:net";
 import { cpus, loadavg, platform, release } from "node:os";
 import path from "node:path";
 import process from "node:process";
@@ -14,6 +13,8 @@ import { parseArgs } from "node:util";
 
 import { chromium } from "@playwright/test";
 import type { Browser, BrowserContext, Page } from "@playwright/test";
+
+import { availablePort } from "./available-port";
 
 /**
  * Measures the Deck dialog of a production build that exists on disk: one tap
@@ -631,19 +632,6 @@ const recordFilm = async (
   const video = page.video();
   await context.close();
   return video?.path();
-};
-
-const availablePort = async () => {
-  const server = createHttpServer();
-  const listening = once(server, "listening");
-  server.listen(0, "127.0.0.1");
-  await listening;
-  // SAFETY: listening on an IP address gives AddressInfo, never a pipe name.
-  const address = server.address() as AddressInfo;
-  const closed = once(server, "close");
-  server.close();
-  await closed;
-  return address.port;
 };
 
 const startApp = async (output: string, env: NodeJS.ProcessEnv) => {
