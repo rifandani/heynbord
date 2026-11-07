@@ -63,11 +63,11 @@ ICE = hex_color("#cfeeff")
 WOOD = hex_color("#7a5636")
 WOOD_DARK = hex_color("#4e3420")
 ROPE = hex_color("#b49a6a")
-NEST = hex_color("#9a7a4a")
-BIRD = hex_color("#d8d8d0")
-BIRD_DARK = hex_color("#3a3a3e")
+NEST = hex_color("#9d764e")
+BIRD = hex_color("#e9e4db")
+BIRD_DARK = hex_color("#40393d")
 BEAK = hex_color("#e09a2a")
-TOE = hex_color("#d9cbb0")
+TOE = hex_color("#ecd5c7")
 
 # --- Proportions ---------------------------------------------------------------
 

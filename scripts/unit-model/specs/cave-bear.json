@@ -10,7 +10,7 @@
     "fur_dark": "#4f3119",
     "fur_light": "#a9764a",
     "honey": "#e9a52a",
-    "honey_dark": "#b67412",
+    "honey_dark": "#b6752a",
     "honey_drip": "#f2bd4a",
     "lid": "#5a3a20",
     "moss": "#7d8d38",
@@ -20,8 +20,8 @@
     "nose": "#1e1612",
     "scar": "#c98a84",
     "tooth": "#efe4cc",
-    "wound": "#b8323a",
-    "wound_dark": "#6e1c20"
+    "wound": "#9b4d3b",
+    "wound_dark": "#5c2b26"
   },
   "parts": [
     "body",

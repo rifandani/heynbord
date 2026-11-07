@@ -3,10 +3,10 @@
   "bodyPlan": "quadruped",
   "height": 0.7280354,
   "palette": {
-    "hide": "#7d6d5c",
-    "hide_dark": "#56493d",
+    "hide": "#806a54",
+    "hide_dark": "#5c493b",
     "stone": "#9b958a",
-    "stone_dark": "#6c675f",
+    "stone_dark": "#76665a",
     "moss": "#7d8a3c",
     "fur": "#8a5e3c",
     "fur_light": "#b98c5e",
@@ -16,11 +16,11 @@
     "eye": "#1c140e",
     "eye_rim": "#b08a5a",
     "nose": "#3a302a",
-    "hoof": "#3e352c",
+    "hoof": "#3d2d25",
     "shield": "#30528c",
     "shield_dark": "#1f3560",
-    "rim": "#6e6656",
-    "boss": "#c99d4a",
+    "rim": "#766450",
+    "boss": "#cf9d51",
     "wood": "#8a6440"
   },
   "parts": [
@@ -52,7 +52,7 @@
       "id": "shield",
       "hand": "none",
       "cameraSide": true,
-      "bone": "head"
+      "bone": "horn"
     }
   ],
   "clips": {
@@ -113,5 +113,6 @@
       "y0": 0.04,
       "y1": 0.7
     }
-  }
+  },
+  "holedParts": ["plates", "fur"]
 }

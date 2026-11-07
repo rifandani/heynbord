@@ -64,10 +64,10 @@ CLAW_TIP = hex_color("#cfc2a8")
 MOSS = hex_color("#7d8d38")
 MOSS_DARK = hex_color("#566426")
 SCAR = hex_color("#c98a84")
-WOUND = hex_color("#b8323a")
-WOUND_DARK = hex_color("#6e1c20")
+WOUND = hex_color("#9b4d3b")
+WOUND_DARK = hex_color("#5c2b26")
 HONEY = hex_color("#e9a52a")
-HONEY_DARK = hex_color("#b67412")
+HONEY_DARK = hex_color("#b6752a")
 HONEY_DRIP = hex_color("#f2bd4a")
 
 # --- Proportions ---------------------------------------------------------------
@@ -322,7 +322,7 @@ def head_parts():
 
     jaw = Part("jaw", MUZZLE, "jaw", shade=0.1)
     kit.sphere(jaw.bm, Vector((0, -0.44, 0.345)), (0.055, 0.065, 0.025), 8, 5)
-    mouth = kit.sphere(jaw.bm, Vector((0, -0.44, 0.36)), (0.045, 0.055, 0.01), 8, 3)
+    mouth = kit.sphere(jaw.bm, Vector((0, -0.44, 0.361)), (0.045, 0.055, 0.01), 8, 3)
     jaw.paint(faces_of(mouth), MOUTH)
     parts.append(jaw)
 

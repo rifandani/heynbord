@@ -42,18 +42,18 @@ from unit_model_kit import X, Y, Z, Part, clamp01, faces_of, hex_color  # noqa: 
 
 # --- Palette (the card painting) ----------------------------------------------
 
-SCALE = hex_color("#dde1e3")
-SCALE_DARK = hex_color("#a7b0b8")
-SCALE_SHADOW = hex_color("#7a8794")
-ICE = hex_color("#c4e9ff")
+SCALE = hex_color("#cdd3de")
+SCALE_DARK = hex_color("#aeb6cb")
+SCALE_SHADOW = hex_color("#7f8b9d")
+ICE = hex_color("#a8d4f0")
 ICE_DEEP = hex_color("#79bfee")
 EYE = hex_color("#8ff0ff")
 MOUTH = hex_color("#8c3444")
 TONGUE = hex_color("#c45a6a")
 FANG = hex_color("#f3eee0")
 CLAW = hex_color("#3e3a3a")
-BELL = hex_color("#c9963f")
-BELL_DARK = hex_color("#8a6326")
+BELL = hex_color("#d8d0c8")
+BELL_DARK = hex_color("#7d685c")
 
 # --- Proportions ---------------------------------------------------------------
 
@@ -118,8 +118,15 @@ LEGS = {
 
 TAIL = [Vector((0, 0.4, 0.38)), Vector((0, 0.52, 0.3)), Vector((-0.06, 0.62, 0.14))]
 
+# The root of the jaw bone. It is the tip of the head bone.
+JAW_ROOT = big((0, -0.41, 0.575))
+NECK_AXIS = (HEAD - NECK_MID).normalized()
+HEAD_AXIS = (JAW_ROOT - HEAD).normalized()
+# The space between the rings of the neck core at a joint.
+CORE_STEP = 0.02
+
 TRUNK_BONES = [
-    ('jaw', tuple(big((0, -0.41, 0.575))), tuple(big((0, -0.6, 0.53))), 'head'),
+    ('jaw', tuple(JAW_ROOT), tuple(big((0, -0.6, 0.53))), 'head'),
     ('tail', tuple(TAIL[0]), tuple(TAIL[1]), 'hips'),
     ('tail.2', tuple(TAIL[1]), tuple(TAIL[2]), 'tail'),
 ]
@@ -145,6 +152,17 @@ def neck_weights(co):
         return {"neck": t, "chest": 1 - t}
     t = clamp01((co.z - NECK_MID.z + 0.02) / 0.05)
     return {"neck.2": t, "neck": 1 - t}
+
+
+def core_weights(co):
+    """The neck core: a blend at the neck.2 joint and at the head joint."""
+    along_head = (co - HEAD).dot(HEAD_AXIS)
+    if along_head >= -CORE_STEP:
+        return kit.blend("neck.2", "head", along_head, -CORE_STEP, CORE_STEP)
+    along_neck = (co - NECK_MID).dot(NECK_AXIS)
+    if along_neck >= -CORE_STEP:
+        return kit.blend("neck", "neck.2", along_neck, -CORE_STEP, CORE_STEP)
+    return neck_weights(co)
 
 
 def tail_weights(co):
@@ -211,6 +229,15 @@ def body_parts():
         spikes(neck, [NECK_MID + Vector((0.07 * sign, 0.02, 0.02)), NECK + Vector((0.1 * sign, 0.02, 0.04)), HEAD + Vector((0.06 * sign, 0.03, 0.0))], (0.7 * sign, 0.6, 0.3), 0.12, 0.032)
     parts.append(neck)
 
+    # A core in the neck, with a ring at the neck.2 and head joints and one on
+    # each side. The scaled neck is too wide to give rings near these short bones.
+    # Two straight tubes: one tube cannot turn this sharp at the head and not cross itself.
+    core = Part("neck.core", SCALE_DARK, core_weights, shade=0.1)
+    neck_rings = [NECK, *(NECK_MID + NECK_AXIS * CORE_STEP * step for step in (-1, 0, 1))]
+    kit.tube(core.bm, neck_rings, [0.04] * 4, 8)
+    kit.tube(core.bm, [HEAD + HEAD_AXIS * CORE_STEP * step for step in (-1, 0, 1)], [0.04] * 3, 8)
+    parts.append(core)
+
     tail = Part("tail", scale_color, tail_weights, shade=0.15)
     kit.tube(tail.bm, [TAIL[0] - Vector((0, 0.04, 0)), TAIL[0], TAIL[1], TAIL[2], TAIL[2] + Vector((-0.03, 0.03, -0.08))], [0.1, 0.085, 0.06, 0.035, 0.006], 8)
     spikes(tail, [TAIL[0] + Vector((0, 0.03, 0.08)), TAIL[1] + Vector((0, 0.02, 0.06))], (0, 0.7, 0.7), 0.07, 0.025)
@@ -272,10 +299,10 @@ def head_parts():
 
     # The brass bell on a short cord at the right side of the jaw.
     bell = Part("bell", BELL, "jaw", shade=0.1)
-    cord = kit.cone(bell.bm, (-0.05, -0.5, 0.54), (-0.06, -0.5, 0.49), 0.005, 0.005, 4)
+    cord = kit.cone(bell.bm, (-0.05, -0.45, 0.54), (-0.06, -0.45, 0.49), 0.005, 0.005, 4)
     bell.paint(faces_of(cord), BELL_DARK)
-    kit.cone(bell.bm, (-0.06, -0.5, 0.49), (-0.06, -0.5, 0.43), 0.012, 0.03, 8)
-    lip = kit.torus(bell.bm, (-0.06, -0.5, 0.43), (0, 0, 1), 0.03, 0.005, 10, 4)
+    kit.cone(bell.bm, (-0.06, -0.45, 0.49), (-0.06, -0.45, 0.43), 0.012, 0.03, 8)
+    lip = kit.torus(bell.bm, (-0.06, -0.45, 0.43), (0, 0, 1), 0.03, 0.005, 10, 4)
     bell.paint(faces_of(lip), BELL_DARK)
     parts.append(bell)
     grow = kit.Matrix.Translation(HEAD) @ kit.Matrix.Scale(HEAD_SCALE, 4) @ kit.Matrix.Translation(-HEAD)

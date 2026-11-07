@@ -44,10 +44,10 @@ from unit_model_kit import X, Y, Z, Part, clamp01, faces_of, hex_color  # noqa: 
 FUR = hex_color("#b3221d")
 FUR_DARK = hex_color("#7a1512")
 FUR_LIGHT = hex_color("#d6432c")
-SNOUT = hex_color("#ab9d84")
-SNOUT_DARK = hex_color("#7e715e")
+SNOUT = hex_color("#b3977d")
+SNOUT_DARK = hex_color("#a87c5c")
 HORN = hex_color("#e4d7b5")
-HORN_DARK = hex_color("#bfae88")
+HORN_DARK = hex_color("#bd9d79")
 VEIN = hex_color("#ff3b24")
 EYE = hex_color("#ffb43a")
 TUSK = hex_color("#eee2c4")
@@ -107,8 +107,11 @@ LEGS = {
     for leg in plan.LEGS
 }
 
+# The root of the jaw bone. It is the tip of the head bone.
+JAW_ROOT = Vector((0, -0.38, 0.33))
+
 TRUNK_BONES = [
-    ('jaw', (0, -0.38, 0.33), (0, -0.5, 0.29), 'head'),
+    ('jaw', tuple(JAW_ROOT), (0, -0.5, 0.29), 'head'),
     ('tail', (0, 0.42, 0.47), (0, 0.5, 0.36), 'hips'),
 ]
 
@@ -125,6 +128,23 @@ def body_weights(co):
         return {"chest": 1 - t, "spine": t}
     t = clamp01((co.y + 0.3) / 0.08)
     return {"neck": 1 - t, "chest": t}
+
+
+def around(before, joint, after, step=0.04):
+    """The points of a tube through a joint, with a ring `step` from it on each side."""
+    return [
+        before,
+        joint + (before - joint).normalized() * step,
+        joint,
+        joint + (after - joint).normalized() * step,
+        after,
+    ]
+
+
+def neck_weights(co):
+    """The neck, with a blend into the head at the head joint."""
+    axis = (JAW_ROOT - HEAD).normalized()
+    return kit.blend("neck", "head", (co - HEAD).dot(axis), -0.02, 0.02)
 
 
 def leg_weights(leg):
@@ -181,7 +201,15 @@ def body_parts():
     # The mane flows back over the hump.
     hump = [(x, y, 0.7) for x in (-0.09, 0.0, 0.09) for y in (-0.2, -0.06)]
     tufts(body, hump, 0.11, 0.06, (0, 1, -0.25))
+    # A core under the fur, with a ring at the spine joint and one on each side.
+    # The fur spheres are too wide to give rings near the bone.
+    kit.tube(body.bm, around(HIP, MID, CHEST), [0.09] * 5, 8)
     parts.append(body)
+
+    # The neck under the mane, with a ring at the head joint and one on each side.
+    neck = Part("neck", FUR_DARK, neck_weights, shade=0.15)
+    kit.tube(neck.bm, [NECK, *around(NECK, HEAD, JAW_ROOT, 0.02)[1:4]], [0.05, 0.045, 0.045, 0.045], 8)
+    parts.append(neck)
 
     tail = Part("tail", FUR_DARK, "tail")
     kit.cone(tail.bm, (0, 0.41, 0.48), (0, 0.5, 0.34), 0.03, 0.012, 6)

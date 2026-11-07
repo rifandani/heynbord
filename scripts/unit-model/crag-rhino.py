@@ -51,10 +51,10 @@ plan = body_plans.BODY_PLANS["quadruped"]
 
 # --- Palette (the card painting) ----------------------------------------------
 
-HIDE = hex_color("#7d6d5c")
-HIDE_DARK = hex_color("#56493d")
+HIDE = hex_color("#806a54")
+HIDE_DARK = hex_color("#5c493b")
 STONE = hex_color("#9b958a")
-STONE_DARK = hex_color("#6c675f")
+STONE_DARK = hex_color("#76665a")
 MOSS = hex_color("#7d8a3c")
 FUR = hex_color("#8a5e3c")
 FUR_LIGHT = hex_color("#b98c5e")
@@ -64,11 +64,11 @@ HORN_DARK = hex_color("#7f776a")
 EYE = hex_color("#1c140e")
 EYE_RIM = hex_color("#b08a5a")
 NOSE = hex_color("#3a302a")
-HOOF = hex_color("#3e352c")
+HOOF = hex_color("#3d2d25")
 SHIELD = hex_color("#30528c")
 SHIELD_DARK = hex_color("#1f3560")
-RIM = hex_color("#6e6656")
-BOSS = hex_color("#c99d4a")
+RIM = hex_color("#766450")
+BOSS = hex_color("#cf9d51")
 WOOD = hex_color("#8a6440")
 
 # --- Proportions ---------------------------------------------------------------
@@ -126,10 +126,17 @@ TAIL = [Vector((0, 0.41, 0.46)), Vector((0, 0.45, 0.33))]
 TRUNK_BONES = [
     ("ear.L", tuple(grown((0.075, -0.29, 0.5))), tuple(grown((0.1, -0.26, 0.56))), "head"),
     ("ear.R", tuple(grown((-0.075, -0.29, 0.5))), tuple(grown((-0.1, -0.26, 0.56))), "head"),
+    # The big horn holds the shield, so the shield has a bone near it.
+    ("horn", tuple(grown(HORN_PATH[1])), tuple(grown(HORN_PATH[3])), "head"),
     ("tail", tuple(TAIL[0]), tuple(TAIL[1]), "hips"),
 ]
 
 # --- Weights -------------------------------------------------------------------
+
+
+def horn_weights(co):
+    """The big horn is on its own bone. The small horn is on the head."""
+    return {"horn": 1.0} if co.y < grown((0, -0.47, 0)).y else {"head": 1.0}
 
 
 def body_weights(co):
@@ -238,6 +245,31 @@ def body_parts():
     return parts
 
 
+def rim_arc(bm, center, side, up, radius, minor, angles, sides=4):
+    """
+    A round bar along an arc in the plane of `side` and `up`. Each ring is in the
+    plane of the radius and the normal, so the bar does not twist as `kit.tube`
+    does where its path turns near vertical.
+    """
+    normal = side.cross(up)
+    rings = []
+    for angle in angles:
+        radial = side * math.cos(angle) + up * math.sin(angle)
+        middle = center + radial * radius
+        rings.append([
+            bm.verts.new(middle + (radial * math.cos(beta) + normal * math.sin(beta)) * minor)
+            for beta in (2 * math.pi * step / sides for step in range(sides))
+        ])
+    for a, b in zip(rings, rings[1:]):
+        for step in range(sides):
+            n = (step + 1) % sides
+            bm.faces.new((a[step], b[step], b[n], a[n]))
+    bm.faces.new(rings[0])
+    bm.faces.new(list(reversed(rings[-1])))
+    kit.bmesh.ops.recalc_face_normals(bm, faces=list({face for ring in rings for vert in ring for face in vert.link_faces}))
+    return [vert for ring in rings for vert in ring]
+
+
 def head_parts():
     parts = []
     head = Part("head", hide_color, "head", shade=0.14)
@@ -260,7 +292,7 @@ def head_parts():
     head.paint(faces_of(lip), HIDE_DARK)
     parts.append(head)
 
-    horns = Part("horns", HORN, "head", shade=0.16)
+    horns = Part("horns", HORN, horn_weights, shade=0.16)
     verts = kit.tube(horns.bm, HORN_PATH, [0.055, 0.045, 0.033, 0.019, 0.003], 9)
     for face in faces_of(verts):
         if face.calc_center_median().z < 0.36:
@@ -270,7 +302,7 @@ def head_parts():
 
     # The broken shield on the horn: a round board with an iron rim, a gold
     # boss pierced by the horn, and planks that broke off at the bottom.
-    shield = Part("shield", SHIELD, "head", smooth=False, shade=0.08)
+    shield = Part("shield", SHIELD, "horn", smooth=False, shade=0.08)
     face_dir = SHIELD_N
     up = (Z - face_dir * face_dir.dot(Z)).normalized()
     side = up.cross(face_dir).normalized()
@@ -294,7 +326,9 @@ def head_parts():
         rim = shield.bm.faces.new((front[n], front[step], back[step], back[n]))
         shield.paint([rim], RIM)
     kit.bmesh.ops.recalc_face_normals(shield.bm, faces=list(shield.bm.faces))
-    rim_ring = kit.torus(shield.bm, SHIELD_C + face_dir * 0.01, face_dir, radius * 0.94, 0.008, 12, 3)
+    # The iron rim stops at the bite. A full ring would cross the gap.
+    arc = [math.radians(degrees) for degrees in range(270, 541, 30)]
+    rim_ring = rim_arc(shield.bm, SHIELD_C + face_dir * 0.01, side, up, radius * 0.94, 0.008, arc)
     shield.paint(faces_of(rim_ring), RIM)
     boss = kit.sphere(shield.bm, SHIELD_C + face_dir * 0.016, (0.03, 0.03, 0.03), 8, 5)
     shield.paint(faces_of(boss), BOSS)

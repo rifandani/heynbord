@@ -52,10 +52,10 @@ WOOD = hex_color("#7a6247")
 WOOD_DARK = hex_color("#4f3d2b")
 WOOD_LIGHT = hex_color("#9a8063")
 IRON = hex_color("#4b4a48")
-GOLD = hex_color("#d2a548")
-BONE = hex_color("#e3d9c0")
-BONE_DARK = hex_color("#a99c7c")
-SOCKET = hex_color("#1c1f22")
+GOLD = hex_color("#c69a61")
+BONE = hex_color("#efd4bd")
+BONE_DARK = hex_color("#d1bba7")
+SOCKET = hex_color("#262728")
 GLOW = hex_color("#9fe8ff")
 TEAL = hex_color("#4d6e6b")
 TEAL_DARK = hex_color("#334a48")
@@ -133,6 +133,17 @@ def flag_weights(co):
 # --- Parts ---------------------------------------------------------------------
 
 
+def outward_slab(bm, center, x_axis, y_axis, z_axis):
+    """
+    `kit.slab`, with its faces out. Left-handed axes, such as the width, the
+    normal and the height of a shield, turn the box inside out.
+    """
+    x_axis, y_axis, z_axis = Vector(x_axis), Vector(y_axis), Vector(z_axis)
+    if x_axis.cross(y_axis).dot(z_axis) < 0:
+        z_axis = -z_axis
+    return kit.slab(bm, center, x_axis, y_axis, z_axis)
+
+
 def coffin_width(v):
     """The half width of a coffin shield at `v` (0 at the foot, 1 at the top)."""
     if v < 0.72:
@@ -166,14 +177,14 @@ def shield_part(index, angle):
     face = base + n * (SHIELD_THICK / 2 + 0.004)
     # Two iron bands across each shield.
     for v in (0.2, 0.8):
-        band = kit.slab(part.bm, face + Z * (v * SHIELD_HEIGHT), u * (coffin_width(v) + 0.004), n * 0.005, Z * 0.012)
+        band = outward_slab(part.bm, face + Z * (v * SHIELD_HEIGHT), u * (coffin_width(v) + 0.004), n * 0.005, Z * 0.012)
         part.paint(faces_of(band), IRON)
     if index == 2:
         # The big skull on the middle shield.
         center = face + Z * 0.32 + n * 0.02
         skull = kit.sphere(part.bm, center, (0.05, 0.05, 0.05), 10, 7)
         part.paint(faces_of(skull), BONE)
-        jaw = kit.slab(part.bm, center - Z * 0.05 + n * 0.012, u * 0.032, n * 0.02, Z * 0.016)
+        jaw = outward_slab(part.bm, center - Z * 0.05 + n * 0.012, u * 0.032, n * 0.02, Z * 0.016)
         part.paint(faces_of(jaw), BONE_DARK)
         for sign in (1, -1):
             hole = kit.sphere(part.bm, center + n * 0.042 + u * (0.02 * sign) + Z * 0.006, (0.015, 0.015, 0.016), 6, 4)
@@ -182,10 +193,10 @@ def shield_part(index, angle):
         # A gold fleur: a tall middle leaf, a band and two side leaves.
         center = face + Z * 0.31
         gold = set()
-        gold |= set(kit.slab(part.bm, center + Z * 0.02, u * 0.012, n * 0.004, Z * 0.07))
-        gold |= set(kit.slab(part.bm, center - Z * 0.01, u * 0.045, n * 0.004, Z * 0.01))
+        gold |= set(outward_slab(part.bm, center + Z * 0.02, u * 0.012, n * 0.004, Z * 0.07))
+        gold |= set(outward_slab(part.bm, center - Z * 0.01, u * 0.045, n * 0.004, Z * 0.01))
         for sign in (1, -1):
-            gold |= set(kit.slab(part.bm, center + u * (0.03 * sign) + Z * 0.03, u * 0.01 + Z * (0.012 * sign), n * 0.004, Z * 0.035 - u * (0.012 * sign)))
+            gold |= set(outward_slab(part.bm, center + u * (0.03 * sign) + Z * 0.03, u * 0.01 + Z * (0.012 * sign), n * 0.004, Z * 0.035 - u * (0.012 * sign)))
         part.paint(faces_of(gold), GOLD)
     return part
 
@@ -197,10 +208,11 @@ def wall_parts():
     platform = Part("platform", MUD, "base", smooth=False, shade=0.1)
     top = kit.cone(platform.bm, (0, 0.02, 0.0), (0, 0.02, 0.035), 0.4, 0.38, 12, squash=0.85)
     platform.paint({f for f in faces_of(top) if f.normal.z > 0.9}, WOOD_DARK)
-    # Loose bones on the ground in front.
+    # Loose bones on the ground in front. The knobs touch the ground: bones
+    # higher than this float over the edge of the platform.
     for x, y, a in ((0.12, -0.33, 30), (-0.05, -0.36, -20), (0.25, -0.22, 70)):
         d = Vector((math.cos(math.radians(a)), math.sin(math.radians(a)), 0))
-        p = Vector((x, y, 0.045))
+        p = Vector((x, y, 0.011))
         bone = kit.cone(platform.bm, p - d * 0.04, p + d * 0.04, 0.008, 0.008, 5)
         platform.paint(faces_of(bone), BONE)
         for end in (-1, 1):
@@ -253,7 +265,7 @@ def skeleton_parts(name, helmet):
     head = Part(f"skel.{name}.head", BONE, f"skel.{name}.head", shade=0.1)
     center = spot + Z * 0.68
     kit.sphere(head.bm, center, (0.045, 0.05, 0.05), 10, 7)
-    jaw = kit.slab(head.bm, center + Vector((0, -0.025, -0.045)), X * 0.03, Y * 0.022, Z * 0.012)
+    jaw = outward_slab(head.bm, center + Vector((0, -0.025, -0.045)), X * 0.03, Y * 0.022, Z * 0.012)
     head.paint(faces_of(jaw), BONE_DARK)
     for sign in (1, -1):
         hole = kit.sphere(head.bm, center + Vector((0.018 * sign, -0.042, 0.004)), (0.014, 0.01, 0.014), 6, 4)
@@ -283,7 +295,7 @@ def hammer_parts():
     for end in (-0.065, 0.26):
         knob = kit.sphere(arm.bm, HAND_A + HAMMER * end, (0.017, 0.017, 0.017), 6, 4)
         arm.paint(faces_of(knob), BONE_DARK)
-    head = kit.slab(arm.bm, HAND_A + HAMMER * 0.24, X * 0.035, Y * 0.075, Z * 0.035)
+    head = outward_slab(arm.bm, HAND_A + HAMMER * 0.24, X * 0.035, Y * 0.075, Z * 0.035)
     arm.paint(faces_of(head), IRON)
     return [arm]
 
@@ -327,8 +339,8 @@ def banner_parts():
     panel(flag, grid(-0.003), grid(0.003), color_of)
     fleur_center = Vector((POLE.x - 0.008, (POLE.y + FLAG_FRONT) / 2, (FLAG_TOP + FLAG_LOW) / 2 + 0.03))
     gold = set()
-    gold |= set(kit.slab(flag.bm, fleur_center + Z * 0.012, X * 0.004, Y * 0.01, Z * 0.05))
-    gold |= set(kit.slab(flag.bm, fleur_center - Z * 0.012, X * 0.004, Y * 0.035, Z * 0.008))
+    gold |= set(outward_slab(flag.bm, fleur_center + Z * 0.012, X * 0.004, Y * 0.01, Z * 0.05))
+    gold |= set(outward_slab(flag.bm, fleur_center - Z * 0.012, X * 0.004, Y * 0.035, Z * 0.008))
     flag.paint(faces_of(gold), GOLD)
     return [arm, pole, flag]
 
@@ -338,14 +350,14 @@ def sign_parts():
     kit.cone(sign.bm, SIGN_POST, SIGN_POST + Z * 0.42, 0.016, 0.014, 6)
     # The arrow board points to the side, to the other Lane.
     board = SIGN_POST + Vector((-0.06, 0, 0.36))
-    plank = kit.slab(sign.bm, board, X * 0.075, Y * 0.012, Z * 0.035)
+    plank = outward_slab(sign.bm, board, X * 0.075, Y * 0.012, Z * 0.035)
     sign.paint(faces_of(plank), SIGN)
     tip = kit.cone(sign.bm, board - X * 0.075, board - X * 0.125, 0.05, 0.001, 4)
     sign.paint(faces_of(tip), SIGN)
     # Lines of writing on both faces.
     for dz in (0.012, -0.01):
         for side in (-1, 1):
-            line = kit.slab(sign.bm, board + Vector((0.005, side * 0.0135, dz)), X * 0.055, Y * 0.002, Z * 0.004)
+            line = outward_slab(sign.bm, board + Vector((0.005, side * 0.0135, dz)), X * 0.055, Y * 0.002, Z * 0.004)
             sign.paint(faces_of(line), INK)
     return [sign]
 

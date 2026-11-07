@@ -1262,43 +1262,43 @@
   },
   "crag-rhino.glb": {
     "min": [-0.25305120750282156, -2.686329871622663e-8, -0.49489823902247027],
-    "max": [0.23710235956245873, 0.728035374549564, 0.7729076825896034],
-    "bones": [20],
+    "max": [0.23710235956245873, 0.7280354269533535, 0.7729076602970527],
+    "bones": [21],
     "clips": [
       {
         "name": "idle",
         "duration": 2,
-        "keyframes": "ea017e2b5f73a838868a641a34740a891c70570ee33366e57d1c15d443dc3345"
+        "keyframes": "8482addff22d1c91ff25dd7522dffcd54fa47ee82f648a5f9aec9a62dcebc15b"
       },
       {
         "name": "lowHp",
         "duration": 2,
-        "keyframes": "e4b143cfa6cdfccc67b8bcdbe8625be782fd95041e24938fa672a45922c13780"
+        "keyframes": "e017c7e78c45ed289c4d8ecb15702eba13e8323c65c2a4065a6da478bd0ba915"
       },
       {
         "name": "walk",
         "duration": 0.8333333134651184,
-        "keyframes": "35a4c159e77ffaedec3a1de6b710a2327bce2355833052f45b766f4feefbdf7f"
+        "keyframes": "5ac1369f393a6e65b1bd8165b010a402c1222d357177561304f295faae449700"
       },
       {
         "name": "attack",
         "duration": 1.25,
-        "keyframes": "48630be3c38f52ad289cfc3377b2a449da96ac4af69156b5f3365e9b381a2ba0"
+        "keyframes": "e668dc04325cbb984cb9bb716e082ffc343d648646deda4bc901d1a13289e1d1"
       },
       {
         "name": "hurt",
         "duration": 0.6666666865348816,
-        "keyframes": "c8bc9b0d3b944c77e3ecd445b0c974624982f2bfa34978993e4d10e60be4fa49"
+        "keyframes": "97ca42a4c894c16d0aa2a23a594935839bf106d16cd4c01fae65d43137671730"
       },
       {
         "name": "death",
         "duration": 1.5,
-        "keyframes": "193826bd133403bf8b367f48e398cbdbbf321e916964ea299fa1dda1106f7e93"
+        "keyframes": "5960f1861df8417202daada81c66ae83584609907922e85b49f5862a2311d4e6"
       },
       {
         "name": "summon",
         "duration": 1,
-        "keyframes": "736cfe43a124bb0459fca8f01296880df7658c9295af83fa87163e3f2a5af1a3"
+        "keyframes": "3ce4f6cb54e6ebd38a57316b26084ad381ac5dcfcb10c2874f3d7418b5fb2c39"
       }
     ]
   },
