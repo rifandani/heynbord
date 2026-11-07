@@ -1,7 +1,7 @@
 import { keywordValue } from "./keywords";
 import {
+  creatureStats,
   recallChance,
-  scaleForRank,
   skillAmountForRank,
   skillCountForRank,
   skillSquaresForRank,
@@ -129,12 +129,16 @@ const summonPoints = (summon: TokenId | undefined, rank: RankId): number =>
 export const creaturePower = (
   card: CreatureCardDefinition,
   rank: RankId = card.baseRank
-): number =>
-  scaleForRank(card.attack, rank) * 2 +
-  scaleForRank(card.hp, rank) +
-  keywordPoints(card.keywords, rank) +
-  summonPoints(card.keywords.summon, rank) +
-  DAMAGE_TYPE_POINTS[card.damageType];
+): number => {
+  const { attack, hp } = creatureStats(card, rank);
+  return (
+    attack * 2 +
+    hp +
+    keywordPoints(card.keywords, rank) +
+    summonPoints(card.keywords.summon, rank) +
+    DAMAGE_TYPE_POINTS[card.damageType]
+  );
+};
 
 /**
  * The slope `s` of the Power Budget (ADR-0021): the steepest slope that passes

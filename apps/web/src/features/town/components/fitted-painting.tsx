@@ -13,29 +13,27 @@ const paintingMask: CSSProperties = {
 };
 
 /**
- * The box of the painting, on the Town Bar and as wide as the screen. The
+ * The box of the painting, behind the Town Bar and as wide as the screen. The
  * sides and the bottom are never cropped. The painting fills the height
- * above the Town Bar if it can, and stretches on the x axis by at most
+ * of the screen if it can, and stretches on the x axis by at most
  * `FIT_STRETCH`, or squashes by at most `MAX_STRETCH`, to fill the width
  * (as the Region Map, web ADR-0007). On a screen that is wider than that,
- * the painting gets taller than the space above the Town Bar, and the screen
+ * the painting gets taller than the screen, and the screen
  * crops its top. On a screen that is narrower, the backdrop shows above it.
- * A stowed Town Bar gives back the room of its shelf, and the painting
- * stretches on the y axis into that room, so a painting that fills the
- * screen above the full shelf also fills it when the shelf is stowed.
+ * The painting stays in place when the Town Bar is stowed.
  */
 const frameStyle = (
   aspect: number
 ): CSSProperties & Record<"--frame-height" | "--fade-top", string> => ({
-  "--frame-height": `max(min(100dvh - var(--town-bar), 100vw * ${(1 + MAX_STRETCH) / aspect} + var(--town-bar-shelf) - var(--town-bar)), 100vw / ${aspect * (1 + FIT_STRETCH)})`,
+  "--frame-height": `max(min(100dvh, 100vw * ${(1 + MAX_STRETCH) / aspect}), 100vw / ${aspect * (1 + FIT_STRETCH)})`,
   "--fade-top":
-    "clamp(0px, 100dvh - var(--town-bar) - var(--frame-height), var(--frame-height) * 0.06)",
+    "clamp(0px, 100dvh - var(--frame-height), var(--frame-height) * 0.06)",
   height: "var(--frame-height)",
-  bottom: "var(--town-bar)",
+  bottom: 0,
 });
 
 /**
- * A painting of a screen with the Town Bar: the painting above the Town Bar,
+ * A painting of a screen with the Town Bar: the painting behind the Town Bar,
  * as wide as the screen. A soft backdrop of the same painting fills the space
  * above it on a narrow screen, and its top edge fades into the backdrop
  * there. The children are over the painting, with positions in painting

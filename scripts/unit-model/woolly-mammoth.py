@@ -34,11 +34,18 @@ sys.path.insert(0, os.path.join(REPO, "scripts", "unit-model"))
 
 import importlib  # noqa: E402
 
+import body_plans  # noqa: E402
+import clips  # noqa: E402
 import unit_model_kit as kit  # noqa: E402
 
 importlib.reload(kit)
 
-from unit_model_kit import X, Y, Z, Clip, Part, blend, clamp01, faces_of, hex_color, lerp, turn  # noqa: E402
+from clips.base import Beat  # noqa: E402
+from clips.overrides import Fall, Patch  # noqa: E402
+
+plan = body_plans.BODY_PLANS["quadruped"]
+
+from unit_model_kit import X, Y, Z, Part, blend, clamp01, faces_of, hex_color, lerp  # noqa: E402
 
 # --- Palette (the card painting) ----------------------------------------------
 
@@ -56,11 +63,11 @@ ICE = hex_color("#cfeeff")
 WOOD = hex_color("#7a5636")
 WOOD_DARK = hex_color("#4e3420")
 ROPE = hex_color("#b49a6a")
-NEST = hex_color("#9a7a4a")
-BIRD = hex_color("#d8d8d0")
-BIRD_DARK = hex_color("#3a3a3e")
+NEST = hex_color("#9d764e")
+BIRD = hex_color("#e9e4db")
+BIRD_DARK = hex_color("#40393d")
 BEAK = hex_color("#e09a2a")
-TOE = hex_color("#d9cbb0")
+TOE = hex_color("#ecd5c7")
 
 # --- Proportions ---------------------------------------------------------------
 
@@ -80,38 +87,62 @@ TUSKS = {
     for sign in (1, -1)
 }
 
+TABLE = plan.Proportions(
+    hip_y=HIP.y,
+    hip_z=HIP.z,
+    mid_y=MID.y,
+    mid_z=MID.z,
+    chest_y=CHEST.y,
+    chest_z=CHEST.z,
+    neck_y=NECK.y,
+    neck_z=NECK.z,
+    necks=(),
+    head_tip_y=(HEAD_C + Vector((0, -0.12, 0.0))).y,
+    head_tip_z=(HEAD_C + Vector((0, -0.12, 0.0))).z,
+    front_top_x=0.13,
+    front_top_y=-0.13,
+    front_top_z=0.42,
+    front_knee_x=0.13,
+    front_knee_y=-0.14,
+    front_knee_z=0.24,
+    front_ankle_x=0.13,
+    front_ankle_y=-0.14,
+    front_ankle_z=0.07,
+    front_toe_x=0.13,
+    front_toe_y=-0.22,
+    front_toe_z=0.03,
+    back_top_x=0.12,
+    back_top_y=0.25,
+    back_top_z=0.38,
+    back_knee_x=0.12,
+    back_knee_y=0.27,
+    back_knee_z=0.22,
+    back_ankle_x=0.12,
+    back_ankle_y=0.26,
+    back_ankle_z=0.07,
+    back_toe_x=0.12,
+    back_toe_y=0.18,
+    back_toe_z=0.03,
+)
+
 LEGS = {
-    # name: (top, joint, ankle, toe, parent)
-    "FL": (Vector((0.13, -0.13, 0.42)), Vector((0.13, -0.14, 0.24)), Vector((0.13, -0.14, 0.07)), Vector((0.13, -0.22, 0.03)), "chest"),
-    "FR": (Vector((-0.13, -0.13, 0.42)), Vector((-0.13, -0.14, 0.24)), Vector((-0.13, -0.14, 0.07)), Vector((-0.13, -0.22, 0.03)), "chest"),
-    "BL": (Vector((0.12, 0.25, 0.38)), Vector((0.12, 0.27, 0.22)), Vector((0.12, 0.26, 0.07)), Vector((0.12, 0.18, 0.03)), "hips"),
-    "BR": (Vector((-0.12, 0.25, 0.38)), Vector((-0.12, 0.27, 0.22)), Vector((-0.12, 0.26, 0.07)), Vector((-0.12, 0.18, 0.03)), "hips"),
+    leg: (*map(Vector, plan.leg_points(TABLE, leg)), plan.leg_parent(leg))
+    for leg in plan.LEGS
 }
 
 TAIL = [Vector((0, 0.42, 0.5)), Vector((0, 0.47, 0.36))]
 NEST_C = Vector((0.0, -0.31, 0.95))
 BIRD_C = NEST_C + Vector((0.0, 0.0, 0.05))
 
-BONES = [
-    ("root", (0, 0, 0), (0, 0, 0.1), None),
-    ("hips", tuple(HIP), tuple(MID), "root"),
-    ("spine", tuple(MID), tuple(CHEST), "hips"),
-    ("chest", tuple(CHEST), tuple(NECK), "spine"),
-    ("head", tuple(NECK), tuple(HEAD_C + Vector((0, -0.12, 0.0))), "chest"),
-    ("trunk", tuple(TRUNK[0]), tuple(TRUNK[1]), "head"),
-    ("trunk.2", tuple(TRUNK[1]), tuple(TRUNK[2]), "trunk"),
-    ("trunk.3", tuple(TRUNK[2]), tuple(TRUNK[3]), "trunk.2"),
-    ("ear.L", (0.12, -0.3, 0.7), (0.17, -0.27, 0.62), "head"),
-    ("ear.R", (-0.12, -0.3, 0.7), (-0.17, -0.27, 0.62), "head"),
-    ("tail", tuple(TAIL[0]), tuple(TAIL[1]), "hips"),
-    ("bird", tuple(BIRD_C), tuple(BIRD_C + Vector((0, -0.05, 0))), "head"),
+TRUNK_BONES = [
+    ('trunk', tuple(TRUNK[0]), tuple(TRUNK[1]), 'head'),
+    ('trunk.2', tuple(TRUNK[1]), tuple(TRUNK[2]), 'trunk'),
+    ('trunk.3', tuple(TRUNK[2]), tuple(TRUNK[3]), 'trunk.2'),
+    ('ear.L', (0.12, -0.3, 0.7), (0.17, -0.27, 0.62), 'head'),
+    ('ear.R', (-0.12, -0.3, 0.7), (-0.17, -0.27, 0.62), 'head'),
+    ('tail', tuple(TAIL[0]), tuple(TAIL[1]), 'hips'),
+    ('bird', tuple(BIRD_C), tuple(BIRD_C + Vector((0, -0.05, 0))), 'head'),
 ]
-for leg, (top, joint, ankle, toe, parent) in LEGS.items():
-    BONES += [
-        (f"upper.{leg}", tuple(top), tuple(joint), parent),
-        (f"lower.{leg}", tuple(joint), tuple(ankle), f"upper.{leg}"),
-        (f"foot.{leg}", tuple(ankle), tuple(toe), f"lower.{leg}"),
-    ]
 
 # --- Weights -------------------------------------------------------------------
 
@@ -380,9 +411,11 @@ def leg_parts():
 
 def build_figure():
     kit.reset_scene()
-    rig = kit.build_armature("WoollyMammoth", BONES)
+    rig, _ = plan.build_rig("WoollyMammoth", TABLE, TRUNK_BONES, foot="foot")
     parts = body_parts() + head_parts() + leg_parts()
+    plan.mirror_parts(parts)
     objects = [kit.part_object(part) for part in parts]
+    plan.check_skin(parts, rig)
     mesh = kit.join_parts(objects, "WoollyMammothMesh")
     kit.skin(mesh, rig)
     return rig, mesh
@@ -391,164 +424,173 @@ def build_figure():
 # --- Clips -----------------------------------------------------------------------
 
 
-def build_clips(rig):
-    def t(bone, *rotations):
-        return turn(rig, bone, *rotations)
+PATCHES = (
+    Patch("walk", "heavy-walk", beats=clips.quadruped.walk_beats(32), frames=32),
+    Patch(
+        "attack",
+        "tusk-toss",
+        beats=(
+            Beat(0),
+            Beat(5, "snort", (0.4,)),
+            Beat(10, "charge"),
+            Beat(15, "toss"),
+            Beat(19, "toss", (1,)),
+            Beat(26),
+            Beat(30),
+        ),
+    ),
+    Patch("death", "fall-left"),
+)
 
-    def at(bone, offset):
-        return kit.shift(rig, bone, offset)
 
-    def pose(base, **changes):
-        result = dict(base)
-        for key, value in changes.items():
-            result[key.replace("__", ".").replace("_at_", "@")] = value
-        return result
+class Poses(clips.quadruped.Poses):
+    foot = "foot"
+    fall = Fall(Y, 84, (-0.4, 0, 0.26))
 
-    def legs(**angles):
-        """Leg swings: `FL=(upper, lower, foot)` in degrees about X. A negative upper swings forward."""
-        result = {}
-        for leg, (upper, lower, foot) in angles.items():
-            result[f"upper__{leg}"] = t(f"upper.{leg}", (X, upper))
-            result[f"lower__{leg}"] = t(f"lower.{leg}", (X, lower))
-            result[f"foot__{leg}"] = t(f"foot.{leg}", (X, foot))
-        return result
-
-    def trunk(curl=0.0, swing=0.0, lift=0.0):
+    def trunk(self, curl=0.0, swing=0.0, lift=0.0):
         """
         The trunk: `curl` > 0 curls the tip forward and up, < 0 tucks it back
         under the chin; `swing` turns it to the side; `lift` raises the whole
         trunk forward and up from its base, as in a trumpet call.
         """
         return {
-            "trunk": t("trunk", (X, -6 * curl - 80 * lift), (Z, swing * 6)),
-            "trunk.2": t("trunk.2", (X, -16 * curl - 40 * lift), (Z, swing * 8)),
-            "trunk.3": t("trunk.3", (X, -26 * curl - 20 * lift), (Z, swing * 10)),
+            "trunk": self.t("trunk", (X, -6 * curl - 80 * lift), (Z, swing * 6)),
+            "trunk.2": self.t("trunk.2", (X, -16 * curl - 40 * lift), (Z, swing * 8)),
+            "trunk.3": self.t("trunk.3", (X, -26 * curl - 20 * lift), (Z, swing * 10)),
         }
 
-    def ears(flap=0.0):
+    def ears(self, flap=0.0):
         return {
-            "ear.L": t("ear.L", (Z, 20 * flap)),
-            "ear.R": t("ear.R", (Z, -20 * flap)),
+            "ear.L": self.t("ear.L", (Z, 20 * flap)),
+            "ear.R": self.t("ear.R", (Z, -20 * flap)),
         }
 
-    def stand(breath=0.0, sway=0.0):
+    def stance(self, breath=0.0, sway=0.0):
         """The idle stance: the head turned a little to the camera, the trunk swings and the ears flap."""
         return {
-            "hips@loc": at("hips", (0, 0, -breath * 0.004)),
-            "hips": t("hips", (Z, -8)),
-            "spine": t("spine", (X, -breath * 1.5)),
-            "chest": t("chest", (X, breath * 1.5), (Z, sway * 2)),
-            "head": t("head", (Z, -6 + sway * 4), (X, 2 - breath * 3), (Y, sway * 3)),
-            **trunk(0.4 + 0.3 * breath, sway),
-            **ears(0.2 + 0.6 * max(0.0, sway)),
-            "tail": t("tail", (Z, sway * 20), (X, -breath * 6)),
-            "bird": t("bird", (Z, sway * 30)),
+            **super().stance(breath, sway),
+            "head": self.t(
+                "head", (Z, -6 + sway * 4), (X, 2 - breath * 3), (Y, sway * 3)
+            ),
+            **self.trunk(0.4 + 0.3 * breath, sway),
+            **self.ears(0.2 + 0.6 * max(0.0, sway)),
+            "tail": self.t("tail", (Z, sway * 20), (X, -breath * 6)),
+            "bird": self.t("bird", (Z, sway * 30)),
         }
 
-    def gasp(breath=0.0):
+    def gasp(self, base, breath=0.0):
         """Low HP: the legs give a little, the head hangs, the trunk on the ground."""
-        return pose(
-            stand(),
-            hips_at_loc=at("hips", (0, 0, -0.008 - breath * 0.004)),
-            spine=t("spine", (X, 3)),
-            chest=t("chest", (X, 6 + breath * 2)),
-            head=t("head", (X, 16 + breath * 3), (Y, -6)),
-            **trunk(-0.4 + 0.2 * breath),
-            **ears(-0.3),
-            tail=t("tail", (X, 10)),
-            bird=t("bird", (Z, 0)),
-            **legs(FL=(-4, 14, -10), FR=(4, 10, -14), BL=(-6, 12, -6), BR=(-6, 12, -6)),
+        return self.pose(
+            super().gasp(base, breath),
+            hips_at_loc=self.at("hips", (0, 0, -0.008 - breath * 0.004)),
+            chest=self.t("chest", (X, 6 + breath * 2)),
+            head=self.t("head", (X, 16 + breath * 3), (Y, -6)),
+            **self.trunk(-0.4 + 0.2 * breath),
+            **self.ears(-0.3),
+            tail=self.t("tail", (X, 10)),
+            bird=self.t("bird", (Z, 0)),
+            **self.legs(
+                FL=(-4, 14, -10), FR=(4, 10, -14), BL=(-6, 12, -6), BR=(-6, 12, -6)
+            ),
         )
 
-    def recoil(base, amount=1.0):
+    def recoil(self, base, amount=1.0):
         """The hit pushes the head up and the body back, and the bird hops."""
-        return pose(
-            base,
-            hips_at_loc=at("hips", (0, 0.03 * amount, -0.01 * amount)),
-            chest=t("chest", (X, -6 * amount), (Z, 6 * amount)),
-            head=t("head", (X, -14 * amount), (Z, 8 * amount)),
-            **trunk(1.2 * amount, -amount),
-            **ears(amount),
-            tail=t("tail", (X, -20 * amount)),
-            bird_at_loc=at("bird", (0, 0, 0.06 * amount)),
+        return self.pose(
+            super().recoil(base, amount),
+            hips_at_loc=self.at("hips", (0, 0.03 * amount, -0.01 * amount)),
+            head=self.t("head", (X, -14 * amount), (Z, 8 * amount)),
+            **self.trunk(1.2 * amount, -amount),
+            **self.ears(amount),
+            tail=self.t("tail", (X, -20 * amount)),
+            bird_at_loc=self.at("bird", (0, 0, 0.06 * amount)),
         )
 
-    def buckle(base):
+    def buckle(self, base):
         """The legs give way, and the bird flies up."""
-        return pose(
-            base,
-            hips_at_loc=at("hips", (0, 0, -0.03)),
-            chest=t("chest", (X, 12)),
-            head=t("head", (X, 16)),
-            **trunk(-0.5),
-            **ears(0.5),
-            bird_at_loc=at("bird", (0.0, 0.1, 0.22)),
-            **legs(FL=(-20, 50, -30), FR=(-10, 40, -30), BL=(-30, 40, -10), BR=(-24, 40, -10)),
+        return self.pose(
+            super().buckle(base),
+            hips_at_loc=self.at("hips", (0, 0, -0.03)),
+            chest=self.t("chest", (X, 12)),
+            head=self.t("head", (X, 16)),
+            **self.trunk(-0.5),
+            **self.ears(0.5),
+            bird_at_loc=self.at("bird", (0.0, 0.1, 0.22)),
+            **self.legs(
+                FL=(-20, 50, -30),
+                FR=(-10, 40, -30),
+                BL=(-30, 40, -10),
+                BR=(-24, 40, -10),
+            ),
         )
 
-    def fallen(base, bounce=0.0):
+    def fallen(self, base, bounce=0.0):
         """
         On its left side, the legs stiff and out. The Battle camera sees the
         right side of a player Unit (-X), so it sees the legs and the belly.
         The bird is gone.
         """
-        return pose(
-            base,
-            root=t("root", (Y, 84 - bounce)),
-            root_at_loc=at("root", (-0.4, 0, 0.26)),
-            chest=t("chest", (X, 4)),
-            head=t("head", (X, 6), (Y, 10)),
-            **trunk(-0.2, 1.5),
-            **ears(-0.4),
-            tail=t("tail", (X, -10)),
-            bird_at_loc=at("bird", (0.0, 0.3, 0.6)),
+        return self.pose(
+            super().fallen(base, bounce),
+            head=self.t("head", (X, 6), (Y, 10)),
+            **self.trunk(-0.2, 1.5),
+            **self.ears(-0.4),
+            tail=self.t("tail", (X, -10)),
+            bird_at_loc=self.at("bird", (0.0, 0.3, 0.6)),
             bird_at_scale=0.02,
-            **legs(FL=(-30, 10, -10), FR=(-12, 8, -10), BL=(30, 6, 0), BR=(8, 8, 0)),
+            **self.legs(
+                FL=(-30, 10, -10), FR=(-12, 8, -10), BL=(30, 6, 0), BR=(8, 8, 0)
+            ),
         )
 
-    def low(base):
+    def low(self, base):
         """Down low with the legs folded, as a summon starts."""
-        return pose(
-            base,
-            hips_at_loc=at("hips", (0, 0, -0.08)),
-            chest=t("chest", (X, 6)),
-            head=t("head", (X, 18)),
-            **trunk(-0.6),
-            **ears(-0.4),
-            **legs(FL=(-50, 100, -50), FR=(-50, 100, -50), BL=(-60, 90, -30), BR=(-60, 90, -30)),
+        return self.pose(
+            super().low(base),
+            hips_at_loc=self.at("hips", (0, 0, -0.08)),
+            head=self.t("head", (X, 18)),
+            **self.trunk(-0.6),
+            **self.ears(-0.4),
+            **self.legs(
+                FL=(-50, 100, -50),
+                FR=(-50, 100, -50),
+                BL=(-60, 90, -30),
+                BR=(-60, 90, -30),
+            ),
         )
 
-    def trumpet(base, rear=1.0):
+    def snort(self, base, rear=1.0):
         """The head up and the trunk high: a call. The front lifts a little with `rear`."""
-        return pose(
-            base,
-            hips=t("hips", (Z, -8), (X, -8 * rear)),
-            hips_at_loc=at("hips", (0, 0.02 * rear, 0.0)),
-            chest=t("chest", (X, -4 * rear)),
-            head=t("head", (Z, -4), (X, -18)),
-            **trunk(0, 0, 1.0),
-            **ears(1.0),
-            tail=t("tail", (X, -20)),
-            bird_at_loc=at("bird", (0, 0, 0.05)),
-            **legs(FL=(-18 * rear, 30 * rear, -12 * rear), FR=(-6 * rear, 20 * rear, -14 * rear), BL=(6 * rear, 0, 0), BR=(8 * rear, 0, 0)),
+        return self.pose(
+            super().snort(base, rear),
+            head=self.t("head", (Z, -4), (X, -18)),
+            **self.trunk(0, 0, 1.0),
+            **self.ears(1.0),
+            tail=self.t("tail", (X, -20)),
+            bird_at_loc=self.at("bird", (0, 0, 0.05)),
+            **self.legs(
+                FL=(-18 * rear, 30 * rear, -12 * rear),
+                FR=(-6 * rear, 20 * rear, -14 * rear),
+                BL=(6 * rear, 0, 0),
+                BR=(8 * rear, 0, 0),
+            ),
         )
 
-    def stride(phase):
+    def stride(self, base, phase):
         """
         The Heavy walk: one leg at a time, BL, FL, BR, FR. `phase` 0 to 1 is
         one cycle. The body rolls toward the leg that stands.
         """
-        result = pose(
-            stand(),
-            hips_at_loc=at("hips", (0, 0, 0.006 * math.sin(phase * 4 * math.pi))),
-            chest=t("chest", (Y, 3 * math.sin(phase * 2 * math.pi))),
-            head=t("head", (Z, -6), (X, 2 + 3 * math.sin(phase * 4 * math.pi))),
-            **trunk(0.3, math.sin(phase * 2 * math.pi)),
-            tail=t("tail", (Z, 14 * math.sin(phase * 2 * math.pi))),
+        result = self.pose(
+            base,
+            hips_at_loc=self.at("hips", (0, 0, 0.006 * math.sin(phase * 4 * math.pi))),
+            chest=self.t("chest", (Y, 3 * math.sin(phase * 2 * math.pi))),
+            head=self.t("head", (Z, -6), (X, 2 + 3 * math.sin(phase * 4 * math.pi))),
+            **self.trunk(0.3, math.sin(phase * 2 * math.pi)),
+            tail=self.t("tail", (Z, 14 * math.sin(phase * 2 * math.pi))),
         )
         for leg, offset in (("BL", 0.0), ("FL", 0.25), ("BR", 0.5), ("FR", 0.75)):
             local = (phase - offset) % 1.0
-            # A quarter of the cycle in the air, the rest on the ground, pushed back.
             if local < 0.25:
                 u = local / 0.25
                 swing = lerp(18, -18, u)
@@ -559,74 +601,48 @@ def build_clips(rig):
                 lift = 0.0
             back = leg.startswith("B")
             bend = (34 if back else 44) * lift
-            result.update(legs(**{leg: (swing - 10 * lift, bend, 10 * lift - swing - bend)}))
+            result.update(
+                self.legs(**{leg: (swing - 10 * lift, bend, 10 * lift - swing - bend)})
+            )
         return result
 
-    # The attack (Trample): it lifts its head with the trunk up, then lunges
-    # and tosses the tusks up through the enemy. The slash effect starts at
-    # 50% of the attack (`MELEE_IMPACT` in fx.ts), so the tusks swing up at
-    # frame 15 of 30.
-    def lower_tusks(base):
-        return pose(
-            base,
-            hips_at_loc=at("hips", (0, 0.05, -0.01)),
-            chest=t("chest", (X, 6)),
-            head=t("head", (Z, -4), (X, 24)),
-            **trunk(1.2),
-            **ears(1.0),
-            tail=t("tail", (X, -20)),
-            **legs(FL=(-10, 16, -6), FR=(6, 10, -16), BL=(-14, 20, -6), BR=(-10, 16, -6)),
+    def charge(self, base):
+        return self.pose(
+            self.unchanged(super().charge(base), base, "hips"),
+            hips_at_loc=self.at("hips", (0, 0.05, -0.01)),
+            chest=self.t("chest", (X, 6)),
+            head=self.t("head", (Z, -4), (X, 24)),
+            **self.trunk(1.2),
+            **self.ears(1.0),
+            tail=self.t("tail", (X, -20)),
+            **self.legs(
+                FL=(-10, 16, -6), FR=(6, 10, -16), BL=(-14, 20, -6), BR=(-10, 16, -6)
+            ),
         )
 
-    def toss(base, follow=0.0):
-        return pose(
-            base,
-            hips_at_loc=at("hips", (0, -0.16 - 0.02 * follow, 0.02)),
-            hips=t("hips", (Z, -8), (X, -4)),
-            chest=t("chest", (X, -6)),
-            head=t("head", (Z, -4), (X, -22 - 4 * follow)),
-            **trunk(0, 0, 0.6),
-            **ears(1.0),
-            tail=t("tail", (X, -30)),
-            bird_at_loc=at("bird", (0, 0.02, 0.07)),
-            **legs(FL=(-30, 30, 0), FR=(-16, 20, -4), BL=(24, 0, -24), BR=(30, -4, -26)),
+    def toss(self, base, follow=0.0):
+        return self.pose(
+            super().toss(base, follow),
+            hips_at_loc=self.at("hips", (0, -0.16 - 0.02 * follow, 0.02)),
+            hips=self.t("hips", (Z, -8), (X, -4)),
+            head=self.t("head", (Z, -4), (X, -22 - 4 * follow)),
+            **self.trunk(0, 0, 0.6),
+            **self.ears(1.0),
+            tail=self.t("tail", (X, -30)),
+            bird_at_loc=self.at("bird", (0, 0.02, 0.07)),
+            **self.legs(
+                FL=(-30, 30, 0), FR=(-16, 20, -4), BL=(24, 0, -24), BR=(30, -4, -26)
+            ),
         )
 
-    clips = []
-    idle = Clip("idle", 48, loop=True)
-    for frame, breath, sway in ((0, 0, 0), (12, 0.5, 1), (24, 1, 0), (36, 0.5, -1), (48, 0, 0)):
-        idle.key(frame, stand(breath, sway))
-    clips.append(idle)
 
-    low_hp = Clip("lowHp", 48, loop=True)
-    for frame, breath in ((0, 0), (24, 1), (48, 0)):
-        low_hp.key(frame, gasp(breath))
-    clips.append(low_hp)
-
-    walk = Clip("walk", 32, loop=True)
-    for frame in range(0, 33, 2):
-        walk.key(frame, stride(frame / 32))
-    clips.append(walk)
-
-    attack = Clip("attack", 30)
-    attack.key(0, stand()).key(5, trumpet(stand(), 0.4)).key(10, lower_tusks(stand()))
-    attack.key(15, toss(stand())).key(19, toss(stand(), 1)).key(26, stand()).key(30, stand())
-    clips.append(attack)
-
-    hurt = Clip("hurt", 16)
-    hurt.key(0, stand()).key(3, recoil(stand())).key(8, recoil(stand(), 0.4)).key(16, stand())
-    clips.append(hurt)
-
-    death = Clip("death", 36)
-    death.key(0, stand()).key(5, recoil(stand())).key(14, buckle(stand()))
-    death.key(26, fallen(stand())).key(30, fallen(stand(), 5)).key(36, fallen(stand()))
-    clips.append(death)
-
-    summon = Clip("summon", 24)
-    summon.key(0, low(stand())).key(8, low(stand())).key(15, trumpet(stand())).key(19, trumpet(stand(), 0.6))
-    summon.key(24, stand())
-    clips.append(summon)
-    return clips
+def build_clips(rig):
+    return clips.overrides.build(
+        clips.quadruped.CLIPS,
+        Poses(*kit.pose_tools(rig)),
+        PATCHES,
+        without=("cast", "rebirth"),
+    )
 
 
 def build(export=True):

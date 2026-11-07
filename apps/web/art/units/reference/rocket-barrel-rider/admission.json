@@ -1,0 +1,32 @@
+{
+  "id": "rocket-barrel-rider",
+  "passed": true,
+  "problems": [],
+  "measures": {
+    "front": {
+      "backgroundEdge": 0.989,
+      "offPalette": 0.098,
+      "fill": 0.93
+    },
+    "three-quarter": {
+      "backgroundEdge": 0.948,
+      "offPalette": 0.104,
+      "fill": 0.973
+    },
+    "side": {
+      "backgroundEdge": 1,
+      "offPalette": 0.087,
+      "fill": 0.847
+    },
+    "back": {
+      "backgroundEdge": 0.983,
+      "offPalette": 0.082,
+      "fill": 0.935
+    },
+    "details": {
+      "backgroundEdge": 0.908,
+      "offPalette": 0.091,
+      "fill": 0.915
+    }
+  }
+}

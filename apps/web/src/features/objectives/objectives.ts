@@ -31,7 +31,7 @@ export interface ActivityBar {
   /** The Activity of the last checkpoint: the end of the bar. */
   readonly max: number;
   readonly checkpoints: readonly CheckpointView[];
-  /** The reached checkpoints to claim: the Claim button is off at 0. */
+  /** The reached checkpoints to claim from their chests. */
   readonly claimable: number;
 }
 
@@ -42,7 +42,7 @@ export interface ObjectivesView {
   readonly rows: readonly QuestRow[];
   readonly bar: ActivityBar;
   readonly groups: readonly AchievementGroup[];
-  /** The rewards to claim on each tab: Claim all is off at 0. */
+  /** The rewards to claim on each tab, including Activity chests. */
   readonly counts: Readonly<Record<ObjectivesTab, number>>;
 }
 

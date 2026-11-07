@@ -1,0 +1,117 @@
+{
+  "id": "woolly-mammoth",
+  "bodyPlan": "quadruped",
+  "height": 1.0420001316077256,
+  "palette": {
+    "beak": "#e09a2a",
+    "bird": "#e9e4db",
+    "bird_dark": "#40393d",
+    "eye": "#1e140e",
+    "eye_rim": "#c99a5a",
+    "fur": "#8a5a34",
+    "fur_dark": "#5e3a20",
+    "fur_light": "#b07a48",
+    "ice": "#cfeeff",
+    "nest": "#9d764e",
+    "rope": "#b49a6a",
+    "skin": "#6e4a32",
+    "skin_dark": "#4a3022",
+    "snow": "#f2f4f6",
+    "toe": "#ecd5c7",
+    "tusk": "#efe4cc",
+    "tusk_dark": "#c9b894",
+    "wood": "#7a5636",
+    "wood_dark": "#4e3420"
+  },
+  "parts": [
+    "body",
+    "skirt",
+    "tail",
+    "head",
+    "face",
+    "tusks",
+    "fence",
+    "trunk",
+    "ear.L",
+    "ear.R",
+    "nest",
+    "bird",
+    "upper.FL",
+    "lower.FL",
+    "foot.FL",
+    "upper.FR",
+    "lower.FR",
+    "foot.FR",
+    "upper.BL",
+    "lower.BL",
+    "foot.BL",
+    "upper.BR",
+    "lower.BR",
+    "foot.BR"
+  ],
+  "props": [
+    {
+      "id": "bird",
+      "hand": "none",
+      "cameraSide": false,
+      "bone": "bird"
+    }
+  ],
+  "clips": {
+    "idle": {},
+    "lowHp": {},
+    "walk": {
+      "override": "heavy-walk"
+    },
+    "attack": {
+      "override": "tusk-toss"
+    },
+    "hurt": {},
+    "death": {
+      "override": "fall-left"
+    },
+    "summon": {}
+  },
+  "details": [
+    "shaggy brown coat with a long hanging fringe",
+    "two curved ivory tusks and a flexible three-bone trunk",
+    "broken fence caught on the tusks",
+    "bird and nest on the head"
+  ],
+  "regions": {
+    "head": {
+      "x0": 0.02,
+      "x1": 0.85,
+      "y0": 0.07,
+      "y1": 0.78
+    },
+    "leg.L": {
+      "x0": 0.54,
+      "x1": 0.94,
+      "y0": 0.54,
+      "y1": 1
+    },
+    "leg.R": {
+      "x0": 0.11,
+      "x1": 0.51,
+      "y0": 0.54,
+      "y1": 1
+    },
+    "prop": {
+      "x0": 0.48,
+      "x1": 0.58,
+      "y0": 0,
+      "y1": 0.06
+    },
+    "torso": {
+      "x0": 0,
+      "x1": 1,
+      "y0": 0.21,
+      "y1": 0.88
+    }
+  },
+  "identity": {
+    "feature": "bird nest above the tusks and trunk",
+    "azimuthDegrees": 30
+  }
+}

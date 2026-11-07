@@ -1,0 +1,25 @@
+{
+  "id": "junk-walker",
+  "source": "apps/web/public/creature/goblin/junk-walker.webp",
+  "views": {
+    "front": "front.webp",
+    "three-quarter": "three-quarter.webp",
+    "side": "side.webp",
+    "back": "back.webp",
+    "details": "details.webp"
+  },
+  "props": [
+    "A round boiler body",
+    "pipe legs",
+    "a claw arm",
+    "an open seat with levers",
+    "brass gauges",
+    "rivets"
+  ],
+  "approval": {
+    "status": "approved",
+    "by": "rifandani",
+    "date": "2026-11-07",
+    "notes": "Approved all five views and this prop list by a message to the agent. Known differences: The pilot is more upright. The boiler is rounder and the legs are set apart in the neutral views. The claw joints, gauges, levers, tank fittings and plate seams differ. The rear plate, piping and vent are inferred. The helper goblin and mine yard are omitted."
+  }
+}

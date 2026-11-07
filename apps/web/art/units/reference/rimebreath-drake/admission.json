@@ -1,0 +1,32 @@
+{
+  "id": "rimebreath-drake",
+  "passed": true,
+  "problems": [],
+  "measures": {
+    "front": {
+      "backgroundEdge": 0.97,
+      "offPalette": 0.094,
+      "fill": 0.96
+    },
+    "three-quarter": {
+      "backgroundEdge": 1,
+      "offPalette": 0.104,
+      "fill": 0.82
+    },
+    "side": {
+      "backgroundEdge": 0.987,
+      "offPalette": 0.102,
+      "fill": 0.953
+    },
+    "back": {
+      "backgroundEdge": 0.982,
+      "offPalette": 0.087,
+      "fill": 0.96
+    },
+    "details": {
+      "backgroundEdge": 0.927,
+      "offPalette": 0.12,
+      "fill": 0.953
+    }
+  }
+}

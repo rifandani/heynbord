@@ -1,5 +1,10 @@
 import type { DamageType, Profile, QuestView, RaceId } from "@workspace/rules";
-import { dailyQuests, getQuestTemplate, isUnlocked } from "@workspace/rules";
+import {
+  claimQuest,
+  dailyQuests,
+  getQuestTemplate,
+  isUnlocked,
+} from "@workspace/rules";
 import { absurd } from "effect";
 
 import type { TextRef } from "@/features/battle/card-text";
@@ -194,3 +199,18 @@ export const questLines = (
       : [];
   });
 };
+
+/** Claims Completed Daily Quests without claiming any Activity chest. */
+export const claimDailyQuestRewards = (profile: Profile) =>
+  dailyQuests(profile).reduce(
+    (claimed, quest) => {
+      const change = claimQuest(claimed.profile, quest.index);
+      return change
+        ? {
+            profile: change.profile,
+            count: claimed.count + change.quests.length,
+          }
+        : claimed;
+    },
+    { profile, count: 0 }
+  );

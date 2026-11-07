@@ -130,6 +130,27 @@ describe("published Unit Model checks", () => {
     );
   });
 
+  describe.each(["_REGION", "_PART"])("with %s data", (attribute) => {
+    const tagged = editJson(packed, (gltf) => {
+      gltf.meshes = gltf.meshes.map((mesh) => ({
+        primitives: mesh.primitives.map((primitive) => ({
+          ...primitive,
+          attributes: { ...primitive.attributes, [attribute]: 0 },
+        })),
+      }));
+    });
+
+    test("rejects a Published Model", () => {
+      expect(checkUnitModel(tagged).problems).toContain(
+        `primitive has a ${attribute} attribute`
+      );
+    });
+
+    test("accepts a Raw Export", () => {
+      expect(checkUnitModel(tagged, false).problems).toEqual([]);
+    });
+  });
+
   test("rejects a truncated GLB", () => {
     expect(() => checkUnitModel(raw.subarray(0, 24))).toThrow("Invalid GLB");
   });

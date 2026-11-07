@@ -12,11 +12,15 @@ to Y up and +Z forward, which `unit-rig.ts` expects. The left side of the
 figure is +X.
 """
 
+import json
 import math
+from collections import Counter
 
 import bmesh
 import bpy
+from clips.base import Clip
 from mathutils import Matrix, Quaternion, Vector
+from unit_regions import PART_ATTRIBUTE, PARTS_EXTRA, REGION_ATTRIBUTE, part_region, region_id
 
 FPS = 24
 
@@ -86,8 +90,19 @@ def sphere(bm, center, radii, segments=12, rings=8):
     return geom["verts"]
 
 
-def cone(bm, start, end, r_start, r_end, segments=8, caps=True, squash=1.0):
-    """A tapered cylinder from `start` to `end`. `squash` scales its depth (Y)."""
+def shares(low, high, *heights):
+    """Each height as a share of the way from `low` to `high`: the `loops` of a cone."""
+    return tuple((z - low) / (high - low) for z in heights)
+
+
+def cone(bm, start, end, r_start, r_end, segments=8, caps=True, squash=1.0, loops=()):
+    """
+    A tapered cylinder from `start` to `end`. `squash` scales its depth (Y).
+    `loops` adds a ring at each share of the length, so a joint there can bend.
+    The rings are on the old surface, so they do not change the shape.
+    """
+    if any(not 0 < share < 1 for share in loops):
+        raise ValueError(f"a ring must be inside the cone: {loops}")
     start, end = Vector(start), Vector(end)
     axis = end - start
     geom = bmesh.ops.create_cone(
@@ -102,7 +117,18 @@ def cone(bm, start, end, r_start, r_end, segments=8, caps=True, squash=1.0):
     squash_m = Matrix.Diagonal((1.0, squash, 1.0, 1.0))
     place = Matrix.Translation((start + end) / 2) @ _frame(axis)
     bmesh.ops.transform(bm, matrix=place @ squash_m, verts=geom["verts"])
-    return geom["verts"]
+    verts = list(geom["verts"])
+    for share in loops:
+        edges = {edge for vert in verts for edge in vert.link_edges}
+        faces = {face for vert in verts for face in vert.link_faces}
+        cut = bmesh.ops.bisect_plane(
+            bm,
+            geom=verts + list(edges) + list(faces),
+            plane_co=start + axis * share,
+            plane_no=axis,
+        )
+        verts += [item for item in cut["geom_cut"] if isinstance(item, bmesh.types.BMVert)]
+    return verts
 
 
 def box(bm, center, size):
@@ -143,10 +169,10 @@ def tube(bm, points, radii, sides=6, caps=True):
     for a, b in zip(rings, rings[1:]):
         for step in range(sides):
             n = (step + 1) % sides
-            bm.faces.new((a[step], a[n], b[n], b[step]))
+            bm.faces.new((a[step], b[step], b[n], a[n]))
     if caps:
-        bm.faces.new(list(reversed(rings[0])))
-        bm.faces.new(rings[-1])
+        bm.faces.new(rings[0])
+        bm.faces.new(list(reversed(rings[-1])))
     return [vert for ring in rings for vert in ring]
 
 
@@ -263,11 +289,14 @@ class Part:
     """
     One piece of the figure. `color` is an RGB tuple or a function
     (face, center) -> RGB. `weights` is a bone name or a function
-    (co) -> {bone: weight}.
+    (co) -> {bone: weight}. `region` is a name from `regions.json`, or None to
+    get it from `part_region` when the part is made. `self.region` keeps its id,
+    and `self.bones` keeps the names of the bones that it uses.
     """
 
-    def __init__(self, name, color, weights, smooth=True, shade=0.18):
+    def __init__(self, name, color, weights, smooth=True, shade=0.18, region=None):
         self.name = name
+        self.region = None if region is None else region_id(region)
         self.bm = bmesh.new()
         self.color = color
         self.weights = weights
@@ -279,6 +308,22 @@ class Part:
         """Gives some faces their own color, for a trim."""
         for face in faces:
             self.face_colors[face] = color
+
+
+def mirror_part_geometry(source, target):
+    """Reflect the painted mesh across X; keep the target's skin rule and region."""
+    source.bm.normal_update()
+    colors = [_face_color(source, face) for face in source.bm.faces]
+    target.bm.free()
+    target.bm = source.bm.copy()
+    target.face_colors = dict(zip(target.bm.faces, colors))
+    target.smooth = source.smooth
+    target.shade = source.shade
+    bmesh.ops.transform(
+        target.bm, matrix=Matrix.Diagonal((-1, 1, 1, 1)), verts=list(target.bm.verts)
+    )
+    bmesh.ops.reverse_faces(target.bm, faces=list(target.bm.faces))
+    target.bm.normal_update()
 
 
 def _face_color(part, face):
@@ -316,6 +361,7 @@ def part_object(part):
     obj = bpy.data.objects.new(part.name, mesh)
     bpy.context.scene.collection.objects.link(obj)
 
+    bones = Counter()
     for vertex in mesh.vertices:
         rule = part.weights
         weights = rule(vertex.co) if callable(rule) else {rule: 1.0}
@@ -325,6 +371,17 @@ def part_object(part):
                 continue
             group = obj.vertex_groups.get(bone) or obj.vertex_groups.new(name=bone)
             group.add([vertex.index], weight / total, "REPLACE")
+            bones[bone] += weight / total
+
+    part.bones = set(bones)
+    if part.region is None:
+        main_bone = bones.most_common(1)[0][0]
+        center_x = sum(v.co.x for v in mesh.vertices) / len(mesh.vertices)
+        part.region = region_id(part_region(part.name, main_bone, center_x))
+    # The join keeps this attribute, so the review can name a region of the mesh.
+    regions = mesh.attributes.new(REGION_ATTRIBUTE, "INT", "POINT")
+    regions.data.foreach_set("value", [part.region] * len(mesh.vertices))
+    obj[PARTS_EXTRA] = part.name
     return obj
 
 
@@ -345,14 +402,18 @@ def figure_material():
 
 
 def join_parts(objects, name):
+    part_names = [obj[PARTS_EXTRA] for obj in objects]
     bpy.ops.object.select_all(action="DESELECT")
-    for obj in objects:
+    for index, obj in enumerate(objects):
+        ids = obj.data.attributes.new(PART_ATTRIBUTE, "INT", "POINT")
+        ids.data.foreach_set("value", [index + 1] * len(obj.data.vertices))
         obj.select_set(True)
     bpy.context.view_layer.objects.active = objects[0]
     bpy.ops.object.join()
     joined = bpy.context.view_layer.objects.active
     joined.name = name
     joined.data.name = name
+    joined[PARTS_EXTRA] = json.dumps(part_names)
     material = figure_material()
     joined.data.materials.clear()
     joined.data.materials.append(material)
@@ -416,6 +477,18 @@ def shift(rig, bone, offset):
     return rest.inverted() @ Vector(offset)
 
 
+def pose_tools(rig):
+    """The `t` and `at` functions of a `clips.base.Poses`, for one rig."""
+
+    def t(bone, *rotations):
+        return turn(rig, bone, *rotations)
+
+    def at(bone, offset):
+        return shift(rig, bone, offset)
+
+    return t, at
+
+
 def add_empty(name, location=(0, 0, 0)):
     empty = bpy.data.objects.new(name, None)
     empty.empty_display_size = 0.03
@@ -423,25 +496,6 @@ def add_empty(name, location=(0, 0, 0)):
     empty.rotation_mode = "QUATERNION"
     bpy.context.scene.collection.objects.link(empty)
     return empty
-
-
-class Clip:
-    """
-    The keys of one clip. Each key is a frame and a pose: a dict of
-    bone -> quaternion, plus `"<bone>@loc"` -> Vector, plus `"<empty>@pos"` ->
-    Vector for an IK target, plus `"<bone>/<constraint>"` -> influence, plus
-    `"<bone>@scale"` -> float.
-    """
-
-    def __init__(self, name, frames, loop=False):
-        self.name = name
-        self.frames = frames
-        self.loop = loop
-        self.keys = []
-
-    def key(self, frame, pose):
-        self.keys.append((frame, pose))
-        return self
 
 
 def _key_pose(rig, empties, frame, pose):
@@ -596,6 +650,8 @@ def export_glb(rig, mesh, path):
         export_apply=True,
         export_yup=True,
         export_vertex_color="MATERIAL",
+        export_attributes=True,
+        export_extras=True,
         export_normals=True,
         export_texcoords=False,
         export_materials="EXPORT",

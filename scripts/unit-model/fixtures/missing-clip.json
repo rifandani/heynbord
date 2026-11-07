@@ -1,0 +1,15 @@
+{
+  "id": "missing-clip",
+  "bodyPlan": "biped-medium",
+  "height": 0.985,
+  "palette": { "skin": "#eab68c" },
+  "parts": ["head"],
+  "props": [],
+  "clips": {
+    "idle": {},
+    "walk": {},
+    "hurt": {},
+    "death": {}
+  },
+  "details": []
+}

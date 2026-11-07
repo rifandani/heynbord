@@ -1,0 +1,24 @@
+{
+  "id": "boss-snikkit",
+  "source": "apps/web/public/creature/goblin/boss-snikkit.webp",
+  "views": {
+    "front": "front.webp",
+    "three-quarter": "three-quarter.webp",
+    "side": "side.webp",
+    "back": "back.webp",
+    "details": "details.webp"
+  },
+  "props": [
+    "A mine-cart throne",
+    "a bucket crown with glass gems",
+    "a scepter that is a lit torch",
+    "a pile of bombs",
+    "a stolen hourglass on a chain"
+  ],
+  "approval": {
+    "status": "approved",
+    "by": "rifandani",
+    "date": "2026-11-07",
+    "notes": "Approved all five views and this prop list by a message to the agent. Known differences: The crown is more upright and shows both eyes. The beard is fuller. The cart panels, bomb layout, cloak tears and gem shapes differ. The side and back of the cart and cloak are inferred. The cheering crowd and rails are omitted."
+  }
+}

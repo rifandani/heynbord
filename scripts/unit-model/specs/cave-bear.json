@@ -1,0 +1,114 @@
+{
+  "id": "cave-bear",
+  "bodyPlan": "quadruped",
+  "height": 0.7263715936547309,
+  "palette": {
+    "claw": "#3a3028",
+    "claw_tip": "#cfc2a8",
+    "eye": "#3a2414",
+    "fur": "#7c4f2c",
+    "fur_dark": "#4f3119",
+    "fur_light": "#a9764a",
+    "honey": "#e9a52a",
+    "honey_dark": "#b6752a",
+    "honey_drip": "#f2bd4a",
+    "lid": "#5a3a20",
+    "moss": "#7d8d38",
+    "moss_dark": "#566426",
+    "mouth": "#a0444c",
+    "muzzle": "#c79e6e",
+    "nose": "#1e1612",
+    "scar": "#c98a84",
+    "tooth": "#efe4cc",
+    "wound": "#9b4d3b",
+    "wound_dark": "#5c2b26"
+  },
+  "parts": [
+    "body",
+    "fur",
+    "moss",
+    "cut",
+    "head",
+    "honey",
+    "jaw",
+    "ear.L",
+    "ear.R",
+    "upper.FL",
+    "lower.FL",
+    "foot.FL",
+    "upper.FR",
+    "lower.FR",
+    "foot.FR",
+    "upper.BL",
+    "lower.BL",
+    "foot.BL",
+    "upper.BR",
+    "lower.BR",
+    "foot.BR"
+  ],
+  "props": [],
+  "clips": {
+    "idle": {
+      "override": "head-nod"
+    },
+    "lowHp": {},
+    "walk": {
+      "override": "heavy-walk"
+    },
+    "attack": {
+      "override": "claw-swipe"
+    },
+    "cast": {
+      "override": "wound-lick"
+    },
+    "hurt": {},
+    "death": {
+      "override": "fall-left"
+    },
+    "summon": {
+      "override": "rise-and-roar"
+    }
+  },
+  "details": [
+    "dark shaggy fur with moss on the shoulders",
+    "large head, rounded ears and a pale muzzle",
+    "honey at the mouth",
+    "fresh right-shoulder wound closes during the cast"
+  ],
+  "regions": {
+    "effect": {
+      "x0": 0.04,
+      "x1": 0.09,
+      "y0": 0.2,
+      "y1": 0.34
+    },
+    "head": {
+      "x0": 0.15,
+      "x1": 0.84,
+      "y0": 0.09,
+      "y1": 0.61
+    },
+    "leg.L": {
+      "x0": 0.52,
+      "x1": 1,
+      "y0": 0.33,
+      "y1": 1
+    },
+    "leg.R": {
+      "x0": 0,
+      "x1": 0.48,
+      "y0": 0.33,
+      "y1": 1
+    },
+    "torso": {
+      "x0": 0.03,
+      "x1": 0.95,
+      "y0": 0,
+      "y1": 0.61
+    }
+  },
+  "identity": {
+    "feature": "honey at the mouth and the right-shoulder wound",
+    "azimuthDegrees": 30
+  }
+}

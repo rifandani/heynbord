@@ -254,7 +254,7 @@ export const STAGES: readonly StageDefinition[] = [
     firstWinCard: { cardId: "human.riverKnight", rank: "uncommon" },
     closedLanes: [],
     enemy: {
-      heroHp: 40,
+      heroHp: 39,
       classId: "mage",
       gear: NO_GEAR,
       deck: [
@@ -616,13 +616,13 @@ export const STAGES: readonly StageDefinition[] = [
           cardId: "goblin.junkBarricade",
           rank: "uncommon",
           lane: 0,
-          position: 10,
+          position: 9,
         },
         {
           cardId: "goblin.junkBarricade",
           rank: "uncommon",
           lane: 2,
-          position: 10,
+          position: 9,
         },
       ],
     },
@@ -698,7 +698,7 @@ export const STAGES: readonly StageDefinition[] = [
     firstWinCard: { cardId: "elf.acornTender", rank: "common" },
     closedLanes: [],
     enemy: {
-      heroHp: 55,
+      heroHp: 52,
       classId: "mage",
       gear: NO_GEAR,
       deck: [
@@ -714,7 +714,7 @@ export const STAGES: readonly StageDefinition[] = [
         ...copies(1, "goblin.scrapPlateGuard", "common"),
         ...copies(1, "goblin.fuseRunner", "common"),
         ...copies(1, "mage.frostShards", "common"),
-        ...copies(1, "mage.fireball", "common"),
+        ...copies(1, "mage.fireball", "uncommon"),
         ...copies(1, "goblin.fuseRunner", "common"),
         ...copies(1, "goblin.scrapPlateGuard", "common"),
         ...copies(1, "goblin.ankleSnatcher", "common"),
@@ -754,7 +754,7 @@ export const STAGES: readonly StageDefinition[] = [
         ...copies(1, "goblin.scrapPlateGuard", "uncommon"),
         ...copies(2, "elf.brambleDuelist", "common"),
         ...copies(1, "goblin.scrapPlateGuard", "common"),
-        ...copies(1, "ranger.harryingShot", "common"),
+        ...copies(1, "ranger.harryingShot", "uncommon"),
       ],
       startUnits: [],
     },

@@ -1,0 +1,141 @@
+{
+  "id": "shieldbearer",
+  "bodyPlan": "biped-medium",
+  "height": 0.9617469906806946,
+  "palette": {
+    "blue": "#334e90",
+    "blue_dark": "#35436c",
+    "blue_faded": "#4e67a1",
+    "boot": "#5c3b22",
+    "brow": "#2e1c12",
+    "cream": "#e6dcc6",
+    "eyes": "#231a14",
+    "gold": "#d6a443",
+    "gold_dark": "#98722b",
+    "hair": "#3a2418",
+    "hair_light": "#55361f",
+    "leather": "#6a4228",
+    "leather_dark": "#4a2e1c",
+    "mail": "#8a8f95",
+    "mail_dark": "#5c6168",
+    "skin": "#d9a17f",
+    "steel": "#b6babe",
+    "steel_dark": "#767c82",
+    "trousers": "#4e3c30",
+    "wood": "#6b4a2c"
+  },
+  "parts": [
+    "head",
+    "face",
+    "hair",
+    "cap",
+    "neck",
+    "mail",
+    "collar",
+    "skirt",
+    "mailHem",
+    "belt",
+    "cape",
+    "sleeve.L",
+    "bracer.L",
+    "glove.L",
+    "thigh.L",
+    "boot.L",
+    "foot.L",
+    "sleeve.R",
+    "bracer.R",
+    "glove.R",
+    "thigh.R",
+    "boot.R",
+    "foot.R",
+    "shield",
+    "sword"
+  ],
+  "props": [
+    {
+      "id": "shield",
+      "hand": "left",
+      "cameraSide": false,
+      "bone": "hand.L"
+    },
+    {
+      "id": "sword",
+      "hand": "right",
+      "cameraSide": true,
+      "bone": "hand.R"
+    }
+  ],
+  "clips": {
+    "idle": {},
+    "lowHp": {},
+    "walk": {
+      "override": "heavy-march"
+    },
+    "attack": {
+      "override": "shield-bash"
+    },
+    "hurt": {},
+    "death": {
+      "override": "fall-back"
+    },
+    "rebirth": {},
+    "summon": {}
+  },
+  "details": [
+    "simple steel cap with a ridge and rivets",
+    "mail shirt over a blue skirt with a gold hem",
+    "short blue cape with a gold edge",
+    "large round shield with faded blue and gold paint, a steel boss and dents",
+    "short sword low in the right hand"
+  ],
+  "regions": {
+    "arm.L": {
+      "x0": 0.5,
+      "x1": 0.86,
+      "y0": 0.22,
+      "y1": 0.48
+    },
+    "arm.R": {
+      "x0": 0,
+      "x1": 0.22,
+      "y0": 0.23,
+      "y1": 0.58
+    },
+    "head": {
+      "x0": 0.22,
+      "x1": 0.59,
+      "y0": 0,
+      "y1": 0.24
+    },
+    "leg.L": {
+      "x0": 0.45,
+      "x1": 0.63,
+      "y0": 0.49,
+      "y1": 1
+    },
+    "leg.R": {
+      "x0": 0.18,
+      "x1": 0.37,
+      "y0": 0.49,
+      "y1": 1
+    },
+    "prop": {
+      "x0": 0.03,
+      "x1": 1,
+      "y0": 0.26,
+      "y1": 0.74
+    },
+    "torso": {
+      "x0": 0.07,
+      "x1": 0.74,
+      "y0": 0.2,
+      "y1": 0.71
+    }
+  },
+  "identity": {
+    "feature": "large round shield with a steel boss and dents",
+    "azimuthDegrees": 315
+  },
+  "posedPairs": ["bracer", "forearm", "glove", "hand", "sleeve"],
+  "holedParts": ["body"]
+}

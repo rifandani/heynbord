@@ -46,7 +46,7 @@ SCALE = hex_color("#e6eaee")
 SCALE_SHADE = hex_color("#b3bfcb")
 SCALE_DARK = hex_color("#8794a3")
 BELLY = hex_color("#f3eedf")
-BELLY_BAND = hex_color("#d9d1bc")
+BELLY_BAND = hex_color("#d9c6bc")
 ICE = hex_color("#c4e9ff")
 ICE_DEEP = hex_color("#6fb3e6")
 MEMBRANE = hex_color("#cfe7f6")
@@ -54,7 +54,7 @@ MEMBRANE_DEEP = hex_color("#9cc9e8")
 EYE = hex_color("#8ff0ff")
 MOUTH = hex_color("#b45a6c")
 FANG = hex_color("#f6f2e6")
-CLAW = hex_color("#4a4f5a")
+CLAW = hex_color("#534f5a")
 FROST = hex_color("#f4fbff")
 SNOW = hex_color("#eef2f5")
 SNOW_SHADE = hex_color("#c3ccd6")
@@ -76,7 +76,7 @@ def lifted(point):
     return Vector(point) + HEAD_LIFT
 
 
-TAIL = [Vector((0, 0.14, 0.54)), Vector((0, 0.3, 0.5)), Vector((0, 0.46, 0.47)), Vector((0, 0.62, 0.5))]
+TAIL = [Vector((0, 0.14, 0.54)), Vector((-0.05, 0.3, 0.3)), Vector((-0.12, 0.46, 0.12)), Vector((0.03, 0.62, 0.08))]
 
 # Each wing: the root on the shoulder, the wrist and the tip. The left wing is +X.
 WING_ROOT = Vector((0.06, -0.06, 0.63))
@@ -95,7 +95,7 @@ def mirror(point, sign):
 def stand_path(s):
     """The column of frozen mist: a twist from under the belly down to the snow. `s` is 0..1."""
     angle = s * 1.4 * 2 * math.pi
-    radius = 0.015 + 0.03 * s
+    radius = 0.008 + 0.015 * s
     return Vector((radius * math.sin(angle), 0.03 - radius * math.cos(angle) + 0.02 * s, lerp(0.5, 0.03, s ** 0.95)))
 
 
@@ -325,7 +325,7 @@ def wing_part(side, sign):
     root, wrist, tip = (mirror(p, sign) for p in (WING_ROOT, WRIST, WING_TIP))
     back_root = mirror(Vector((0.06, 0.15, 0.57)), sign)
     back_mid = mirror(Vector((0.3, 0.26, 0.62)), sign)
-    rows, columns = 6, 3
+    rows, columns = 6, 1
 
     def leading(u):
         return root.lerp(wrist, u / 0.5) if u < 0.5 else wrist.lerp(tip, (u - 0.5) / 0.5)
@@ -343,7 +343,8 @@ def wing_part(side, sign):
             line = []
             for column in range(columns + 1):
                 v = column / columns
-                sag = 0.025 * math.sin(v * math.pi) * (1 - u)
+                # Each membrane strip is straight across its width.
+                sag = 0.0
                 line.append(a.lerp(b, v) + Vector((0, 0, offset - sag)))
             result.append(line)
         return result
@@ -352,7 +353,7 @@ def wing_part(side, sign):
         if face_side == "back":
             return MEMBRANE_DEEP
         # Light near the arm, deeper toward the trailing edge.
-        return MEMBRANE if column < columns - 1 else MEMBRANE_DEEP
+        return MEMBRANE
 
     part = Part(f"wing.{side}", MEMBRANE, wing_weights(side), shade=0.0)
     kit.panel(part, grid(0.004), grid(-0.004), color_of)
@@ -377,13 +378,16 @@ def wing_part(side, sign):
 def leg_parts():
     parts = []
     for leg, (hip, foot, _parent) in LEGS.items():
-        part = Part(f"leg.{leg}", SCALE_SHADE, f"leg.{leg}", shade=0.1)
+        part = Part(f"leg.{leg}", SCALE, f"leg.{leg}", shade=0.04)
         knee = hip.lerp(foot, 0.5) + Vector((0, -0.03 if leg.startswith("B") else 0.02, 0))
-        kit.tube(part.bm, [hip, knee, foot], [0.03 if leg.startswith("B") else 0.024, 0.018, 0.013], 6)
-        # Three dark claws, curled.
+        kit.tube(part.bm, [hip, knee, foot], [0.041 if leg.startswith("B") else 0.032, 0.025, 0.02], 6)
+        kit.sphere(part.bm, foot + Vector((0, -0.009, 0)), (0.026, 0.026, 0.018), 8, 5)
+        # Pale toes end in short dark claws.
         for spread in (-1, 0, 1):
             base = foot + Vector((spread * 0.012, -0.005, 0))
-            claw = kit.cone(part.bm, base, base + Vector((spread * 0.01, -0.025, -0.02)), 0.007, 0.001, 4)
+            toe_tip = base + Vector((spread * 0.01, -0.022, -0.012))
+            kit.cone(part.bm, base, toe_tip, 0.009, 0.005, 6)
+            claw = kit.cone(part.bm, toe_tip, toe_tip + Vector((0, -0.008, -0.006)), 0.005, 0.001, 5)
             part.paint(faces_of(claw), CLAW)
         parts.append(part)
     return parts
@@ -391,26 +395,39 @@ def leg_parts():
 
 def stand_part():
     """The flight stand: a twisted column of frozen mist with ice shards, on a mound of snow."""
-    part = Part("stand", ICE, chain_weights(STAND_POINTS, ["stand", "stand.2", "stand.3"]), shade=0.08)
+    part = Part("stand", ICE, chain_weights(STAND_POINTS, ["stand", "stand.2", "stand.3"]), shade=0.0)
     steps = 18
     path = [stand_path(step / steps) for step in range(steps + 1)]
-    verts = kit.tube(part.bm, path, [lerp(0.022, 0.032, step / steps) for step in range(steps + 1)], 6)
+    # Horizontal rings keep the mist continuous through the twist. A tangent
+    # frame can turn abruptly on a nearly vertical path and crease the column.
+    sides = 12
+    rings = []
+    for index, point in enumerate(path):
+        radius = lerp(0.08, 0.09, index / steps)
+        rings.append([
+            part.bm.verts.new(point + Vector((radius * math.cos(step * 2 * math.pi / sides), radius * math.sin(step * 2 * math.pi / sides), 0)))
+            for step in range(sides)
+        ])
+    for a, b in zip(rings, rings[1:]):
+        for step in range(sides):
+            next_step = (step + 1) % sides
+            part.bm.faces.new((a[step], b[step], b[next_step], a[next_step]))
+    part.bm.faces.new(rings[0])
+    part.bm.faces.new(list(reversed(rings[-1])))
+    verts = [vert for ring in rings for vert in ring]
     for face in faces_of(verts):
         if int(face.calc_center_median().z * 40) % 3 == 0:
             part.paint([face], FROST)
-    # A thin second strand of mist round the column.
-    strand = [stand_path(step / steps) + Vector((0.04 * math.cos(step * 0.9), 0.04 * math.sin(step * 0.9), 0)) for step in range(2, steps)]
-    verts = kit.tube(part.bm, strand, [0.008] * len(strand), 4)
-    part.paint(faces_of(verts), FROST)
+    # A broad continuous mist core keeps the pale ice visible between ink edges.
     for index in range(3, steps - 1, 3):
         a = path[index]
         out = Vector((math.cos(index * 1.3), math.sin(index * 1.3), 0.4)).normalized()
         shard = kit.cone(part.bm, a, a + out * 0.05, 0.01, 0.001, 4)
         part.paint(faces_of(shard), ICE_DEEP)
     # The mound of snow, with shards of ice in it.
-    snow = Part("snow", SNOW, "snow", shade=0.1)
+    snow = Part("snow", SNOW, "snow", shade=0.1, region="effect")
     base = path[-1] * Vector((1, 1, 0))
-    mound = kit.sphere(snow.bm, base + Vector((0, 0, 0.022)), (0.09, 0.09, 0.028), 10, 5)
+    mound = kit.sphere(snow.bm, base + Vector((0, 0, 0.028)), (0.09, 0.09, 0.028), 10, 5)
     snow.paint([f for f in faces_of(mound) if f.normal.z < 0.5], SNOW_SHADE)
     for index in range(4):
         angle = index * 1.7

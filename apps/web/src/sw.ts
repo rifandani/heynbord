@@ -17,6 +17,7 @@ const ART_CACHE = "web-art-v1";
 /** Folders in `public/` with game art. The precache leaves them out (see `vite.config.ts`). */
 const ART_FOLDERS = [
   "/creature/",
+  "/card-thumbs/",
   "/models/units/",
   "/skills/",
   "/town/",
@@ -108,7 +109,7 @@ registerRoute(
     cacheName: ART_CACHE,
     plugins: [
       new ExpirationPlugin({
-        maxEntries: 300,
+        maxEntries: 450,
         maxAgeSeconds: 60 * 60 * 24 * 30,
         purgeOnQuotaError: true,
       }),

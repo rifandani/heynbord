@@ -1,0 +1,18 @@
+{
+  "id": "ashcaller-grosh",
+  "source": "apps/web/public/creature/orc/ashcaller-grosh.webp",
+  "views": {
+    "front": "front.webp",
+    "three-quarter": "three-quarter.webp",
+    "side": "side.webp",
+    "back": "back.webp",
+    "details": "details.webp"
+  },
+  "props": ["ash-caked staff", "hanging iron runes", "small hourglass"],
+  "approval": {
+    "status": "approved",
+    "by": "rifandani",
+    "date": "2026-11-07",
+    "notes": "Approved all five views and this prop list by a message to the agent. Known differences: the brass brazier and the two fire bolts are absent, because the prompt excludes separate scene objects."
+  }
+}

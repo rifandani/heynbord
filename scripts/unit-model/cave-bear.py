@@ -35,11 +35,18 @@ sys.path.insert(0, os.path.join(REPO, "scripts", "unit-model"))
 
 import importlib  # noqa: E402
 
+import body_plans  # noqa: E402
+import clips  # noqa: E402
 import unit_model_kit as kit  # noqa: E402
 
 importlib.reload(kit)
 
-from unit_model_kit import X, Y, Z, Clip, Part, blend, clamp01, faces_of, hex_color, lerp, turn  # noqa: E402
+from clips.base import Beat  # noqa: E402
+from clips.overrides import Fall, Patch  # noqa: E402
+
+plan = body_plans.BODY_PLANS["quadruped"]
+
+from unit_model_kit import X, Y, Z, Part, blend, clamp01, faces_of, hex_color, lerp  # noqa: E402
 
 # --- Palette (the card painting) ----------------------------------------------
 
@@ -57,10 +64,10 @@ CLAW_TIP = hex_color("#cfc2a8")
 MOSS = hex_color("#7d8d38")
 MOSS_DARK = hex_color("#566426")
 SCAR = hex_color("#c98a84")
-WOUND = hex_color("#b8323a")
-WOUND_DARK = hex_color("#6e1c20")
+WOUND = hex_color("#9b4d3b")
+WOUND_DARK = hex_color("#5c2b26")
 HONEY = hex_color("#e9a52a")
-HONEY_DARK = hex_color("#b67412")
+HONEY_DARK = hex_color("#b6752a")
 HONEY_DRIP = hex_color("#f2bd4a")
 
 # --- Proportions ---------------------------------------------------------------
@@ -87,31 +94,55 @@ def grown(point):
     return NECK + (Vector(point) + HEAD_LIFT - NECK) * HEAD_SCALE
 
 
+TABLE = plan.Proportions(
+    hip_y=HIP.y,
+    hip_z=HIP.z,
+    mid_y=MID.y,
+    mid_z=MID.z,
+    chest_y=CHEST.y,
+    chest_z=CHEST.z,
+    neck_y=NECK.y,
+    neck_z=NECK.z,
+    necks=(),
+    head_tip_y=(grown(SNOUT)).y,
+    head_tip_z=(grown(SNOUT)).z,
+    front_top_x=0.12,
+    front_top_y=-0.14,
+    front_top_z=0.42,
+    front_knee_x=0.12,
+    front_knee_y=-0.15,
+    front_knee_z=0.23,
+    front_ankle_x=0.12,
+    front_ankle_y=-0.15,
+    front_ankle_z=0.07,
+    front_toe_x=0.12,
+    front_toe_y=-0.24,
+    front_toe_z=0.03,
+    back_top_x=0.11,
+    back_top_y=0.25,
+    back_top_z=0.4,
+    back_knee_x=0.11,
+    back_knee_y=0.21,
+    back_knee_z=0.22,
+    back_ankle_x=0.11,
+    back_ankle_y=0.27,
+    back_ankle_z=0.07,
+    back_toe_x=0.11,
+    back_toe_y=0.17,
+    back_toe_z=0.03,
+)
+
 LEGS = {
-    # name: (top, joint, ankle, toe, parent)
-    "FL": (Vector((0.12, -0.14, 0.42)), Vector((0.12, -0.15, 0.23)), Vector((0.12, -0.15, 0.07)), Vector((0.12, -0.24, 0.03)), "chest"),
-    "FR": (Vector((-0.12, -0.14, 0.42)), Vector((-0.12, -0.15, 0.23)), Vector((-0.12, -0.15, 0.07)), Vector((-0.12, -0.24, 0.03)), "chest"),
-    "BL": (Vector((0.11, 0.25, 0.4)), Vector((0.11, 0.21, 0.22)), Vector((0.11, 0.27, 0.07)), Vector((0.11, 0.17, 0.03)), "hips"),
-    "BR": (Vector((-0.11, 0.25, 0.4)), Vector((-0.11, 0.21, 0.22)), Vector((-0.11, 0.27, 0.07)), Vector((-0.11, 0.17, 0.03)), "hips"),
+    leg: (*map(Vector, plan.leg_points(TABLE, leg)), plan.leg_parent(leg))
+    for leg in plan.LEGS
 }
 
-BONES = [
-    ("root", (0, 0, 0), (0, 0, 0.1), None),
-    ("hips", tuple(HIP), tuple(MID), "root"),
-    ("spine", tuple(MID), tuple(CHEST), "hips"),
-    ("chest", tuple(CHEST), tuple(NECK), "spine"),
-    ("head", tuple(NECK), tuple(grown(SNOUT)), "chest"),
-    ("jaw", tuple(grown(JAW_A)), tuple(grown(JAW_B)), "head"),
-    ("ear.L", tuple(grown((0.08, -0.32, 0.52))), tuple(grown((0.1, -0.31, 0.57))), "head"),
-    ("ear.R", tuple(grown((-0.08, -0.32, 0.52))), tuple(grown((-0.1, -0.31, 0.57))), "head"),
-    ("cut", tuple(CUT), tuple(CUT + Vector((-0.04, 0, 0))), "chest"),
+TRUNK_BONES = [
+    ('jaw', tuple(grown(JAW_A)), tuple(grown(JAW_B)), 'head'),
+    ('ear.L', tuple(grown((0.08, -0.32, 0.52))), tuple(grown((0.1, -0.31, 0.57))), 'head'),
+    ('ear.R', tuple(grown((-0.08, -0.32, 0.52))), tuple(grown((-0.1, -0.31, 0.57))), 'head'),
+    ('cut', tuple(CUT), tuple(CUT + Vector((-0.04, 0, 0))), 'chest'),
 ]
-for leg, (top, joint, ankle, toe, parent) in LEGS.items():
-    BONES += [
-        (f"upper.{leg}", tuple(top), tuple(joint), parent),
-        (f"lower.{leg}", tuple(joint), tuple(ankle), f"upper.{leg}"),
-        (f"foot.{leg}", tuple(ankle), tuple(toe), f"lower.{leg}"),
-    ]
 
 # --- Weights -------------------------------------------------------------------
 
@@ -291,7 +322,7 @@ def head_parts():
 
     jaw = Part("jaw", MUZZLE, "jaw", shade=0.1)
     kit.sphere(jaw.bm, Vector((0, -0.44, 0.345)), (0.055, 0.065, 0.025), 8, 5)
-    mouth = kit.sphere(jaw.bm, Vector((0, -0.44, 0.36)), (0.045, 0.055, 0.01), 8, 3)
+    mouth = kit.sphere(jaw.bm, Vector((0, -0.44, 0.361)), (0.045, 0.055, 0.01), 8, 3)
     jaw.paint(faces_of(mouth), MOUTH)
     parts.append(jaw)
 
@@ -338,9 +369,11 @@ def leg_parts():
 
 def build_figure():
     kit.reset_scene()
-    rig = kit.build_armature("CaveBear", BONES)
+    rig, _ = plan.build_rig("CaveBear", TABLE, TRUNK_BONES, foot="foot")
     parts = body_parts() + head_parts() + leg_parts()
+    plan.mirror_parts(parts)
     objects = [kit.part_object(part) for part in parts]
+    plan.check_skin(parts, rig)
     mesh = kit.join_parts(objects, "CaveBearMesh")
     kit.skin(mesh, rig)
     return rig, mesh
@@ -349,134 +382,183 @@ def build_figure():
 # --- Clips -----------------------------------------------------------------------
 
 
-def build_clips(rig):
-    def t(bone, *rotations):
-        return turn(rig, bone, *rotations)
+PATCHES = (
+    Patch(
+        "idle",
+        "head-nod",
+        beats=(
+            Beat(0, "stance", (0, 0, 0)),
+            Beat(12, "stance", (0.5, 1, 0.3)),
+            Beat(20, "stance", (0.8, 0.4, 1)),
+            Beat(24, "stance", (1, 0, 0)),
+            Beat(36, "stance", (0.5, -1, 0)),
+            Beat(48, "stance", (0, 0, 0)),
+        ),
+    ),
+    Patch("walk", "heavy-walk", beats=clips.quadruped.walk_beats(28), frames=28),
+    Patch(
+        "attack",
+        "claw-swipe",
+        beats=(
+            Beat(0),
+            Beat(9, "paw"),
+            Beat(12, "paw"),
+            Beat(15, "toss"),
+            Beat(19, "toss", (1,)),
+            Beat(26),
+            Beat(30),
+        ),
+    ),
+    Patch(
+        "cast",
+        "wound-lick",
+        beats=(
+            Beat(0),
+            Beat(7, "lick"),
+            Beat(12, "licking"),
+            Beat(17, "closing"),
+            Beat(21, "shake_right"),
+            Beat(24, "shake_left"),
+            Beat(27, "healed"),
+            Beat(30),
+        ),
+    ),
+    Patch("death", "fall-left"),
+    Patch(
+        "summon",
+        "rise-and-roar",
+        beats=(
+            Beat(0, "low"),
+            Beat(8, "low"),
+            Beat(15, "snort"),
+            Beat(19, "snort", (0.8,)),
+            Beat(24),
+        ),
+    ),
+)
 
-    def at(bone, offset):
-        return kit.shift(rig, bone, offset)
 
-    def pose(base, **changes):
-        result = dict(base)
-        for key, value in changes.items():
-            result[key.replace("__", ".").replace("_at_", "@")] = value
-        return result
+class Poses(clips.quadruped.Poses):
+    foot = "foot"
+    fall = Fall(Y, 84, (-0.4, 0, 0.24))
 
-    def legs(**angles):
-        """Leg swings: `FL=(upper, lower, foot)` in degrees about X. A negative upper swings forward."""
-        result = {}
-        for leg, (upper, lower, foot) in angles.items():
-            result[f"upper__{leg}"] = t(f"upper.{leg}", (X, upper))
-            result[f"lower__{leg}"] = t(f"lower.{leg}", (X, lower))
-            result[f"foot__{leg}"] = t(f"foot.{leg}", (X, foot))
-        return result
-
-    def ears(flick=0.0):
+    def ears(self, flick=0.0):
         return {
-            "ear.L": t("ear.L", (Z, 20 * flick)),
-            "ear.R": t("ear.R", (Z, -20 * flick)),
+            "ear.L": self.t("ear.L", (Z, 20 * flick)),
+            "ear.R": self.t("ear.R", (Z, -20 * flick)),
         }
 
-    def stand(breath=0.0, sway=0.0, nod=0.0):
+    def stance(self, breath=0.0, sway=0.0, nod=0.0):
         """The idle stance: turned a little to the camera, sleepy; the head nods off and comes back up."""
         return {
-            "hips@loc": at("hips", (0, 0, -breath * 0.005)),
-            "hips": t("hips", (Z, -10)),
-            "spine": t("spine", (X, -breath * 1.5)),
-            "chest": t("chest", (X, breath * 1.5), (Z, sway * 2)),
-            "head": t("head", (Z, -8 + sway * 4), (X, 2 + nod * 14), (Y, sway * 4 - nod * 6)),
-            "jaw": t("jaw", (X, 6 + breath * 3)),
-            **ears(0.2 * sway),
+            **super().stance(breath, sway),
+            "hips@loc": self.at("hips", (0, 0, -breath * 0.005)),
+            "hips": self.t("hips", (Z, -10)),
+            "head": self.t(
+                "head", (Z, -8 + sway * 4), (X, 2 + nod * 14), (Y, sway * 4 - nod * 6)
+            ),
+            "jaw": self.t("jaw", (X, 6 + breath * 3)),
+            **self.ears(0.2 * sway),
         }
 
-    def slump(breath=0.0):
+    def gasp(self, base, breath=0.0):
         """Low HP: the belly sinks, the head hangs low and the mouth sags."""
-        return pose(
-            stand(),
-            hips_at_loc=at("hips", (0, 0, -0.015 - breath * 0.005)),
-            spine=t("spine", (X, 3)),
-            chest=t("chest", (X, 3 + breath * 2)),
-            head=t("head", (X, 16 + breath * 3), (Y, -8)),
-            jaw=t("jaw", (X, 14 + breath * 4)),
-            **ears(-0.5),
-            **legs(FL=(-6, 30, -24), FR=(4, 24, -28), BL=(-10, 18, -8), BR=(-10, 18, -8)),
+        return self.pose(
+            super().gasp(base, breath),
+            hips_at_loc=self.at("hips", (0, 0, -0.015 - breath * 0.005)),
+            chest=self.t("chest", (X, 3 + breath * 2)),
+            head=self.t("head", (X, 16 + breath * 3), (Y, -8)),
+            jaw=self.t("jaw", (X, 14 + breath * 4)),
+            **self.ears(-0.5),
+            **self.legs(
+                FL=(-6, 30, -24), FR=(4, 24, -28), BL=(-10, 18, -8), BR=(-10, 18, -8)
+            ),
         )
 
-    def recoil(base, amount=1.0):
+    def recoil(self, base, amount=1.0):
         """The hit throws the head up and the body back: a grunt."""
-        return pose(
-            base,
-            hips_at_loc=at("hips", (0, 0.03 * amount, 0.0)),
-            chest=t("chest", (X, -6 * amount), (Z, 6 * amount)),
-            head=t("head", (X, -16 * amount), (Z, 10 * amount)),
-            jaw=t("jaw", (X, 6 + 14 * amount)),
-            **ears(amount),
+        return self.pose(
+            super().recoil(base, amount),
+            jaw=self.t("jaw", (X, 6 + 14 * amount)),
+            **self.ears(amount),
         )
 
-    def buckle(base):
+    def buckle(self, base):
         """The front legs give way first."""
-        return pose(
-            base,
-            hips_at_loc=at("hips", (0, 0, -0.005)),
-            chest=t("chest", (X, 10)),
-            head=t("head", (X, 6)),
-            jaw=t("jaw", (X, 18)),
-            **ears(0.5),
-            **legs(FL=(-20, 50, -30), FR=(-10, 44, -30), BL=(-24, 36, -10), BR=(-20, 36, -10)),
+        return self.pose(
+            super().buckle(base),
+            jaw=self.t("jaw", (X, 18)),
+            **self.ears(0.5),
+            **self.legs(
+                FL=(-20, 50, -30),
+                FR=(-10, 44, -30),
+                BL=(-24, 36, -10),
+                BR=(-20, 36, -10),
+            ),
         )
 
-    def fallen(base, bounce=0.0):
+    def fallen(self, base, bounce=0.0):
         """
         On its left side, the legs out. The Battle camera sees the right side
         of a player Unit (-X), so it sees the legs and the belly.
         """
-        return pose(
-            base,
-            root=t("root", (Y, 84 - bounce)),
-            root_at_loc=at("root", (-0.4, 0, 0.24)),
-            chest=t("chest", (X, 4)),
-            head=t("head", (X, 8), (Y, 10)),
-            jaw=t("jaw", (X, 16)),
-            **ears(-0.4),
-            **legs(FL=(-30, 10, -10), FR=(-12, 8, -10), BL=(30, 6, 0), BR=(8, 8, 0)),
+        return self.pose(
+            super().fallen(base, bounce),
+            jaw=self.t("jaw", (X, 16)),
+            **self.ears(-0.4),
+            **self.legs(
+                FL=(-30, 10, -10), FR=(-12, 8, -10), BL=(30, 6, 0), BR=(8, 8, 0)
+            ),
         )
 
-    def low(base):
+    def low(self, base):
         """Curled down low, asleep, as a summon starts."""
-        return pose(
-            base,
-            hips_at_loc=at("hips", (0, 0, -0.1)),
-            chest=t("chest", (X, 6)),
-            head=t("head", (X, 22), (Y, -10)),
-            jaw=t("jaw", (X, 0)),
-            **ears(-0.4),
-            **legs(FL=(-50, 100, -50), FR=(-50, 100, -50), BL=(-60, 90, -30), BR=(-60, 90, -30)),
+        return self.pose(
+            super().low(base),
+            hips_at_loc=self.at("hips", (0, 0, -0.1)),
+            head=self.t("head", (X, 22), (Y, -10)),
+            jaw=self.t("jaw", (X, 0)),
+            **self.ears(-0.4),
+            **self.legs(
+                FL=(-50, 100, -50),
+                FR=(-50, 100, -50),
+                BL=(-60, 90, -30),
+                BR=(-60, 90, -30),
+            ),
         )
 
-    def yawn(base, amount=1.0):
+    def snort(self, base, amount=1.0):
         """Up on its front, the head back and the mouth wide: a big yawn, the end of a summon."""
-        return pose(
-            base,
-            hips=t("hips", (Z, -10), (X, -6 * amount)),
-            chest=t("chest", (X, -6 * amount)),
-            head=t("head", (Z, -6), (X, -26 * amount)),
-            jaw=t("jaw", (X, 6 + 30 * amount)),
-            **ears(-0.4 * amount),
-            **legs(FL=(-10 * amount, 16 * amount, -6), FR=(-6 * amount, 10 * amount, -6)),
+        return self.pose(
+            self.unchanged(
+                super().snort(base, amount), base, "hips@loc",
+                "upper.BL", "lower.BL", "foot.BL",
+                "upper.BR", "lower.BR", "foot.BR",
+            ),
+            hips=self.t("hips", (Z, -10), (X, -6 * amount)),
+            chest=self.t("chest", (X, -6 * amount)),
+            head=self.t("head", (Z, -6), (X, -26 * amount)),
+            jaw=self.t("jaw", (X, 6 + 30 * amount)),
+            **self.ears(-0.4 * amount),
+            **self.legs(
+                FL=(-10 * amount, 16 * amount, -6), FR=(-6 * amount, 10 * amount, -6)
+            ),
         )
 
-    def stride(phase):
+    def stride(self, base, phase):
         """
         The amble (Heavy): the two legs on one side move nearly together, so
         the big body rolls from side to side. `phase` 0 to 1 is one cycle.
         """
         wave = math.sin(phase * 2 * math.pi)
-        result = pose(
-            stand(),
-            hips_at_loc=at("hips", (0, 0, 0.01 * abs(math.sin(phase * 2 * math.pi)) - 0.005)),
-            hips=t("hips", (Z, -10), (Y, 3 * wave)),
-            chest=t("chest", (Y, -4 * wave), (Z, 3 * wave)),
-            head=t("head", (Z, -8 - 6 * wave), (X, 6)),
+        result = self.pose(
+            base,
+            hips_at_loc=self.at(
+                "hips", (0, 0, 0.01 * abs(math.sin(phase * 2 * math.pi)) - 0.005)
+            ),
+            hips=self.t("hips", (Z, -10), (Y, 3 * wave)),
+            chest=self.t("chest", (Y, -4 * wave), (Z, 3 * wave)),
+            head=self.t("head", (Z, -8 - 6 * wave), (X, 6)),
         )
         for leg, offset in (("FL", 0.0), ("BL", 0.1), ("FR", 0.5), ("BR", 0.6)):
             local = (phase - offset) % 1.0
@@ -490,107 +572,97 @@ def build_clips(rig):
                 lift = 0.0
             back = leg.startswith("B")
             bend = (-30 if back else 50) * lift
-            result = pose(result, **legs(**{leg: (swing - 10 * lift, bend, 10 * lift - swing - bend * 0.8)}))
+            result = self.pose(
+                result,
+                **self.legs(
+                    **{leg: (swing - 10 * lift, bend, 10 * lift - swing - bend * 0.8)}
+                ),
+            )
         return result
 
-    # The attack: it rears its front up with the right fore paw high, then
-    # swipes the paw down. The slash effect starts at 50% of the attack
-    # (`MELEE_IMPACT` in fx.ts), so the paw comes down at frame 15 of 30.
-    def rear(base):
-        return pose(
-            base,
-            hips_at_loc=at("hips", (0, 0.05, 0.0)),
-            hips=t("hips", (Z, -14), (X, -10)),
-            spine=t("spine", (X, -6)),
-            chest=t("chest", (X, -6), (Z, -6)),
-            head=t("head", (Z, -4), (X, -8)),
-            jaw=t("jaw", (X, 12)),
-            **ears(-0.6),
+    def paw(self, base):
+        return self.pose(
+            super().paw(base),
+            hips_at_loc=self.at("hips", (0, 0.05, 0.0)),
+            hips=self.t("hips", (Z, -14), (X, -10)),
+            spine=self.t("spine", (X, -6)),
+            chest=self.t("chest", (X, -6), (Z, -6)),
+            head=self.t("head", (Z, -4), (X, -8)),
+            jaw=self.t("jaw", (X, 12)),
+            **self.ears(-0.6),
             **{
-                **legs(FL=(-6, 20, -10), FR=(-110, 40, 20), BL=(10, -10, 6), BR=(10, -10, 6)),
-                # The raised paw goes out to the camera side, so it does not hide the head.
-                "upper__FR": t("upper.FR", (X, -110), (Y, -28)),
+                **self.legs(
+                    FL=(-6, 20, -10),
+                    FR=(-110, 40, 20),
+                    BL=(10, -10, 6),
+                    BR=(10, -10, 6),
+                ),
+                "upper__FR": self.t("upper.FR", (X, -110), (Y, -28)),
             },
         )
 
-    def swipe(base, follow=0.0):
-        return pose(
-            base,
-            hips_at_loc=at("hips", (0, -0.12 - 0.02 * follow, 0.0)),
-            hips=t("hips", (Z, -6), (X, 2)),
-            spine=t("spine", (X, 4)),
-            chest=t("chest", (X, 8), (Z, 8)),
-            head=t("head", (Z, -6), (X, 8)),
-            jaw=t("jaw", (X, 14)),
-            **ears(-0.6),
-            **legs(FL=(-14, 44, -30), FR=(-40 + 14 * follow, 10, -4), BL=(20, -6, 0), BR=(24, -6, 0)),
+    def toss(self, base, follow=0.0):
+        return self.pose(
+            super().toss(base, follow),
+            hips_at_loc=self.at("hips", (0, -0.12 - 0.02 * follow, 0.0)),
+            hips=self.t("hips", (Z, -6), (X, 2)),
+            spine=self.t("spine", (X, 4)),
+            chest=self.t("chest", (X, 8), (Z, 8)),
+            head=self.t("head", (Z, -6), (X, 8)),
+            jaw=self.t("jaw", (X, 14)),
+            **self.ears(-0.6),
+            **self.legs(
+                FL=(-14, 44, -30),
+                FR=(-40 + 14 * follow, 10, -4),
+                BL=(20, -6, 0),
+                BR=(24, -6, 0),
+            ),
         )
 
-    # The cast (Regenerate): it turns its head to the cut on its right
-    # shoulder and licks it; the cut closes; then it shakes its fur.
-    def lick(base, amount=1.0):
-        return pose(
+    def lick(self, base, amount=1.0):
+        return self.pose(
             base,
-            chest=t("chest", (Z, -12 * amount), (X, 4 * amount)),
-            head=t("head", (Z, -50 * amount), (X, 12 * amount), (Y, 14 * amount)),
-            jaw=t("jaw", (X, 6 + 10 * amount)),
-            **ears(0.4 * amount),
-            **legs(FR=(-10 * amount, 16 * amount, -6)),
+            chest=self.t("chest", (Z, -12 * amount), (X, 4 * amount)),
+            head=self.t("head", (Z, -50 * amount), (X, 12 * amount), (Y, 14 * amount)),
+            jaw=self.t("jaw", (X, 6 + 10 * amount)),
+            **self.ears(0.4 * amount),
+            **self.legs(FR=(-10 * amount, 16 * amount, -6)),
         )
 
-    def shake(base, side=1.0):
-        return pose(
+    def shake(self, base, side=1.0):
+        return self.pose(
             base,
-            hips=t("hips", (Z, -10), (Y, -3 * side)),
-            spine=t("spine", (Y, 5 * side)),
-            chest=t("chest", (Y, 7 * side)),
-            head=t("head", (Z, -8), (Y, 16 * side), (X, -4)),
-            jaw=t("jaw", (X, 4)),
-            **ears(side),
+            hips=self.t("hips", (Z, -10), (Y, -3 * side)),
+            spine=self.t("spine", (Y, 5 * side)),
+            chest=self.t("chest", (Y, 7 * side)),
+            head=self.t("head", (Z, -8), (Y, 16 * side), (X, -4)),
+            jaw=self.t("jaw", (X, 4)),
+            **self.ears(side),
         )
 
-    clips = []
-    idle = Clip("idle", 48, loop=True)
-    for frame, breath, sway, nod in ((0, 0, 0, 0), (12, 0.5, 1, 0.3), (20, 0.8, 0.4, 1), (24, 1, 0, 0), (36, 0.5, -1, 0), (48, 0, 0, 0)):
-        idle.key(frame, stand(breath, sway, nod))
-    clips.append(idle)
+    def licking(self, base):
+        return self.pose(self.lick(base, 0.85), cut_at_scale=0.6)
 
-    low_hp = Clip("lowHp", 48, loop=True)
-    for frame, breath in ((0, 0), (24, 1), (48, 0)):
-        low_hp.key(frame, slump(breath))
-    clips.append(low_hp)
+    def closing(self, base):
+        return self.pose(self.lick(base), cut_at_scale=0.05)
 
-    walk = Clip("walk", 28, loop=True)
-    for frame in range(0, 29, 2):
-        walk.key(frame, stride(frame / 28))
-    clips.append(walk)
+    def shake_right(self, base):
+        return self.pose(self.shake(base, 1), cut_at_scale=0.05)
 
-    attack = Clip("attack", 30)
-    attack.key(0, stand()).key(9, rear(stand())).key(12, rear(stand()))
-    attack.key(15, swipe(stand())).key(19, swipe(stand(), 1)).key(26, stand()).key(30, stand())
-    clips.append(attack)
+    def shake_left(self, base):
+        return self.pose(self.shake(base, -1), cut_at_scale=0.05)
 
-    cast = Clip("cast", 30)
-    cast.key(0, stand()).key(7, lick(stand()))
-    cast.key(12, pose(lick(stand(), 0.85), cut_at_scale=0.6)).key(17, pose(lick(stand()), cut_at_scale=0.05))
-    cast.key(21, pose(shake(stand(), 1), cut_at_scale=0.05)).key(24, pose(shake(stand(), -1), cut_at_scale=0.05))
-    cast.key(27, pose(stand(), cut_at_scale=0.4)).key(30, stand())
-    clips.append(cast)
+    def healed(self, base):
+        return self.pose(base, cut_at_scale=0.4)
 
-    hurt = Clip("hurt", 16)
-    hurt.key(0, stand()).key(3, recoil(stand())).key(8, recoil(stand(), 0.4)).key(16, stand())
-    clips.append(hurt)
 
-    death = Clip("death", 36)
-    death.key(0, stand()).key(5, recoil(stand())).key(14, buckle(stand()))
-    death.key(26, fallen(stand())).key(30, fallen(stand(), 5)).key(36, fallen(stand()))
-    clips.append(death)
-
-    summon = Clip("summon", 24)
-    summon.key(0, low(stand())).key(8, low(stand())).key(15, yawn(stand())).key(19, yawn(stand(), 0.8))
-    summon.key(24, stand())
-    clips.append(summon)
-    return clips
+def build_clips(rig):
+    return clips.overrides.build(
+        clips.quadruped.CLIPS,
+        Poses(*kit.pose_tools(rig)),
+        PATCHES,
+        without=("rebirth",),
+    )
 
 
 def build(export=True):

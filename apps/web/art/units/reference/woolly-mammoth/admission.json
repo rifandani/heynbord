@@ -1,0 +1,32 @@
+{
+  "id": "woolly-mammoth",
+  "passed": true,
+  "problems": [],
+  "measures": {
+    "front": {
+      "backgroundEdge": 0.902,
+      "offPalette": 0.034,
+      "fill": 0.953
+    },
+    "three-quarter": {
+      "backgroundEdge": 0.888,
+      "offPalette": 0.096,
+      "fill": 0.993
+    },
+    "side": {
+      "backgroundEdge": 0.895,
+      "offPalette": 0.085,
+      "fill": 0.993
+    },
+    "back": {
+      "backgroundEdge": 0.915,
+      "offPalette": 0.05,
+      "fill": 0.947
+    },
+    "details": {
+      "backgroundEdge": 1,
+      "offPalette": 0.086,
+      "fill": 0.88
+    }
+  }
+}

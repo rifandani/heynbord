@@ -1,0 +1,32 @@
+{
+  "id": "old-frostmaw",
+  "passed": true,
+  "problems": [],
+  "measures": {
+    "front": {
+      "backgroundEdge": 0.955,
+      "offPalette": 0.078,
+      "fill": 0.973
+    },
+    "three-quarter": {
+      "backgroundEdge": 0.914,
+      "offPalette": 0.117,
+      "fill": 0.987
+    },
+    "side": {
+      "backgroundEdge": 0.968,
+      "offPalette": 0.061,
+      "fill": 0.973
+    },
+    "back": {
+      "backgroundEdge": 0.959,
+      "offPalette": 0.053,
+      "fill": 0.965
+    },
+    "details": {
+      "backgroundEdge": 1,
+      "offPalette": 0.05,
+      "fill": 0.82
+    }
+  }
+}

@@ -7,6 +7,7 @@
 - refactor whole codebase to follow best practices for react and composition patterns from /vercel-composition-patterns and /vercel-react-best-practices
 - remove oxlint-disable, fallow-disable across codebase and actually fix it
 - fix error in browser logs and terminal logs
+- fix issues in build logs and find improvements to make it faster, smaller, etc
 
 ## Debugging
 
@@ -123,6 +124,7 @@ Mage:
 - Absorb Magic: Absorb magic damage for 1 turns
 - Nullify Magic: Nullify magic damage for 2 turns
 - Mind Control: apply Charm to enemy for 1 turn (Charm is a new Keyword: The targeted enemy unit is forced to fight on your side against its own allies for the duration of the effect)
+- Meditation: Returns 2 random skill cards from your graveyard to your hand
 
 Priest:
 
@@ -134,13 +136,17 @@ Priest:
 
 New features:
 
-1. /grill-with-docs work on new feature called "XXX" (recommend me better name, similar to what we already have). Split it into 3 Stage pattern: shape, engine, then UI. Orchestrate it with gh issues relationships, decide the sequence order and which can be done in parallel.
-2. cleanup all redundant game docs, adrs, rules, etc
-3. check if we already finish all "v1" related features from docs, check whats not done in game design and PRD, check all still (draft) things, check roadmap
-4. theres no difference between fernwing courier and canopy skirmisher units
-5. there should be a quest feature, aside from achievement feature
-6. gamedev tips how to animate X, dont go too much to implementation details, just give me the big overview how
+1. tidy up game dev panel and make it more granular
+1. tidy up master design
+1. add vfx, maybe remove all of our spritebooks and go full 3d vfx
+1. /grill-with-docs experiment with using new GPT Image 2.6 and generate GIF for campaign story, try the opening first, brainstorm like how many fps, how long the duration of the video, how many ms frame duration, seamless loop, and save the prompt somewhere
+1. lets fix all creatures illustration images, before we use tripo 3d
+1. use the procedural 3d models (low poly) as fallback for low spec/mobile devices, by default it should use high poly for high spec/desktop devices (using tripo 3d)
+1. /grill-with-docs work on new feature called "XXX" (recommend me better name if possible).
+1. cleanup all redundant game docs, adrs, rules, etc
+1. check if we already finish all "v1" related features from docs, check whats not done in game design and PRD, check all still (draft) things, check roadmap
 
+- gamedev tips how to animate X, dont go too much to implementation details, just give me the big overview how
 - search across codebase where the design and the code differ
 - search across codebase in a feature where we can add a "measurement" script or CI gate for something
 - 42,000–46,000 triangles at 1.6–1.8 MB
@@ -167,7 +173,7 @@ v2:
 - Enemy AI: a search-based AI (for example Monte Carlo) that uses the deterministic engine
 - add server side feature flag
 - Asynchronous online: an account, a server
-- Login rewards, Daily Activity + Rewards, add limit to how many challenge can be taken daily for dungeons and heynspire then introduce entry ticket for both for extra challenge,
+- Login rewards, add limit to how many challenge can be taken daily for dungeons and heynspire then introduce entry ticket for both for extra challenge
 - https://kingsandlegends-archive.fandom.com/wiki/Auction_House
 - https://kingsandlegends-archive.fandom.com/wiki/Guild
 - https://kingsandlegends-archive.fandom.com/wiki/Buildings Ranking Board + Arena Real-time PvP or PvP against other players' _saved defense decks_ (the AI controls them)

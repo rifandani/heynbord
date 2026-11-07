@@ -1,0 +1,32 @@
+{
+  "id": "junk-walker",
+  "passed": true,
+  "problems": [],
+  "measures": {
+    "front": {
+      "backgroundEdge": 0.908,
+      "offPalette": 0.111,
+      "fill": 0.967
+    },
+    "three-quarter": {
+      "backgroundEdge": 0.957,
+      "offPalette": 0.1,
+      "fill": 0.96
+    },
+    "side": {
+      "backgroundEdge": 0.967,
+      "offPalette": 0.12,
+      "fill": 0.947
+    },
+    "back": {
+      "backgroundEdge": 0.945,
+      "offPalette": 0.106,
+      "fill": 0.967
+    },
+    "details": {
+      "backgroundEdge": 0.944,
+      "offPalette": 0.119,
+      "fill": 0.925
+    }
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "id": "skeleton",
+  "passed": true,
+  "problems": [],
+  "measures": {
+    "front": {
+      "backgroundEdge": 0.98,
+      "offPalette": 0.062,
+      "fill": 0.955
+    },
+    "three-quarter": {
+      "backgroundEdge": 0.989,
+      "offPalette": 0.063,
+      "fill": 0.965
+    },
+    "side": {
+      "backgroundEdge": 0.988,
+      "offPalette": 0.053,
+      "fill": 0.94
+    },
+    "back": {
+      "backgroundEdge": 0.984,
+      "offPalette": 0.064,
+      "fill": 0.95
+    },
+    "details": {
+      "backgroundEdge": 0.977,
+      "offPalette": 0.103,
+      "fill": 0.94
+    }
+  }
+}

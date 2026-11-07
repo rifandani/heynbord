@@ -1,0 +1,18 @@
+{
+  "id": "amberwing-dart",
+  "source": "apps/web/public/creature/elf/amberwing-dart.webp",
+  "views": {
+    "front": "front.webp",
+    "three-quarter": "three-quarter.webp",
+    "side": "side.webp",
+    "back": "back.webp",
+    "details": "details.webp"
+  },
+  "props": ["Amber-veined wings", "thorn lance", "trailing vines"],
+  "approval": {
+    "status": "approved",
+    "by": "rifandani",
+    "date": "2026-11-07",
+    "notes": "Approved all five views and this prop list by a message to the agent. Known differences: The body and thorn lance are straighter and longer than in the card. The vines are arranged for clear views. The wing repair has a different outline. The side and back are inferred."
+  }
+}

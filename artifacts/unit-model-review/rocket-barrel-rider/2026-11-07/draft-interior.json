@@ -1,0 +1,75 @@
+{
+  "unit": "rocket-barrel-rider",
+  "admitted": false,
+  "note": "This measurement uses pending Turnaround views. It is not an admitted Review Gate result.",
+  "exitCode": 0,
+  "referenceSha256": {
+    "front": "7aac4127013dbd5cefabb19cf0a9b3a013919fc09cceef4fb809483e36abc4e3",
+    "back": "a90c565399a651b49edb7860dafd68c9ad44218c6d290e1969b738fcf7ee50a1"
+  },
+  "report": {
+    "limit": 0.28,
+    "bodies": [
+      {
+        "view": "front",
+        "renderRaised": 0.0,
+        "baselineRaised": 0.0
+      },
+      {
+        "view": "back",
+        "renderRaised": 0.0,
+        "baselineRaised": 0.0
+      }
+    ],
+    "bands": [
+      {
+        "view": "front",
+        "band": "head",
+        "status": "pass",
+        "difference": 0.22930240925665524,
+        "cellsCompared": 2747,
+        "detail": "measured"
+      },
+      {
+        "view": "front",
+        "band": "torso",
+        "status": "pass",
+        "difference": 0.23583802149119656,
+        "cellsCompared": 6463,
+        "detail": "measured"
+      },
+      {
+        "view": "front",
+        "band": "legs",
+        "status": "pass",
+        "difference": 0.19343038331071735,
+        "cellsCompared": 9683,
+        "detail": "measured"
+      },
+      {
+        "view": "back",
+        "band": "head",
+        "status": "pass",
+        "difference": 0.2720621096118458,
+        "cellsCompared": 2326,
+        "detail": "measured"
+      },
+      {
+        "view": "back",
+        "band": "torso",
+        "status": "pass",
+        "difference": 0.19226269035928248,
+        "cellsCompared": 5596,
+        "detail": "measured"
+      },
+      {
+        "view": "back",
+        "band": "legs",
+        "status": "pass",
+        "difference": 0.22005979645636498,
+        "cellsCompared": 8298,
+        "detail": "measured"
+      }
+    ]
+  }
+}

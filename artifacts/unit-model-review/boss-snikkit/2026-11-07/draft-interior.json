@@ -1,0 +1,75 @@
+{
+  "unit": "boss-snikkit",
+  "admitted": false,
+  "note": "This measurement uses pending Turnaround views. It is not an admitted Review Gate result.",
+  "exitCode": 0,
+  "referenceSha256": {
+    "front": "32f3d6ab217528ba562c27f30e8c0989bf33144038099e39d2680c2a5da96114",
+    "back": "4a0d83f78a7bfce76e3e7ef8ec301ed864701edb735c2a5b48d20c4b7a18628e"
+  },
+  "report": {
+    "limit": 0.28,
+    "bodies": [
+      {
+        "view": "front",
+        "renderRaised": 0.0,
+        "baselineRaised": 0.0
+      },
+      {
+        "view": "back",
+        "renderRaised": 0.0,
+        "baselineRaised": 0.0
+      }
+    ],
+    "bands": [
+      {
+        "view": "front",
+        "band": "head",
+        "status": "pass",
+        "difference": 0.25782040682585566,
+        "cellsCompared": 1004,
+        "detail": "measured"
+      },
+      {
+        "view": "front",
+        "band": "torso",
+        "status": "pass",
+        "difference": 0.2751793699936115,
+        "cellsCompared": 6517,
+        "detail": "measured"
+      },
+      {
+        "view": "front",
+        "band": "legs",
+        "status": "pass",
+        "difference": 0.19605970022365635,
+        "cellsCompared": 11737,
+        "detail": "measured"
+      },
+      {
+        "view": "back",
+        "band": "head",
+        "status": "pass",
+        "difference": 0.2578940361069704,
+        "cellsCompared": 855,
+        "detail": "measured"
+      },
+      {
+        "view": "back",
+        "band": "torso",
+        "status": "pass",
+        "difference": 0.20313213572191507,
+        "cellsCompared": 5905,
+        "detail": "measured"
+      },
+      {
+        "view": "back",
+        "band": "legs",
+        "status": "pass",
+        "difference": 0.176682527398871,
+        "cellsCompared": 10515,
+        "detail": "measured"
+      }
+    ]
+  }
+}

@@ -230,6 +230,7 @@ export {
 } from "./content/keywords";
 export type { ActivatedKeyword } from "./content/keywords";
 export {
+  creatureStats,
   isRankAtLeast,
   rankPips,
   RANKS,

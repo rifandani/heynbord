@@ -1,4 +1,4 @@
-import { getCard, getToken, scaleForRank } from "@workspace/rules";
+import { creatureStats, getCard, getToken } from "@workspace/rules";
 import type {
   CardDefinition,
   CreatureCardDefinition,
@@ -21,6 +21,7 @@ import {
 } from "@/core/components/game/tokens";
 import {
   cardIllustration,
+  cardThumbnail,
   hasCardArt,
   hasTokenArt,
   tokenIllustration,
@@ -552,16 +553,44 @@ const loadedArt = new Set<string>();
 
 /**
  * The placeholder while the art loads for the first time: the dark Well of an
- * empty Hand Slot with the faded Heynbord emblem, which pulses slowly.
+ * empty Hand Slot with the faded Heynbord emblem, which pulses slowly. A grid
+ * has no pulse: dozens of pulses at once take the main thread on each frame.
  */
-const ArtPlaceholder = () => (
+const ArtPlaceholder = ({ still }: { readonly still: boolean }) => (
   <span
     className="absolute inset-0 grid place-items-center"
     style={{ backgroundColor: CARD_ART_WELL, boxShadow: SHADOW_ART_WELL }}
   >
-    <HeynbordEmblem className="w-[3.6em] opacity-[0.16] grayscale motion-safe:animate-pulse" />
+    <HeynbordEmblem
+      className={cn(
+        "w-[3.6em] opacity-[0.16] grayscale",
+        !still && "motion-safe:animate-pulse"
+      )}
+    />
   </span>
 );
+
+/**
+ * What shows under the art while it loads: the small art of a card grid when
+ * this page has it, so the Card Details over a grid show the picture at once.
+ */
+const ArtBelow = ({
+  preview,
+  still,
+}: {
+  readonly preview: string | undefined;
+  readonly still: boolean;
+}) =>
+  preview !== undefined && loadedArt.has(preview) ? (
+    <img
+      src={preview}
+      alt=""
+      draggable={false}
+      className="absolute inset-0 size-full object-cover"
+    />
+  ) : (
+    <ArtPlaceholder still={still} />
+  );
 
 /**
  * The art of a card or a Token. One with no art yet shows its Race or Class
@@ -594,7 +623,7 @@ const CardArt = ({ face }: { readonly face: FrameFace }) => {
   }
   return (
     <>
-      {loaded ? null : <ArtPlaceholder />}
+      {loaded ? null : <ArtBelow preview={face.preview} still={face.inGrid} />}
       <img
         // The image can load before hydration, and then `onLoad` does not fire.
         ref={(img) => {
@@ -605,7 +634,9 @@ const CardArt = ({ face }: { readonly face: FrameFace }) => {
         src={face.art}
         alt=""
         draggable={false}
-        loading="lazy"
+        // A grid mounts a frame only near the view. Its art must also load under
+        // the cover of the Deck book, where `lazy` would wait for the page to show.
+        loading={face.inGrid ? "eager" : "lazy"}
         decoding="async"
         onLoad={markLoaded}
         onError={() => setMissing(true)}
@@ -635,6 +666,10 @@ interface FrameFace {
   /** The card ID or the Token ID: a new ID loads new art. */
   readonly id: string;
   readonly art: string;
+  /** The small art to show while `art` loads. */
+  readonly preview?: string;
+  /** True for a frame in a grid of many cards, which uses the small art. */
+  readonly inGrid: boolean;
   readonly hasArt: boolean;
   readonly emblem: {
     readonly glyph: Glyph;
@@ -669,14 +704,19 @@ const creaturePlates = (
   kind: "creature",
   damageType: card.damageType,
   wall: card.keywords.wall ?? false,
-  attack: scaleForRank(card.attack, rank),
-  hp: scaleForRank(card.hp, rank),
+  ...creatureStats(card, rank),
 });
 
-const cardFace = (card: CardDefinition, rank: RankId): FrameFace => {
+const cardFace = (
+  card: CardDefinition,
+  rank: RankId,
+  thumbnail: boolean
+): FrameFace => {
   const base = {
     id: card.id,
-    art: cardIllustration(card.id),
+    art: thumbnail ? cardThumbnail(card.id) : cardIllustration(card.id),
+    preview: thumbnail ? undefined : cardThumbnail(card.id),
+    inGrid: thumbnail,
     hasArt: hasCardArt(card.id),
   };
   if (card.kind === "skill") {
@@ -706,6 +746,7 @@ const cardFace = (card: CardDefinition, rank: RankId): FrameFace => {
 const tokenFace = (token: TokenDefinition, rank: RankId): FrameFace => ({
   id: token.id,
   art: tokenIllustration(token.id),
+  inGrid: false,
   hasArt: hasTokenArt(token.id),
   ...raceFace(token.race, raceGlyph(token.race)),
   plates: {
@@ -752,6 +793,23 @@ const FrameShell = ({
 );
 
 /**
+ * The place of a Card Frame in a long grid, until the card comes near the view.
+ * It has the same size and metal, and two elements in place of about 120.
+ */
+export const CardFrameSlot = () => (
+  <span
+    className="shadow-bevel block h-[12.6em] w-[9em] rounded-[0.85em] p-[0.36em]"
+    style={{ background: BRONZE }}
+    aria-hidden
+  >
+    <span
+      className="block size-full rounded-[0.55em]"
+      style={{ backgroundColor: CARD_ART_WELL, boxShadow: SHADOW_ART_WELL }}
+    />
+  </span>
+);
+
+/**
  * The Card Frame: the card art in a bronze frame, with the Countdown, the Rank
  * Gems, the emblem, and Attack and HP. The name is not on the frame. All sizes
  * are in `em`, so the font size of the parent sets the size of the card
@@ -762,14 +820,17 @@ export const CardFrame = ({
   rank,
   countdown,
   className,
+  thumbnail = false,
 }: {
   readonly cardId: string;
   readonly rank: RankId;
   readonly countdown: number;
   readonly className?: string;
+  /** Use the small art (`cardThumbnail`): for a grid with many small cards. */
+  readonly thumbnail?: boolean;
 }) => (
   <FrameShell
-    face={cardFace(getCard(cardId), rank)}
+    face={cardFace(getCard(cardId), rank, thumbnail)}
     rank={rank}
     className={className}
   >

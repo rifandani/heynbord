@@ -1,0 +1,18 @@
+{
+  "id": "tusk-brute",
+  "source": "apps/web/public/creature/orc/tusk-brute.webp",
+  "views": {
+    "front": "front.webp",
+    "three-quarter": "three-quarter.webp",
+    "side": "side.webp",
+    "back": "back.webp",
+    "details": "details.webp"
+  },
+  "props": ["A big wooden club", "rough iron shoulder plates", "a fur belt"],
+  "approval": {
+    "status": "approved",
+    "by": "rifandani",
+    "date": "2026-11-07",
+    "notes": "Approved all five views and this prop list by a message to the agent. Known differences: The neutral views stand still with the free arm lowered. The tusks are larger and the hair is higher and fuller. The shoulder plates, club bands and spikes, belt, fur trim and cloth tears differ. The rear costume is inferred. The broken door and flying wood are omitted."
+  }
+}

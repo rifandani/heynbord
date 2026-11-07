@@ -26,7 +26,7 @@ export const ClaimAllBar = ({
   return (
     <footer
       className={cn(
-        "bg-parchment-deep border-parchment-rule flex shrink-0 items-center justify-end border-t-2 px-4 py-2 [@media(max-height:500px)]:px-2 [@media(max-height:500px)]:py-1",
+        "flex shrink-0 items-center justify-end px-4 py-2 [@media(max-height:500px)]:px-2 [@media(max-height:500px)]:py-1",
         className
       )}
     >
@@ -40,7 +40,7 @@ export const ClaimAllBar = ({
             ? tr("objectives.claimAllLabel", { count })
             : `${tr("objectives.claimAll")}, ${tr("objectives.noneToClaim")}`
         }
-        className="font-display [@media(max-height:500px)]:min-h-9"
+        className="font-display min-w-32 [@media(max-height:500px)]:min-h-9"
         data-testid={testId}
       >
         {tr("objectives.claimAll")}

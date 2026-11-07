@@ -1,0 +1,32 @@
+{
+  "id": "elderreed-dartmaster",
+  "passed": true,
+  "problems": [],
+  "measures": {
+    "front": {
+      "backgroundEdge": 0.996,
+      "offPalette": 0.048,
+      "fill": 0.945
+    },
+    "three-quarter": {
+      "backgroundEdge": 0.991,
+      "offPalette": 0.033,
+      "fill": 0.95
+    },
+    "side": {
+      "backgroundEdge": 0.988,
+      "offPalette": 0.068,
+      "fill": 0.95
+    },
+    "back": {
+      "backgroundEdge": 0.984,
+      "offPalette": 0.069,
+      "fill": 0.945
+    },
+    "details": {
+      "backgroundEdge": 0.795,
+      "offPalette": 0.041,
+      "fill": 0.96
+    }
+  }
+}

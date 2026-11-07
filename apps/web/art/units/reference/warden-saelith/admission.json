@@ -1,0 +1,32 @@
+{
+  "id": "warden-saelith",
+  "passed": true,
+  "problems": [],
+  "measures": {
+    "front": {
+      "backgroundEdge": 0.988,
+      "offPalette": 0.078,
+      "fill": 0.945
+    },
+    "three-quarter": {
+      "backgroundEdge": 0.964,
+      "offPalette": 0.108,
+      "fill": 0.965
+    },
+    "side": {
+      "backgroundEdge": 0.985,
+      "offPalette": 0.088,
+      "fill": 0.945
+    },
+    "back": {
+      "backgroundEdge": 0.986,
+      "offPalette": 0.084,
+      "fill": 0.945
+    },
+    "details": {
+      "backgroundEdge": 1,
+      "offPalette": 0.073,
+      "fill": 0.873
+    }
+  }
+}

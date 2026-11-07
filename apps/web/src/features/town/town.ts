@@ -44,8 +44,8 @@ const TOWN_BAR_SHARE = 0.17;
 
 /**
  * The Town Bar heights in pixels, without the safe-area inset. They mirror the
- * `--town-bar` values in `globals.css`: the shelf, the phone shelf, and the
- * stowed bar, which has no wood and no rail, so it takes no room at all.
+ * `--town-bar` values in `globals.css`: the open bar, the open bar on a phone,
+ * and the stowed bar, which has no cloth and takes no room at all.
  */
 export const TOWN_BAR_HEIGHT = {
   expanded: 76,
@@ -403,6 +403,15 @@ export const TOWN_SHORTCUTS: readonly TownShortcut[] = [
   // The Handbook has no Building (GDD 11.4): it is a dialog, like the Deck builder.
   { id: "handbook", screen: null, dialog: "handbook" },
 ];
+
+/**
+ * The first shortcut of each later group on the Town Bar: the places, the
+ * collection, then the services of the Town. A gold diamond stands before each.
+ */
+export const TOWN_BAR_GROUP_STARTS: ReadonlySet<TownShortcut["id"]> = new Set([
+  "deck",
+  "objectives",
+]);
 
 /**
  * The box of the hover light of a Building, in painting coordinates: `glow`,

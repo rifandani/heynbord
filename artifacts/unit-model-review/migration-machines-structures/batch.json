@@ -1,0 +1,632 @@
+{
+  "issue": 187,
+  "batch": 1,
+  "status": "stopped",
+  "stopReason": "palette fails on 5 of 5 units; 4 of 5 units have no admitted Turnaround",
+  "gateCode": {
+    "before": "working tree with the uncommitted issue 185 gate changes",
+    "after": "this commit only"
+  },
+  "units": [
+    {
+      "unit": "grand-gearjammer",
+      "bodyPlan": "machine",
+      "before": {
+        "exitCode": 2,
+        "gates": [
+          {
+            "gate": "turntable",
+            "status": "fail",
+            "exitCode": 1
+          },
+          {
+            "gate": "interior-difference",
+            "status": "error",
+            "exitCode": 2
+          },
+          {
+            "gate": "self-intersection",
+            "status": "fail",
+            "exitCode": 1
+          },
+          {
+            "gate": "joint-loops",
+            "status": "fail",
+            "exitCode": 1
+          },
+          {
+            "gate": "attachment-anchor",
+            "status": "pass",
+            "exitCode": 0
+          },
+          {
+            "gate": "region-coverage",
+            "status": "pass",
+            "exitCode": 0
+          },
+          {
+            "gate": "chirality",
+            "status": "fail",
+            "exitCode": 1
+          },
+          {
+            "gate": "palette",
+            "status": "fail",
+            "exitCode": 1
+          },
+          {
+            "gate": "part-coverage",
+            "status": "pass",
+            "exitCode": 0
+          },
+          {
+            "gate": "ground-contact",
+            "status": "pass",
+            "exitCode": 0
+          },
+          {
+            "gate": "foot-bones",
+            "status": "pass",
+            "exitCode": 0
+          }
+        ]
+      },
+      "after": {
+        "exitCode": 2,
+        "gates": [
+          {
+            "gate": "turntable",
+            "status": "fail",
+            "exitCode": 1
+          },
+          {
+            "gate": "interior-difference",
+            "status": "error",
+            "exitCode": 2
+          },
+          {
+            "gate": "self-intersection",
+            "status": "fail",
+            "exitCode": 1
+          },
+          {
+            "gate": "joint-loops",
+            "status": "fail",
+            "exitCode": 1
+          },
+          {
+            "gate": "attachment-anchor",
+            "status": "pass",
+            "exitCode": 0
+          },
+          {
+            "gate": "region-coverage",
+            "status": "pass",
+            "exitCode": 0
+          },
+          {
+            "gate": "chirality",
+            "status": "fail",
+            "exitCode": 1
+          },
+          {
+            "gate": "palette",
+            "status": "fail",
+            "exitCode": 1
+          },
+          {
+            "gate": "part-coverage",
+            "status": "pass",
+            "exitCode": 0
+          },
+          {
+            "gate": "ground-contact",
+            "status": "pass",
+            "exitCode": 0
+          },
+          {
+            "gate": "foot-bones",
+            "status": "pass",
+            "exitCode": 0
+          }
+        ]
+      }
+    },
+    {
+      "unit": "boss-snikkit",
+      "bodyPlan": "machine",
+      "before": {
+        "exitCode": 2,
+        "gates": [
+          {
+            "gate": "turntable",
+            "status": "fail",
+            "exitCode": 1
+          },
+          {
+            "gate": "interior-difference",
+            "status": "error",
+            "exitCode": 2
+          },
+          {
+            "gate": "self-intersection",
+            "status": "fail",
+            "exitCode": 1
+          },
+          {
+            "gate": "joint-loops",
+            "status": "pass",
+            "exitCode": 0
+          },
+          {
+            "gate": "attachment-anchor",
+            "status": "fail",
+            "exitCode": 1
+          },
+          {
+            "gate": "region-coverage",
+            "status": "pass",
+            "exitCode": 0
+          },
+          {
+            "gate": "chirality",
+            "status": "pass",
+            "exitCode": 0
+          },
+          {
+            "gate": "palette",
+            "status": "fail",
+            "exitCode": 1
+          },
+          {
+            "gate": "part-coverage",
+            "status": "pass",
+            "exitCode": 0
+          },
+          {
+            "gate": "ground-contact",
+            "status": "pass",
+            "exitCode": 0
+          },
+          {
+            "gate": "foot-bones",
+            "status": "pass",
+            "exitCode": 0
+          }
+        ]
+      },
+      "after": {
+        "exitCode": 2,
+        "gates": [
+          {
+            "gate": "turntable",
+            "status": "fail",
+            "exitCode": 1
+          },
+          {
+            "gate": "interior-difference",
+            "status": "error",
+            "exitCode": 2
+          },
+          {
+            "gate": "self-intersection",
+            "status": "fail",
+            "exitCode": 1
+          },
+          {
+            "gate": "joint-loops",
+            "status": "pass",
+            "exitCode": 0
+          },
+          {
+            "gate": "attachment-anchor",
+            "status": "pass",
+            "exitCode": 0
+          },
+          {
+            "gate": "region-coverage",
+            "status": "pass",
+            "exitCode": 0
+          },
+          {
+            "gate": "chirality",
+            "status": "pass",
+            "exitCode": 0
+          },
+          {
+            "gate": "palette",
+            "status": "fail",
+            "exitCode": 1
+          },
+          {
+            "gate": "part-coverage",
+            "status": "pass",
+            "exitCode": 0
+          },
+          {
+            "gate": "ground-contact",
+            "status": "pass",
+            "exitCode": 0
+          },
+          {
+            "gate": "foot-bones",
+            "status": "pass",
+            "exitCode": 0
+          }
+        ]
+      }
+    },
+    {
+      "unit": "junk-walker",
+      "bodyPlan": "machine",
+      "before": {
+        "exitCode": 2,
+        "gates": [
+          {
+            "gate": "turntable",
+            "status": "pass",
+            "exitCode": 0
+          },
+          {
+            "gate": "interior-difference",
+            "status": "error",
+            "exitCode": 2
+          },
+          {
+            "gate": "self-intersection",
+            "status": "fail",
+            "exitCode": 1
+          },
+          {
+            "gate": "joint-loops",
+            "status": "pass",
+            "exitCode": 0
+          },
+          {
+            "gate": "attachment-anchor",
+            "status": "pass",
+            "exitCode": 0
+          },
+          {
+            "gate": "region-coverage",
+            "status": "pass",
+            "exitCode": 0
+          },
+          {
+            "gate": "chirality",
+            "status": "pass",
+            "exitCode": 0
+          },
+          {
+            "gate": "palette",
+            "status": "fail",
+            "exitCode": 1
+          },
+          {
+            "gate": "part-coverage",
+            "status": "pass",
+            "exitCode": 0
+          },
+          {
+            "gate": "ground-contact",
+            "status": "pass",
+            "exitCode": 0
+          },
+          {
+            "gate": "foot-bones",
+            "status": "pass",
+            "exitCode": 0
+          }
+        ]
+      },
+      "after": {
+        "exitCode": 2,
+        "gates": [
+          {
+            "gate": "turntable",
+            "status": "pass",
+            "exitCode": 0
+          },
+          {
+            "gate": "interior-difference",
+            "status": "error",
+            "exitCode": 2
+          },
+          {
+            "gate": "self-intersection",
+            "status": "fail",
+            "exitCode": 1
+          },
+          {
+            "gate": "joint-loops",
+            "status": "pass",
+            "exitCode": 0
+          },
+          {
+            "gate": "attachment-anchor",
+            "status": "pass",
+            "exitCode": 0
+          },
+          {
+            "gate": "region-coverage",
+            "status": "pass",
+            "exitCode": 0
+          },
+          {
+            "gate": "chirality",
+            "status": "pass",
+            "exitCode": 0
+          },
+          {
+            "gate": "palette",
+            "status": "fail",
+            "exitCode": 1
+          },
+          {
+            "gate": "part-coverage",
+            "status": "pass",
+            "exitCode": 0
+          },
+          {
+            "gate": "ground-contact",
+            "status": "pass",
+            "exitCode": 0
+          },
+          {
+            "gate": "foot-bones",
+            "status": "pass",
+            "exitCode": 0
+          }
+        ]
+      }
+    },
+    {
+      "unit": "rocket-barrel-rider",
+      "bodyPlan": "machine",
+      "before": {
+        "exitCode": 2,
+        "gates": [
+          {
+            "gate": "turntable",
+            "status": "fail",
+            "exitCode": 1
+          },
+          {
+            "gate": "interior-difference",
+            "status": "error",
+            "exitCode": 2
+          },
+          {
+            "gate": "self-intersection",
+            "status": "pass",
+            "exitCode": 0
+          },
+          {
+            "gate": "joint-loops",
+            "status": "pass",
+            "exitCode": 0
+          },
+          {
+            "gate": "attachment-anchor",
+            "status": "fail",
+            "exitCode": 1
+          },
+          {
+            "gate": "region-coverage",
+            "status": "pass",
+            "exitCode": 0
+          },
+          {
+            "gate": "chirality",
+            "status": "pass",
+            "exitCode": 0
+          },
+          {
+            "gate": "palette",
+            "status": "fail",
+            "exitCode": 1
+          },
+          {
+            "gate": "part-coverage",
+            "status": "pass",
+            "exitCode": 0
+          },
+          {
+            "gate": "ground-contact",
+            "status": "pass",
+            "exitCode": 0
+          },
+          {
+            "gate": "foot-bones",
+            "status": "pass",
+            "exitCode": 0
+          }
+        ]
+      },
+      "after": {
+        "exitCode": 2,
+        "gates": [
+          {
+            "gate": "turntable",
+            "status": "fail",
+            "exitCode": 1
+          },
+          {
+            "gate": "interior-difference",
+            "status": "error",
+            "exitCode": 2
+          },
+          {
+            "gate": "self-intersection",
+            "status": "pass",
+            "exitCode": 0
+          },
+          {
+            "gate": "joint-loops",
+            "status": "fail",
+            "exitCode": 1
+          },
+          {
+            "gate": "attachment-anchor",
+            "status": "pass",
+            "exitCode": 0
+          },
+          {
+            "gate": "region-coverage",
+            "status": "pass",
+            "exitCode": 0
+          },
+          {
+            "gate": "chirality",
+            "status": "pass",
+            "exitCode": 0
+          },
+          {
+            "gate": "palette",
+            "status": "fail",
+            "exitCode": 1
+          },
+          {
+            "gate": "part-coverage",
+            "status": "pass",
+            "exitCode": 0
+          },
+          {
+            "gate": "ground-contact",
+            "status": "pass",
+            "exitCode": 0
+          },
+          {
+            "gate": "foot-bones",
+            "status": "pass",
+            "exitCode": 0
+          }
+        ]
+      }
+    },
+    {
+      "unit": "bone-rampart",
+      "bodyPlan": "structure",
+      "before": {
+        "exitCode": 2,
+        "gates": [
+          {
+            "gate": "turntable",
+            "status": "fail",
+            "exitCode": 1
+          },
+          {
+            "gate": "interior-difference",
+            "status": "pass",
+            "exitCode": 0
+          },
+          {
+            "gate": "self-intersection",
+            "status": "fail",
+            "exitCode": 1
+          },
+          {
+            "gate": "joint-loops",
+            "status": "pass",
+            "exitCode": 0
+          },
+          {
+            "gate": "attachment-anchor",
+            "status": "fail",
+            "exitCode": 1
+          },
+          {
+            "gate": "region-coverage",
+            "status": "error",
+            "exitCode": 2
+          },
+          {
+            "gate": "chirality",
+            "status": "pass",
+            "exitCode": 0
+          },
+          {
+            "gate": "palette",
+            "status": "fail",
+            "exitCode": 1
+          },
+          {
+            "gate": "part-coverage",
+            "status": "pass",
+            "exitCode": 0
+          },
+          {
+            "gate": "ground-contact",
+            "status": "pass",
+            "exitCode": 0
+          },
+          {
+            "gate": "foot-bones",
+            "status": "pass",
+            "exitCode": 0
+          }
+        ]
+      },
+      "after": {
+        "exitCode": 1,
+        "gates": [
+          {
+            "gate": "turntable",
+            "status": "fail",
+            "exitCode": 1
+          },
+          {
+            "gate": "interior-difference",
+            "status": "pass",
+            "exitCode": 0
+          },
+          {
+            "gate": "self-intersection",
+            "status": "fail",
+            "exitCode": 1
+          },
+          {
+            "gate": "joint-loops",
+            "status": "pass",
+            "exitCode": 0
+          },
+          {
+            "gate": "attachment-anchor",
+            "status": "pass",
+            "exitCode": 0
+          },
+          {
+            "gate": "region-coverage",
+            "status": "pass",
+            "exitCode": 0
+          },
+          {
+            "gate": "chirality",
+            "status": "pass",
+            "exitCode": 0
+          },
+          {
+            "gate": "palette",
+            "status": "fail",
+            "exitCode": 1
+          },
+          {
+            "gate": "part-coverage",
+            "status": "pass",
+            "exitCode": 0
+          },
+          {
+            "gate": "ground-contact",
+            "status": "pass",
+            "exitCode": 0
+          },
+          {
+            "gate": "foot-bones",
+            "status": "pass",
+            "exitCode": 0
+          }
+        ]
+      }
+    }
+  ]
+}

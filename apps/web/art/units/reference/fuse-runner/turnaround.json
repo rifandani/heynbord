@@ -1,0 +1,22 @@
+{
+  "id": "fuse-runner",
+  "source": "apps/web/public/creature/goblin/fuse-runner.webp",
+  "views": {
+    "front": "front.webp",
+    "three-quarter": "three-quarter.webp",
+    "side": "side.webp",
+    "back": "back.webp",
+    "details": "details.webp"
+  },
+  "props": [
+    "A round black bomb with a short lit fuse",
+    "soot on his face",
+    "a long scarf"
+  ],
+  "approval": {
+    "status": "approved",
+    "by": "rifandani",
+    "date": "2026-11-07",
+    "notes": "Approved all five views and this prop list by a message to the agent. Known differences: The head and eyes are rounder. The neutral views stand still. The bomb band, cloth patches, scarf tears and soot marks differ. The rear clothing and belt pockets are inferred. The mine track, debris and background lights are omitted."
+  }
+}

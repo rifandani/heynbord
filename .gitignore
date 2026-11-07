@@ -25,6 +25,8 @@ repos
 
 # misc
 .DS_Store
+# The Review Gates make these files again from the capture and the Raw Export.
+artifacts/unit-model-review/*/*/gate-inputs/
 **/.env
 **/.env.*
 !**/.env.example
@@ -91,7 +93,32 @@ prisma/_sqlite/migrations
 .zap-reports/
 
 # ChatGPT output and reference sheets. `public/` holds the exported art.
-apps/web/art/*/raw/
+apps/web/art/*/raw/*
+# The Unit Model Review reads these Raw Exports. Add a line for each new Unit Spec.
+!apps/web/art/units/raw/amberwing-dart.glb
+!apps/web/art/units/raw/ashcaller-grosh.glb
+!apps/web/art/units/raw/bomb-lobber.glb
+!apps/web/art/units/raw/bone-rampart.glb
+!apps/web/art/units/raw/crag-rhino.glb
+!apps/web/art/units/raw/shieldbearer.glb
+!apps/web/art/units/raw/skeleton.glb
+!apps/web/art/units/raw/thornline-archer.glb
+!apps/web/art/units/raw/warden-saelith.glb
 
 # Python bytecode cache (the Blender build scripts make it)
 __pycache__/
+# Issue 186: the first beast Migration batch.
+!apps/web/art/units/raw/gorehorn-red-maw.glb
+!apps/web/art/units/raw/old-frostmaw.glb
+!apps/web/art/units/raw/woolly-mammoth.glb
+!apps/web/art/units/raw/cave-bear.glb
+# Issue 187: the first machine Migration batch.
+!apps/web/art/units/raw/grand-gearjammer.glb
+!apps/web/art/units/raw/boss-snikkit.glb
+!apps/web/art/units/raw/junk-walker.glb
+!apps/web/art/units/raw/rocket-barrel-rider.glb
+!apps/web/art/units/raw/rimebreath-drake.glb
+!apps/web/art/units/raw/fuse-runner.glb
+!apps/web/art/units/raw/elderreed-dartmaster.glb
+!apps/web/art/units/raw/tailsweep-basilisk.glb
+!apps/web/art/units/raw/tusk-brute.glb

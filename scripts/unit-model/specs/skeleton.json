@@ -1,0 +1,147 @@
+{
+  "id": "skeleton",
+  "bodyPlan": "biped-medium",
+  "height": 0.9110254619386405,
+  "palette": {
+    "bone": "#e9ddc5",
+    "bone_dark": "#afa288",
+    "brass": "#c49448",
+    "glow": "#9fe8ff",
+    "iron": "#6f6a62",
+    "kilt": "#7a5a3c",
+    "kilt_dark": "#54402c",
+    "leather": "#6a4a2e",
+    "leather_dark": "#45301e",
+    "lichen": "#7d8f6a",
+    "rust": "#8a5a34",
+    "rust_dark": "#5c3a22",
+    "socket": "#1c1f22",
+    "steel": "#a9a49a",
+    "steel_light": "#d6d1c4",
+    "teal": "#617874",
+    "teal_dark": "#48584f",
+    "wood": "#8a6a48",
+    "wood_dark": "#644a32"
+  },
+  "parts": [
+    "skull",
+    "face",
+    "eyes",
+    "jaw",
+    "neck",
+    "helmet",
+    "spine",
+    "ribs",
+    "pelvis",
+    "cloth",
+    "belt",
+    "kilt",
+    "humerus.L",
+    "radius.L",
+    "hand.L",
+    "femur.L",
+    "shin.L",
+    "foot.L",
+    "humerus.R",
+    "radius.R",
+    "hand.R",
+    "femur.R",
+    "shin.R",
+    "foot.R",
+    "sword",
+    "lid"
+  ],
+  "props": [
+    {
+      "id": "sword",
+      "hand": "right",
+      "cameraSide": true,
+      "bone": "hand.R"
+    },
+    {
+      "id": "lid",
+      "hand": "left",
+      "cameraSide": false,
+      "bone": "hand.L"
+    }
+  ],
+  "clips": {
+    "idle": {
+      "override": "nervous-glance"
+    },
+    "lowHp": {
+      "override": "cower"
+    },
+    "walk": {
+      "override": "eager-march"
+    },
+    "attack": {
+      "override": "wild-chop"
+    },
+    "hurt": {},
+    "death": {
+      "override": "helmet-roll"
+    },
+    "rebirth": {
+      "override": "helmet-back"
+    },
+    "summon": {}
+  },
+  "details": [
+    "rusted bucket helmet tipped over the right eye socket",
+    "pale teal neck cloth",
+    "ragged brown kilt on a leather belt",
+    "chipped sword held high in the right hand",
+    "round wooden lid as a shield on the left arm"
+  ],
+  "regions": {
+    "arm.L": {
+      "x0": 0.66,
+      "x1": 0.96,
+      "y0": 0.4,
+      "y1": 0.55
+    },
+    "arm.R": {
+      "x0": 0,
+      "x1": 0.23,
+      "y0": 0.18,
+      "y1": 0.44
+    },
+    "head": {
+      "x0": 0.22,
+      "x1": 0.71,
+      "y0": 0.19,
+      "y1": 0.42
+    },
+    "leg.L": {
+      "x0": 0.54,
+      "x1": 0.68,
+      "y0": 0.64,
+      "y1": 1
+    },
+    "leg.R": {
+      "x0": 0.26,
+      "x1": 0.4,
+      "y0": 0.64,
+      "y1": 1
+    },
+    "prop": {
+      "x0": 0.07,
+      "x1": 1,
+      "y0": 0,
+      "y1": 0.62
+    },
+    "torso": {
+      "x0": 0.19,
+      "x1": 0.75,
+      "y0": 0.37,
+      "y1": 0.79
+    }
+  },
+  "identity": {
+    "feature": "rusted bucket helmet over the right eye socket",
+    "azimuthDegrees": 315
+  },
+  "posedPairs": ["forearm", "hand", "humerus", "radius"],
+  "holedParts": ["body", "helmet"]
+}

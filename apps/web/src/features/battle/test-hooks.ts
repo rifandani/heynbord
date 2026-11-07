@@ -225,9 +225,10 @@ const playOutOptions = (options: BattleOptions): BattleSession => {
 
 /**
  * Plays the Battle of `options` with the AI for both sides until one ends
- * with the wanted winner: from its seed, then the next seeds, for 80 seeds
- * at most. It keeps the Stage or the Dungeon, the Deck and the Player of the
- * Battle, so that its result is a real result of that Battle.
+ * with the wanted winner: from its seed, then the next seeds, for 200 seeds
+ * at most. An early Stage is easy, so a loss can need many seeds. It keeps
+ * the Stage or the Dungeon, the Deck and the Player of the Battle, so that
+ * its result is a real result of that Battle.
  */
 const finishedFrom = (
   options: BattleOptions,
@@ -236,7 +237,7 @@ const finishedFrom = (
   let session = playOutOptions(options);
   for (
     let offset = 1;
-    offset < 80 && session.rules.result?.winner !== winner;
+    offset < 200 && session.rules.result?.winner !== winner;
     offset += 1
   ) {
     session = playOutOptions({ ...options, seed: options.seed + offset });

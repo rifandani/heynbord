@@ -34,17 +34,30 @@ sys.path.insert(0, os.path.join(REPO, "scripts", "unit-model"))
 
 import importlib  # noqa: E402
 
+import body_plans  # noqa: E402
+import clips  # noqa: E402
 import unit_model_kit as kit  # noqa: E402
 
 importlib.reload(kit)
+importlib.reload(body_plans.shared)
+importlib.reload(body_plans.biped)
+importlib.reload(body_plans.biped_large)
+importlib.reload(clips.base)
+importlib.reload(clips.overrides)
+importlib.reload(clips.biped)
+importlib.reload(clips.biped_large)
 
-from unit_model_kit import X, Y, Z, Clip, Part, blend, faces_of, hex_color, lerp, turn  # noqa: E402
+from clips.base import Beat  # noqa: E402
+from clips.overrides import Fall, Patch  # noqa: E402
+from unit_model_kit import X, Y, Z, Part, blend, faces_of, hex_color, lerp  # noqa: E402
+
+plan = body_plans.BODY_PLANS["biped-large"]
 
 # --- Palette (the card painting) ----------------------------------------------
 
-SKIN = hex_color("#a6ac48")
+SKIN = hex_color("#b68c50")
 SKIN_DARK = hex_color("#767c32")
-EYES = hex_color("#1a120c")
+EYES = hex_color("#1b120c")
 MOUTH = hex_color("#4a1612")
 TUSK = hex_color("#f2e8ca")
 TUSK_DARK = hex_color("#c4b690")
@@ -52,10 +65,10 @@ HAIR = hex_color("#3a2618")
 HAIR_DARK = hex_color("#22160e")
 LEATHER = hex_color("#6a4228")
 LEATHER_DARK = hex_color("#3e2818")
-IRON = hex_color("#5c5650")
-IRON_DARK = hex_color("#38342f")
+IRON = hex_color("#6f5650")
+IRON_DARK = hex_color("#43342f")
 RUST = hex_color("#8a4e30")
-FUR = hex_color("#a8906c")
+FUR = hex_color("#b1906c")
 FUR_DARK = hex_color("#76644a")
 CLOTH = hex_color("#9e3024")
 CLOTH_DARK = hex_color("#661c16")
@@ -66,25 +79,45 @@ WOOD_LIGHT = hex_color("#c4a070")
 # --- Proportions ---------------------------------------------------------------
 
 # She is very big: wide shoulders, thick arms and legs, a small head.
-HIP_Z = 0.5
-WAIST_Z = 0.6
-CHEST_Z = 0.7
-SHOULDER_Z = 0.8
-NECK_Z = 0.83
+TABLE = plan.Proportions(
+    ankle_z=0.06,
+    knee_z=0.28,
+    hip_z=0.5,
+    waist_z=0.6,
+    chest_z=0.7,
+    shoulder_z=0.8,
+    neck_z=0.83,
+    head_base_z=0.86,
+    head_top_z=1.0,
+    neck_y=-0.015,
+    head_base_y=-0.025,
+    head_top_y=-0.04,
+    shoulder_width=0.38,
+    shoulder_root_x=0.04,
+    hip_x=0.09,
+    knee_x=0.09,
+    foot_tip_y=-0.11,
+)
+HIP_Z = TABLE.hip_z
+WAIST_Z = TABLE.waist_z
+CHEST_Z = TABLE.chest_z
+SHOULDER_Z = TABLE.shoulder_z
+NECK_Z = TABLE.neck_z
 HEAD_C = Vector((0, -0.045, 0.92))
-KNEE_Z = 0.28
-ANKLE_Z = 0.06
-LEG_X = 0.09
+KNEE_Z = TABLE.knee_z
+ANKLE_Z = TABLE.ankle_z
+LEG_X = TABLE.hip_x
 
 # The arms hang out from the wide shoulders at rest (the bind pose).
-SR = Vector((-0.19, 0, SHOULDER_Z))
+SR = Vector(plan.shoulder_point(TABLE, -1))
 ER = Vector((-0.255, -0.01, 0.63))
 WR = Vector((-0.275, -0.05, 0.48))
 TR = WR + (WR - ER).normalized() * 0.06
-SL = Vector((0.19, 0, SHOULDER_Z))
+SL = Vector(plan.shoulder_point(TABLE, 1))
 EL = Vector((0.255, -0.01, 0.63))
 WL = Vector((0.275, -0.05, 0.48))
 TL = WL + (WL - EL).normalized() * 0.06
+ARMS = {"L": (EL, WL, TL), "R": (ER, WR, TR)}
 
 # The club hangs from the right fist, its head to the front and down.
 GRIP_R = WR + (WR - ER).normalized() * 0.035
@@ -98,30 +131,14 @@ DOOR_U = DOOR_TURN @ X
 DOOR_V = DOOR_TURN @ Z
 DOOR_N = DOOR_TURN @ -Y
 
-BONES = [
-    ("root", (0, 0, 0), (0, 0, 0.12), None),
-    ("hips", (0, 0, HIP_Z), (0, 0, WAIST_Z), "root"),
-    ("spine", (0, 0, WAIST_Z), (0, 0, CHEST_Z), "hips"),
-    ("chest", (0, 0, CHEST_Z), (0, 0, NECK_Z), "spine"),
-    ("neck", (0, -0.015, NECK_Z), (0, -0.025, 0.86), "chest"),
-    ("head", (0, -0.025, 0.86), (0, -0.04, 1.0), "neck"),
+TRUNK_BONES = [
     ("jaw", tuple(HEAD_C + Vector((0, 0.0, -0.025))), tuple(HEAD_C + Vector((0, -0.065, -0.07))), "head"),
     ("hair", tuple(HEAD_C + Vector((0, 0.05, 0.02))), tuple(HEAD_C + Vector((0, 0.12, -0.2))), "head"),
     ("door", tuple(DOOR_C), tuple(DOOR_C + DOOR_V * 0.1), "spine"),
     ("cloth.F", (0, -0.11, 0.5), (0, -0.12, 0.3), "hips"),
     ("cloth.B", (0, 0.11, 0.5), (0, 0.12, 0.3), "hips"),
 ]
-for side, sign, (s, e, w, t) in (("L", 1, (SL, EL, WL, TL)), ("R", -1, (SR, ER, WR, TR))):
-    BONES += [
-        (f"shoulder.{side}", (0.04 * sign, 0, SHOULDER_Z), tuple(s), "chest"),
-        (f"upperarm.{side}", tuple(s), tuple(e), f"shoulder.{side}"),
-        (f"forearm.{side}", tuple(e), tuple(w), f"upperarm.{side}"),
-        (f"hand.{side}", tuple(w), tuple(t), f"forearm.{side}"),
-        (f"thigh.{side}", (LEG_X * sign, 0, HIP_Z), (LEG_X * sign, 0, KNEE_Z), "hips"),
-        (f"shin.{side}", (LEG_X * sign, 0, KNEE_Z), (LEG_X * sign, 0, ANKLE_Z), f"thigh.{side}"),
-        (f"foot.{side}", (LEG_X * sign, 0, ANKLE_Z), (LEG_X * sign, -0.11, 0.02), f"shin.{side}"),
-    ]
-BONES.append(("club", tuple(GRIP_R), tuple(GRIP_R + CLUB * 0.12), "hand.R"))
+PROP_BONES = [("club", tuple(GRIP_R), tuple(GRIP_R + CLUB * 0.12), "hand.R")]
 
 # --- Weights -------------------------------------------------------------------
 
@@ -203,7 +220,7 @@ def body_parts():
     torso = Part("torso", SKIN, torso_weights, shade=0.14)
     # A broad chest and a hard, bare stomach.
     kit.sphere(torso.bm, (0, 0.0, 0.73), (0.17, 0.105, 0.105), 14, 8)
-    kit.cone(torso.bm, (0, 0, 0.49), (0, 0, 0.7), 0.13, 0.15, 12, squash=0.75)
+    kit.cone(torso.bm, (0, 0, 0.49), (0, 0, 0.7), 0.13, 0.15, 12, squash=0.75, loops=kit.shares(0.49, 0.7, WAIST_Z - 0.02, WAIST_Z, WAIST_Z + 0.02))
     parts.append(torso)
 
     # The brown leather top, the fur belt and its iron buckle.
@@ -290,13 +307,14 @@ def limb_parts():
             # A spiked iron bracer on the club arm.
             kit.cone(bracer.bm, e + d * 0.03, w - d * 0.006, 0.058, 0.05, 8)
             bracer.paint(list(bracer.bm.faces), IRON)
+            spike_part = Part("bracer.spikes", IRON_DARK, "forearm.R", region="arm.R")
             outward = Vector((-1, 0.2, 0)).normalized()
             for along in (0.3, 0.55, 0.8):
                 p = e + (w - e) * along + outward * 0.05
-                spike = kit.cone(bracer.bm, p, p + outward * 0.04, 0.012, 0.001, 5)
-                bracer.paint(faces_of(spike), IRON_DARK)
+                kit.cone(spike_part.bm, p, p + outward * 0.04, 0.012, 0.001, 5)
+            parts.append(spike_part)
         else:
-            verts = kit.cone(bracer.bm, e + d * 0.05, w - d * 0.006, 0.052, 0.046, 8)
+            verts = kit.cone(bracer.bm, e + d * 0.03, w - d * 0.006, 0.058, 0.05, 8)
             for face in faces_of(verts):
                 if int(((face.calc_center_median() - e).dot(d)) * 70) % 3 == 0:
                     bracer.paint([face], LEATHER_DARK)
@@ -425,9 +443,10 @@ def door_part():
 
 def build_figure():
     kit.reset_scene()
-    rig = kit.build_armature("TuskBrute", BONES)
+    rig, _ = plan.build_rig("TuskBrute", TABLE, TRUNK_BONES, PROP_BONES, ARMS)
     parts = head_parts() + body_parts() + limb_parts() + club_part() + door_part()
     objects = [kit.part_object(part) for part in parts]
+    plan.check_skin(parts, rig)
     mesh = kit.join_parts(objects, "TuskBruteMesh")
     kit.skin(mesh, rig)
     return rig, mesh
@@ -436,25 +455,43 @@ def build_figure():
 # --- Clips -----------------------------------------------------------------------
 
 
-def build_clips(rig):
-    def t(bone, *rotations):
-        return turn(rig, bone, *rotations)
+PATCHES = (
+    # The idle: heavy breaths, then a roar that shakes the door.
+    Patch(
+        "idle",
+        "roar",
+        beats=tuple(
+            Beat(frame, "stance", args)
+            for frame, *args in ((0, 0, 0, 0), (12, 1, 0, 1), (20, 0.5, 0.6, 0), (26, 0.8, 1, 0), (32, 0.6, 1, -1), (38, 0.3, 0.2, 0), (48, 0, 0, 0))
+        ),
+    ),
+    Patch("walk", "heavy-stomp", beats=clips.biped.LIFTED_WALK),
+    # She lifts the club high over her head and smashes it down. The slash effect
+    # starts at 50% of the attack (`MELEE_IMPACT` in fx.ts), so the smash lands
+    # at frame 15 of 30.
+    Patch(
+        "attack",
+        "club-smash",
+        beats=(Beat(0), Beat(10, "windup"), Beat(15, "strike"), Beat(20, "strike"), Beat(27), Beat(30)),
+    ),
+    Patch(
+        "death",
+        "slow-fall",
+        beats=(Beat(0), Beat(5, "recoil"), Beat(13, "stagger"), Beat(26, "fallen"), Beat(30, "fallen", (4,)), Beat(36, "fallen")),
+    ),
+)
 
-    def at(bone, offset):
-        return kit.shift(rig, bone, offset)
 
-    def pose(base, **changes):
-        result = dict(base)
-        for key, value in changes.items():
-            result[key.replace("__", ".").replace("_at_", "@")] = value
-        return result
+class Poses(clips.biped_large.Poses):
+    fall = Fall(X, -86, (0, 0, 0.09))
 
-    def stand(breath=0.0, roar=0.0, sway=0.0):
+    def stance(self, breath=0.0, roar=0.0, sway=0.0):
         """
         The idle: wide and heavy, leaning forward, ready for the next fight.
         The club hangs in her right hand and the left fist is ready. `roar`
         throws her head back and opens her mouth.
         """
+        t, at = self.t, self.at
         return {
             "hips@loc": at("hips", (0, 0.01, -0.03 - breath * 0.006)),
             "hips": t("hips", (Z, -8), (Y, sway * 2)),
@@ -481,35 +518,27 @@ def build_clips(rig):
             "cloth.B": t("cloth.B", (X, 6 + sway * 3)),
         }
 
-    def slump(breath=0.0):
+    def slump(self, base, breath=0.0):
         """Low HP: down on one knee, she leans on the club, its head on the ground."""
-        return pose(
-            stand(breath),
+        t, at = self.t, self.at
+        return self.pose(
+            super().slump(self.stance(breath), breath),
             hips_at_loc=at("hips", (0, 0.03, -0.18 - breath * 0.005)),
             spine=t("spine", (X, 28 + breath * 3)),
             chest=t("chest", (X, 10 + breath * 2)),
-            neck=t("neck", (X, -14)),
-            head=t("head", (X, 0 + breath * 3), (Z, -10)),
             jaw=t("jaw", (X, 12 + breath * 6)),
             door=t("door", (X, 10), (Y, -8)),
-            upperarm__R=t("upperarm.R", (X, -40), (Y, 10)),
             forearm__R=t("forearm.R", (X, -30)),
             hand__R=t("hand.R", (X, -40)),
-            upperarm__L=t("upperarm.L", (X, -10), (Y, -6)),
-            forearm__L=t("forearm.L", (X, -30)),
             thigh__L=t("thigh.L", (X, -76), (Y, -6)),
-            shin__L=t("shin.L", (X, 80)),
-            foot__L=t("foot.L", (X, 0)),
-            thigh__R=t("thigh.R", (X, 6), (Y, 8)),
-            shin__R=t("shin.R", (X, 96)),
-            foot__R=t("foot.R", (X, -40)),
             cloth__F=t("cloth.F", (X, -36)),
         )
 
-    def recoil(base, amount=1.0):
+    def recoil(self, base, amount=1.0):
         """A hit jolts her a little: she is big. The door rattles."""
-        return pose(
-            base,
+        t, at = self.t, self.at
+        return self.pose(
+            self.unchanged(super().recoil(base, amount), base, "upperarm.R"),
             hips_at_loc=at("hips", (0, 0.025 * amount, -0.03)),
             spine=t("spine", (X, 2)),
             chest=t("chest", (X, -6 * amount), (Z, 6 * amount)),
@@ -518,77 +547,45 @@ def build_clips(rig):
             jaw=t("jaw", (X, 24 * amount)),
             door=t("door", (X, -8 * amount), (Y, 6 * amount)),
             door_at_loc=at("door", (0, 0, 0.02 * amount)),
-            upperarm__L=t("upperarm.L", (X, -40 * amount), (Y, -30 * amount)),
             cloth__F=t("cloth.F", (X, -20 * amount)),
         )
 
-    def stagger(base):
-        return pose(
-            base,
-            hips_at_loc=at("hips", (0, 0.03, -0.05)),
-            hips=t("hips", (Z, -10)),
+    def stagger(self, base):
+        t, at = self.t, self.at
+        return self.pose(
+            self.unchanged(super().stagger(base), base, "foot.L", "foot.R"),
             spine=t("spine", (X, -8)),
-            head=t("head", (X, -22)),
             jaw=t("jaw", (X, 26)),
             door=t("door", (X, -14), (Y, 10)),
             door_at_loc=at("door", (0, 0.02, 0.06)),
-            thigh__L=t("thigh.L", (X, -30)),
-            shin__L=t("shin.L", (X, 34)),
-            thigh__R=t("thigh.R", (X, 12)),
-            shin__R=t("shin.R", (X, 30)),
-            upperarm__R=t("upperarm.R", (X, -30), (Y, 40)),
-            upperarm__L=t("upperarm.L", (X, -30), (Y, -40)),
         )
 
-    def fallen(base, bounce=0.0, door_on=0.0):
-        """
-        Flat on her back, the club out to the side. The door slid off over her
-        head and lies on the ground behind her. `door_on` (0 to 1) puts it on again.
-        """
-        off = 1 - door_on
-        return pose(
-            base,
-            root=t("root", (X, -86 + bounce)),
-            root_at_loc=at("root", (0, 0, 0.09)),
+    def fallen(self, base, bounce=0.0):
+        """Flat on her back, the club out to the side. The door slid off over her head and lies behind her."""
+        t, at = self.t, self.at
+        return self.pose(
+            super().fallen(base, bounce),
             hips_at_loc=at("hips", (0, 0, -0.01)),
             hips=t("hips", (Z, 0), (X, 0)),
-            spine=t("spine", (X, -4)),
-            chest=t("chest", (X, -4)),
-            neck=t("neck", (X, 0)),
             head=t("head", (X, -10), (Z, -26)),
             jaw=t("jaw", (X, 20)),
-            door=t("door", (X, -60 * off), (Y, 10 * off)),
-            door_at_loc=at("door", Vector((0.0, -0.06, 0.36)) * off),
+            door=t("door", (X, -60), (Y, 10)),
+            door_at_loc=at("door", (0.0, -0.06, 0.36)),
             upperarm__R=t("upperarm.R", (Y, 70), (X, 10)),
-            forearm__R=t("forearm.R", (X, -10)),
             hand__R=t("hand.R", (X, 40)),
-            upperarm__L=t("upperarm.L", (Y, -60), (X, 10)),
             forearm__L=t("forearm.L", (X, -10)),
-            thigh__L=t("thigh.L", (X, -10), (Y, -6)),
-            shin__L=t("shin.L", (X, 12)),
-            foot__L=t("foot.L", (X, 0)),
-            thigh__R=t("thigh.R", (X, -24), (Y, 6)),
-            shin__R=t("shin.R", (X, 36)),
-            foot__R=t("foot.R", (X, 0)),
             cloth__F=t("cloth.F", (X, 10)),
             cloth__B=t("cloth.B", (X, -6)),
         )
 
-    def crouch(base):
-        """Low on bent knees, as a summon starts and a Rebirth gets up."""
-        return pose(
-            base,
+    def crouch(self, base):
+        t, at = self.t, self.at
+        return self.pose(
+            super().crouch(base),
             hips_at_loc=at("hips", (0, 0.04, -0.18)),
             spine=t("spine", (X, 30)),
             chest=t("chest", (X, 12)),
             neck=t("neck", (X, -16)),
-            head=t("head", (X, -10)),
-            thigh__L=t("thigh.L", (X, -70), (Y, -6)),
-            shin__L=t("shin.L", (X, 96)),
-            foot__L=t("foot.L", (X, -24)),
-            thigh__R=t("thigh.R", (X, -50), (Y, 8)),
-            shin__R=t("shin.R", (X, 106)),
-            foot__R=t("foot.R", (X, -52)),
             upperarm__R=t("upperarm.R", (X, -10), (Y, 10)),
             forearm__R=t("forearm.R", (X, -40)),
             hand__R=t("hand.R", (X, -50)),
@@ -596,27 +593,29 @@ def build_clips(rig):
             cloth__F=t("cloth.F", (X, -40)),
         )
 
-    def flex(base):
+    def rising(self, base):
+        return self.pose(self.crouch(base), hips_at_loc=self.at("hips", (0, 0.04, -0.16)))
+
+    def heroic(self, base):
         """Up again with a roar, the club high and the left fist up: the end of a summon and a Rebirth."""
-        return pose(
-            base,
+        t, at = self.t, self.at
+        return self.pose(
+            self.unchanged(super().heroic(base), base, "hips"),
             hips_at_loc=at("hips", (0, 0, -0.02)),
-            spine=t("spine", (X, -4)),
             chest=t("chest", (X, -10)),
             head=t("head", (X, -24)),
             jaw=t("jaw", (X, 34)),
-            upperarm__R=t("upperarm.R", (X, -40), (Y, 80)),
             forearm__R=t("forearm.R", (X, -90)),
             hand__R=t("hand.R", (X, 30)),
-            upperarm__L=t("upperarm.L", (X, -40), (Y, -80)),
             forearm__L=t("forearm.L", (X, -90)),
         )
 
-    def step(front, lift=0.0):
+    def step(self, base, front, lift=0.0):
         """A heavy stomp. `front` is 1 for the left foot, -1 for the right; `lift` is the foot in the air."""
+        t, at = self.t, self.at
         lead, back = ("L", "R") if front == 1 else ("R", "L")
-        return pose(
-            stand(),
+        return self.pose(
+            self.stance(),
             hips_at_loc=at("hips", (0, 0.0, -0.045 + lift * 0.02)),
             hips=t("hips", (Z, -8 * front), (Y, 5 * front)),
             spine=t("spine", (X, 14), (Y, -5 * front)),
@@ -637,11 +636,9 @@ def build_clips(rig):
             },
         )
 
-    # The attack: she lifts the club high over her head and smashes it down.
-    # The slash effect starts at 50% of the attack (`MELEE_IMPACT` in fx.ts),
-    # so the smash lands at frame 15 of 30.
-    def lift_club(base):
-        return pose(
+    def windup(self, base):
+        t, at = self.t, self.at
+        return self.pose(
             base,
             hips_at_loc=at("hips", (0, 0.03, -0.03)),
             hips=t("hips", (Z, -10)),
@@ -657,8 +654,9 @@ def build_clips(rig):
             forearm__L=t("forearm.L", (X, -40)),
         )
 
-    def smash(base):
-        return pose(
+    def strike(self, base):
+        t, at = self.t, self.at
+        return self.pose(
             base,
             hips_at_loc=at("hips", (0, -0.08, -0.1)),
             hips=t("hips", (Z, 6), (X, 8)),
@@ -684,48 +682,10 @@ def build_clips(rig):
             cloth__B=t("cloth.B", (X, 30)),
         )
 
-    clips = []
-    # The idle: heavy breaths, then a roar that shakes the door.
-    idle = Clip("idle", 48, loop=True)
-    for frame, breath, roar, sway in ((0, 0, 0, 0), (12, 1, 0, 1), (20, 0.5, 0.6, 0), (26, 0.8, 1, 0), (32, 0.6, 1, -1), (38, 0.3, 0.2, 0), (48, 0, 0, 0)):
-        idle.key(frame, stand(breath, roar, sway))
-    clips.append(idle)
 
-    low = Clip("lowHp", 48, loop=True)
-    for frame, breath in ((0, 0), (24, 1), (48, 0)):
-        low.key(frame, slump(breath))
-    clips.append(low)
-
-    walk = Clip("walk", 24, loop=True)
-    walk.key(0, step(1)).key(6, step(1, 1)).key(12, step(-1)).key(18, step(-1, 1)).key(24, step(1))
-    clips.append(walk)
-
-    attack = Clip("attack", 30)
-    attack.key(0, stand()).key(10, lift_club(stand())).key(15, smash(stand())).key(20, smash(stand()))
-    attack.key(27, stand()).key(30, stand())
-    clips.append(attack)
-
-    hurt = Clip("hurt", 16)
-    hurt.key(0, stand()).key(3, recoil(stand())).key(8, recoil(stand(), 0.4)).key(16, stand())
-    clips.append(hurt)
-
-    death = Clip("death", 36)
-    death.key(0, stand()).key(5, recoil(stand())).key(13, stagger(stand()))
-    death.key(26, fallen(stand())).key(30, fallen(stand(), 4)).key(36, fallen(stand()))
-    clips.append(death)
-
-    # Rebirth: the Unit falls (45% of the event, `REBORN_FALL`), then gets up.
-    # The door stays on the ground, so it comes back with her as she rises.
-    rebirth = Clip("rebirth", 48)
-    rebirth.key(0, stand()).key(4, recoil(stand())).key(20, fallen(stand())).key(22, fallen(stand(), 3))
-    rebirth.key(32, crouch(stand())).key(41, flex(stand())).key(48, stand())
-    clips.append(rebirth)
-
-    summon = Clip("summon", 24)
-    summon.key(0, crouch(stand())).key(10, pose(crouch(stand()), hips_at_loc=at("hips", (0, 0.04, -0.16))))
-    summon.key(17, flex(stand())).key(24, stand())
-    clips.append(summon)
-    return clips
+def build_clips(rig):
+    poses = Poses(*kit.pose_tools(rig))
+    return clips.overrides.build(clips.biped_large.CLIPS, poses, PATCHES, without=("cast",))
 
 
 def build(export=True):

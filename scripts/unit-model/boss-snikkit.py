@@ -31,31 +31,42 @@ sys.path.insert(0, os.path.join(REPO, "scripts", "unit-model"))
 
 import importlib  # noqa: E402
 
+import body_plans  # noqa: E402
+import clips  # noqa: E402
 import unit_model_kit as kit  # noqa: E402
 
 importlib.reload(kit)
+importlib.reload(body_plans.shared)
+importlib.reload(body_plans.machine)
+importlib.reload(clips.base)
+importlib.reload(clips.overrides)
+importlib.reload(clips.machine)
 
-from unit_model_kit import X, Y, Z, Clip, Part, faces_of, hex_color, lerp, turn  # noqa: E402
+from clips.base import Beat  # noqa: E402
+from clips.overrides import Fall, Patch  # noqa: E402
+from unit_model_kit import X, Y, Z, Part, faces_of, hex_color, lerp  # noqa: E402
+
+plan = body_plans.BODY_PLANS["machine"]
 
 # --- Palette (the card painting) ----------------------------------------------
 
-IRON = hex_color("#54463c")
-IRON_DARK = hex_color("#342c28")
+IRON = hex_color("#59493e")
+IRON_DARK = hex_color("#2c1e18")
 RUST = hex_color("#8a5232")
-BRASS = hex_color("#d4a24a")
-BRASS_DARK = hex_color("#94692a")
-GOLD = hex_color("#f0c24a")
-GOLD_DARK = hex_color("#b58a2a")
+BRASS = hex_color("#e4a75a")
+BRASS_DARK = hex_color("#97642a")
+GOLD = hex_color("#f7c15c")
+GOLD_DARK = hex_color("#c28943")
 RUBY = hex_color("#c4202a")
 EMERALD = hex_color("#2aa860")
-BOMB = hex_color("#2e2a2c")
+BOMB = hex_color("#241a1c")
 FUSE = hex_color("#c8a878")
 SPARK = hex_color("#ffb43a")
-SKIN = hex_color("#9aa46a")
-SKIN_DARK = hex_color("#727c46")
+SKIN = hex_color("#c9a68b")
+SKIN_DARK = hex_color("#90735a")
 EAR = hex_color("#e0a08e")
 BEARD = hex_color("#efece4")
-BEARD_DARK = hex_color("#c4bfb2")
+BEARD_DARK = hex_color("#a9987b")
 EYES = hex_color("#f4e2a6")
 PUPIL = hex_color("#1d140e")
 MOUTH = hex_color("#4a1e1c")
@@ -67,23 +78,29 @@ GLASS = hex_color("#f2c46a")
 SAND = hex_color("#c4823a")
 FLAME = hex_color("#ffa22b")
 FLAME_CORE = hex_color("#ffe7a0")
-EMBER = hex_color("#ff5e1a")
+EMBER = hex_color("#ec692a")
 
 # --- Proportions ---------------------------------------------------------------
 
-AXLE_Z = 0.075
-WHEEL_R = 0.075
-WHEEL_X = 0.15
-FRONT_Y = -0.17
-BACK_Y = 0.17
+# The cart rocks about the middle of its floor. The small wheels turn twice for
+# each Square (`STEPS_PER_SQUARE`).
+TABLE = plan.Proportions(
+    carrier_y=0.0,
+    carrier_z=0.075,
+    carrier_tip_y=-0.1,
+    carrier_tip_z=0.075,
+    axle_z=0.075,
+    wheel_x=0.15,
+    front_y=-0.17,
+    back_y=0.17,
+    wheel_tip_z=0.05,
+    wheel_turns=2,
+)
+# The wheel touches the ground.
+WHEEL_R = TABLE.axle_z
 RIM_Z = 0.37
 
-WHEELS = {
-    "FL": Vector((WHEEL_X, FRONT_Y, AXLE_Z)),
-    "FR": Vector((-WHEEL_X, FRONT_Y, AXLE_Z)),
-    "BL": Vector((WHEEL_X, BACK_Y, AXLE_Z)),
-    "BR": Vector((-WHEEL_X, BACK_Y, AXLE_Z)),
-}
+WHEELS = {name: Vector(center) for name, center in plan.wheel_centers(TABLE).items()}
 
 # The boss sits a little to the camera side, with the bombs in front of him.
 SEAT = Vector((-0.02, 0.05, 0.3))
@@ -96,10 +113,7 @@ ER = Vector((-0.18, 0.02, 0.52))
 WR = Vector((-0.18, -0.01, 0.61))
 TORCH_TOP = WR + Vector((0, -0.01, 0.2))
 
-BONES = [
-    ("root", (0, 0, 0), (0, 0, 0.12), None),
-    # The cart rocks about the middle of its floor.
-    ("cart", (0, 0, AXLE_Z), (0, -0.1, AXLE_Z), "root"),
+TRUNK_BONES = [
     ("cloth", (-0.2, 0.0, 0.35), (-0.21, 0.0, 0.2), "cart"),
     ("body", tuple(SEAT), tuple(NECK), "cart"),
     ("head", tuple(NECK), tuple(NECK + Vector((0, 0, 0.16))), "body"),
@@ -109,10 +123,6 @@ BONES = [
     ("torch", tuple(WR), tuple(WR + Vector((0, 0, 0.08))), "forearm.R"),
     ("flame", tuple(TORCH_TOP - Vector((0, 0, 0.03))), tuple(TORCH_TOP + Vector((0, 0, 0.06))), "torch"),
 ]
-for name, center in WHEELS.items():
-    BONES.append((f"wheel.{name}", tuple(center), tuple(center + Vector((0, 0, 0.05))), "cart"))
-
-# --- Parts ---------------------------------------------------------------------
 
 
 def cart_point(u, v, w):
@@ -122,24 +132,38 @@ def cart_point(u, v, w):
     return Vector((u * half_x, v * half_y, lerp(0.11, RIM_Z, w)))
 
 
+# The bomb pile stands on the floor of the cart, and the hourglass hangs from the front rim.
+# Each prop has its own bone, so each prop is near the bone that holds it.
+BOMB_PILE = Vector((0.0, -0.03, 0.31))
+CHAIN_TOP = cart_point(-0.45, -1, 1.0) + Vector((0, -0.005, 0))
+GLASS_C = cart_point(-0.45, -1, 0.55) + Vector((0, -0.03, 0))
+
+PROP_BONES = [
+    ("bombs", tuple(BOMB_PILE), tuple(BOMB_PILE + Vector((0, 0, 0.1))), "cart"),
+    ("hourglass", tuple(CHAIN_TOP), tuple(GLASS_C), "cart"),
+]
+
+# --- Parts ---------------------------------------------------------------------
+
+
 def cart_parts():
     parts = []
     cart = Part("cart", IRON, "cart", shade=0.14)
-    # The tapered box: four walls and a floor, from quads between the corners.
+    # Each iron wall is a closed plate. The plates overlap at the corners.
+    # A single hollow shell has concave floor corners with no outward hemisphere.
     corners = [(-1, -1), (1, -1), (1, 1), (-1, 1)]
-    bottom = [cart.bm.verts.new(cart_point(u, v, 0)) for u, v in corners]
-    top = [cart.bm.verts.new(cart_point(u, v, 1)) for u, v in corners]
-    inner = [cart.bm.verts.new(cart_point(u * 0.9, v * 0.92, 1) - Vector((0, 0, 0.0))) for u, v in corners]
-    floor_in = [cart.bm.verts.new(cart_point(u * 0.88, v * 0.9, 0.15)) for u, v in corners]
-    cart.bm.faces.new(list(reversed(bottom)))
-    for i in range(4):
-        n = (i + 1) % 4
-        cart.bm.faces.new((bottom[i], bottom[n], top[n], top[i]))
-        rim = cart.bm.faces.new((top[i], top[n], inner[n], inner[i]))
-        cart.paint([rim], IRON_DARK)
-        wall = cart.bm.faces.new((inner[i], inner[n], floor_in[n], floor_in[i]))
-        cart.paint([wall], IRON_DARK)
-    cart.bm.faces.new(floor_in)
+    kit.box(cart.bm, (0, 0, 0.13), (0.3, 0.4, 0.04))
+    for index, (u, v) in enumerate(corners):
+        u2, v2 = corners[(index + 1) % 4]
+        along = Vector((u2 - u, v2 - v, 0)).normalized() * 0.002
+        outer = [cart_point(u, v, 0) - along, cart_point(u2, v2, 0) + along,
+                 cart_point(u2, v2, 1) + along, cart_point(u, v, 1) - along]
+        inward = Vector((-(u + u2), -(v + v2), 0)).normalized() * 0.018
+        vertices = [cart.bm.verts.new(point) for point in outer + [point + inward for point in outer]]
+        for face_indices in ((0, 1, 2, 3), (7, 6, 5, 4), (0, 4, 5, 1), (1, 5, 6, 2), (2, 6, 7, 3), (3, 7, 4, 0)):
+            face = cart.bm.faces.new([vertices[i] for i in face_indices])
+            if face_indices != (0, 1, 2, 3):
+                cart.paint([face], IRON_DARK)
     kit.bmesh.ops.recalc_face_normals(cart.bm, faces=list(cart.bm.faces))
     # Brass straps at the corners and across the walls, with rivets.
     for u, v in corners:
@@ -149,8 +173,10 @@ def cart_parts():
         for u, v, u2, v2 in ((-1, -1, -1, 1), (1, -1, 1, 1), (-1, -1, 1, -1), (-1, 1, 1, 1)):
             band = kit.tube(cart.bm, [cart_point(u, v, w) * 1.0 + Vector((0.006 * u, 0.006 * v, 0)), cart_point(u2, v2, w) + Vector((0.006 * u2, 0.006 * v2, 0))], [0.007, 0.007], 4)
             cart.paint(faces_of(band), BRASS_DARK if w < 0.5 else RUST)
-    rim = kit.tube(cart.bm, [cart_point(u, v, 1.0) for u, v in corners + corners[:1]], [0.014] * 5, 4)
-    cart.paint(faces_of(rim), BRASS)
+    # Separate straight bars keep the corner rings from turning into each other.
+    for (u, v), (u2, v2) in zip(corners, corners[1:] + corners[:1]):
+        rim = kit.cone(cart.bm, cart_point(u, v, 1.0), cart_point(u2, v2, 1.0), 0.014, 0.014, 4)
+        cart.paint(faces_of(rim), BRASS)
     # The gold crown on the front wall.
     front = cart_point(0, -1, 0.55) + Vector((0, -0.012, 0))
     crown = set(kit.box(cart.bm, front + Vector((0, 0, -0.03)), (0.1, 0.012, 0.03)))
@@ -158,13 +184,13 @@ def cart_parts():
         crown |= set(kit.cone(cart.bm, front + Vector((dx, 0, -0.02)), front + Vector((dx, -0.002, -0.02 + h)), 0.018, 0.002, 4, squash=0.4))
     cart.paint(faces_of(crown), GOLD)
     # The axles.
-    for y in (FRONT_Y, BACK_Y):
-        axle = kit.cone(cart.bm, (WHEEL_X, y, AXLE_Z), (-WHEEL_X, y, AXLE_Z), 0.012, 0.012, 6)
+    for y in (TABLE.front_y, TABLE.back_y):
+        axle = kit.cone(cart.bm, (TABLE.wheel_x, y, TABLE.axle_z), (-TABLE.wheel_x, y, TABLE.axle_z), 0.012, 0.012, 6)
         cart.paint(faces_of(axle), IRON_DARK)
     parts.append(cart)
 
     # Bombs with lit fuses, in the front of the cart and on the rim.
-    bombs = Part("bombs", BOMB, "cart", shade=0.12)
+    bombs = Part("bombs", BOMB, "bombs", shade=0.12)
     for x, y, z, r in ((0.08, -0.14, 0.36, 0.055), (-0.06, -0.16, 0.355, 0.05), (0.01, -0.07, 0.37, 0.05), (0.12, 0.02, 0.37, 0.05), (0.1, 0.14, 0.36, 0.045), (-0.13, -0.06, 0.35, 0.045)):
         c = Vector((x, y, z))
         kit.sphere(bombs.bm, c, (r, r, r), 10, 7)
@@ -187,7 +213,7 @@ def cart_parts():
             line = []
             for column in range(columns + 1):
                 u = lerp(-1, 1, column / columns)
-                torn = 0.04 * v * (((column * 7) % 5) / 4) if row == rows else 0.0
+                torn = 0.025 * v * (((column * 7) % 5) / 4) if row == rows else 0.0
                 base = cart_point(-1, u * 0.6, lerp(1.0, 0.25, v))
                 line.append((base.x - 0.012 - offset, base.y, base.z + torn))
             result.append(line)
@@ -265,9 +291,17 @@ def boss_parts():
     head.paint(faces_of(teeth), TEETH)
     parts.append(head)
 
-    beard = Part("beard", BEARD, "head", shade=0.12)
+    beard = Part("beard", BEARD_DARK, "head", shade=0.12)
     # A long white beard from the cheeks, down over the chest.
-    kit.cone(beard.bm, c + Vector((0, -0.04, -0.045)), c + Vector((0, -0.09, -0.2)), 0.06, 0.008, 8, squash=0.6)
+    # Separate shaded locks replace the flat white beard panel.
+    for index in range(3):
+        x = (index - 1) * 0.032
+        root = c + Vector((x, -0.05, -0.045))
+        tip = c + Vector((x * 0.7, -0.09, -0.2 + abs(index - 1) * 0.025))
+        lock = kit.cone(beard.bm, root, tip, 0.027, 0.004, 7, squash=0.7)
+        beard.paint([face for face in faces_of(lock) if face.normal.x < -0.4], BEARD)
+        cuff = kit.cone(beard.bm, root.lerp(tip, 0.65), root.lerp(tip, 0.71), 0.014, 0.012, 7)
+        beard.paint(faces_of(cuff), GOLD_DARK)
     for sign in (1, -1):
         strand = kit.cone(beard.bm, c + Vector((0.05 * sign, -0.03, -0.03)), c + Vector((0.07 * sign, -0.07, -0.17)), 0.03, 0.004, 6, squash=0.6)
         beard.paint(faces_of(strand), BEARD_DARK)
@@ -278,14 +312,17 @@ def boss_parts():
     # The tall gold crown with gems.
     crown = Part("crown", GOLD, "head", shade=0.08)
     band_c = c + Vector((0, 0.005, 0.045))
-    kit.cone(crown.bm, band_c, band_c + Vector((0, 0, 0.05)), 0.07, 0.08, 12)
+    band = kit.cone(crown.bm, band_c, band_c + Vector((0, 0, 0.105)), 0.07, 0.08, 12)
+    # Dark brass on the back gives the crown the metal shade of the card.
+    crown.paint([face for face in faces_of(band) if face.normal.y > 0.2], GOLD_DARK)
     for index in range(8):
         a = 2 * math.pi * index / 8
         out = Vector((math.sin(a), -math.cos(a), 0))
-        base = band_c + out * 0.074 + Vector((0, 0, 0.045))
-        height = 0.1 if index % 2 == 0 else 0.07
+        base = band_c + out * 0.074 + Vector((0, 0, 0.1))
+        height = 0.18 if index % 2 == 0 else 0.14
         point = kit.cone(crown.bm, base, base + out * 0.03 + Vector((0, 0, height)), 0.024, 0.003, 4)
-        crown.paint(faces_of(point), GOLD if index % 2 == 0 else GOLD_DARK)
+        for face in faces_of(point):
+            crown.paint([face], GOLD_DARK if face.normal.y > 0.2 else (GOLD if index % 2 == 0 else GOLD_DARK))
         knob = kit.sphere(crown.bm, base + out * 0.031 + Vector((0, 0, height + 0.006)), (0.009, 0.009, 0.009), 5, 3)
         crown.paint(faces_of(knob), GOLD)
     for index, (angle, gem) in enumerate(((0, RUBY), (45, EMERALD), (-45, EMERALD), (90, RUBY), (-90, RUBY))):
@@ -317,9 +354,9 @@ def boss_parts():
     parts.append(forearm)
 
     # The hourglass on a chain, over the front of the cart (Last Breath).
-    glass = Part("hourglass", BRASS, "cart", shade=0.06)
-    gc = cart_point(-0.45, -1, 0.55) + Vector((0, -0.03, 0))
-    chain = kit.tube(glass.bm, [cart_point(-0.45, -1, 1.0) + Vector((0, -0.005, 0)), gc + Vector((0, 0, 0.05))], [0.003, 0.003], 4)
+    glass = Part("hourglass", BRASS, "hourglass", shade=0.06)
+    gc = GLASS_C
+    chain = kit.tube(glass.bm, [CHAIN_TOP, gc + Vector((0, 0, 0.05))], [0.003, 0.003], 4)
     glass.paint(faces_of(chain), GOLD)
     for dz in (0.042, -0.042):
         kit.cone(glass.bm, gc + Vector((0, 0, dz - 0.006)), gc + Vector((0, 0, dz + 0.006)), 0.026, 0.026, 8)
@@ -364,9 +401,10 @@ def torch_parts():
 
 def build_figure():
     kit.reset_scene()
-    rig = kit.build_armature("BossSnikkit", BONES)
+    rig, _ = plan.build_rig("BossSnikkit", TABLE, TRUNK_BONES, PROP_BONES)
     parts = cart_parts() + wheel_parts() + boss_parts() + torch_parts()
     objects = [kit.part_object(part) for part in parts]
+    plan.check_skin(parts, rig)
     mesh = kit.join_parts(objects, "BossSnikkitMesh")
     kit.skin(mesh, rig)
     return rig, mesh
@@ -374,24 +412,45 @@ def build_figure():
 
 # --- Clips -----------------------------------------------------------------------
 
+LOOP = clips.machine.LOOP
+WALK = clips.machine.WALK
 
-def build_clips(rig):
-    def t(bone, *rotations):
-        return turn(rig, bone, *rotations)
 
-    def at(bone, offset):
-        return kit.shift(rig, bone, offset)
+def _idle(frame):
+    """He laughs three times in each loop, and the flame flickers."""
+    phase = frame / LOOP * 2 * math.pi
+    laugh = abs(math.sin(phase * 3)) if frame not in (0, LOOP) else 0.0
+    fire = 1.0 + 0.12 * math.sin(phase * 5)
+    return Beat(frame, "stance", (laugh, math.sin(phase), fire))
 
-    def wheels(angle):
-        """The wheels turn forward by `angle` degrees."""
-        return {f"wheel.{name}": t(f"wheel.{name}", (X, angle)) for name in WHEELS}
 
-    def rest(laugh=0.0, sway=0.0, fire=1.0):
+PATCHES = (
+    Patch("idle", "cackle", beats=tuple(_idle(frame) for frame in range(0, LOOP + 1, 4))),
+    Patch("lowHp", "slump", beats=tuple(Beat(frame, "broken", (math.sin(frame / LOOP * 2 * math.pi),)) for frame in range(0, LOOP + 1, 8))),
+    # The small wheels turn fast, so the walk has a key on each second frame.
+    Patch("walk", "small-wheels", beats=tuple(Beat(frame, "rolling", (frame, math.sin(frame / WALK * 4 * math.pi))) for frame in range(0, WALK + 1, 2))),
+    # The attack: he pulls the torch back, then the cart jumps forward and the
+    # torch comes down. The slash effect starts at 50% of the attack
+    # (`MELEE_IMPACT` in fx.ts), so the blow lands at frame 15 of 30.
+    Patch(
+        "attack",
+        "torch-strike",
+        beats=(Beat(0), Beat(9, "windup", (), (0, 0, 1.2)), Beat(15, "strike", (), (0, 0, 1.6)), Beat(19, "strike", (), (0, 0, 1.2)), Beat(26), Beat(30)),
+    ),
+)
+
+
+class Poses(clips.machine.Poses):
+    fall = Fall(Y, -84, (-0.04, 0, 0.21))
+    table = TABLE
+
+    def stance(self, laugh=0.0, sway=0.0, fire=1.0):
         """
         At rest: he sits in the cart with the torch up, and laughs. The
         flame flickers with `fire`.
         """
-        result = {
+        t, at = self.t, self.at
+        return {
             "cart": t("cart", (Y, sway * 1.5)),
             "body": t("body", (Z, -10 + sway * 4), (X, -2 + laugh * 3)),
             "body@loc": at("body", (0, 0, 0.004 * laugh)),
@@ -403,193 +462,136 @@ def build_clips(rig):
             "flame@scale": fire,
             "flame": t("flame", (Y, sway * 6)),
             "cloth": t("cloth", (Y, sway * 4)),
+            **self.wheels(0),
         }
-        result.update(wheels(0))
-        return result
 
-    def slumped(breath=0.0):
+    def broken(self, base, breath=0.0):
         """Low HP: he slumps over the rim of the cart, the torch low and the flame small."""
-        result = rest(0, 0, 0.55 + 0.1 * breath)
-        result.update(
-            {
-                "body": t("body", (Z, -10), (X, 26 + breath * 3), (Y, -8)),
-                "head": t("head", (Z, 6), (X, 20 + breath * 5), (Y, -12)),
-                "upperarm.R": t("upperarm.R", (X, 40), (Y, -20)),
-                "forearm.R": t("forearm.R", (X, 60)),
-                "torch": t("torch", (X, -50)),
-                "flame": t("flame", (X, -40)),
-                "arm.L": t("arm.L", (X, 10)),
-                "cart": t("cart", (Y, -3)),
-            }
-        )
-        return result
+        t = self.t
+        return {
+            **self.stance(0, 0, 0.55 + 0.1 * breath),
+            "body": t("body", (Z, -10), (X, 26 + breath * 3), (Y, -8)),
+            "head": t("head", (Z, 6), (X, 20 + breath * 5), (Y, -12)),
+            "upperarm.R": t("upperarm.R", (X, 40), (Y, -20)),
+            "forearm.R": t("forearm.R", (X, 60)),
+            "torch": t("torch", (X, -50)),
+            "flame": t("flame", (X, -40)),
+            "arm.L": t("arm.L", (X, 10)),
+            "cart": t("cart", (Y, -3)),
+        }
 
-    def rolling(angle, bump=0.0):
+    def rolling(self, base, frame, bump=0.0):
         """The cart rolls on its small wheels: they turn fast, and he holds on."""
-        result = rest(0, bump * 0.5, 1.1)
-        result.update(wheels(angle))
-        result["cart@loc"] = at("cart", (0, 0, 0.008 * abs(bump)))
-        result["cart"] = t("cart", (X, 2 * bump), (Y, bump))
-        result["body"] = t("body", (Z, -10), (X, 10))
-        result["head"] = t("head", (Z, 8), (X, -8))
-        result["upperarm.R"] = t("upperarm.R", (X, -20))
-        result["forearm.R"] = t("forearm.R", (X, -30))
-        result["flame"] = t("flame", (X, 30))
-        return result
+        t, at = self.t, self.at
+        return {
+            **self.stance(0, bump * 0.5, 1.1),
+            **self.wheels(plan.rolling_angle(self.table, frame, WALK)),
+            "cart@loc": at("cart", (0, 0, 0.008 * abs(bump))),
+            "cart": t("cart", (X, 2 * bump), (Y, bump)),
+            "body": t("body", (Z, -10), (X, 10)),
+            "head": t("head", (Z, 8), (X, -8)),
+            "upperarm.R": t("upperarm.R", (X, -20)),
+            "forearm.R": t("forearm.R", (X, -30)),
+            "flame": t("flame", (X, 30)),
+        }
 
-    # The attack: he pulls the torch back, then the cart jumps forward and the
-    # torch comes down. The slash effect starts at 50% of the attack
-    # (`MELEE_IMPACT` in fx.ts), so the blow lands at frame 15 of 30.
-    def windup():
-        result = rest(0, 0, 1.2)
-        result.update(
-            {
-                "root@loc": at("root", (0, 0.03, 0)),
-                "cart": t("cart", (X, -4)),
-                "body": t("body", (Z, -16), (X, -10)),
-                "head": t("head", (Z, 14), (X, -10)),
-                "upperarm.R": t("upperarm.R", (X, -40), (Y, -10)),
-                "forearm.R": t("forearm.R", (X, 40)),
-                "flame": t("flame", (X, -20)),
-            }
-        )
-        return result
+    def windup(self, base):
+        """He pulls the torch back, and the cart rolls back a little."""
+        t, at = self.t, self.at
+        return {
+            **base,
+            "root@loc": at("root", (0, 0.03, 0)),
+            "cart": t("cart", (X, -4)),
+            "body": t("body", (Z, -16), (X, -10)),
+            "head": t("head", (Z, 14), (X, -10)),
+            "upperarm.R": t("upperarm.R", (X, -40), (Y, -10)),
+            "forearm.R": t("forearm.R", (X, 40)),
+            "flame": t("flame", (X, -20)),
+        }
 
-    def strike(fire=1.6):
-        result = rest(0, 0, fire)
-        result.update(
-            {
-                "root@loc": at("root", (0, -0.1, 0)),
-                "cart": t("cart", (X, 5)),
-                "body": t("body", (Z, -4), (X, 22)),
-                "head": t("head", (Z, 4), (X, -12)),
-                "upperarm.R": t("upperarm.R", (X, -50), (Y, -10)),
-                "forearm.R": t("forearm.R", (X, -80)),
-                "torch": t("torch", (X, -20)),
-                "flame": t("flame", (X, 70)),
-            }
-        )
-        result.update(wheels(-60))
-        return result
+    def strike(self, base):
+        """The cart jumps forward and the torch comes down."""
+        t, at = self.t, self.at
+        return {
+            **base,
+            "root@loc": at("root", (0, -0.1, 0)),
+            "cart": t("cart", (X, 5)),
+            "body": t("body", (Z, -4), (X, 22)),
+            "head": t("head", (Z, 4), (X, -12)),
+            "upperarm.R": t("upperarm.R", (X, -50), (Y, -10)),
+            "forearm.R": t("forearm.R", (X, -80)),
+            "torch": t("torch", (X, -20)),
+            "flame": t("flame", (X, 70)),
+            **self.wheels(-60),
+        }
 
-    def jolt(amount=1.0):
-        """A hit shakes the cart and throws him back."""
-        result = rest(0, 0, 1.0 - 0.3 * amount)
-        result.update(
-            {
-                "cart": t("cart", (Y, 6 * amount), (X, -4 * amount)),
-                "cart@loc": at("cart", (0, 0.02 * amount, 0.01 * amount)),
-                "body": t("body", (Z, -10), (X, -16 * amount)),
-                "head": t("head", (Z, 12), (X, -20 * amount)),
-                "upperarm.R": t("upperarm.R", (X, 20 * amount), (Y, -20 * amount)),
-                "arm.L": t("arm.L", (X, -40 * amount)),
-                "cloth": t("cloth", (X, -20 * amount)),
-            }
-        )
-        return result
+    def jolt(self, base, amount=1.0):
+        """A hit shakes the cart and throws him back. The flame becomes small."""
+        t = self.t
+        return {
+            **super().jolt(self.stance(0, 0, 1.0 - 0.3 * amount), amount),
+            "cart": t("cart", (Y, 6 * amount), (X, -4 * amount)),
+            "body": t("body", (Z, -10), (X, -16 * amount)),
+            "head": t("head", (Z, 12), (X, -20 * amount)),
+            "upperarm.R": t("upperarm.R", (X, 20 * amount), (Y, -20 * amount)),
+            "arm.L": t("arm.L", (X, -40 * amount)),
+            "cloth": t("cloth", (X, -20 * amount)),
+        }
 
-    def tilting():
-        """Halfway over, on two wheels."""
-        result = rest(0, 0, 0.6)
-        result.update(
-            {
-                "root": t("root", (Y, -30)),
-                "root@loc": at("root", (-0.05, 0, 0.08)),
-                "body": t("body", (Z, -10), (Y, 20)),
-                "arm.L": t("arm.L", (X, -80)),
-                "upperarm.R": t("upperarm.R", (Y, -30)),
-                "cloth": t("cloth", (Y, 30)),
-            }
-        )
-        return result
+    def tilting(self, base):
+        """Halfway over, on two wheels. The small cart stays lower."""
+        t, at = self.t, self.at
+        return {
+            **super().tilting(self.stance(0, 0, 0.6)),
+            "root@loc": at("root", (-0.05, 0, 0.08)),
+            "body": t("body", (Z, -10), (Y, 20)),
+            "arm.L": t("arm.L", (X, -80)),
+            "upperarm.R": t("upperarm.R", (Y, -30)),
+            "cloth": t("cloth", (Y, 30)),
+        }
 
-    def tipped(bounce=0.0):
-        """The cart lies on its right side, toward the camera; he tumbles out, and the fire goes out."""
-        result = rest(0, 0, 0.0)
-        result.update(
-            {
-                "root": t("root", (Y, -84 + bounce)),
-                "root@loc": at("root", (-0.04, 0, 0.21)),
-                # He hangs out of the cart: a lean to his left keeps him above the ground.
-                "body": t("body", (Y, 24), (X, 20)),
-                "head": t("head", (X, -10), (Z, 30), (Y, 20)),
-                "arm.L": t("arm.L", (X, -120)),
-                "upperarm.R": t("upperarm.R", (Y, -40), (X, 30)),
-                "forearm.R": t("forearm.R", (X, 30)),
-                "wheel.FR": t("wheel.FR", (X, 40)),
-                "wheel.BL": t("wheel.BL", (X, -60)),
-                "cloth": t("cloth", (X, 30)),
-            }
-        )
-        return result
+    def tipped(self, base, bounce=0.0):
+        """He tumbles out, and the fire goes out."""
+        t = self.t
+        return {
+            **super().tipped(self.stance(0, 0, 0.0), bounce),
+            # He hangs out of the cart: a lean to his left keeps him above the ground.
+            "body": t("body", (Y, 24), (X, 20)),
+            "head": t("head", (X, -10), (Z, 30), (Y, 20)),
+            "arm.L": t("arm.L", (X, -120)),
+            "upperarm.R": t("upperarm.R", (Y, -40), (X, 30)),
+            "forearm.R": t("forearm.R", (X, 30)),
+            "wheel.FR": t("wheel.FR", (X, 40)),
+            "wheel.BL": t("wheel.BL", (X, -60)),
+            "cloth": t("cloth", (X, 30)),
+        }
 
-    def landing(height=0.0, squash=0.0):
-        """A summon: the cart drops onto the Square and bounces."""
-        result = rest(0, 0, 1.0)
-        result["root@loc"] = at("root", (0, 0, height))
-        result["cart@loc"] = at("cart", (0, 0, -0.012 * squash))
-        result["body@loc"] = at("body", (0, 0, -0.02 * squash))
-        return result
+    def landing(self, base, height=0.0, squash=0.0):
+        """A summon: the cart drops onto the Square and bounces, and he sinks into it."""
+        at = self.at
+        return {
+            **self.stance(0, 0, 1.0),
+            "root@loc": at("root", (0, 0, height)),
+            "cart@loc": at("cart", (0, 0, -0.012 * squash)),
+            "body@loc": at("body", (0, 0, -0.02 * squash)),
+        }
 
-    def cackle(base):
+    def cheer(self, base):
         """The torch high and a big laugh."""
-        result = dict(base)
-        result.update(
-            {
-                "body": t("body", (Z, -10), (X, -10)),
-                "head": t("head", (Z, 10), (X, -24)),
-                "upperarm.R": t("upperarm.R", (X, -30), (Y, 20)),
-                "forearm.R": t("forearm.R", (X, -10)),
-                "flame@scale": 1.4,
-            }
-        )
-        return result
+        t = self.t
+        return {
+            **base,
+            "body": t("body", (Z, -10), (X, -10)),
+            "head": t("head", (Z, 10), (X, -24)),
+            "upperarm.R": t("upperarm.R", (X, -30), (Y, 20)),
+            "forearm.R": t("forearm.R", (X, -10)),
+            "flame@scale": 1.4,
+        }
 
-    clips = []
-    idle = Clip("idle", 48, loop=True)
-    for frame in range(0, 49, 4):
-        phase = frame / 48 * 2 * math.pi
-        laugh = abs(math.sin(phase * 3)) if frame not in (0, 48) else 0.0
-        fire = 1.0 + 0.12 * math.sin(phase * 5)
-        idle.key(frame, rest(laugh, math.sin(phase), fire))
-    clips.append(idle)
 
-    low = Clip("lowHp", 48, loop=True)
-    for frame in range(0, 49, 8):
-        low.key(frame, slumped(math.sin(frame / 48 * 2 * math.pi)))
-    clips.append(low)
-
-    # The small wheels turn twice for each Square (`STEPS_PER_SQUARE`).
-    walk = Clip("walk", 24, loop=True)
-    for frame in range(0, 25, 2):
-        walk.key(frame, rolling(frame / 24 * 720, math.sin(frame / 24 * 4 * math.pi)))
-    clips.append(walk)
-
-    attack = Clip("attack", 30)
-    attack.key(0, rest()).key(9, windup()).key(15, strike()).key(19, strike(1.2))
-    attack.key(26, rest()).key(30, rest())
-    clips.append(attack)
-
-    hurt = Clip("hurt", 16)
-    hurt.key(0, rest()).key(3, jolt()).key(8, jolt(0.4)).key(16, rest())
-    clips.append(hurt)
-
-    death = Clip("death", 36)
-    death.key(0, rest()).key(5, jolt()).key(14, tilting())
-    death.key(24, tipped()).key(28, tipped(6)).key(36, tipped())
-    clips.append(death)
-
-    # Rebirth: the Unit falls (45% of the event, `REBORN_FALL`), then rights itself.
-    rebirth = Clip("rebirth", 48)
-    rebirth.key(0, rest()).key(4, jolt()).key(12, tilting()).key(20, tipped()).key(22, tipped(3))
-    rebirth.key(32, tilting()).key(38, landing(0.0, 1.0)).key(42, cackle(rest())).key(48, rest())
-    clips.append(rebirth)
-
-    summon = Clip("summon", 24)
-    summon.key(0, landing(0.16)).key(8, landing(0.0, 1.0)).key(12, landing(0.03)).key(15, landing(0.0, 0.5))
-    summon.key(19, cackle(rest())).key(24, rest())
-    clips.append(summon)
-    return clips
+def build_clips(rig):
+    poses = Poses(*kit.pose_tools(rig))
+    return clips.overrides.build(clips.machine.CLIPS, poses, PATCHES, without=("cast",))
 
 
 def build(export=True):

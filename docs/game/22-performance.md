@@ -289,6 +289,52 @@ M .github/workflows/ci.yml
 
 </details>
 
+## Deck dialog open — 2026-11-07
+
+**The Deck dialog paints its first frame 4 times faster on the desktop and on the phone, and the art of the first Card Pool screen shows in 236 ms on the desktop, not 1410 ms.** One tap on the Town Bar Deck shortcut is the start of each time.
+
+- Builds: commit `a37ed4d3` with no changes ("before"), and the same commit with only the Deck change ("after"). Other work in the checkout was not in these builds.
+- Command: `bun web measure:deck-open --label=<name> --output=<.output folder>`. The runner does not build the app. It reads an existing production build.
+- Method: 5 runs of each build, one after the other, so that the load of the host is the same for the two builds. Each run starts in a new browser context with an empty cache. The table shows the medians. The host load average was 2.3 to 3.8.
+- Phone: 915 × 412, DPR 2, touch, 4× CPU slowdown, a shared 200,000 B/s link, 150 ms latency. It is the emulated phone of `measure:first-load`, not a real device.
+- Desktop: 1440 × 900, DPR 2, no CPU slowdown, a shared 5,000,000 B/s link, 20 ms latency.
+- Browser: Chromium 153, headless, for the table. Headless Chromium has no GPU, so 3 more runs of each build used Chrome 156, headed, on the real GPU. These gave 594 → 149 ms to the first painted frame and 1494 → 284 ms to all visible art.
+
+| Measure (median) | Phone before | Phone after | Desktop before | Desktop after |
+| --- | ---: | ---: | ---: | ---: |
+| First open: tap to first painted frame | 1973 ms | 442 ms | 603 ms | 149 ms |
+| First open: tap to all visible art | 7638 ms | 1742 ms | 1410 ms | 236 ms |
+| First open: longest task | 1214 ms | 394 ms | 276 ms | 89 ms |
+| First open: frames in the 720 ms book animation | 1 | 13 | 5 | 19 |
+| First open: image bytes after the tap | 6,384,554 (not finished at 25 s) | 256,790 | 6,918,242 | 195,774 |
+| First open: decoded image memory | 124.8 MB | 4.3 MB | 142.1 MB | 3.2 MB |
+| First open: elements in the dialog | 17,923 | 3,918 | 17,824 | 3,439 |
+| Open after a reload: tap to all visible art | 2693 ms | 432 ms | 1164 ms | 104 ms |
+| Second open: tap to next paint | 1288 ms | 328 ms | 328 ms | 112 ms |
+| Kind filter press: tap to next paint | 1056 ms | 304 ms | 400 ms | 128 ms |
+| Scroll to the end: longest task | 467 ms | none over 50 ms | 113 ms | none over 50 ms |
+| Scroll to the end: worst frame | 533 ms | 100 ms | 217 ms | 33 ms |
+| Scroll to the end: image bytes | 6,873,607 | 1,718,794 | 6,394,344 | 1,779,810 |
+
+Causes and changes:
+
+- Five `body:has(...)` selectors in `globals.css` made Chromium restyle the full page after DOM changes. At 17,000 elements, one pass took about 450 ms on the phone. With the last four removed at runtime, the style work of a scroll went from 9647 ms to 622 ms. These rules applied to all of `/play`. `useBodyMark` now sets the same conditions as attributes on `body`, and a unit test stops a new `body:has()` rule.
+- Each Card Pool tile mounted a full Card Frame of about 120 elements. A tile now mounts its frame near the view. The tile and its button stay in the page, so that the keyboard and screen readers reach all cards.
+- A grid showed 600 × 800 art at about 90 × 130 CSS pixels. The Deck dialog now uses Card Thumbnails at 200 × 267: 1,975,584 bytes for 136 cards in place of 13,312,586. The Card Details keep the full art.
+- `loading="lazy"` held the art until the `clip-path` of the book lifted. A grid frame now loads its art at once, under the cover.
+- `React.lazy` suspended at each first open, and React holds the reveal after a fallback for 300 ms. The closed dialog now mounts when its chunk is ready. The chunk loads on hover, on focus, on press, or 5 s after the Town shows. The slowest recorded First Load tap is 4139.3 ms, so the 5 s wait stays out of the NFR-02 JavaScript budget.
+- The pulse of the art placeholder took style work on each frame for each card. A grid has no pulse now.
+
+Limits of this record:
+
+- The first open on the phone now does its mount in the tap, so the input time of that step went from 64 ms to 456 ms. The first painted frame is still 1531 ms earlier.
+- The art at the end of a scroll on the phone takes the same time (9314 → 9231 ms). A full scroll asks for each tile that it passes, and 1.7 MB takes 8.6 s on this link.
+- The main thread numbers of the first open are not in the table as a sum: the "before" run was still loading images at the 25 s stop, so the two windows are different.
+- The book animation stays at 720 ms. It is a design value, not a load time.
+- The films are for the eye. Video capture slows the page, so their times are not in the table.
+
+Evidence: [`apps/web/artifacts/performance/deck-open/`](../../apps/web/artifacts/performance/deck-open/) has the raw JSON of each run, the medians, the filmstrips and the side-by-side films.
+
 ## Repeat a record
 
 The frame-rate runner is `apps/web/scripts/measure-frame-rate.ts`. Run
@@ -298,6 +344,12 @@ to `apps/web/artifacts/performance/`. Use `--scenario=baseline` or
 `--scenario=strict` for one scenario, and `--cdp=http://127.0.0.1:9222` for a
 real Android phone over USB. The host, browser, scene and result go into each
 raw file.
+
+The Deck open runner is `apps/web/scripts/measure-deck-open.ts`. Build each
+version first, then run `bun web measure:deck-open --label=<name>
+--output=<.output folder>` for each build, one run at a time, so that the host
+load is the same for the two builds. Add `--headed` for Chrome on the real GPU,
+and `--film` for a film of the first open.
 
 The First Load runner is `apps/web/scripts/measure-first-load.ts`. ADR 0014
 fixes the Slow 4G profile. Run `bun web measure:first-load` to add a dated

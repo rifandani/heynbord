@@ -47,8 +47,8 @@
     ]
   },
   "amberwing-dart.glb": {
-    "min": [-0.3862579180854003, 0.008207070124195961, -0.4149907370280356],
-    "max": [0.38625786685918667, 0.6598877587726002, 0.27399997718967006],
+    "min": [-0.3844760977267564, 0.006088069814830169, -0.4149907370280356],
+    "max": [0.38447604539236657, 0.7001822436846897, 0.27399997718967006],
     "bones": [16],
     "clips": [
       {
@@ -173,12 +173,12 @@
       {
         "name": "death",
         "duration": 1.5,
-        "keyframes": "016311f264ef0eb98ae55ae209c9ae26365b91bf41c956b878447c70896f61a1"
+        "keyframes": "1ed5fe1b56c239414247f86aa7d4aa6a8416709bace734e5f53e5d833a9003bb"
       },
       {
         "name": "rebirth",
         "duration": 2,
-        "keyframes": "9c49ea3c5c311e394766c35e8b4a0f3ff658b72f05d6fae6b1436f6643a17d2f"
+        "keyframes": "ee6425bb16bca8ac0562af799b6414eab529e96c830b51f47b3fd406e74c1e06"
       },
       {
         "name": "summon",
@@ -423,8 +423,8 @@
     ]
   },
   "bomb-lobber.glb": {
-    "min": [-0.21064105629921004, -0.0009999921832770041, -0.15798401069462792],
-    "max": [0.2106410562992127, 0.6950049553436849, 0.15338005656336984],
+    "min": [-0.18557882308959925, -0.0009999921832770041, -0.13401421038137568],
+    "max": [0.1882211863994632, 0.7016194015895402, 0.15338005656336984],
     "bones": [22],
     "clips": [
       {
@@ -565,48 +565,48 @@
   },
   "boss-snikkit.glb": {
     "min": [-0.2507448172368528, -0.01199998722652009, -0.26571209309940924],
-    "max": [0.21074486188737399, 0.9500001560944652, 0.28349998396516374],
-    "bones": [14],
+    "max": [0.21074486188737399, 0.9500001560944652, 0.2834999915441574],
+    "bones": [16],
     "clips": [
       {
         "name": "idle",
         "duration": 2,
-        "keyframes": "3a6d1b49099fea7e2bb00c90ec5a854fdb1e9ad31cbd4245d79cd8ebe0e58e95"
+        "keyframes": "176852f77c24ba94bad183812783a4870b956e4b75613d176cec6ad59fef56ba"
       },
       {
         "name": "lowHp",
         "duration": 2,
-        "keyframes": "6fa7086c88ef94be1413ad39a9de0780e4ecd4730de40982eb2982d021edda48"
+        "keyframes": "d0d00e75b8adcb07650c7ef8e37c76f9321c82e95990a045d54bf403b0b60485"
       },
       {
         "name": "walk",
         "duration": 1,
-        "keyframes": "3d9151eb2a7bbd53dd1b142881d55a97a260c19565c23cca01ee8e8d1e535b4c"
+        "keyframes": "d241f9964fc27bb3bbe0219cce2ab7880cd924cf5787f13bb44f0d462a38ad82"
       },
       {
         "name": "attack",
         "duration": 1.25,
-        "keyframes": "98128f670803a31a7c65e862a8c88d16bb6312e3ccf41d6b86ca9a3018e631c3"
+        "keyframes": "7486fcc5beff3156639cae1f5f77faf4588ed79d30bedda6114bcd36d73631b3"
       },
       {
         "name": "hurt",
         "duration": 0.6666666865348816,
-        "keyframes": "8fb518bf2fd0ab2dfb417d5fb5177ecbaf7299553fd91148fd2a2dcfb41d5a1e"
+        "keyframes": "06459b4b920dd86dd4e57213b609ebbe99115b3b3e3254ba86d864b14448b597"
       },
       {
         "name": "death",
         "duration": 1.5,
-        "keyframes": "98593ce2325aaf5b413c5eeeed12b239f93d6239e15765bf597a1cdc0f9477f0"
+        "keyframes": "c52db6b7f187caf0c4dccaa3e2b27fa7e496f0f54bfd21e82838a94d5f91f59b"
       },
       {
         "name": "rebirth",
         "duration": 2,
-        "keyframes": "745d26a203ae4060bb398a83be2231b3f61d31c947c416629635deac6c477cae"
+        "keyframes": "f9b6124573e749cd224fcf5edf011e32ea418469b53dfaf5eb135b6eff4dadec"
       },
       {
         "name": "summon",
         "duration": 1,
-        "keyframes": "470d1b7ff6b6b0f373c1e9a33fca0ad2667a57ba21d5800c547a02d6e3cc0b2b"
+        "keyframes": "a8336aa2312e1d7deb5c0a3a71c2a6ef2f31135b7dfdd5e9d4821fab026240a4"
       }
     ]
   },
@@ -935,7 +935,7 @@
     ]
   },
   "cave-bear.glb": {
-    "min": [-0.21848077864175633, -0.00500004715480466, -0.4099999997854554],
+    "min": [-0.22569409950501196, -0.00500004715480466, -0.4099999997854554],
     "max": [0.22569410724189984, 0.7263715936547309, 0.6292276127487008],
     "bones": [21],
     "clips": [
@@ -1262,43 +1262,43 @@
   },
   "crag-rhino.glb": {
     "min": [-0.25305120750282156, -2.686329871622663e-8, -0.49489823902247027],
-    "max": [0.23710235956245873, 0.728035374549564, 0.7729076825896034],
-    "bones": [20],
+    "max": [0.23710235956245873, 0.7280354269533535, 0.7729076602970527],
+    "bones": [21],
     "clips": [
       {
         "name": "idle",
         "duration": 2,
-        "keyframes": "ea017e2b5f73a838868a641a34740a891c70570ee33366e57d1c15d443dc3345"
+        "keyframes": "8482addff22d1c91ff25dd7522dffcd54fa47ee82f648a5f9aec9a62dcebc15b"
       },
       {
         "name": "lowHp",
         "duration": 2,
-        "keyframes": "e4b143cfa6cdfccc67b8bcdbe8625be782fd95041e24938fa672a45922c13780"
+        "keyframes": "e017c7e78c45ed289c4d8ecb15702eba13e8323c65c2a4065a6da478bd0ba915"
       },
       {
         "name": "walk",
         "duration": 0.8333333134651184,
-        "keyframes": "35a4c159e77ffaedec3a1de6b710a2327bce2355833052f45b766f4feefbdf7f"
+        "keyframes": "5ac1369f393a6e65b1bd8165b010a402c1222d357177561304f295faae449700"
       },
       {
         "name": "attack",
         "duration": 1.25,
-        "keyframes": "48630be3c38f52ad289cfc3377b2a449da96ac4af69156b5f3365e9b381a2ba0"
+        "keyframes": "e668dc04325cbb984cb9bb716e082ffc343d648646deda4bc901d1a13289e1d1"
       },
       {
         "name": "hurt",
         "duration": 0.6666666865348816,
-        "keyframes": "c8bc9b0d3b944c77e3ecd445b0c974624982f2bfa34978993e4d10e60be4fa49"
+        "keyframes": "97ca42a4c894c16d0aa2a23a594935839bf106d16cd4c01fae65d43137671730"
       },
       {
         "name": "death",
         "duration": 1.5,
-        "keyframes": "193826bd133403bf8b367f48e398cbdbbf321e916964ea299fa1dda1106f7e93"
+        "keyframes": "5960f1861df8417202daada81c66ae83584609907922e85b49f5862a2311d4e6"
       },
       {
         "name": "summon",
         "duration": 1,
-        "keyframes": "736cfe43a124bb0459fca8f01296880df7658c9295af83fa87163e3f2a5af1a3"
+        "keyframes": "3ce4f6cb54e6ebd38a57316b26084ad381ac5dcfcb10c2874f3d7418b5fb2c39"
       }
     ]
   },
@@ -1726,14 +1726,14 @@
     ]
   },
   "fuse-runner.glb": {
-    "min": [-0.1507707089185697, 5.4715755065378086e-9, -0.22095769607112944],
-    "max": [0.15077070891857564, 0.6900000848843938, 0.2681107521057129],
+    "min": [-0.3351200222969055, 5.4715755065378086e-9, -0.2509576997961344],
+    "max": [0.20651841163635354, 0.7250000499498654, 0.2681107521057129],
     "bones": [24],
     "clips": [
       {
         "name": "idle",
         "duration": 2,
-        "keyframes": "0d224e3f75db1004d0d7c8df941dcb09bc6bd0ef8c961bb8954fcb12556b8a23"
+        "keyframes": "cd7e608e3180ee4f94c7aabb1a4fcc91058877e0eaf123cac2d1bac4053c2305"
       },
       {
         "name": "lowHp",
@@ -1748,27 +1748,27 @@
       {
         "name": "attack",
         "duration": 1.25,
-        "keyframes": "aeff0a483c5ffbebe7dcb41cacecb3b3bc550ca9c14827074ac12ecf6551ce59"
+        "keyframes": "87fb75aa7b0e20c75e6cb1372bcaeffc96e7d63b9f56cb39e4f5c6a4ad03bdc9"
       },
       {
         "name": "hurt",
         "duration": 0.6666666865348816,
-        "keyframes": "6519a4f2344798bb63dab23f2bd7e8e7dcdcc1e2cc38b6c62b414eb13a002d14"
+        "keyframes": "cdd52dbcdaf2bf61d11b67ca8de3fe4539df2dea01608946093fc4feb559b6de"
       },
       {
         "name": "death",
         "duration": 1.5,
-        "keyframes": "3ddf7cf801bdec36aff99fe716cb09349ae013379b258ebb1572baa0f343738a"
+        "keyframes": "307db9a57d62dc60db5b02c50bfd3fe178f2b78215a3c6c635162a98b9ff0896"
       },
       {
         "name": "rebirth",
         "duration": 2,
-        "keyframes": "5eebfad1100d3b12201e25acb7e71253e768a433f35a22c461d153312515f22f"
+        "keyframes": "37919eb325ede97ef7e432d512be50b2786ba5b61ee4bd4cdf41ac17de057cdd"
       },
       {
         "name": "summon",
         "duration": 1,
-        "keyframes": "3eee9053bb4c7aed803738e76145b4e3253161c5c177c6db82c64605ff2ecb00"
+        "keyframes": "a75abb6d617e94a21f9ba6b75dcdcc3d4282484daa4df35830f107091cca9766"
       }
     ]
   },
@@ -1899,7 +1899,7 @@
       {
         "name": "death",
         "duration": 1.5,
-        "keyframes": "3ce00438158200e9cff6af80cf7272a3cd746b328a83830cb701ab1ba4d06df4"
+        "keyframes": "deb89c976b634fabffee9ed8f6b39dbf7471dcde65f5a02b08c0c43037bda3ca"
       },
       {
         "name": "rebirth",
@@ -1914,8 +1914,8 @@
     ]
   },
   "grand-gearjammer.glb": {
-    "min": [-0.25951412035823856, -0.00999999642086355, -0.4299999433994922],
-    "max": [0.254124331740124, 0.929999931853463, 0.5999999479444316],
+    "min": [-0.25951412035823856, -0.00999999642086355, -0.4149999298748716],
+    "max": [0.254124331740124, 0.9299999914581052, 0.5999999479444316],
     "bones": [22],
     "clips": [
       {
@@ -1931,7 +1931,7 @@
       {
         "name": "walk",
         "duration": 1,
-        "keyframes": "3e34667618897c82b5e1ebf85c33db482707e0648fb5993b6bc53582af5b8a3a"
+        "keyframes": "862dfc5c8ea194b91b083465118eeb9505ecab471fadbaa1d617ca67620f5720"
       },
       {
         "name": "attack",
@@ -2441,49 +2441,49 @@
     ]
   },
   "junk-walker.glb": {
-    "min": [-0.3323080494118544, -2.722289789982453e-9, -0.2748347520828247],
-    "max": [0.22422240674495697, 0.9661999940872192, 0.45388060287791826],
+    "min": [-0.3323080494118544, -2.722289789982453e-9, -0.2491961419582367],
+    "max": [0.22422240674495697, 0.9996000528335571, 0.45388060287791826],
     "bones": [23],
     "clips": [
       {
         "name": "idle",
         "duration": 2,
-        "keyframes": "b8193451e59acc91ab2715d02dcc2e3f611a8c2b51002749b40c753a56948926"
+        "keyframes": "4486d65049086bc76378e459fdfbd456dedbaf946c434f9030ec9440c0dfa225"
       },
       {
         "name": "lowHp",
         "duration": 2,
-        "keyframes": "3bce2ae83282a7637326e8a2c18117a81e8679cb26d688d5242a23a17f1d15e1"
+        "keyframes": "300849a153593a37623065129f03209ea1db300fa37703ce6b0e94db8dbc70d0"
       },
       {
         "name": "walk",
         "duration": 1,
-        "keyframes": "6cd23a9aa843419990d5acd50599670caec9371bcdc23514d89943459e7ad03b"
+        "keyframes": "305bc45d11091ae608a41b86ec3303b84e7fb2b7c552eebe740c23d546becb83"
       },
       {
         "name": "attack",
         "duration": 1.25,
-        "keyframes": "60ec196b2f22335d52db51be8e1b4cecff27ac73bb11f9f5e27261c867c75d48"
+        "keyframes": "60a89f582bc8b832045801e2d820b075e7cf877137e3dd88db598ca406e67d98"
       },
       {
         "name": "hurt",
         "duration": 0.6666666865348816,
-        "keyframes": "82314f72e007354a636d4b7c392e4ab4e4dd907e9f2d5002f598d73f29c094de"
+        "keyframes": "f8677f456703a4ce6cc2797ff87a5985ace958fabf17c6abd775feb4d24727dd"
       },
       {
         "name": "death",
         "duration": 1.5,
-        "keyframes": "3b239a79aadd59151fc103a2e251d2fe4a29758992e8c2be30f7060ef3b5ca93"
+        "keyframes": "c666d8f270dc6e306c30edd4c7765123cc020866b819d88eb324eef0127f3ef8"
       },
       {
         "name": "rebirth",
         "duration": 2,
-        "keyframes": "c6aa231f3c0ef720d0ec4a9bbf2159a8685b762ce0318f96c527b4b4070195eb"
+        "keyframes": "f620251b47a7fd55528bbd736ed517a6cdf5947ab3420eaee7ffa9a619fe6e20"
       },
       {
         "name": "summon",
         "duration": 1,
-        "keyframes": "ccd338a06ce968da00e6fc022975559cd0ffc23c41f9f638388d09f3c88ac60a"
+        "keyframes": "d9ecb49c99d1c906a77144c422926bd890ad1c1f03022e7c2026d712a56683f9"
       }
     ]
   },
@@ -3349,44 +3349,44 @@
     ]
   },
   "rimebreath-drake.glb": {
-    "min": [-0.5722769440454435, -0.006000000983476639, -0.7001313167197625],
+    "min": [-0.5722769440454435, 0, -0.7001314643984876],
     "max": [0.5722769440453656, 0.9918699405389102, 0.5163139622322078],
     "bones": [23],
     "clips": [
       {
         "name": "idle",
         "duration": 2,
-        "keyframes": "1f0175ed1e96e9555a922c9adc5a4f3efb679150788a41ede945a0407c531c59"
+        "keyframes": "8f22763f5c210781779cf4ff523a9edafab90a21aa4d1a4e53400495fca62a08"
       },
       {
         "name": "lowHp",
         "duration": 2,
-        "keyframes": "b9bd1899c24c94a224b29a4d5f031d70e89eea895ed6fda6d087d5b06ffe28fe"
+        "keyframes": "1924c1063ab9113d303cd2b75e8baa4607ee01dd0f74b718725960ece279c54d"
       },
       {
         "name": "walk",
         "duration": 1,
-        "keyframes": "e27baaa8eb26de348f31e3d5f69064d110266a4587b26706d28d0836a9e59825"
+        "keyframes": "3dfdfe3edb3a57a751b7c0fcff8dc223d52b7d46148930ebad75d957a5f2d9e9"
       },
       {
         "name": "attack",
         "duration": 1.25,
-        "keyframes": "81d708dd60b4113ea53e14b846867b46a899d5665b855697f22abe34280692ca"
+        "keyframes": "44785a751a85ab653ed2f1dff81087227934185efa7d5310038032b168d1b7eb"
       },
       {
         "name": "hurt",
         "duration": 0.6666666865348816,
-        "keyframes": "d321eba6394dfee2b00a7c9e1fe7cbedd5afb28674bde3186b63cd41758b46da"
+        "keyframes": "4f3fab5c1f98f43c05996ed110d0f1357dba23991fcdb7ec907b8b251d589997"
       },
       {
         "name": "death",
         "duration": 1.5,
-        "keyframes": "a93bc555d6d29a00e2957b8787dd9ee3a3c89fa57bdc314bf91c11a7f67e68a6"
+        "keyframes": "9f704cd055eef252c204bf56371dc3492741c59976739156aee3e6383155b4c3"
       },
       {
         "name": "summon",
         "duration": 1,
-        "keyframes": "56ec7e4608eb5abbafd2c8e557e365e6b23ae35def8999fbbaf6beb86fc8eb43"
+        "keyframes": "e1aa4598dad845de13cf6eb176b0473a5816cac622e336cc53285e6024494ba2"
       }
     ]
   },
@@ -3470,7 +3470,7 @@
       {
         "name": "death",
         "duration": 1.5,
-        "keyframes": "44c8068f08993d48db6efca9ebb540c93cbb56116ffdbe3801cfe4c12fe73f78"
+        "keyframes": "82a4dea8d8fe12304f64fe31965767cedb373bf1d8c21e3f40a94bbbaf586148"
       },
       {
         "name": "rebirth",
@@ -3965,8 +3965,8 @@
     ]
   },
   "tailsweep-basilisk.glb": {
-    "min": [-0.2913287384900377, -0.0009015687584947407, -0.65249998304747],
-    "max": [0.2913288287975234, 0.6667906502928611, 0.6199998996941641],
+    "min": [-0.29132873849003754, -0.0009015665466061017, -0.65249998304747],
+    "max": [0.2913288287975232, 0.6667906502928611, 0.6199998996941641],
     "bones": [23],
     "clips": [
       {
@@ -4039,12 +4039,12 @@
       {
         "name": "death",
         "duration": 1.5,
-        "keyframes": "7725590ddd0940e4cb5d08944f8591674bd4d8735d2f14fb74fa8b8e26e0aa05"
+        "keyframes": "cc8f56bcc909421fc0d47f3053c6814024d88b3f6716db3774d3730db433d1aa"
       },
       {
         "name": "rebirth",
         "duration": 2,
-        "keyframes": "871c97ef4eb855950615eb3b8b0b49d95992600387be97387dea36a0f78088fd"
+        "keyframes": "86775256b0f0fc019a4405bc3d5ac9a8c206a2bde3a88c5adc677cc3722e3c8c"
       },
       {
         "name": "summon",
@@ -4295,7 +4295,7 @@
   },
   "warden-saelith.glb": {
     "min": [-0.38406050019226157, 3.357549154825119e-8, -0.19670016913729632],
-    "max": [0.2501247144307749, 0.98499995470047, 0.09455273300409317],
+    "max": [0.2881248176165334, 0.98499995470047, 0.09866530448198318],
     "bones": [28],
     "clips": [
       {
@@ -4504,7 +4504,7 @@
       {
         "name": "walk",
         "duration": 1.3333333730697632,
-        "keyframes": "9d839d960018ff76306f97a26fead19ac1ef3e5c3a4d32c79bf771359a492cd9"
+        "keyframes": "bdcbec9adc9da3364e4d8ca7a1f60ed415e0435a4d5460ad95658c71af13887a"
       },
       {
         "name": "attack",
@@ -4561,12 +4561,12 @@
       {
         "name": "death",
         "duration": 1.5,
-        "keyframes": "4c489279c0fd792139d61f7ef0d1845eb46e1fd62112c7546dfba5346e377882"
+        "keyframes": "380e4d6de8581be5458eeb32ae5303e8995c0da97ea7a15882076876d0b4d62d"
       },
       {
         "name": "rebirth",
         "duration": 2,
-        "keyframes": "2301994dce17a1d9934b523d7a8de44a45f28bc4ebda4739dbf894d74fb41588"
+        "keyframes": "172d3ffe1f34d95e43e3fe11a301b7e57db83f09d5d8a995006b4ee9a29588c3"
       },
       {
         "name": "summon",

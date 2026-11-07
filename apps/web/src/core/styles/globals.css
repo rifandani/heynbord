@@ -8,9 +8,9 @@
 @plugin "tailwindcss-react-aria-components";
 
 /*
- * The Town Bar is a wood shelf that can stow away. `--town-bar` is the live
+ * The Town Bar is a blue sash that can stow away. `--town-bar` is the live
  * height, registered so every screen's floor follows one motion.
- * `--town-bar-shelf` is the height of the full shelf, also when it is stowed.
+ * `--town-bar-shelf` is the height of the open bar, also when it is stowed.
  * The values mirror `TOWN_BAR_HEIGHT` in `features/town/town.ts`.
  */
 @property --town-bar {
@@ -26,7 +26,7 @@
 }
 
 /* The transition waits for the first frame, so a saved stowed bar shows at
-   once and never animates from the full shelf on load. */
+   once and never animates from the open bar on load. */
 html[data-town-bar-ready] {
   transition: --town-bar 300ms cubic-bezier(0.2, 0.8, 0.2, 1);
 }
@@ -45,7 +45,7 @@ html[data-town-bar-ready] {
   }
 }
 
-/* A stowed bar has no wood and no rail: it takes no room, so the scene fills
+/* A stowed bar has no cloth: it takes no room, so the scene fills
    the screen. Only the safe-area inset stays, so the content never goes under
    the home indicator of a phone. */
 html[data-town-bar="collapsed"] {
@@ -63,9 +63,11 @@ html[data-town-bar="collapsed"] {
 html[data-reduced-motion="true"] *,
 html[data-reduced-motion="true"] *::before,
 html[data-reduced-motion="true"] *::after {
+  animation-delay: 0s !important;
   animation-duration: 0.01ms !important;
   animation-iteration-count: 1 !important;
   scroll-behavior: auto !important;
+  transition-delay: 0s !important;
   transition-duration: 0.01ms !important;
 }
 
@@ -261,7 +263,6 @@ html[data-reduced-motion="true"] {
   --shadow-ready: 0 0 18px 4px rgb(255 210 90 / 75%);
   --shadow-active: 0 0 14px 2px rgb(255 215 90 / 60%);
   --shadow-selected: 0 0 0 3px rgb(226 169 59 / 45%);
-  --shadow-bar-lift: 0 -4px 12px rgb(0 0 0 / 35%);
   --drop-shadow-icon: 0 2px 0 rgb(0 0 0 / 50%);
   --drop-shadow-building: 0 0 14px rgb(255 224 138 / 95%);
 
@@ -696,6 +697,14 @@ html[data-reduced-motion="true"] {
 .battle-cover[data-state="leaving"] .battle-cover-body {
   opacity: 0;
   transform: scale(1.06);
+}
+
+/* A reward token shows at the roller after the sash winds onto it. */
+@keyframes town-bar-seal-in {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
 }
 
 /* A Town Bar icon hops once when its screen becomes the current one. */
@@ -2323,7 +2332,7 @@ html[data-reduced-motion="true"] {
 }
 
 /* Story controls must remain clear of device and update notifications. */
-body:has([data-testid="story-player"]) [data-sonner-toaster] {
+body[data-story] [data-sonner-toaster] {
   visibility: hidden;
 }
 
@@ -2333,7 +2342,7 @@ body:has([data-testid="story-player"]) [data-sonner-toaster] {
  * gives the column room to the right of the 1008px Hand Bar, so the toast
  * sits in the true bottom right corner there.
  */
-body:has([data-testid="battle-stage"]) [data-sonner-toaster] {
+body[data-battle] [data-sonner-toaster] {
   --width: 210px !important;
   right: max(0.5rem, env(safe-area-inset-right)) !important;
   left: auto !important;
@@ -2343,13 +2352,13 @@ body:has([data-testid="battle-stage"]) [data-sonner-toaster] {
 
 /* 1440px: the 210px column and its margin clear the Hand Bar. */
 @media (min-width: 1440px) {
-  body:has([data-testid="battle-stage"]) [data-sonner-toaster] {
+  body[data-battle] [data-sonner-toaster] {
     bottom: max(0.5rem, env(safe-area-inset-bottom)) !important;
   }
 }
 
 @media (max-height: 500px) {
-  body:has([data-testid="battle-stage"]) [data-sonner-toaster] {
+  body[data-battle] [data-sonner-toaster] {
     bottom: 168px !important;
   }
 }
@@ -2358,9 +2367,11 @@ body:has([data-testid="battle-stage"]) [data-sonner-toaster] {
    the two colors remain distinct on both light and dark surfaces (issue 133).
    Containers such as Tabs also set data-focus-visible for focus within them.
    Draw the edge only on the focused element, not on those containers. A radio
-   or a switch is a label around a hidden input, so the label gets the edge. */
-body:has([data-testid="town-bar"], [data-testid="battle-stage"])
-  :is([data-focus-visible]:is(:focus, label), :focus-visible) {
+   or a switch is a label around a hidden input, so the label gets the edge.
+   The attributes on `body` in this file come from `useBodyMark`, not from
+   `body:has()`: that selector restyled the full page after each DOM change,
+   which at 17,000 elements takes 450 ms on a phone. */
+body[data-game] :is([data-focus-visible]:is(:focus, label), :focus-visible) {
   outline: 2px solid var(--color-night-plate);
   outline-offset: 4px;
 }

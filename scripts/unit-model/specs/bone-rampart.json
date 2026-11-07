@@ -1,0 +1,141 @@
+{
+  "id": "bone-rampart",
+  "bodyPlan": "structure",
+  "height": 1.13,
+  "palette": {
+    "wood": "#7a6247",
+    "wood_dark": "#4f3d2b",
+    "wood_light": "#9a8063",
+    "iron": "#4b4a48",
+    "gold": "#c69a61",
+    "bone": "#efd4bd",
+    "bone_dark": "#d1bba7",
+    "socket": "#262728",
+    "glow": "#9fe8ff",
+    "teal": "#4d6e6b",
+    "teal_dark": "#334a48",
+    "mud": "#4a3d30",
+    "sign": "#d8ccb0",
+    "ink": "#3a3028",
+    "rust": "#7a5a3c"
+  },
+  "parts": [
+    "shield.0",
+    "shield.1",
+    "shield.2",
+    "shield.3",
+    "shield.4",
+    "platform",
+    "stakes",
+    "chains",
+    "skel.A",
+    "skel.A.head",
+    "skel.B",
+    "skel.B.head",
+    "skel.A.arm",
+    "skel.B.arm",
+    "banner",
+    "banner.flag",
+    "sign"
+  ],
+  "props": [
+    {
+      "id": "skel.A.arm",
+      "hand": "left",
+      "cameraSide": false,
+      "bone": "skel.A.arm"
+    },
+    {
+      "id": "banner",
+      "hand": "right",
+      "cameraSide": true,
+      "bone": "banner"
+    },
+    {
+      "id": "sign",
+      "hand": "none",
+      "cameraSide": true,
+      "bone": "sign"
+    }
+  ],
+  "clips": {
+    "idle": {},
+    "lowHp": {},
+    "walk": {
+      "override": "wall-heave"
+    },
+    "attack": {
+      "override": "hammer-smash"
+    },
+    "hurt": {},
+    "death": {
+      "override": "wall-collapse"
+    },
+    "rebirth": {
+      "override": "wall-rebuild"
+    },
+    "summon": {}
+  },
+  "footBones": [
+    "shield.0",
+    "shield.1",
+    "shield.2",
+    "shield.3",
+    "shield.4",
+    "sign"
+  ],
+  "details": [
+    "five coffin-shaped shields stand on an arc",
+    "gold fleurs on the outer shields and a large skull on the middle shield",
+    "chains and sharp stakes hold the shields",
+    "each shield has a bone at its foot",
+    "skeleton A holds a bone-handled iron hammer in skel.A.arm",
+    "skeleton B holds a teal banner on the camera side",
+    "teal swallowtail flag with a gold fleur",
+    "arrow sign at the side with writing on both faces",
+    "rebirth stands the shields up one by one"
+  ],
+  "regions": {
+    "arm.L": {
+      "x0": 0.77,
+      "x1": 0.87,
+      "y0": 0.12,
+      "y1": 0.47
+    },
+    "arm.R": {
+      "x0": 0.32,
+      "x1": 0.41,
+      "y0": 0.46,
+      "y1": 0.54
+    },
+    "base": {
+      "x0": 0.19,
+      "x1": 1,
+      "y0": 0.44,
+      "y1": 1
+    },
+    "head": {
+      "x0": 0.41,
+      "x1": 0.78,
+      "y0": 0.33,
+      "y1": 0.45
+    },
+    "prop": {
+      "x0": 0,
+      "x1": 0.93,
+      "y0": 0,
+      "y1": 1
+    },
+    "torso": {
+      "x0": 0.4,
+      "x1": 0.78,
+      "y0": 0.44,
+      "y1": 0.96
+    }
+  },
+  "identity": {
+    "feature": "large skull on the middle shield",
+    "azimuthDegrees": 0
+  },
+  "holedParts": ["chains"]
+}

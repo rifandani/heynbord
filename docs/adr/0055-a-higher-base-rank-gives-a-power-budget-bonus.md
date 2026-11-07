@@ -54,12 +54,12 @@ The content test checks the budget and the pairwise rule for every card. The sim
 
 ### The written exceptions
 
-There are no written exceptions. Every Creature Card and every Skill Card passes the fitted budget, the pairwise rule and the simulation gate. The content test still fails if a card leaves the budget or the pairwise rule, and the simulation check is the gate. A card that fails in a later change goes back to the tuning pass, not to an exception list.
+There is 1 written exception: `mage.fireball`. Its Common value 3 is not the nearest step to its budget, because a higher line fails the pairwise rule ([ADR-0057](0057-each-combine-of-a-skill-card-changes-its-effect.md)). Every other Creature Card and Skill Card passes the fitted budget, the pairwise rule and the simulation gate. The content test still fails if a card leaves the budget or the pairwise rule, and the simulation check is the gate. A card that fails in a later change goes back to the tuning pass, not to an exception list.
 
 ## Considered Options
 
 - **Check every Rank that a copy can have, and change the cards.** Chosen for the full rebalance of issue #189, together with the new Decks and the campaign retune.
-- **Give each Base Rank a budget bonus, and keep the old lines as exceptions.** Rejected for v1.0. The exception list is empty, so the cards use the fitted table.
+- **Give each Base Rank a budget bonus, and keep the old lines as exceptions.** Rejected for v1.0. The cards use the fitted table, and the exception list has only 1 card.
 - **Change the comparison rule to the Base Rank line.** Rejected. The deck builder shows each copy at its own Rank, so the comparison must use that Rank.
 
 ## Consequences
@@ -69,5 +69,5 @@ There are no written exceptions. Every Creature Card and every Skill Card passes
 - The Specialist stays stronger than the 2 Epic cards of its Race (ADR-0054).
 - The UI does not change. The deck builder already shows the copy at its Rank.
 - The `Power Budget` glossary entry uses the new rule and links to this ADR.
-- There is no written exception list. The content test fails when a card leaves the budget or the pairwise rule.
+- The written exception list has only `mage.fireball`. The content test fails when another card leaves the budget or the pairwise rule.
 - The tuning log in [08 — Archetypes](../game/08-archetypes.md) records the change and the simulation result.

@@ -44,12 +44,12 @@ SKIN = hex_color("#e2b28c")
 HAIR = hex_color("#c4bfb4")
 HAIR_LIGHT = hex_color("#e4e0d6")
 HAIR_DARK = hex_color("#9a958a")
-EYES = hex_color("#1f2a1a")
+EYES = hex_color("#2d1a1a")
 BROW = hex_color("#8c877c")
-LEAF = hex_color("#5d7a34")
-LEAF_DARK = hex_color("#3d5424")
-LEAF_LIGHT = hex_color("#8aa452")
-TUNIC = hex_color("#6f7f36")
+LEAF = hex_color("#6b6434")
+LEAF_DARK = hex_color("#595424")
+LEAF_LIGHT = hex_color("#9a8e52")
+TUNIC = hex_color("#7b6f36")
 GOLD = hex_color("#d8a843")
 LEATHER = hex_color("#6b4528")
 LEATHER_DARK = hex_color("#442b19")
@@ -57,9 +57,9 @@ LEGGINGS = hex_color("#4f3522")
 BOOT = hex_color("#6e4a2c")
 CREAM = hex_color("#ece0c2")
 REED = hex_color("#8a8c48")
-REED_DARK = hex_color("#62652f")
-SAP = hex_color("#9ee04a")
-SAP_DARK = hex_color("#5fa02a")
+REED_DARK = hex_color("#6d652f")
+SAP = hex_color("#aea056")
+SAP_DARK = hex_color("#6f732a")
 
 # --- Proportions ---------------------------------------------------------------
 
@@ -213,6 +213,21 @@ def head_parts():
     # The tail of the knot down the back.
     tail = kit.tube(hair.bm, [HEAD_C + Vector((0, 0.09, -0.07)), HEAD_C + Vector((0, 0.11, -0.13)), HEAD_C + Vector((0, 0.115, -0.2))], [0.02, 0.016, 0.004], 6)
     hair.paint(faces_of(tail), HAIR)
+    # Silver locks break up the smooth cap. The leaf wreath follows the
+    # approved back view, with the low knot visible below it.
+    for index in range(9):
+        angle = math.radians(-75 + index * 18.75)
+        x = math.sin(angle)
+        y = math.cos(angle)
+        root = HEAD_C + Vector((0.035 * x, 0.025 * y, 0.072))
+        tip = HEAD_C + Vector((0.067 * x, 0.073 * y, -0.012))
+        lock = kit.tube(hair.bm, [root, root.lerp(tip, 0.55) + Vector((0, 0.025, 0.016)), tip], [0.009, 0.011, 0.004], 5)
+        hair.paint(faces_of(lock), HAIR_DARK if index % 2 else HAIR_LIGHT)
+    for index in range(11):
+        angle = math.radians(-110 + index * 22)
+        out = Vector((math.sin(angle), math.cos(angle), 0))
+        base = HEAD_C + Vector((out.x * 0.077, out.y * 0.085, -0.002))
+        leaf(hair, base, Vector((out.x * 0.65, out.y * 0.65, 0.55)), 0.034, 0.014, LEAF if index % 2 else LEAF_LIGHT)
     parts.append(hair)
     return parts
 
@@ -338,7 +353,7 @@ def pipe_parts():
     pipe.paint(faces_of(tassel), SAP_DARK)
 
     # The puff of green sap at the mouth when the dart leaves.
-    puff = Part("puff", SAP, "puff", shade=0.0)
+    puff = Part("puff", SAP, "puff", shade=0.0, region="effect")
     side = PIPE.cross(Y).normalized()
     up = side.cross(PIPE).normalized()
     kit.sphere(puff.bm, muzzle + PIPE * 0.04, (0.03, 0.03, 0.03), 8, 6)

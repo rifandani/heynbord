@@ -1,0 +1,98 @@
+{
+  "id": "gorehorn-red-maw",
+  "bodyPlan": "quadruped",
+  "height": 0.7582084693265698,
+  "palette": {
+    "eye": "#ffb43a",
+    "fur": "#b3221d",
+    "fur_dark": "#7a1512",
+    "fur_light": "#d6432c",
+    "hoof": "#6c665f",
+    "hoof_dark": "#3d3935",
+    "horn": "#e4d7b5",
+    "horn_dark": "#bd9d79",
+    "mouth": "#4a1a18",
+    "snout": "#b3977d",
+    "snout_dark": "#a87c5c",
+    "tusk": "#eee2c4",
+    "vein": "#ff3b24"
+  },
+  "parts": [
+    "body",
+    "neck",
+    "tail",
+    "head",
+    "snout",
+    "jaw",
+    "tusks",
+    "eyes",
+    "horns",
+    "upper.FL",
+    "lower.FL",
+    "hoof.FL",
+    "upper.FR",
+    "lower.FR",
+    "hoof.FR",
+    "upper.BL",
+    "lower.BL",
+    "hoof.BL",
+    "upper.BR",
+    "lower.BR",
+    "hoof.BR"
+  ],
+  "props": [],
+  "clips": {
+    "idle": {},
+    "lowHp": {},
+    "walk": {
+      "override": "heavy-trot"
+    },
+    "attack": {
+      "override": "horn-gore"
+    },
+    "hurt": {},
+    "death": {
+      "override": "fall-left"
+    },
+    "rebirth": {},
+    "summon": {
+      "override": "rise-and-roar"
+    }
+  },
+  "details": [
+    "huge red-furred shoulders above four grey hooves",
+    "two curved ivory horns with red light threads",
+    "scaly grey snout, small tusks and amber eyes",
+    "wide jaw opens during the charge"
+  ],
+  "regions": {
+    "head": {
+      "x0": 0.01,
+      "x1": 0.99,
+      "y0": 0.09,
+      "y1": 0.65
+    },
+    "leg.L": {
+      "x0": 0.57,
+      "x1": 0.92,
+      "y0": 0.41,
+      "y1": 1
+    },
+    "leg.R": {
+      "x0": 0.08,
+      "x1": 0.43,
+      "y0": 0.41,
+      "y1": 1
+    },
+    "torso": {
+      "x0": 0,
+      "x1": 1,
+      "y0": 0,
+      "y1": 0.72
+    }
+  },
+  "identity": {
+    "feature": "two ivory horns above the scaly snout",
+    "azimuthDegrees": 30
+  }
+}

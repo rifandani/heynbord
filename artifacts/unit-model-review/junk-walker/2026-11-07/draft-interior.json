@@ -1,0 +1,75 @@
+{
+  "unit": "junk-walker",
+  "admitted": false,
+  "note": "This measurement uses pending Turnaround views. It is not an admitted Review Gate result.",
+  "exitCode": 1,
+  "referenceSha256": {
+    "front": "4ac81d606ef57cf672d7bee543178214d980d68ee750227e7d90700b1d0c2fc0",
+    "back": "fd31b75730d1d78150c515f98bb0deb51ca7e238bd22b71c583d625bf3f4fd96"
+  },
+  "report": {
+    "limit": 0.28,
+    "bodies": [
+      {
+        "view": "front",
+        "renderRaised": 0.0,
+        "baselineRaised": 0.0
+      },
+      {
+        "view": "back",
+        "renderRaised": 0.0,
+        "baselineRaised": 0.0
+      }
+    ],
+    "bands": [
+      {
+        "view": "front",
+        "band": "head",
+        "status": "fail",
+        "difference": 0.2866050450681362,
+        "cellsCompared": 595,
+        "detail": "measured"
+      },
+      {
+        "view": "front",
+        "band": "torso",
+        "status": "pass",
+        "difference": 0.20813606292586134,
+        "cellsCompared": 7209,
+        "detail": "measured"
+      },
+      {
+        "view": "front",
+        "band": "legs",
+        "status": "pass",
+        "difference": 0.20593660412056972,
+        "cellsCompared": 3588,
+        "detail": "measured"
+      },
+      {
+        "view": "back",
+        "band": "head",
+        "status": "pass",
+        "difference": 0.22820873113643364,
+        "cellsCompared": 764,
+        "detail": "measured"
+      },
+      {
+        "view": "back",
+        "band": "torso",
+        "status": "pass",
+        "difference": 0.19494170367083394,
+        "cellsCompared": 7070,
+        "detail": "measured"
+      },
+      {
+        "view": "back",
+        "band": "legs",
+        "status": "pass",
+        "difference": 0.19341572596870138,
+        "cellsCompared": 4808,
+        "detail": "measured"
+      }
+    ]
+  }
+}

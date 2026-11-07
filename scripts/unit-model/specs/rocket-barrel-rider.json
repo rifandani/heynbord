@@ -1,0 +1,148 @@
+{
+  "id": "rocket-barrel-rider",
+  "bodyPlan": "machine",
+  "height": 0.6770443265614026,
+  "palette": {
+    "barrel": "#b2402c",
+    "barrel_dark": "#923424",
+    "blast": "#ffb838",
+    "blast_dark": "#ea6f2d",
+    "boot": "#5e3a22",
+    "brass": "#d0a048",
+    "brass_dark": "#93692a",
+    "cap": "#7a5236",
+    "cap_dark": "#55382a",
+    "cheek": "#dca898",
+    "ear": "#e8a08a",
+    "flame_core": "#fff2b0",
+    "flame_mid": "#ffa830",
+    "flame_out": "#ff6a1c",
+    "glove": "#7a4a2a",
+    "hair": "#f0eadc",
+    "hair_dark": "#d4ccb8",
+    "iron": "#4c403c",
+    "iron_dark": "#2e2a28",
+    "jacket": "#6e4a30",
+    "jacket_dark": "#4e3220",
+    "lens": "#c8a048",
+    "mouth": "#5a2422",
+    "rivet": "#8a8278",
+    "rope": "#c8a46a",
+    "scarf": "#b8322a",
+    "scarf_dark": "#86221c",
+    "shirt": "#d8ccb0",
+    "shut": "#2a1a14",
+    "skin": "#c6b6ab",
+    "smoke": "#6a6058",
+    "star": "#f0e4cc",
+    "teeth": "#f4eedc",
+    "trousers": "#5a4434"
+  },
+  "parts": [
+    "head",
+    "face",
+    "hair",
+    "cap",
+    "neck",
+    "jacket",
+    "scarf",
+    "sleeve.L",
+    "forearm.L",
+    "hand.L",
+    "thigh.L",
+    "shin.L",
+    "foot.L",
+    "sleeve.R",
+    "forearm.R",
+    "hand.R",
+    "thigh.R",
+    "shin.R",
+    "foot.R",
+    "barrel",
+    "flame",
+    "blast"
+  ],
+  "props": [],
+  "clips": {
+    "idle": {
+      "override": "barrel-hover"
+    },
+    "lowHp": {
+      "override": "barrel-sputter"
+    },
+    "walk": {
+      "override": "swift-flight"
+    },
+    "attack": {
+      "override": "barrel-ram"
+    },
+    "hurt": {},
+    "death": {
+      "override": "barrel-blast"
+    },
+    "rebirth": {
+      "override": "barrel-crash"
+    },
+    "summon": {
+      "override": "rocket-launch"
+    }
+  },
+  "details": [
+    "a young pale goblin with wild white hair, very large ears and her eyes shut tight",
+    "a leather cap with brass goggles and a long red scarf that streams back",
+    "a brown leather jacket, gloves, brown trousers and boots",
+    "a red powder barrel with iron bands and a white star on its front",
+    "a rocket on the back of the barrel blows a long flame",
+    "a rope round the barrel holds a brass canteen",
+    "the barrel blows up in death"
+  ],
+  "regions": {
+    "arm.L": {
+      "x0": 0.61,
+      "x1": 0.89,
+      "y0": 0.33,
+      "y1": 0.63
+    },
+    "arm.R": {
+      "x0": 0.11,
+      "x1": 0.39,
+      "y0": 0.33,
+      "y1": 0.63
+    },
+    "effect": {
+      "x0": 0.32,
+      "x1": 0.68,
+      "y0": 0.72,
+      "y1": 0.9
+    },
+    "head": {
+      "x0": 0,
+      "x1": 1,
+      "y0": 0,
+      "y1": 0.35
+    },
+    "leg.L": {
+      "x0": 0.54,
+      "x1": 0.96,
+      "y0": 0.55,
+      "y1": 0.87
+    },
+    "leg.R": {
+      "x0": 0.04,
+      "x1": 0.46,
+      "y0": 0.55,
+      "y1": 0.87
+    },
+    "torso": {
+      "x0": 0.04,
+      "x1": 0.85,
+      "y0": 0.22,
+      "y1": 1
+    }
+  },
+  "identity": {
+    "feature": "red powder barrel with a white star",
+    "azimuthDegrees": 0
+  },
+  "holedParts": ["cap", "body", "scarf"]
+}

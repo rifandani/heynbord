@@ -16,12 +16,22 @@ After the rebalance of [ADR-0055](0055-a-higher-base-rank-gives-a-power-budget-b
 - **Use the Stat scale exactly.** Rejected. Small values cannot hit one exact number.
 - **Restore Shield Wall to Bulwark 1/2/3/4/5.** Rejected. It is more than 2 times the maximum. Shield Wall gets more Turns.
 
+### The Fireball line
+
+Issue #192 removed the last 4 flat steps. Fireball had 4/4/5/6/7. It now has 3/4/5/6/7. It is the written exception in [ADR-0055](0055-a-higher-base-rank-gives-a-power-budget-bonus.md). Its budget is 19. Common 3 gives 15.4 Power Points (−18.9%), and Common 4 gives 19.4. Thus Common 3 is not the nearest step of [ADR-0031](0031-a-skill-card-uses-the-power-budget-of-a-creature-card.md). It stays in the ±25% cap.
+
+- **4/5/6/7/8.** Rejected. It keeps the nearest step at Common, but Fireball becomes stronger than Ground Slam, Skybreaker, Frost Wave, Expose Weakness, Long Shot and Cleanse at the same Rank. This fails the pairwise rule of ADR-0055.
+- **Change the 6 other cards so that 4/5/6/7/8 passes.** Rejected. It changes 6 more cards to fix 1 line, and the sim checks are sensitive to these values.
+- **Keep 4/4/5/6/7.** Rejected. It keeps the flat step that this ADR removes.
+
 ## Consequences
 
 - Each Skill Card effect value can be a Rank table, also `turns` on Shield Wall.
 - Penance, Unbroken Vow and Onslaught had no Rank value, so each one gets a new part. The Onslaught change adds a value at its Base Rank, and the Power Points now count it. An Archetype has an Epic Onslaught, so this can move a Main Matchup.
 - Some high-Rank values go down, for example Rain of Arrows at Legendary goes from 10 to 7.
-- Common and Uncommon values do not change in this work, because the sim checks are sensitive to them (issue #189). Thus Fireball, Frost Bolt, Frost Shards and Spark keep a flat step from Common to Uncommon until issue #192.
+- The first change to the Rank lines kept the Common and Uncommon values, because the sim checks are sensitive to them (issue #189). Issue #192 then changed Fireball to 3/4/5/6/7, Frost Bolt to 5/6/7/8/10, Frost Shards to 2/3/4/5/6 and Spark to 2/3/4/5/6. It also retuned Stages 1-9, 2-10, 3-3 and 3-4. Each Combine of each Skill Card now changes its effect.
+- Frost Shards goes over the maximum at ×2.135. Its line is the smallest rising line of whole numbers, so it is a nearest-step card.
+- Fireball still fails the swap rule at its Common Rank (1000 seeds, Raiders Full against Vanguard / Raiders). It was −6.7 / −9.8 with Common 4, and it is −10.0 / −9.6 with Common 3. The other 3 cards still pass. ADR-0031 says that the sim wins, and this lower value moves Fireball further from the swap target against Vanguard. The pairwise rule and the change on each step have priority here. The ADR-0031 fix order (Hold Rule, rate, then card values) stays open for this card.
 - The first lines for Penance (+2/+4/+6) and Unbroken Vow (Ward 3/6) moved Stages 4-8 and 5-5 below their targets. Now Penance has +1/+2/+4, Unbroken Vow has Ward 2/5, and 1 of the 2 Penance copies in Stage 4-8 is Uncommon. With these changes, `sim:check` has 0 misses.
 - Penance still fails the swap rule against Vanguard at Rare, Epic and Legendary (+11.5 to +14.3 points at 500 seeds, with `--rank`). The swap rule at high Ranks is advisory, and the old lines also failed on 12 to 16 cards at those Ranks.
 - War Drums lowers 5 cards at Legendary, so its Hold Rule waits for 2 cards that are not Ready, not for all the cards that it lowers. Without this cap, the AI seldom plays the card.

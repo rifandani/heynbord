@@ -1,0 +1,18 @@
+{
+  "id": "crag-rhino",
+  "source": "apps/web/public/creature/feral/crag-rhino.webp",
+  "views": {
+    "front": "front.webp",
+    "three-quarter": "three-quarter.webp",
+    "side": "side.webp",
+    "back": "back.webp",
+    "details": "details.webp"
+  },
+  "props": ["broken shield"],
+  "approval": {
+    "status": "approved",
+    "by": "rifandani",
+    "date": "2026-11-06",
+    "notes": "Approved with the known differences: the mane is fuller and the shield breaks differ. The flying shield stays out on purpose. The side and back are inferred."
+  }
+}

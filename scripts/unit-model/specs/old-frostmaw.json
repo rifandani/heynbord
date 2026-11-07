@@ -1,0 +1,110 @@
+{
+  "id": "old-frostmaw",
+  "bodyPlan": "quadruped",
+  "height": 0.8100256522946042,
+  "palette": {
+    "bell": "#d8d0c8",
+    "bell_dark": "#7d685c",
+    "claw": "#3e3a3a",
+    "eye": "#8ff0ff",
+    "fang": "#f3eee0",
+    "ice": "#a8d4f0",
+    "ice_deep": "#79bfee",
+    "mouth": "#8c3444",
+    "scale": "#cdd3de",
+    "scale_dark": "#aeb6cb",
+    "scale_shadow": "#7f8b9d",
+    "tongue": "#c45a6a"
+  },
+  "parts": [
+    "body",
+    "neck",
+    "neck.core",
+    "tail",
+    "head",
+    "crown",
+    "fangs",
+    "eyes",
+    "jaw",
+    "bell",
+    "upper.FL",
+    "lower.FL",
+    "paw.FL",
+    "upper.FR",
+    "lower.FR",
+    "paw.FR",
+    "upper.BL",
+    "lower.BL",
+    "paw.BL",
+    "upper.BR",
+    "lower.BR",
+    "paw.BR"
+  ],
+  "props": [
+    {
+      "id": "bell",
+      "hand": "none",
+      "cameraSide": false,
+      "bone": "jaw"
+    }
+  ],
+  "clips": {
+    "idle": {},
+    "lowHp": {},
+    "walk": {
+      "override": "heavy-trot"
+    },
+    "attack": {
+      "override": "frost-bite"
+    },
+    "hurt": {},
+    "death": {
+      "override": "fall-left"
+    },
+    "summon": {
+      "override": "rise-and-roar"
+    }
+  },
+  "details": [
+    "slate-violet hide with ice-white scales and spines",
+    "two rising neck bones hold the large fanged head",
+    "broken bell at the jaw swings with the bite",
+    "long tail and four broad paws"
+  ],
+  "regions": {
+    "head": {
+      "x0": 0.1,
+      "x1": 0.9,
+      "y0": 0,
+      "y1": 0.59
+    },
+    "leg.L": {
+      "x0": 0.6,
+      "x1": 1,
+      "y0": 0.47,
+      "y1": 1
+    },
+    "leg.R": {
+      "x0": 0,
+      "x1": 0.4,
+      "y0": 0.47,
+      "y1": 1
+    },
+    "prop": {
+      "x0": 0.25,
+      "x1": 0.43,
+      "y0": 0.36,
+      "y1": 0.55
+    },
+    "torso": {
+      "x0": 0.08,
+      "x1": 0.92,
+      "y0": 0.08,
+      "y1": 0.93
+    }
+  },
+  "identity": {
+    "feature": "ice crown and broken bell at the jaw",
+    "azimuthDegrees": 30
+  }
+}

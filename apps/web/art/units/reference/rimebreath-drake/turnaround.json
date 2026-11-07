@@ -1,0 +1,18 @@
+{
+  "id": "rimebreath-drake",
+  "source": "apps/web/public/creature/feral/rimebreath-drake.webp",
+  "views": {
+    "front": "front.webp",
+    "three-quarter": "three-quarter.webp",
+    "side": "side.webp",
+    "back": "back.webp",
+    "details": "details.webp"
+  },
+  "props": ["Icicles on its nose"],
+  "approval": {
+    "status": "approved",
+    "by": "rifandani",
+    "date": "2026-11-07",
+    "notes": "Approved all five views and this prop list by a message to the agent. Known differences: The wings are raised in a neutral hover and the mouth is closed in the front and side views. The frost breath is omitted. The tail curl, wing veins, icicle shapes and ice-spine pattern differ. The rear anatomy is inferred. The cliffs, clouds and loose ice are omitted."
+  }
+}

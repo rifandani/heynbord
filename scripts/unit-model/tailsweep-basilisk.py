@@ -40,13 +40,13 @@ from unit_model_kit import X, Y, Z, Clip, Part, blend, clamp01, faces_of, hex_co
 
 # --- Palette (the card painting) ----------------------------------------------
 
-SCALE = hex_color("#b8925a")
+SCALE = hex_color("#c1925a")
 SCALE_LIGHT = hex_color("#d2b07a")
 SCALE_DARK = hex_color("#6e4e2c")
-BELLY = hex_color("#ddc58e")
+BELLY = hex_color("#e4c58e")
 SPIKE = hex_color("#6a4a2a")
 SPIKE_TIP = hex_color("#d8c49a")
-EYE = hex_color("#e3b232")
+EYE = hex_color("#e39b42")
 PUPIL = hex_color("#1a1208")
 MOUTH = hex_color("#6a2a24")
 CLAW = hex_color("#2e2a26")
@@ -205,7 +205,7 @@ def body_parts():
     parts.append(tail)
 
     # The club: a heavy knot of rock-hard scale with spikes all round.
-    club = Part("club", CLUB, "tail.4", smooth=False, shade=0.15)
+    club = Part("club", CLUB, "tail.4", smooth=False, shade=0.15, region="torso")
     kit.sphere(club.bm, CLUB_C, (0.075, 0.07, 0.07), 9, 6)
     golden = math.pi * (3 - math.sqrt(5))
     for index in range(16):
@@ -277,9 +277,10 @@ def leg_parts():
             direction = (ahead + side * spread * 0.45).normalized()
             knuckle = wrist + Vector((0, 0, -0.02)) + direction * 0.03
             tip = knuckle + direction * 0.04 + Vector((0, 0, -0.008))
-            kit.cone(foot.bm, knuckle, tip, 0.01, 0.008, 4)
-            claw = kit.cone(foot.bm, tip, tip + direction * 0.025 + Vector((0, 0, -0.012)), 0.008, 0.001, 4)
-            foot.paint(faces_of(claw), CLAW)
+            # One tube has no internal cap where the claw bends.
+            end = tip + direction * 0.025 + Vector((0, 0, -0.012))
+            claw = kit.tube(foot.bm, [knuckle, tip, end], [0.01, 0.008, 0.001], 4)
+            foot.paint([face for face in faces_of(claw) if (face.calc_center_median() - tip).dot(direction) > 0], CLAW)
         parts.append(foot)
     return parts
 
@@ -288,6 +289,13 @@ def build_figure():
     kit.reset_scene()
     rig = kit.build_armature("TailsweepBasilisk", BONES)
     parts = body_parts() + head_parts() + leg_parts()
+    # Three rings let the short head joint bend under the wide neck scales.
+    axis = (SNOUT - HEAD_A).normalized()
+    def core_weights(co):
+        return blend("neck", "head", (co - HEAD_A).dot(axis), -0.012, 0.012)
+    core = Part("neck.core", SCALE_DARK, core_weights, region="head")
+    kit.tube(core.bm, [HEAD_A + axis * step for step in (-0.012, 0, 0.012)], [0.025] * 3, 8)
+    parts.append(core)
     objects = [kit.part_object(part) for part in parts]
     mesh = kit.join_parts(objects, "TailsweepBasiliskMesh")
     kit.skin(mesh, rig)

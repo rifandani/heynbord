@@ -12,6 +12,7 @@ import {
 import { toast } from "sonner";
 
 import { GameButton } from "@/core/components/game/game-button";
+import { useBodyMark } from "@/core/hooks/use-body-mark";
 import type { PadPress } from "@/core/input/gamepad";
 import { useGamepad } from "@/core/input/use-gamepad";
 import { battlePainting } from "@/features/battle/battle-painting";
@@ -536,6 +537,7 @@ const BattleStageContent = ({ battle }: { readonly battle: Battle }) => {
   useBattleKeys(battle, overlays);
   useBattlePad(battle, overlays);
   useBattleHints(battle.liveSession);
+  useBodyMark("data-battle");
   return (
     <div
       className="text-cream fixed inset-0 overflow-hidden overscroll-none"

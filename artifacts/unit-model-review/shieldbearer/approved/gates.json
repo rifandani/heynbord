@@ -1,0 +1,2503 @@
+{
+  "name": "shieldbearer",
+  "passed": true,
+  "exitCode": 0,
+  "provenance": {
+    "review": "approved",
+    "rawSha256": "71a544620ee34b14210d65bc4f825850d15afa94fc1830ecf1c67231aef82db5",
+    "publishedSha256": "fb255dc1d6a7a6825a0470627b452c37099b0e57886a81d3b21c678ecc535b33",
+    "gatesSourceCommit": "a669e9a97cea4452b1c2310c5cca6aa0f6657c1f"
+  },
+  "inputProblems": [],
+  "gates": [
+    {
+      "gate": "turntable",
+      "question": "Are all four views present, and is there a hole through a part?",
+      "status": "pass",
+      "exitCode": 0,
+      "report": {
+        "angles": [
+          {
+            "azimuth": 0,
+            "path": "gate-inputs/front-cutout.png",
+            "isReference": true,
+            "segmented": true,
+            "holed": false,
+            "interiorHolePixelCount": 46,
+            "interiorHoleFraction": 0.0006990987704980319,
+            "largestHolePixelCount": 32,
+            "largestHoleBBox": {
+              "x": 204,
+              "y": 140,
+              "width": 5,
+              "height": 11
+            },
+            "areaFraction": 0.26947696919806857,
+            "ratio": 1,
+            "degenerate": false
+          },
+          {
+            "azimuth": 90,
+            "path": "gate-inputs/right-cutout.png",
+            "isReference": false,
+            "segmented": true,
+            "holed": false,
+            "interiorHolePixelCount": 318,
+            "interiorHoleFraction": 0.004236159215644482,
+            "largestHolePixelCount": 255,
+            "largestHoleBBox": {
+              "x": 160,
+              "y": 224,
+              "width": 12,
+              "height": 85
+            },
+            "areaFraction": 0.3074377592936156,
+            "ratio": 1.1408684022553535,
+            "degenerate": false
+          },
+          {
+            "azimuth": 180,
+            "path": "gate-inputs/back-cutout.png",
+            "isReference": false,
+            "segmented": true,
+            "holed": false,
+            "interiorHolePixelCount": 69,
+            "interiorHoleFraction": 0.0010873162199215242,
+            "largestHolePixelCount": 39,
+            "largestHoleBBox": {
+              "x": 206,
+              "y": 139,
+              "width": 6,
+              "height": 13
+            },
+            "areaFraction": 0.2598936000294873,
+            "ratio": 0.9644371495007524,
+            "degenerate": false
+          },
+          {
+            "azimuth": 270,
+            "path": "gate-inputs/left-cutout.png",
+            "isReference": false,
+            "segmented": true,
+            "holed": false,
+            "interiorHolePixelCount": 673,
+            "interiorHoleFraction": 0.00884165166782716,
+            "largestHolePixelCount": 630,
+            "largestHoleBBox": {
+              "x": 245,
+              "y": 227,
+              "width": 15,
+              "height": 90
+            },
+            "areaFraction": 0.31173389359183856,
+            "ratio": 1.1568108937825803,
+            "degenerate": false
+          }
+        ],
+        "referenceAzimuth": 0,
+        "requiredAzimuths": [0, 90, 180, 270],
+        "azimuthTolerance": 5,
+        "missingAzimuths": [],
+        "covered": true,
+        "collapseRatio": 0.15,
+        "degenerate": false,
+        "allowHoles": true,
+        "holed": false,
+        "unsegmentedAzimuths": [],
+        "segmentationReliable": true,
+        "passed": true,
+        "note": "deterministic; zero token; mandatory azimuth coverage catches off-axis-only defects, interior-hole flood fill catches silhouette-enclosed background that an area-only check misses",
+        "partHoles": [
+          {
+            "part": "body",
+            "azimuth": 0,
+            "allowed": true,
+            "pixels": 345,
+            "fraction": 0.0143
+          },
+          {
+            "part": "body",
+            "azimuth": 180,
+            "allowed": true,
+            "pixels": 345,
+            "fraction": 0.0142
+          }
+        ],
+        "problems": []
+      }
+    },
+    {
+      "gate": "interior-difference",
+      "question": "What differs from the Turnaround inside the silhouette, banded by height?",
+      "status": "pass",
+      "exitCode": 0,
+      "report": {
+        "limit": 0.28,
+        "bodies": [
+          {
+            "view": "front",
+            "renderRaised": 0,
+            "baselineRaised": 0
+          },
+          {
+            "view": "back",
+            "renderRaised": 0,
+            "baselineRaised": 0
+          }
+        ],
+        "bands": [
+          {
+            "view": "front",
+            "band": "head",
+            "status": "pass",
+            "difference": 0.21760400218531178,
+            "cellsCompared": 1308,
+            "detail": "measured"
+          },
+          {
+            "view": "front",
+            "band": "torso",
+            "status": "pass",
+            "difference": 0.18071036283164776,
+            "cellsCompared": 9427,
+            "detail": "measured"
+          },
+          {
+            "view": "front",
+            "band": "legs",
+            "status": "pass",
+            "difference": 0.18397447369406386,
+            "cellsCompared": 6866,
+            "detail": "measured"
+          },
+          {
+            "view": "back",
+            "band": "head",
+            "status": "pass",
+            "difference": 0.23730873115978035,
+            "cellsCompared": 1368,
+            "detail": "measured"
+          },
+          {
+            "view": "back",
+            "band": "torso",
+            "status": "pass",
+            "difference": 0.12539849220501628,
+            "cellsCompared": 8815,
+            "detail": "measured"
+          },
+          {
+            "view": "back",
+            "band": "legs",
+            "status": "pass",
+            "difference": 0.21697029020987912,
+            "cellsCompared": 6483,
+            "detail": "measured"
+          }
+        ],
+        "problems": []
+      }
+    },
+    {
+      "gate": "self-intersection",
+      "question": "Does a closed island of the mesh cross itself?",
+      "status": "pass",
+      "exitCode": 0,
+      "report": {
+        "selfIntersecting": false,
+        "meshCount": 74,
+        "insideVertexCount": 0,
+        "undecidedVertexCount": 4,
+        "sampledVertexCount": 2180,
+        "totalVertexCount": 2180,
+        "meshes": [
+          {
+            "name": "head#0",
+            "analyzed": true,
+            "error": null,
+            "selfIntersecting": false,
+            "insideVertexCount": 0,
+            "undecidedVertexCount": 2,
+            "outsideVertexCount": 126,
+            "sampledVertexCount": 128,
+            "totalVertexCount": 128,
+            "samplingStride": 1,
+            "triangleCount": 252,
+            "degenerateTriangleCount": 0,
+            "worstRegions": [],
+            "normalSource": "vertexNormals",
+            "normalFallbackCount": 0,
+            "epsilon": 0.00023303000901611,
+            "rayDirectionCount": 3
+          },
+          {
+            "name": "head#1",
+            "analyzed": true,
+            "error": null,
+            "selfIntersecting": false,
+            "insideVertexCount": 0,
+            "undecidedVertexCount": 0,
+            "outsideVertexCount": 10,
+            "sampledVertexCount": 10,
+            "totalVertexCount": 10,
+            "samplingStride": 1,
+            "triangleCount": 16,
+            "degenerateTriangleCount": 0,
+            "worstRegions": [],
+            "normalSource": "vertexNormals",
+            "normalFallbackCount": 0,
+            "epsilon": 0.000036777977156462025,
+            "rayDirectionCount": 3
+          },
+          {
+            "name": "face#0",
+            "analyzed": true,
+            "error": null,
+            "selfIntersecting": false,
+            "insideVertexCount": 0,
+            "undecidedVertexCount": 0,
+            "outsideVertexCount": 42,
+            "sampledVertexCount": 42,
+            "totalVertexCount": 42,
+            "samplingStride": 1,
+            "triangleCount": 80,
+            "degenerateTriangleCount": 0,
+            "worstRegions": [],
+            "normalSource": "vertexNormals",
+            "normalFallbackCount": 0,
+            "epsilon": 0.00002905168048235884,
+            "rayDirectionCount": 3
+          },
+          {
+            "name": "face#1",
+            "analyzed": true,
+            "error": null,
+            "selfIntersecting": false,
+            "insideVertexCount": 0,
+            "undecidedVertexCount": 0,
+            "outsideVertexCount": 8,
+            "sampledVertexCount": 8,
+            "totalVertexCount": 8,
+            "samplingStride": 1,
+            "triangleCount": 12,
+            "degenerateTriangleCount": 0,
+            "worstRegions": [],
+            "normalSource": "vertexNormals",
+            "normalFallbackCount": 0,
+            "epsilon": 0.00003419062804120481,
+            "rayDirectionCount": 3
+          },
+          {
+            "name": "face#2",
+            "analyzed": true,
+            "error": null,
+            "selfIntersecting": false,
+            "insideVertexCount": 0,
+            "undecidedVertexCount": 0,
+            "outsideVertexCount": 42,
+            "sampledVertexCount": 42,
+            "totalVertexCount": 42,
+            "samplingStride": 1,
+            "triangleCount": 80,
+            "degenerateTriangleCount": 0,
+            "worstRegions": [],
+            "normalSource": "vertexNormals",
+            "normalFallbackCount": 0,
+            "epsilon": 0.00002905168048235884,
+            "rayDirectionCount": 3
+          },
+          {
+            "name": "face#3",
+            "analyzed": true,
+            "error": null,
+            "selfIntersecting": false,
+            "insideVertexCount": 0,
+            "undecidedVertexCount": 0,
+            "outsideVertexCount": 8,
+            "sampledVertexCount": 8,
+            "totalVertexCount": 8,
+            "samplingStride": 1,
+            "triangleCount": 12,
+            "degenerateTriangleCount": 0,
+            "worstRegions": [],
+            "normalSource": "vertexNormals",
+            "normalFallbackCount": 0,
+            "epsilon": 0.00003419062804120481,
+            "rayDirectionCount": 3
+          },
+          {
+            "name": "face#4",
+            "analyzed": true,
+            "error": null,
+            "selfIntersecting": false,
+            "insideVertexCount": 0,
+            "undecidedVertexCount": 0,
+            "outsideVertexCount": 8,
+            "sampledVertexCount": 8,
+            "totalVertexCount": 8,
+            "samplingStride": 1,
+            "triangleCount": 12,
+            "degenerateTriangleCount": 0,
+            "worstRegions": [],
+            "normalSource": "vertexNormals",
+            "normalFallbackCount": 0,
+            "epsilon": 0.000025238858415776414,
+            "rayDirectionCount": 3
+          },
+          {
+            "name": "hair#1",
+            "analyzed": true,
+            "error": null,
+            "selfIntersecting": false,
+            "insideVertexCount": 0,
+            "undecidedVertexCount": 0,
+            "outsideVertexCount": 12,
+            "sampledVertexCount": 12,
+            "totalVertexCount": 12,
+            "samplingStride": 1,
+            "triangleCount": 20,
+            "degenerateTriangleCount": 0,
+            "worstRegions": [],
+            "normalSource": "vertexNormals",
+            "normalFallbackCount": 0,
+            "epsilon": 0.00012563657822053817,
+            "rayDirectionCount": 3
+          },
+          {
+            "name": "hair#2",
+            "analyzed": true,
+            "error": null,
+            "selfIntersecting": false,
+            "insideVertexCount": 0,
+            "undecidedVertexCount": 0,
+            "outsideVertexCount": 12,
+            "sampledVertexCount": 12,
+            "totalVertexCount": 12,
+            "samplingStride": 1,
+            "triangleCount": 20,
+            "degenerateTriangleCount": 0,
+            "worstRegions": [],
+            "normalSource": "vertexNormals",
+            "normalFallbackCount": 0,
+            "epsilon": 0.00012563657822053817,
+            "rayDirectionCount": 3
+          },
+          {
+            "name": "hair#3",
+            "analyzed": true,
+            "error": null,
+            "selfIntersecting": false,
+            "insideVertexCount": 0,
+            "undecidedVertexCount": 0,
+            "outsideVertexCount": 12,
+            "sampledVertexCount": 12,
+            "totalVertexCount": 12,
+            "samplingStride": 1,
+            "triangleCount": 20,
+            "degenerateTriangleCount": 0,
+            "worstRegions": [],
+            "normalSource": "vertexNormals",
+            "normalFallbackCount": 0,
+            "epsilon": 0.00013201744852136627,
+            "rayDirectionCount": 3
+          },
+          {
+            "name": "hair#4",
+            "analyzed": true,
+            "error": null,
+            "selfIntersecting": false,
+            "insideVertexCount": 0,
+            "undecidedVertexCount": 0,
+            "outsideVertexCount": 12,
+            "sampledVertexCount": 12,
+            "totalVertexCount": 12,
+            "samplingStride": 1,
+            "triangleCount": 20,
+            "degenerateTriangleCount": 0,
+            "worstRegions": [],
+            "normalSource": "vertexNormals",
+            "normalFallbackCount": 0,
+            "epsilon": 0.00010290844181584809,
+            "rayDirectionCount": 3
+          },
+          {
+            "name": "hair#5",
+            "analyzed": true,
+            "error": null,
+            "selfIntersecting": false,
+            "insideVertexCount": 0,
+            "undecidedVertexCount": 0,
+            "outsideVertexCount": 12,
+            "sampledVertexCount": 12,
+            "totalVertexCount": 12,
+            "samplingStride": 1,
+            "triangleCount": 20,
+            "degenerateTriangleCount": 0,
+            "worstRegions": [],
+            "normalSource": "vertexNormals",
+            "normalFallbackCount": 0,
+            "epsilon": 0.00013201744852136627,
+            "rayDirectionCount": 3
+          },
+          {
+            "name": "hair#6",
+            "analyzed": true,
+            "error": null,
+            "selfIntersecting": false,
+            "insideVertexCount": 0,
+            "undecidedVertexCount": 1,
+            "outsideVertexCount": 11,
+            "sampledVertexCount": 12,
+            "totalVertexCount": 12,
+            "samplingStride": 1,
+            "triangleCount": 20,
+            "degenerateTriangleCount": 0,
+            "worstRegions": [],
+            "normalSource": "vertexNormals",
+            "normalFallbackCount": 0,
+            "epsilon": 0.00010290844181584809,
+            "rayDirectionCount": 3
+          },
+          {
+            "name": "cap#1",
+            "analyzed": true,
+            "error": null,
+            "selfIntersecting": false,
+            "insideVertexCount": 0,
+            "undecidedVertexCount": 0,
+            "outsideVertexCount": 16,
+            "sampledVertexCount": 16,
+            "totalVertexCount": 16,
+            "samplingStride": 1,
+            "triangleCount": 28,
+            "degenerateTriangleCount": 0,
+            "worstRegions": [],
+            "normalSource": "vertexNormals",
+            "normalFallbackCount": 0,
+            "epsilon": 0.00016378121151748598,
+            "rayDirectionCount": 3
+          },
+          {
+            "name": "cap#2",
+            "analyzed": true,
+            "error": null,
+            "selfIntersecting": false,
+            "insideVertexCount": 0,
+            "undecidedVertexCount": 0,
+            "outsideVertexCount": 64,
+            "sampledVertexCount": 64,
+            "totalVertexCount": 64,
+            "samplingStride": 1,
+            "triangleCount": 128,
+            "degenerateTriangleCount": 0,
+            "worstRegions": [],
+            "normalSource": "vertexNormals",
+            "normalFallbackCount": 0,
+            "epsilon": 0.0002472660514062927,
+            "rayDirectionCount": 3
+          },
+          {
+            "name": "cap#3",
+            "analyzed": true,
+            "error": null,
+            "selfIntersecting": false,
+            "insideVertexCount": 0,
+            "undecidedVertexCount": 0,
+            "outsideVertexCount": 10,
+            "sampledVertexCount": 10,
+            "totalVertexCount": 10,
+            "samplingStride": 1,
+            "triangleCount": 16,
+            "degenerateTriangleCount": 0,
+            "worstRegions": [],
+            "normalSource": "vertexNormals",
+            "normalFallbackCount": 0,
+            "epsilon": 0.00001581138383336825,
+            "rayDirectionCount": 3
+          },
+          {
+            "name": "cap#4",
+            "analyzed": true,
+            "error": null,
+            "selfIntersecting": false,
+            "insideVertexCount": 0,
+            "undecidedVertexCount": 0,
+            "outsideVertexCount": 10,
+            "sampledVertexCount": 10,
+            "totalVertexCount": 10,
+            "samplingStride": 1,
+            "triangleCount": 16,
+            "degenerateTriangleCount": 0,
+            "worstRegions": [],
+            "normalSource": "vertexNormals",
+            "normalFallbackCount": 0,
+            "epsilon": 0.000015811385363688007,
+            "rayDirectionCount": 3
+          },
+          {
+            "name": "cap#5",
+            "analyzed": true,
+            "error": null,
+            "selfIntersecting": false,
+            "insideVertexCount": 0,
+            "undecidedVertexCount": 0,
+            "outsideVertexCount": 10,
+            "sampledVertexCount": 10,
+            "totalVertexCount": 10,
+            "samplingStride": 1,
+            "triangleCount": 16,
+            "degenerateTriangleCount": 0,
+            "worstRegions": [],
+            "normalSource": "vertexNormals",
+            "normalFallbackCount": 0,
+            "epsilon": 0.00001581138383336825,
+            "rayDirectionCount": 3
+          },
+          {
+            "name": "cap#6",
+            "analyzed": true,
+            "error": null,
+            "selfIntersecting": false,
+            "insideVertexCount": 0,
+            "undecidedVertexCount": 0,
+            "outsideVertexCount": 10,
+            "sampledVertexCount": 10,
+            "totalVertexCount": 10,
+            "samplingStride": 1,
+            "triangleCount": 16,
+            "degenerateTriangleCount": 0,
+            "worstRegions": [],
+            "normalSource": "vertexNormals",
+            "normalFallbackCount": 0,
+            "epsilon": 0.000015811385363688007,
+            "rayDirectionCount": 3
+          },
+          {
+            "name": "cap#7",
+            "analyzed": true,
+            "error": null,
+            "selfIntersecting": false,
+            "insideVertexCount": 0,
+            "undecidedVertexCount": 0,
+            "outsideVertexCount": 10,
+            "sampledVertexCount": 10,
+            "totalVertexCount": 10,
+            "samplingStride": 1,
+            "triangleCount": 16,
+            "degenerateTriangleCount": 0,
+            "worstRegions": [],
+            "normalSource": "vertexNormals",
+            "normalFallbackCount": 0,
+            "epsilon": 0.00001581138383336825,
+            "rayDirectionCount": 3
+          },
+          {
+            "name": "cap#8",
+            "analyzed": true,
+            "error": null,
+            "selfIntersecting": false,
+            "insideVertexCount": 0,
+            "undecidedVertexCount": 0,
+            "outsideVertexCount": 10,
+            "sampledVertexCount": 10,
+            "totalVertexCount": 10,
+            "samplingStride": 1,
+            "triangleCount": 16,
+            "degenerateTriangleCount": 0,
+            "worstRegions": [],
+            "normalSource": "vertexNormals",
+            "normalFallbackCount": 0,
+            "epsilon": 0.000015811385363688007,
+            "rayDirectionCount": 3
+          },
+          {
+            "name": "cap#9",
+            "analyzed": true,
+            "error": null,
+            "selfIntersecting": false,
+            "insideVertexCount": 0,
+            "undecidedVertexCount": 0,
+            "outsideVertexCount": 10,
+            "sampledVertexCount": 10,
+            "totalVertexCount": 10,
+            "samplingStride": 1,
+            "triangleCount": 16,
+            "degenerateTriangleCount": 0,
+            "worstRegions": [],
+            "normalSource": "vertexNormals",
+            "normalFallbackCount": 0,
+            "epsilon": 0.00001581138383336825,
+            "rayDirectionCount": 3
+          },
+          {
+            "name": "cap#10",
+            "analyzed": true,
+            "error": null,
+            "selfIntersecting": false,
+            "insideVertexCount": 0,
+            "undecidedVertexCount": 0,
+            "outsideVertexCount": 10,
+            "sampledVertexCount": 10,
+            "totalVertexCount": 10,
+            "samplingStride": 1,
+            "triangleCount": 16,
+            "degenerateTriangleCount": 0,
+            "worstRegions": [],
+            "normalSource": "vertexNormals",
+            "normalFallbackCount": 0,
+            "epsilon": 0.000015811385363688007,
+            "rayDirectionCount": 3
+          },
+          {
+            "name": "neck",
+            "analyzed": true,
+            "error": null,
+            "selfIntersecting": false,
+            "insideVertexCount": 0,
+            "undecidedVertexCount": 0,
+            "outsideVertexCount": 40,
+            "sampledVertexCount": 40,
+            "totalVertexCount": 40,
+            "samplingStride": 1,
+            "triangleCount": 76,
+            "degenerateTriangleCount": 0,
+            "worstRegions": [],
+            "normalSource": "vertexNormals",
+            "normalFallbackCount": 0,
+            "epsilon": 0.00010491895859702008,
+            "rayDirectionCount": 3
+          },
+          {
+            "name": "mail",
+            "analyzed": true,
+            "error": null,
+            "selfIntersecting": false,
+            "insideVertexCount": 0,
+            "undecidedVertexCount": 0,
+            "outsideVertexCount": 210,
+            "sampledVertexCount": 210,
+            "totalVertexCount": 210,
+            "samplingStride": 1,
+            "triangleCount": 304,
+            "degenerateTriangleCount": 0,
+            "worstRegions": [],
+            "normalSource": "vertexNormals",
+            "normalFallbackCount": 0,
+            "epsilon": 0.00038127008913029447,
+            "rayDirectionCount": 3
+          },
+          {
+            "name": "collar",
+            "analyzed": true,
+            "error": null,
+            "selfIntersecting": false,
+            "insideVertexCount": 0,
+            "undecidedVertexCount": 0,
+            "outsideVertexCount": 60,
+            "sampledVertexCount": 60,
+            "totalVertexCount": 60,
+            "samplingStride": 1,
+            "triangleCount": 120,
+            "degenerateTriangleCount": 0,
+            "worstRegions": [],
+            "normalSource": "vertexNormals",
+            "normalFallbackCount": 0,
+            "epsilon": 0.00022100528540965647,
+            "rayDirectionCount": 3
+          },
+          {
+            "name": "mailHem",
+            "analyzed": true,
+            "error": null,
+            "selfIntersecting": false,
+            "insideVertexCount": 0,
+            "undecidedVertexCount": 0,
+            "outsideVertexCount": 56,
+            "sampledVertexCount": 56,
+            "totalVertexCount": 56,
+            "samplingStride": 1,
+            "triangleCount": 112,
+            "degenerateTriangleCount": 0,
+            "worstRegions": [],
+            "normalSource": "vertexNormals",
+            "normalFallbackCount": 0,
+            "epsilon": 0.0002742002973442805,
+            "rayDirectionCount": 3
+          },
+          {
+            "name": "belt#0",
+            "analyzed": true,
+            "error": null,
+            "selfIntersecting": false,
+            "insideVertexCount": 0,
+            "undecidedVertexCount": 0,
+            "outsideVertexCount": 28,
+            "sampledVertexCount": 28,
+            "totalVertexCount": 28,
+            "samplingStride": 1,
+            "triangleCount": 52,
+            "degenerateTriangleCount": 0,
+            "worstRegions": [],
+            "normalSource": "vertexNormals",
+            "normalFallbackCount": 0,
+            "epsilon": 0.00023126058406394256,
+            "rayDirectionCount": 3
+          },
+          {
+            "name": "belt#1",
+            "analyzed": true,
+            "error": null,
+            "selfIntersecting": false,
+            "insideVertexCount": 0,
+            "undecidedVertexCount": 0,
+            "outsideVertexCount": 12,
+            "sampledVertexCount": 12,
+            "totalVertexCount": 12,
+            "samplingStride": 1,
+            "triangleCount": 20,
+            "degenerateTriangleCount": 0,
+            "worstRegions": [],
+            "normalSource": "vertexNormals",
+            "normalFallbackCount": 0,
+            "epsilon": 0.00020188055877265842,
+            "rayDirectionCount": 3
+          },
+          {
+            "name": "belt#2",
+            "analyzed": true,
+            "error": null,
+            "selfIntersecting": false,
+            "insideVertexCount": 0,
+            "undecidedVertexCount": 0,
+            "outsideVertexCount": 8,
+            "sampledVertexCount": 8,
+            "totalVertexCount": 8,
+            "samplingStride": 1,
+            "triangleCount": 12,
+            "degenerateTriangleCount": 0,
+            "worstRegions": [],
+            "normalSource": "vertexNormals",
+            "normalFallbackCount": 0,
+            "epsilon": 0.0000574456469057799,
+            "rayDirectionCount": 3
+          },
+          {
+            "name": "belt#3",
+            "analyzed": true,
+            "error": null,
+            "selfIntersecting": false,
+            "insideVertexCount": 0,
+            "undecidedVertexCount": 0,
+            "outsideVertexCount": 8,
+            "sampledVertexCount": 8,
+            "totalVertexCount": 8,
+            "samplingStride": 1,
+            "triangleCount": 12,
+            "degenerateTriangleCount": 0,
+            "worstRegions": [],
+            "normalSource": "vertexNormals",
+            "normalFallbackCount": 0,
+            "epsilon": 0.00003352608027786636,
+            "rayDirectionCount": 3
+          },
+          {
+            "name": "sleeve.L",
+            "analyzed": true,
+            "error": null,
+            "selfIntersecting": false,
+            "insideVertexCount": 0,
+            "undecidedVertexCount": 0,
+            "outsideVertexCount": 28,
+            "sampledVertexCount": 28,
+            "totalVertexCount": 28,
+            "samplingStride": 1,
+            "triangleCount": 28,
+            "degenerateTriangleCount": 0,
+            "worstRegions": [],
+            "normalSource": "vertexNormals",
+            "normalFallbackCount": 0,
+            "epsilon": 0.0002501325047249421,
+            "rayDirectionCount": 3
+          },
+          {
+            "name": "bracer.L#0",
+            "analyzed": true,
+            "error": null,
+            "selfIntersecting": false,
+            "insideVertexCount": 0,
+            "undecidedVertexCount": 0,
+            "outsideVertexCount": 30,
+            "sampledVertexCount": 30,
+            "totalVertexCount": 30,
+            "samplingStride": 1,
+            "triangleCount": 60,
+            "degenerateTriangleCount": 0,
+            "worstRegions": [],
+            "normalSource": "vertexNormals",
+            "normalFallbackCount": 0,
+            "epsilon": 0.00008105806503261213,
+            "rayDirectionCount": 3
+          },
+          {
+            "name": "bracer.L#1",
+            "analyzed": true,
+            "error": null,
+            "selfIntersecting": false,
+            "insideVertexCount": 0,
+            "undecidedVertexCount": 0,
+            "outsideVertexCount": 16,
+            "sampledVertexCount": 16,
+            "totalVertexCount": 16,
+            "samplingStride": 1,
+            "triangleCount": 28,
+            "degenerateTriangleCount": 0,
+            "worstRegions": [],
+            "normalSource": "vertexNormals",
+            "normalFallbackCount": 0,
+            "epsilon": 0.00018717200571235178,
+            "rayDirectionCount": 3
+          },
+          {
+            "name": "bracer.L#2",
+            "analyzed": true,
+            "error": null,
+            "selfIntersecting": false,
+            "insideVertexCount": 0,
+            "undecidedVertexCount": 0,
+            "outsideVertexCount": 30,
+            "sampledVertexCount": 30,
+            "totalVertexCount": 30,
+            "samplingStride": 1,
+            "triangleCount": 60,
+            "degenerateTriangleCount": 0,
+            "worstRegions": [],
+            "normalSource": "vertexNormals",
+            "normalFallbackCount": 0,
+            "epsilon": 0.0000810580572249583,
+            "rayDirectionCount": 3
+          },
+          {
+            "name": "glove.L",
+            "analyzed": true,
+            "error": null,
+            "selfIntersecting": false,
+            "insideVertexCount": 0,
+            "undecidedVertexCount": 0,
+            "outsideVertexCount": 42,
+            "sampledVertexCount": 42,
+            "totalVertexCount": 42,
+            "samplingStride": 1,
+            "triangleCount": 80,
+            "degenerateTriangleCount": 0,
+            "worstRegions": [],
+            "normalSource": "vertexNormals",
+            "normalFallbackCount": 0,
+            "epsilon": 0.00007102110357775313,
+            "rayDirectionCount": 3
+          },
+          {
+            "name": "thigh.L",
+            "analyzed": true,
+            "error": null,
+            "selfIntersecting": false,
+            "insideVertexCount": 0,
+            "undecidedVertexCount": 0,
+            "outsideVertexCount": 16,
+            "sampledVertexCount": 16,
+            "totalVertexCount": 16,
+            "samplingStride": 1,
+            "triangleCount": 28,
+            "degenerateTriangleCount": 0,
+            "worstRegions": [],
+            "normalSource": "vertexNormals",
+            "normalFallbackCount": 0,
+            "epsilon": 0.00025138021846189023,
+            "rayDirectionCount": 3
+          },
+          {
+            "name": "boot.L#0",
+            "analyzed": true,
+            "error": null,
+            "selfIntersecting": false,
+            "insideVertexCount": 0,
+            "undecidedVertexCount": 0,
+            "outsideVertexCount": 16,
+            "sampledVertexCount": 16,
+            "totalVertexCount": 16,
+            "samplingStride": 1,
+            "triangleCount": 28,
+            "degenerateTriangleCount": 0,
+            "worstRegions": [],
+            "normalSource": "vertexNormals",
+            "normalFallbackCount": 0,
+            "epsilon": 0.0002333838498859334,
+            "rayDirectionCount": 3
+          },
+          {
+            "name": "boot.L#1",
+            "analyzed": true,
+            "error": null,
+            "selfIntersecting": false,
+            "insideVertexCount": 0,
+            "undecidedVertexCount": 0,
+            "outsideVertexCount": 16,
+            "sampledVertexCount": 16,
+            "totalVertexCount": 16,
+            "samplingStride": 1,
+            "triangleCount": 28,
+            "degenerateTriangleCount": 0,
+            "worstRegions": [],
+            "normalSource": "vertexNormals",
+            "normalFallbackCount": 0,
+            "epsilon": 0.0001314990545495391,
+            "rayDirectionCount": 3
+          },
+          {
+            "name": "foot.L#0",
+            "analyzed": true,
+            "error": null,
+            "selfIntersecting": false,
+            "insideVertexCount": 0,
+            "undecidedVertexCount": 0,
+            "outsideVertexCount": 8,
+            "sampledVertexCount": 8,
+            "totalVertexCount": 8,
+            "samplingStride": 1,
+            "triangleCount": 12,
+            "degenerateTriangleCount": 0,
+            "worstRegions": [],
+            "normalSource": "vertexNormals",
+            "normalFallbackCount": 0,
+            "epsilon": 0.00013160547588187945,
+            "rayDirectionCount": 3
+          },
+          {
+            "name": "foot.L#1",
+            "analyzed": true,
+            "error": null,
+            "selfIntersecting": false,
+            "insideVertexCount": 0,
+            "undecidedVertexCount": 0,
+            "outsideVertexCount": 8,
+            "sampledVertexCount": 8,
+            "totalVertexCount": 8,
+            "samplingStride": 1,
+            "triangleCount": 12,
+            "degenerateTriangleCount": 0,
+            "worstRegions": [],
+            "normalSource": "vertexNormals",
+            "normalFallbackCount": 0,
+            "epsilon": 0.00006465291969803831,
+            "rayDirectionCount": 3
+          },
+          {
+            "name": "sleeve.R",
+            "analyzed": true,
+            "error": null,
+            "selfIntersecting": false,
+            "insideVertexCount": 0,
+            "undecidedVertexCount": 0,
+            "outsideVertexCount": 26,
+            "sampledVertexCount": 26,
+            "totalVertexCount": 26,
+            "samplingStride": 1,
+            "triangleCount": 28,
+            "degenerateTriangleCount": 0,
+            "worstRegions": [],
+            "normalSource": "vertexNormals",
+            "normalFallbackCount": 0,
+            "epsilon": 0.00021414599829154674,
+            "rayDirectionCount": 3
+          },
+          {
+            "name": "bracer.R#0",
+            "analyzed": true,
+            "error": null,
+            "selfIntersecting": false,
+            "insideVertexCount": 0,
+            "undecidedVertexCount": 0,
+            "outsideVertexCount": 30,
+            "sampledVertexCount": 30,
+            "totalVertexCount": 30,
+            "samplingStride": 1,
+            "triangleCount": 60,
+            "degenerateTriangleCount": 0,
+            "worstRegions": [],
+            "normalSource": "vertexNormals",
+            "normalFallbackCount": 0,
+            "epsilon": 0.00008245620510141549,
+            "rayDirectionCount": 3
+          },
+          {
+            "name": "bracer.R#1",
+            "analyzed": true,
+            "error": null,
+            "selfIntersecting": false,
+            "insideVertexCount": 0,
+            "undecidedVertexCount": 0,
+            "outsideVertexCount": 16,
+            "sampledVertexCount": 16,
+            "totalVertexCount": 16,
+            "samplingStride": 1,
+            "triangleCount": 28,
+            "degenerateTriangleCount": 0,
+            "worstRegions": [],
+            "normalSource": "vertexNormals",
+            "normalFallbackCount": 0,
+            "epsilon": 0.00018070079140547528,
+            "rayDirectionCount": 3
+          },
+          {
+            "name": "bracer.R#2",
+            "analyzed": true,
+            "error": null,
+            "selfIntersecting": false,
+            "insideVertexCount": 0,
+            "undecidedVertexCount": 0,
+            "outsideVertexCount": 30,
+            "sampledVertexCount": 30,
+            "totalVertexCount": 30,
+            "samplingStride": 1,
+            "triangleCount": 60,
+            "degenerateTriangleCount": 0,
+            "worstRegions": [],
+            "normalSource": "vertexNormals",
+            "normalFallbackCount": 0,
+            "epsilon": 0.00008245621431002261,
+            "rayDirectionCount": 3
+          },
+          {
+            "name": "glove.R",
+            "analyzed": true,
+            "error": null,
+            "selfIntersecting": false,
+            "insideVertexCount": 0,
+            "undecidedVertexCount": 0,
+            "outsideVertexCount": 42,
+            "sampledVertexCount": 42,
+            "totalVertexCount": 42,
+            "samplingStride": 1,
+            "triangleCount": 80,
+            "degenerateTriangleCount": 0,
+            "worstRegions": [],
+            "normalSource": "vertexNormals",
+            "normalFallbackCount": 0,
+            "epsilon": 0.00007102110137471558,
+            "rayDirectionCount": 3
+          },
+          {
+            "name": "thigh.R",
+            "analyzed": true,
+            "error": null,
+            "selfIntersecting": false,
+            "insideVertexCount": 0,
+            "undecidedVertexCount": 0,
+            "outsideVertexCount": 16,
+            "sampledVertexCount": 16,
+            "totalVertexCount": 16,
+            "samplingStride": 1,
+            "triangleCount": 28,
+            "degenerateTriangleCount": 0,
+            "worstRegions": [],
+            "normalSource": "vertexNormals",
+            "normalFallbackCount": 0,
+            "epsilon": 0.00025138021846189023,
+            "rayDirectionCount": 3
+          },
+          {
+            "name": "boot.R#0",
+            "analyzed": true,
+            "error": null,
+            "selfIntersecting": false,
+            "insideVertexCount": 0,
+            "undecidedVertexCount": 0,
+            "outsideVertexCount": 16,
+            "sampledVertexCount": 16,
+            "totalVertexCount": 16,
+            "samplingStride": 1,
+            "triangleCount": 28,
+            "degenerateTriangleCount": 0,
+            "worstRegions": [],
+            "normalSource": "vertexNormals",
+            "normalFallbackCount": 0,
+            "epsilon": 0.0002333838498859334,
+            "rayDirectionCount": 3
+          },
+          {
+            "name": "boot.R#1",
+            "analyzed": true,
+            "error": null,
+            "selfIntersecting": false,
+            "insideVertexCount": 0,
+            "undecidedVertexCount": 0,
+            "outsideVertexCount": 16,
+            "sampledVertexCount": 16,
+            "totalVertexCount": 16,
+            "samplingStride": 1,
+            "triangleCount": 28,
+            "degenerateTriangleCount": 0,
+            "worstRegions": [],
+            "normalSource": "vertexNormals",
+            "normalFallbackCount": 0,
+            "epsilon": 0.0001314990545495391,
+            "rayDirectionCount": 3
+          },
+          {
+            "name": "foot.R#0",
+            "analyzed": true,
+            "error": null,
+            "selfIntersecting": false,
+            "insideVertexCount": 0,
+            "undecidedVertexCount": 0,
+            "outsideVertexCount": 8,
+            "sampledVertexCount": 8,
+            "totalVertexCount": 8,
+            "samplingStride": 1,
+            "triangleCount": 12,
+            "degenerateTriangleCount": 0,
+            "worstRegions": [],
+            "normalSource": "vertexNormals",
+            "normalFallbackCount": 0,
+            "epsilon": 0.00013160547588187945,
+            "rayDirectionCount": 3
+          },
+          {
+            "name": "foot.R#1",
+            "analyzed": true,
+            "error": null,
+            "selfIntersecting": false,
+            "insideVertexCount": 0,
+            "undecidedVertexCount": 0,
+            "outsideVertexCount": 8,
+            "sampledVertexCount": 8,
+            "totalVertexCount": 8,
+            "samplingStride": 1,
+            "triangleCount": 12,
+            "degenerateTriangleCount": 0,
+            "worstRegions": [],
+            "normalSource": "vertexNormals",
+            "normalFallbackCount": 0,
+            "epsilon": 0.00006465291969803831,
+            "rayDirectionCount": 3
+          },
+          {
+            "name": "shield#0",
+            "analyzed": true,
+            "error": null,
+            "selfIntersecting": false,
+            "insideVertexCount": 0,
+            "undecidedVertexCount": 0,
+            "outsideVertexCount": 374,
+            "sampledVertexCount": 374,
+            "totalVertexCount": 374,
+            "samplingStride": 1,
+            "triangleCount": 520,
+            "degenerateTriangleCount": 0,
+            "worstRegions": [],
+            "normalSource": "vertexNormals",
+            "normalFallbackCount": 0,
+            "epsilon": 0.0005688585792062691,
+            "rayDirectionCount": 3
+          },
+          {
+            "name": "shield#1",
+            "analyzed": true,
+            "error": null,
+            "selfIntersecting": false,
+            "insideVertexCount": 0,
+            "undecidedVertexCount": 0,
+            "outsideVertexCount": 88,
+            "sampledVertexCount": 88,
+            "totalVertexCount": 88,
+            "samplingStride": 1,
+            "triangleCount": 176,
+            "degenerateTriangleCount": 0,
+            "worstRegions": [],
+            "normalSource": "vertexNormals",
+            "normalFallbackCount": 0,
+            "epsilon": 0.0005941759721274128,
+            "rayDirectionCount": 3
+          },
+          {
+            "name": "shield#2",
+            "analyzed": true,
+            "error": null,
+            "selfIntersecting": false,
+            "insideVertexCount": 0,
+            "undecidedVertexCount": 1,
+            "outsideVertexCount": 39,
+            "sampledVertexCount": 40,
+            "totalVertexCount": 40,
+            "samplingStride": 1,
+            "triangleCount": 76,
+            "degenerateTriangleCount": 0,
+            "worstRegions": [],
+            "normalSource": "vertexNormals",
+            "normalFallbackCount": 0,
+            "epsilon": 0.0005659116202526255,
+            "rayDirectionCount": 3
+          },
+          {
+            "name": "shield#3",
+            "analyzed": true,
+            "error": null,
+            "selfIntersecting": false,
+            "insideVertexCount": 0,
+            "undecidedVertexCount": 0,
+            "outsideVertexCount": 52,
+            "sampledVertexCount": 52,
+            "totalVertexCount": 52,
+            "samplingStride": 1,
+            "triangleCount": 100,
+            "degenerateTriangleCount": 0,
+            "worstRegions": [],
+            "normalSource": "vertexNormals",
+            "normalFallbackCount": 0,
+            "epsilon": 0.0001404270764361829,
+            "rayDirectionCount": 3
+          },
+          {
+            "name": "shield#4",
+            "analyzed": true,
+            "error": null,
+            "selfIntersecting": false,
+            "insideVertexCount": 0,
+            "undecidedVertexCount": 0,
+            "outsideVertexCount": 36,
+            "sampledVertexCount": 36,
+            "totalVertexCount": 36,
+            "samplingStride": 1,
+            "triangleCount": 72,
+            "degenerateTriangleCount": 0,
+            "worstRegions": [],
+            "normalSource": "vertexNormals",
+            "normalFallbackCount": 0,
+            "epsilon": 0.00015308821404885352,
+            "rayDirectionCount": 3
+          },
+          {
+            "name": "shield#5",
+            "analyzed": true,
+            "error": null,
+            "selfIntersecting": false,
+            "insideVertexCount": 0,
+            "undecidedVertexCount": 0,
+            "outsideVertexCount": 20,
+            "sampledVertexCount": 20,
+            "totalVertexCount": 20,
+            "samplingStride": 1,
+            "triangleCount": 36,
+            "degenerateTriangleCount": 0,
+            "worstRegions": [],
+            "normalSource": "vertexNormals",
+            "normalFallbackCount": 0,
+            "epsilon": 0.00004308128137106702,
+            "rayDirectionCount": 3
+          },
+          {
+            "name": "shield#6",
+            "analyzed": true,
+            "error": null,
+            "selfIntersecting": false,
+            "insideVertexCount": 0,
+            "undecidedVertexCount": 0,
+            "outsideVertexCount": 12,
+            "sampledVertexCount": 12,
+            "totalVertexCount": 12,
+            "samplingStride": 1,
+            "triangleCount": 20,
+            "degenerateTriangleCount": 0,
+            "worstRegions": [],
+            "normalSource": "vertexNormals",
+            "normalFallbackCount": 0,
+            "epsilon": 0.000018916841586956658,
+            "rayDirectionCount": 3
+          },
+          {
+            "name": "shield#7",
+            "analyzed": true,
+            "error": null,
+            "selfIntersecting": false,
+            "insideVertexCount": 0,
+            "undecidedVertexCount": 0,
+            "outsideVertexCount": 20,
+            "sampledVertexCount": 20,
+            "totalVertexCount": 20,
+            "samplingStride": 1,
+            "triangleCount": 36,
+            "degenerateTriangleCount": 0,
+            "worstRegions": [],
+            "normalSource": "vertexNormals",
+            "normalFallbackCount": 0,
+            "epsilon": 0.00003789458893340667,
+            "rayDirectionCount": 3
+          },
+          {
+            "name": "shield#8",
+            "analyzed": true,
+            "error": null,
+            "selfIntersecting": false,
+            "insideVertexCount": 0,
+            "undecidedVertexCount": 0,
+            "outsideVertexCount": 12,
+            "sampledVertexCount": 12,
+            "totalVertexCount": 12,
+            "samplingStride": 1,
+            "triangleCount": 20,
+            "degenerateTriangleCount": 0,
+            "worstRegions": [],
+            "normalSource": "vertexNormals",
+            "normalFallbackCount": 0,
+            "epsilon": 0.000016621555148647354,
+            "rayDirectionCount": 3
+          },
+          {
+            "name": "shield#9",
+            "analyzed": true,
+            "error": null,
+            "selfIntersecting": false,
+            "insideVertexCount": 0,
+            "undecidedVertexCount": 0,
+            "outsideVertexCount": 20,
+            "sampledVertexCount": 20,
+            "totalVertexCount": 20,
+            "samplingStride": 1,
+            "triangleCount": 36,
+            "degenerateTriangleCount": 0,
+            "worstRegions": [],
+            "normalSource": "vertexNormals",
+            "normalFallbackCount": 0,
+            "epsilon": 0.000048290800137904955,
+            "rayDirectionCount": 3
+          },
+          {
+            "name": "shield#10",
+            "analyzed": true,
+            "error": null,
+            "selfIntersecting": false,
+            "insideVertexCount": 0,
+            "undecidedVertexCount": 0,
+            "outsideVertexCount": 12,
+            "sampledVertexCount": 12,
+            "totalVertexCount": 12,
+            "samplingStride": 1,
+            "triangleCount": 20,
+            "degenerateTriangleCount": 0,
+            "worstRegions": [],
+            "normalSource": "vertexNormals",
+            "normalFallbackCount": 0,
+            "epsilon": 0.000021220086389384138,
+            "rayDirectionCount": 3
+          },
+          {
+            "name": "shield#11",
+            "analyzed": true,
+            "error": null,
+            "selfIntersecting": false,
+            "insideVertexCount": 0,
+            "undecidedVertexCount": 0,
+            "outsideVertexCount": 20,
+            "sampledVertexCount": 20,
+            "totalVertexCount": 20,
+            "samplingStride": 1,
+            "triangleCount": 36,
+            "degenerateTriangleCount": 0,
+            "worstRegions": [],
+            "normalSource": "vertexNormals",
+            "normalFallbackCount": 0,
+            "epsilon": 0.00004048454232841253,
+            "rayDirectionCount": 3
+          },
+          {
+            "name": "shield#12",
+            "analyzed": true,
+            "error": null,
+            "selfIntersecting": false,
+            "insideVertexCount": 0,
+            "undecidedVertexCount": 0,
+            "outsideVertexCount": 12,
+            "sampledVertexCount": 12,
+            "totalVertexCount": 12,
+            "samplingStride": 1,
+            "triangleCount": 20,
+            "degenerateTriangleCount": 0,
+            "worstRegions": [],
+            "normalSource": "vertexNormals",
+            "normalFallbackCount": 0,
+            "epsilon": 0.000017768004262232504,
+            "rayDirectionCount": 3
+          },
+          {
+            "name": "shield#13",
+            "analyzed": true,
+            "error": null,
+            "selfIntersecting": false,
+            "insideVertexCount": 0,
+            "undecidedVertexCount": 0,
+            "outsideVertexCount": 20,
+            "sampledVertexCount": 20,
+            "totalVertexCount": 20,
+            "samplingStride": 1,
+            "triangleCount": 36,
+            "degenerateTriangleCount": 0,
+            "worstRegions": [],
+            "normalSource": "vertexNormals",
+            "normalFallbackCount": 0,
+            "epsilon": 0.00003274144772270361,
+            "rayDirectionCount": 3
+          },
+          {
+            "name": "shield#14",
+            "analyzed": true,
+            "error": null,
+            "selfIntersecting": false,
+            "insideVertexCount": 0,
+            "undecidedVertexCount": 0,
+            "outsideVertexCount": 12,
+            "sampledVertexCount": 12,
+            "totalVertexCount": 12,
+            "samplingStride": 1,
+            "triangleCount": 20,
+            "degenerateTriangleCount": 0,
+            "worstRegions": [],
+            "normalSource": "vertexNormals",
+            "normalFallbackCount": 0,
+            "epsilon": 0.000014338208753759932,
+            "rayDirectionCount": 3
+          },
+          {
+            "name": "shield#15",
+            "analyzed": true,
+            "error": null,
+            "selfIntersecting": false,
+            "insideVertexCount": 0,
+            "undecidedVertexCount": 0,
+            "outsideVertexCount": 20,
+            "sampledVertexCount": 20,
+            "totalVertexCount": 20,
+            "samplingStride": 1,
+            "triangleCount": 36,
+            "degenerateTriangleCount": 0,
+            "worstRegions": [],
+            "normalSource": "vertexNormals",
+            "normalFallbackCount": 0,
+            "epsilon": 0.000035312903247002885,
+            "rayDirectionCount": 3
+          },
+          {
+            "name": "shield#16",
+            "analyzed": true,
+            "error": null,
+            "selfIntersecting": false,
+            "insideVertexCount": 0,
+            "undecidedVertexCount": 0,
+            "outsideVertexCount": 12,
+            "sampledVertexCount": 12,
+            "totalVertexCount": 12,
+            "samplingStride": 1,
+            "triangleCount": 20,
+            "degenerateTriangleCount": 0,
+            "worstRegions": [],
+            "normalSource": "vertexNormals",
+            "normalFallbackCount": 0,
+            "epsilon": 0.000015478072868280823,
+            "rayDirectionCount": 3
+          },
+          {
+            "name": "shield#17",
+            "analyzed": true,
+            "error": null,
+            "selfIntersecting": false,
+            "insideVertexCount": 0,
+            "undecidedVertexCount": 0,
+            "outsideVertexCount": 20,
+            "sampledVertexCount": 20,
+            "totalVertexCount": 20,
+            "samplingStride": 1,
+            "triangleCount": 36,
+            "degenerateTriangleCount": 0,
+            "worstRegions": [],
+            "normalSource": "vertexNormals",
+            "normalFallbackCount": 0,
+            "epsilon": 0.000032741404031491054,
+            "rayDirectionCount": 3
+          },
+          {
+            "name": "shield#18",
+            "analyzed": true,
+            "error": null,
+            "selfIntersecting": false,
+            "insideVertexCount": 0,
+            "undecidedVertexCount": 0,
+            "outsideVertexCount": 12,
+            "sampledVertexCount": 12,
+            "totalVertexCount": 12,
+            "samplingStride": 1,
+            "triangleCount": 20,
+            "degenerateTriangleCount": 0,
+            "worstRegions": [],
+            "normalSource": "vertexNormals",
+            "normalFallbackCount": 0,
+            "epsilon": 0.000014338208753759932,
+            "rayDirectionCount": 3
+          },
+          {
+            "name": "shield#19",
+            "analyzed": true,
+            "error": null,
+            "selfIntersecting": false,
+            "insideVertexCount": 0,
+            "undecidedVertexCount": 0,
+            "outsideVertexCount": 8,
+            "sampledVertexCount": 8,
+            "totalVertexCount": 8,
+            "samplingStride": 1,
+            "triangleCount": 12,
+            "degenerateTriangleCount": 0,
+            "worstRegions": [],
+            "normalSource": "vertexNormals",
+            "normalFallbackCount": 0,
+            "epsilon": 0.00012191799490568879,
+            "rayDirectionCount": 3
+          },
+          {
+            "name": "sword#1",
+            "analyzed": true,
+            "error": null,
+            "selfIntersecting": false,
+            "insideVertexCount": 0,
+            "undecidedVertexCount": 0,
+            "outsideVertexCount": 8,
+            "sampledVertexCount": 8,
+            "totalVertexCount": 8,
+            "samplingStride": 1,
+            "triangleCount": 12,
+            "degenerateTriangleCount": 0,
+            "worstRegions": [],
+            "normalSource": "vertexNormals",
+            "normalFallbackCount": 0,
+            "epsilon": 0.00009503684289613829,
+            "rayDirectionCount": 3
+          },
+          {
+            "name": "sword#2",
+            "analyzed": true,
+            "error": null,
+            "selfIntersecting": false,
+            "insideVertexCount": 0,
+            "undecidedVertexCount": 0,
+            "outsideVertexCount": 12,
+            "sampledVertexCount": 12,
+            "totalVertexCount": 12,
+            "samplingStride": 1,
+            "triangleCount": 20,
+            "degenerateTriangleCount": 0,
+            "worstRegions": [],
+            "normalSource": "vertexNormals",
+            "normalFallbackCount": 0,
+            "epsilon": 0.00008076246544931564,
+            "rayDirectionCount": 3
+          },
+          {
+            "name": "sword#3",
+            "analyzed": true,
+            "error": null,
+            "selfIntersecting": false,
+            "insideVertexCount": 0,
+            "undecidedVertexCount": 0,
+            "outsideVertexCount": 20,
+            "sampledVertexCount": 20,
+            "totalVertexCount": 20,
+            "samplingStride": 1,
+            "triangleCount": 36,
+            "degenerateTriangleCount": 0,
+            "worstRegions": [],
+            "normalSource": "vertexNormals",
+            "normalFallbackCount": 0,
+            "epsilon": 0.00003648288590453785,
+            "rayDirectionCount": 3
+          }
+        ],
+        "errors": [],
+        "openIslandsNotTested": [
+          "hair#0",
+          "cap#0",
+          "skirt#0",
+          "skirt#1",
+          "cape#0",
+          "cape#1",
+          "sword#0"
+        ],
+        "problems": []
+      }
+    },
+    {
+      "gate": "joint-loops",
+      "question": "Is there enough geometry at each joint?",
+      "status": "pass",
+      "exitCode": 0,
+      "report": {
+        "joints": [
+          {
+            "bone": "hips",
+            "radius": 0.028,
+            "minLoops": 3,
+            "loops": 5,
+            "vertexCount": 103,
+            "axialSpan": 0.046572,
+            "passes": true
+          },
+          {
+            "bone": "spine",
+            "radius": 0.0315,
+            "minLoops": 3,
+            "loops": 4,
+            "vertexCount": 88,
+            "axialSpan": 0.044,
+            "passes": true
+          },
+          {
+            "bone": "chest",
+            "radius": 0.03675,
+            "minLoops": 3,
+            "loops": 3,
+            "vertexCount": 56,
+            "axialSpan": 0.05,
+            "passes": true
+          },
+          {
+            "bone": "neck",
+            "radius": 0.014,
+            "minLoops": 3,
+            "loops": 27,
+            "vertexCount": 82,
+            "axialSpan": 0.025321,
+            "passes": true
+          },
+          {
+            "bone": "upperarm.L",
+            "radius": 0.059303,
+            "minLoops": 3,
+            "loops": 37,
+            "vertexCount": 75,
+            "axialSpan": 0.113822,
+            "passes": true
+          },
+          {
+            "bone": "forearm.L",
+            "radius": 0.046597,
+            "minLoops": 3,
+            "loops": 12,
+            "vertexCount": 50,
+            "axialSpan": 0.062405,
+            "passes": true
+          },
+          {
+            "bone": "upperarm.R",
+            "radius": 0.053298,
+            "minLoops": 3,
+            "loops": 26,
+            "vertexCount": 74,
+            "axialSpan": 0.09538,
+            "passes": true
+          },
+          {
+            "bone": "forearm.R",
+            "radius": 0.048561,
+            "minLoops": 3,
+            "loops": 20,
+            "vertexCount": 74,
+            "axialSpan": 0.087587,
+            "passes": true
+          },
+          {
+            "bone": "thigh.L",
+            "radius": 0.07,
+            "minLoops": 3,
+            "loops": 31,
+            "vertexCount": 295,
+            "axialSpan": 0.1375,
+            "passes": true
+          },
+          {
+            "bone": "shin.L",
+            "radius": 0.077,
+            "minLoops": 3,
+            "loops": 5,
+            "vertexCount": 126,
+            "axialSpan": 0.11,
+            "passes": true
+          },
+          {
+            "bone": "thigh.R",
+            "radius": 0.07,
+            "minLoops": 3,
+            "loops": 67,
+            "vertexCount": 374,
+            "axialSpan": 0.1375,
+            "passes": true
+          },
+          {
+            "bone": "shin.R",
+            "radius": 0.077,
+            "minLoops": 3,
+            "loops": 9,
+            "vertexCount": 130,
+            "axialSpan": 0.11,
+            "passes": true
+          }
+        ],
+        "failures": [],
+        "centerReach": 0.11541,
+        "bonesWithNoTip": [
+          "skirt.F",
+          "cape",
+          "head",
+          "hand.L",
+          "hand.R",
+          "foot.L",
+          "foot.R"
+        ],
+        "problems": []
+      }
+    },
+    {
+      "gate": "attachment-anchor",
+      "question": "Is each prop on the bone that the Unit Spec names?",
+      "status": "pass",
+      "exitCode": 0,
+      "report": {
+        "errors": [],
+        "warnings": [],
+        "attachments": [
+          {
+            "component": "shield",
+            "anchor": "bone:hand.L",
+            "anchorKind": "bone",
+            "distance": 0.035729417648809055,
+            "maxOffset": 0.14426204860210418,
+            "offsetRule": "declared attachment.maxOffset",
+            "withinLimit": true
+          },
+          {
+            "component": "sword",
+            "anchor": "bone:hand.R",
+            "anchorKind": "bone",
+            "distance": 0.0002001940632832065,
+            "maxOffset": 0.14426204860210418,
+            "offsetRule": "declared attachment.maxOffset",
+            "withinLimit": true
+          }
+        ],
+        "unmeasuredAttachments": [],
+        "attachmentCount": 2,
+        "passed": true,
+        "problems": []
+      }
+    },
+    {
+      "gate": "region-coverage",
+      "question": "Is each Body Region where the Unit Spec says?",
+      "status": "pass",
+      "exitCode": 0,
+      "report": {
+        "measured": {
+          "azimuth": 0,
+          "projectedExtent": {
+            "width": 0.4735962152481079,
+            "height": 0.9617469906806946
+          },
+          "sampledVertexCount": 2718,
+          "unclassifiedFraction": 0,
+          "regions": {
+            "head": {
+              "x0": 0.223,
+              "x1": 0.5904,
+              "y0": 0,
+              "y1": 0.241,
+              "vertexCount": 701,
+              "areaFraction": 0.25791,
+              "blobs": [
+                {
+                  "vertexCount": 701,
+                  "centroidX": 0.4067,
+                  "centroidY": 0.0982,
+                  "x0": 0.223,
+                  "x1": 0.5904,
+                  "y0": 0,
+                  "y1": 0.241
+                }
+              ]
+            },
+            "torso": {
+              "x0": 0.0694,
+              "x1": 0.744,
+              "y0": 0.2035,
+              "y1": 0.7089,
+              "vertexCount": 725,
+              "areaFraction": 0.26674,
+              "blobs": [
+                {
+                  "vertexCount": 725,
+                  "centroidX": 0.4053,
+                  "centroidY": 0.465,
+                  "x0": 0.0694,
+                  "x1": 0.744,
+                  "y0": 0.2035,
+                  "y1": 0.7089
+                }
+              ]
+            },
+            "arm.L": {
+              "x0": 0.5006,
+              "x1": 0.8598,
+              "y0": 0.2217,
+              "y1": 0.4809,
+              "vertexCount": 146,
+              "areaFraction": 0.05372,
+              "blobs": [
+                {
+                  "vertexCount": 146,
+                  "centroidX": 0.6612,
+                  "centroidY": 0.4105,
+                  "x0": 0.5006,
+                  "x1": 0.8598,
+                  "y0": 0.2217,
+                  "y1": 0.4809
+                }
+              ]
+            },
+            "leg.L": {
+              "x0": 0.4468,
+              "x1": 0.6284,
+              "y0": 0.4905,
+              "y1": 1,
+              "vertexCount": 64,
+              "areaFraction": 0.02355,
+              "blobs": [
+                {
+                  "vertexCount": 56,
+                  "centroidX": 0.5376,
+                  "centroidY": 0.8327,
+                  "x0": 0.4468,
+                  "x1": 0.6284,
+                  "y0": 0.7089,
+                  "y1": 1
+                },
+                {
+                  "vertexCount": 8,
+                  "centroidX": 0.5376,
+                  "centroidY": 0.4905,
+                  "x0": 0.4468,
+                  "x1": 0.6284,
+                  "y0": 0.4905,
+                  "y1": 0.4905
+                }
+              ]
+            },
+            "arm.R": {
+              "x0": 0,
+              "x1": 0.2233,
+              "y0": 0.2288,
+              "y1": 0.5758,
+              "vertexCount": 144,
+              "areaFraction": 0.05298,
+              "blobs": [
+                {
+                  "vertexCount": 144,
+                  "centroidX": 0.0688,
+                  "centroidY": 0.4641,
+                  "x0": 0,
+                  "x1": 0.2233,
+                  "y0": 0.2288,
+                  "y1": 0.5758
+                }
+              ]
+            },
+            "leg.R": {
+              "x0": 0.185,
+              "x1": 0.3665,
+              "y0": 0.4905,
+              "y1": 1,
+              "vertexCount": 64,
+              "areaFraction": 0.02355,
+              "blobs": [
+                {
+                  "vertexCount": 56,
+                  "centroidX": 0.2758,
+                  "centroidY": 0.8327,
+                  "x0": 0.185,
+                  "x1": 0.3665,
+                  "y0": 0.7089,
+                  "y1": 1
+                },
+                {
+                  "vertexCount": 8,
+                  "centroidX": 0.2758,
+                  "centroidY": 0.4905,
+                  "x0": 0.185,
+                  "x1": 0.3665,
+                  "y0": 0.4905,
+                  "y1": 0.4905
+                }
+              ]
+            },
+            "prop": {
+              "x0": 0.0284,
+              "x1": 1,
+              "y0": 0.263,
+              "y1": 0.7358,
+              "vertexCount": 874,
+              "areaFraction": 0.32156,
+              "blobs": [
+                {
+                  "vertexCount": 874,
+                  "centroidX": 0.5331,
+                  "centroidY": 0.4842,
+                  "x0": 0.0284,
+                  "x1": 1,
+                  "y0": 0.263,
+                  "y1": 0.7358
+                }
+              ]
+            }
+          },
+          "byExpectation": {}
+        },
+        "palette": {
+          "head": "#190000",
+          "torso": "#320000",
+          "arm.L": "#4b0000",
+          "arm.R": "#640000",
+          "leg.L": "#7d0000",
+          "leg.R": "#960000",
+          "prop": "#af0000",
+          "base": "#c80000",
+          "effect": "#e10000"
+        },
+        "evaluation": {
+          "failures": 0,
+          "results": [
+            {
+              "id": "arm.L",
+              "status": "pass",
+              "regions": ["arm.L"],
+              "expected": {
+                "x0": 0.5,
+                "x1": 0.86,
+                "y0": 0.22,
+                "y1": 0.48
+              },
+              "actual": {
+                "x0": 0.5006,
+                "x1": 0.8598,
+                "y0": 0.2217,
+                "y1": 0.4809
+              },
+              "deltas": {
+                "x0": 0.0006,
+                "x1": -0.0002,
+                "y0": 0.0017,
+                "y1": 0.0009
+              },
+              "worstDelta": 0.0017,
+              "tolerance": 0.04
+            },
+            {
+              "id": "arm.R",
+              "status": "pass",
+              "regions": ["arm.R"],
+              "expected": {
+                "x0": 0,
+                "x1": 0.22,
+                "y0": 0.23,
+                "y1": 0.58
+              },
+              "actual": {
+                "x0": 0,
+                "x1": 0.2233,
+                "y0": 0.2288,
+                "y1": 0.5758
+              },
+              "deltas": {
+                "x0": 0,
+                "x1": 0.0033,
+                "y0": -0.0012,
+                "y1": -0.0042
+              },
+              "worstDelta": 0.0042,
+              "tolerance": 0.04
+            },
+            {
+              "id": "head",
+              "status": "pass",
+              "regions": ["head"],
+              "expected": {
+                "x0": 0.22,
+                "x1": 0.59,
+                "y0": 0,
+                "y1": 0.24
+              },
+              "actual": {
+                "x0": 0.223,
+                "x1": 0.5904,
+                "y0": 0,
+                "y1": 0.241
+              },
+              "deltas": {
+                "x0": 0.003,
+                "x1": 0.0004,
+                "y0": 0,
+                "y1": 0.001
+              },
+              "worstDelta": 0.003,
+              "tolerance": 0.04
+            },
+            {
+              "id": "leg.L",
+              "status": "pass",
+              "regions": ["leg.L"],
+              "expected": {
+                "x0": 0.45,
+                "x1": 0.63,
+                "y0": 0.49,
+                "y1": 1
+              },
+              "actual": {
+                "x0": 0.4468,
+                "x1": 0.6284,
+                "y0": 0.4905,
+                "y1": 1
+              },
+              "deltas": {
+                "x0": -0.0032,
+                "x1": -0.0016,
+                "y0": 0.0005,
+                "y1": 0
+              },
+              "worstDelta": 0.0032,
+              "tolerance": 0.04
+            },
+            {
+              "id": "leg.R",
+              "status": "pass",
+              "regions": ["leg.R"],
+              "expected": {
+                "x0": 0.18,
+                "x1": 0.37,
+                "y0": 0.49,
+                "y1": 1
+              },
+              "actual": {
+                "x0": 0.185,
+                "x1": 0.3665,
+                "y0": 0.4905,
+                "y1": 1
+              },
+              "deltas": {
+                "x0": 0.005,
+                "x1": -0.0035,
+                "y0": 0.0005,
+                "y1": 0
+              },
+              "worstDelta": 0.005,
+              "tolerance": 0.04
+            },
+            {
+              "id": "prop",
+              "status": "pass",
+              "regions": ["prop"],
+              "expected": {
+                "x0": 0.03,
+                "x1": 1,
+                "y0": 0.26,
+                "y1": 0.74
+              },
+              "actual": {
+                "x0": 0.0284,
+                "x1": 1,
+                "y0": 0.263,
+                "y1": 0.7358
+              },
+              "deltas": {
+                "x0": -0.0016,
+                "x1": 0,
+                "y0": 0.003,
+                "y1": -0.0042
+              },
+              "worstDelta": 0.0042,
+              "tolerance": 0.04
+            },
+            {
+              "id": "torso",
+              "status": "pass",
+              "regions": ["torso"],
+              "expected": {
+                "x0": 0.07,
+                "x1": 0.74,
+                "y0": 0.2,
+                "y1": 0.71
+              },
+              "actual": {
+                "x0": 0.0694,
+                "x1": 0.744,
+                "y0": 0.2035,
+                "y1": 0.7089
+              },
+              "deltas": {
+                "x0": -0.0006,
+                "x1": 0.004,
+                "y0": 0.0035,
+                "y1": -0.0011
+              },
+              "worstDelta": 0.004,
+              "tolerance": 0.04
+            }
+          ]
+        },
+        "exitCode": 0,
+        "problems": []
+      }
+    },
+    {
+      "gate": "chirality",
+      "question": "Is each left and right pair a reflection, not a rotation?",
+      "status": "pass",
+      "exitCode": 0,
+      "report": {
+        "pairCount": 13,
+        "failures": [],
+        "posed": ["bracer.L", "glove.L", "sleeve.L", "forearm.L", "hand.L"],
+        "pairs": [
+          {
+            "kind": "part",
+            "left": "boot.L",
+            "ok": true,
+            "detail": ""
+          },
+          {
+            "kind": "part",
+            "left": "bracer.L",
+            "ok": true,
+            "posed": true,
+            "detail": ""
+          },
+          {
+            "kind": "part",
+            "left": "foot.L",
+            "ok": true,
+            "detail": ""
+          },
+          {
+            "kind": "part",
+            "left": "glove.L",
+            "ok": true,
+            "posed": true,
+            "detail": ""
+          },
+          {
+            "kind": "part",
+            "left": "sleeve.L",
+            "ok": true,
+            "posed": true,
+            "detail": ""
+          },
+          {
+            "kind": "part",
+            "left": "thigh.L",
+            "ok": true,
+            "detail": ""
+          },
+          {
+            "kind": "bone",
+            "left": "foot.L",
+            "ok": true,
+            "detail": ""
+          },
+          {
+            "kind": "bone",
+            "left": "forearm.L",
+            "ok": true,
+            "posed": true,
+            "detail": ""
+          },
+          {
+            "kind": "bone",
+            "left": "hand.L",
+            "ok": true,
+            "posed": true,
+            "detail": ""
+          },
+          {
+            "kind": "bone",
+            "left": "shin.L",
+            "ok": true,
+            "detail": ""
+          },
+          {
+            "kind": "bone",
+            "left": "shoulder.L",
+            "ok": true,
+            "detail": ""
+          },
+          {
+            "kind": "bone",
+            "left": "thigh.L",
+            "ok": true,
+            "detail": ""
+          },
+          {
+            "kind": "bone",
+            "left": "upperarm.L",
+            "ok": true,
+            "detail": ""
+          }
+        ],
+        "unpaired": [],
+        "note": "A pair that is wrong the same way on both sides is still a mirror of itself.",
+        "problems": []
+      }
+    },
+    {
+      "gate": "palette",
+      "question": "Is each region within delta-E 5 of the card painting?",
+      "status": "pass",
+      "exitCode": 0,
+      "report": {
+        "limit": 5,
+        "paintingColors": 194,
+        "paintingSize": [150, 200],
+        "warnings": [],
+        "regions": [
+          {
+            "region": "head",
+            "worstDeltaE": 3.65,
+            "passes": true,
+            "colors": [
+              {
+                "lab": [61.5, 14.4, 22.8],
+                "share": 0.154,
+                "deltaE": 3.65
+              },
+              {
+                "lab": [10.2, 3.3, 5.8],
+                "share": 0.12,
+                "deltaE": 2.29
+              },
+              {
+                "lab": [13.9, 7.7, 10.8],
+                "share": 0.123,
+                "deltaE": 2.22
+              },
+              {
+                "lab": [70.7, -0.7, -2.3],
+                "share": 0.101,
+                "deltaE": 2.84
+              },
+              {
+                "lab": [46.3, -0.9, -3.6],
+                "share": 0.164,
+                "deltaE": 3
+              }
+            ]
+          },
+          {
+            "region": "torso",
+            "worstDeltaE": 4.4,
+            "passes": true,
+            "colors": [
+              {
+                "lab": [38.3, -0.3, -4.5],
+                "share": 0.232,
+                "deltaE": 3
+              },
+              {
+                "lab": [57, -0.6, -3.7],
+                "share": 0.116,
+                "deltaE": 3.18
+              },
+              {
+                "lab": [28.6, 6.9, -25.4],
+                "share": 0.132,
+                "deltaE": 2.17
+              },
+              {
+                "lab": [26.9, 6.5, -24.1],
+                "share": 0.172,
+                "deltaE": 3.35
+              },
+              {
+                "lab": [33, 11.6, -38.3],
+                "share": 0.138,
+                "deltaE": 4.4
+              }
+            ]
+          },
+          {
+            "region": "arm.L",
+            "worstDeltaE": 2.63,
+            "passes": true,
+            "colors": [
+              {
+                "lab": [20.8, 10.2, 16.1],
+                "share": 0.637,
+                "deltaE": 1.37
+              },
+              {
+                "lab": [31, 14, 22.2],
+                "share": 0.11,
+                "deltaE": 2.63
+              }
+            ]
+          },
+          {
+            "region": "leg.L",
+            "worstDeltaE": 2.22,
+            "passes": true,
+            "colors": [
+              {
+                "lab": [26.9, 5.9, 10.4],
+                "share": 0.125,
+                "deltaE": 2.22
+              },
+              {
+                "lab": [19.7, 5.7, 10.5],
+                "share": 0.188,
+                "deltaE": 1.54
+              },
+              {
+                "lab": [30.2, 13.5, 22.1],
+                "share": 0.375,
+                "deltaE": 2.19
+              },
+              {
+                "lab": [20.1, 9.1, 16.5],
+                "share": 0.188,
+                "deltaE": 1.44
+              },
+              {
+                "lab": [13.1, 7.5, 11],
+                "share": 0.125,
+                "deltaE": 1.77
+              }
+            ]
+          },
+          {
+            "region": "arm.R",
+            "worstDeltaE": 2.78,
+            "passes": true,
+            "colors": [
+              {
+                "lab": [39.4, -0.4, -4.5],
+                "share": 0.104,
+                "deltaE": 2.78
+              },
+              {
+                "lab": [20.8, 10.2, 16.2],
+                "share": 0.646,
+                "deltaE": 1.36
+              },
+              {
+                "lab": [31.1, 14.1, 22.1],
+                "share": 0.111,
+                "deltaE": 2.66
+              }
+            ]
+          },
+          {
+            "region": "leg.R",
+            "worstDeltaE": 2.22,
+            "passes": true,
+            "colors": [
+              {
+                "lab": [26.9, 5.9, 10.4],
+                "share": 0.125,
+                "deltaE": 2.22
+              },
+              {
+                "lab": [19.7, 5.7, 10.5],
+                "share": 0.188,
+                "deltaE": 1.54
+              },
+              {
+                "lab": [30.2, 13.5, 22.1],
+                "share": 0.375,
+                "deltaE": 2.19
+              },
+              {
+                "lab": [20.1, 9.1, 16.5],
+                "share": 0.188,
+                "deltaE": 1.44
+              },
+              {
+                "lab": [13.1, 7.5, 11],
+                "share": 0.125,
+                "deltaE": 1.77
+              }
+            ]
+          },
+          {
+            "region": "prop",
+            "worstDeltaE": 2.95,
+            "passes": true,
+            "colors": [
+              {
+                "lab": [33.4, 10.1, 22.8],
+                "share": 0.207,
+                "deltaE": 2.62
+              },
+              {
+                "lab": [50.4, -0.9, -4],
+                "share": 0.27,
+                "deltaE": 2.95
+              },
+              {
+                "lab": [73.2, -0.6, -2.4],
+                "share": 0.233,
+                "deltaE": 2.72
+              }
+            ]
+          }
+        ],
+        "failures": [],
+        "problems": []
+      }
+    },
+    {
+      "gate": "part-coverage",
+      "question": "Is every part of the Unit Spec present?",
+      "status": "pass",
+      "exitCode": 0,
+      "report": {
+        "model": "shieldbearer",
+        "specifiedComponents": 25,
+        "builtParts": 25,
+        "errors": 0,
+        "warnings": 0,
+        "result": "pass",
+        "findings": [],
+        "problems": []
+      }
+    },
+    {
+      "gate": "ground-contact",
+      "question": "Is each part of a flyer on or above the ground at rest?",
+      "status": "pass",
+      "exitCode": 0,
+      "report": {
+        "applies": false,
+        "problems": []
+      }
+    },
+    {
+      "gate": "foot-bones",
+      "question": "Does each big piece of a structure stand on a foot bone and fall in death?",
+      "status": "pass",
+      "exitCode": 0,
+      "report": {
+        "applies": false,
+        "problems": []
+      }
+    }
+  ]
+}

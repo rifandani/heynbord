@@ -37,15 +37,26 @@ sys.path.insert(0, os.path.join(REPO, "scripts", "unit-model"))
 
 import importlib  # noqa: E402
 
+import body_plans  # noqa: E402
+import clips  # noqa: E402
 import unit_model_kit as kit  # noqa: E402
 
 importlib.reload(kit)
+importlib.reload(body_plans.shared)
+importlib.reload(body_plans.machine)
+importlib.reload(clips.base)
+importlib.reload(clips.overrides)
+importlib.reload(clips.machine)
 
-from unit_model_kit import X, Y, Z, Clip, Part, blend, faces_of, hex_color, turn  # noqa: E402
+from clips.base import Beat  # noqa: E402
+from clips.overrides import Fall, Patch  # noqa: E402
+from unit_model_kit import X, Y, Z, Part, blend, faces_of, hex_color  # noqa: E402
+
+plan = body_plans.BODY_PLANS["machine"]
 
 # --- Palette (the card painting) ----------------------------------------------
 
-SKIN = hex_color("#c4bfb4")
+SKIN = hex_color("#c6b6ab")
 EAR = hex_color("#e8a08a")
 CHEEK = hex_color("#dca898")
 HAIR = hex_color("#f0eadc")
@@ -69,7 +80,7 @@ BOOT = hex_color("#5e3a22")
 BARREL = hex_color("#b2402c")
 BARREL_DARK = hex_color("#923424")
 STAR = hex_color("#f0e4cc")
-IRON = hex_color("#4a4440")
+IRON = hex_color("#4c403c")
 IRON_DARK = hex_color("#2e2a28")
 RIVET = hex_color("#8a8278")
 ROPE = hex_color("#c8a46a")
@@ -77,14 +88,27 @@ FLAME_OUT = hex_color("#ff6a1c")
 FLAME_MID = hex_color("#ffa830")
 FLAME_CORE = hex_color("#fff2b0")
 BLAST = hex_color("#ffb838")
-BLAST_DARK = hex_color("#e05418")
+BLAST_DARK = hex_color("#ea6f2d")
 SMOKE = hex_color("#6a6058")
 
 # --- Proportions ---------------------------------------------------------------
 
+# The `barrel` bone carries the barrel and pivots at its middle. The machine
+# has no wheels, and the rider hangs from the root.
+TABLE = plan.Proportions(
+    root_tip_z=0.1,
+    carrier="barrel",
+    carrier_y=0.02,
+    carrier_z=0.16,
+    carrier_tip_y=0.02,
+    carrier_tip_z=0.26,
+    wheels=False,
+)
 # The barrel lies along the Lane, with its front to the front (-Y).
-BARREL_C = Vector((0, 0.02, 0.16))
+BARREL_C = Vector((0, TABLE.carrier_y, TABLE.carrier_z))
 BARREL_R = 0.11
+# The rise of the fireball for each unit of its scale above 1.
+BLAST_LIFT = 0.011
 BARREL_HALF = 0.155
 NOZZLE = Vector((0, BARREL_C.y + BARREL_HALF + 0.1, BARREL_C.z))
 
@@ -104,9 +128,8 @@ KNEE = Vector((0.098, -0.06, 0.26))
 ANKLE = Vector((0.13, -0.035, 0.15))
 TOE = Vector((0.135, -0.1, 0.135))
 
-BONES = [
-    ("root", (0, 0, 0), (0, 0, 0.1), None),
-    ("barrel", tuple(BARREL_C), tuple(BARREL_C + Z * 0.1), "root"),
+# The rider is not a child of the barrel, so the barrel can blow up under her.
+TRUNK_BONES = [
     ("flame", tuple(NOZZLE), tuple(NOZZLE + Y * 0.1), "barrel"),
     # The fireball of the Last Breath: small inside the barrel at rest.
     ("blast", tuple(BARREL_C), tuple(BARREL_C + Z * 0.05), "root"),
@@ -123,7 +146,7 @@ for side, sign, (s, e, w, t) in (("L", 1, (SL, EL, WL, TL)), ("R", -1, (SR, ER, 
     knee = KNEE * mirror
     ankle = ANKLE * mirror
     toe = TOE * mirror
-    BONES += [
+    TRUNK_BONES += [
         (f"shoulder.{side}", (0.02 * sign, -0.02, SHOULDER_Z), tuple(s), "chest"),
         (f"upperarm.{side}", tuple(s), tuple(e), f"shoulder.{side}"),
         (f"forearm.{side}", tuple(e), tuple(w), f"upperarm.{side}"),
@@ -194,6 +217,9 @@ def head_parts():
     # A leather cap with ear flaps, and brass goggles up on the front.
     cap = Part("cap", CAP, "head", shade=0.06)
     kit.sphere(cap.bm, HEAD_C + Vector((0, 0.006, 0.026)), (0.076, 0.074, 0.06), 12, 8)
+    # A leather rear panel covers the hair roots below the cap rim.
+    rear = kit.sphere(cap.bm, HEAD_C + Vector((0, 0.047, 0.026)), (0.071, 0.06, 0.064), 12, 8)
+    cap.paint(faces_of(rear), CAP_DARK)
     seam = kit.torus(cap.bm, HEAD_C + Vector((0, 0.006, 0.026)), (1, 0, 0), 0.074, 0.004, 14, 3)
     cap.paint(faces_of(seam), CAP_DARK)
     for sign in (1, -1):
@@ -280,7 +306,8 @@ def limb_parts():
 
 
 def barrel_parts():
-    barrel = Part("barrel", BARREL, "barrel", shade=0.12)
+    # The barrel is the carrier, the body of the machine, as the cart of Boss Snikkit is. So it is torso, not a prop.
+    barrel = Part("barrel", BARREL, "barrel", shade=0.12, region="torso")
     c = BARREL_C
     ys = [-1, -0.6, 0, 0.6, 1]
     radii = [BARREL_R * 0.86, BARREL_R * 0.96, BARREL_R, BARREL_R * 0.96, BARREL_R * 0.86]
@@ -368,9 +395,10 @@ def blast_parts():
 
 def build_figure():
     kit.reset_scene()
-    rig = kit.build_armature("RocketBarrelRider", BONES)
+    rig, _ = plan.build_rig("RocketBarrelRider", TABLE, TRUNK_BONES)
     parts = head_parts() + body_parts() + limb_parts() + barrel_parts() + flame_parts() + blast_parts()
     objects = [kit.part_object(part) for part in parts]
+    plan.check_skin(parts, rig)
     mesh = kit.join_parts(objects, "RocketBarrelRiderMesh")
     kit.skin(mesh, rig)
     return rig, mesh
@@ -379,27 +407,117 @@ def build_figure():
 # --- Clips -----------------------------------------------------------------------
 
 
-def build_clips(rig):
-    def t(bone, *rotations):
-        return turn(rig, bone, *rotations)
+# Her Swift walk is a fast loop of 16 frames, with a key each 4 frames.
+FLIGHT = 16
 
-    def at(bone, offset):
-        return kit.shift(rig, bone, offset)
 
-    def pose(base, **changes):
-        result = dict(base)
-        for key, value in changes.items():
-            result[key.replace("__", ".").replace("_at_", "@")] = value
-        return result
+def flight_beat(frame):
+    """One key of the walk: the flame roars, and the scarf flaps two times in a loop."""
+    phase = frame / FLIGHT
+    flame = 1.5 + 0.25 * ((frame // 4) % 2)
+    return Beat(frame, "fly", (phase,), (0.0, flame, math.sin(2 * math.pi * phase * 2)))
 
-    def ride(base, offset, pitch=0.0, roll=0.0):
+
+PATCHES = (
+    Patch(
+        "idle",
+        "barrel-hover",
+        beats=tuple(
+            Beat(frame, "stance", (bob, flame, flap))
+            for frame, bob, flame, flap in (
+                (0, 0, 1, 0),
+                (6, 0.5, 0.75, 1),
+                (12, 1, 1.15, 0),
+                (18, 0.5, 0.8, -1),
+                (24, 0, 1.1, 0),
+                (30, -0.5, 0.75, 1),
+                (36, -1, 1.15, 0),
+                (42, -0.5, 0.8, -1),
+                (48, 0, 1, 0),
+            )
+        ),
+    ),
+    Patch(
+        "lowHp",
+        "barrel-sputter",
+        beats=tuple(
+            Beat(frame, "broken", (breath,), (0.0, flame))
+            for frame, breath, flame in ((0, 0, 0.5), (8, 0.3, 0.15), (12, 0.5, 0.6), (24, 1, 0.3), (30, 0.8, 0.7), (36, 0.5, 0.1), (40, 0.3, 0.55), (48, 0, 0.5))
+        ),
+    ),
+    Patch("walk", "swift-flight", beats=tuple(flight_beat(frame) for frame in range(0, FLIGHT + 1, 4)), frames=FLIGHT),
+    # She rams the barrel nose first into the target. The slash effect starts
+    # at 50% of the attack (`MELEE_IMPACT` in fx.ts), so the barrel hits at
+    # frame 15 of 30.
+    Patch(
+        "attack",
+        "barrel-ram",
+        beats=(
+            Beat(0),
+            Beat(8, "back_up"),
+            Beat(13, "ram"),
+            Beat(15, "ram", (1.0,)),
+            Beat(19, "ram", (0.6,)),
+            Beat(25, "stance", (0.0, 1.2)),
+            Beat(30),
+        ),
+    ),
+    # The death is the Last Breath: the barrel shakes, blows up under her, and
+    # she lands on her back where it was.
+    Patch(
+        "death",
+        "barrel-blast",
+        beats=(
+            Beat(0),
+            Beat(4, "jolt"),
+            Beat(7, "flare", (8,), (0.0, 1.8)),
+            Beat(9, "flare", (-8,), (0.0, 0.4)),
+            Beat(10, "thrown", (0.2, 1.0, 3.0)),
+            Beat(12, "thrown", (0.7, 0.02, 8.0)),
+            Beat(17, "thrown", (1.0, 0.02, 9.5)),
+            Beat(23, "landed"),
+            Beat(27, "landed", (6,)),
+            Beat(36, "landed"),
+        ),
+    ),
+    # Rebirth: the Unit falls (45% of the event, `REBORN_FALL`), then gets up.
+    # The barrel tips over with no blast, and the rocket starts again.
+    Patch(
+        "rebirth",
+        "barrel-crash",
+        beats=(
+            Beat(0),
+            Beat(4, "jolt"),
+            Beat(18, "tipped"),
+            Beat(21, "tipped", (4,)),
+            Beat(30, "grounded"),
+            Beat(40, "launch"),
+            Beat(48),
+        ),
+    ),
+    Patch(
+        "summon",
+        "rocket-launch",
+        beats=(Beat(0, "grounded", (0.05,)), Beat(8, "grounded", (0.5,)), Beat(15, "launch"), Beat(24)),
+    ),
+)
+
+
+class Poses(clips.machine.Poses):
+    # A Rebirth tips the barrel and the rider onto their left side. Her left
+    # boot sticks out under the barrel, so the barrel lies on it.
+    fall = Fall(Y, 84, (-0.11, 0, BARREL_R + 0.03))
+    table = TABLE
+
+    def ride(self, base, offset, pitch=0.0, roll=0.0):
         """Moves the barrel and turns it, and the rider with it: she is not its child."""
+        t, at = self.t, self.at
         offset = Vector(offset)
         # The seat is above and behind the middle of the barrel, so a pitch moves it.
         seat = HIP - BARREL_C
         a = math.radians(pitch)
         seat_shift = Vector((0, seat.y * math.cos(a) - seat.z * math.sin(a) - seat.y, seat.y * math.sin(a) + seat.z * math.cos(a) - seat.z))
-        return pose(
+        return self.pose(
             base,
             barrel_at_loc=at("barrel", offset),
             barrel=t("barrel", (X, pitch), (Y, roll)),
@@ -407,11 +525,12 @@ def build_clips(rig):
             hips=t("hips", (X, pitch * 0.8), (Y, roll * 0.8)),
         )
 
-    def stand(bob=0.0, flame=1.0, flap=0.0):
+    def stance(self, bob=0.0, flame=1.0, flap=0.0):
         """
         The rest pose in flight: the barrel bobs, the flame flickers and the
         scarf flaps. She grins with her eyes shut and holds on.
         """
+        t = self.t
         base = {
             "spine": t("spine", (X, 2)),
             "chest": t("chest", (X, 2 - bob * 2)),
@@ -420,23 +539,64 @@ def build_clips(rig):
             "scarf": t("scarf", (Z, flap * 12), (X, -flap * 6)),
             "flame@scale": flame,
         }
-        return ride(base, (0, 0, 0.012 * bob), pitch=-2 * bob, roll=flap * 2)
+        return self.ride(base, (0, 0, 0.012 * bob), pitch=-2 * bob, roll=flap * 2)
 
-    def slump(breath=0.0, flame=0.5):
+    def broken(self, base, breath=0.0):
         """Low HP: the barrel sputters low with its nose down, and she hangs on, tired."""
-        base = pose(
-            stand(flame=flame),
+        t = self.t
+        base = self.pose(
+            base,
             spine=t("spine", (X, 12 + breath * 2)),
             chest=t("chest", (X, 10 + breath * 2)),
             neck=t("neck", (X, 4)),
             head=t("head", (X, 12 + breath * 4), (Z, -10), (Y, -10)),
             scarf=t("scarf", (X, 30), (Z, -10)),
         )
-        return ride(base, (0, 0, -0.035 - breath * 0.004), pitch=8 + breath * 2, roll=-6)
+        return self.ride(base, (0, 0, -0.035 - breath * 0.004), pitch=8 + breath * 2, roll=-6)
 
-    def recoil(base, amount=1.0):
+    def fly(self, base, phase):
+        """The fast, bumpy flight of Swift: the barrel bucks and the flame roars."""
+        t = self.t
+        a = 2 * math.pi * phase
+        base = self.pose(
+            base,
+            spine=t("spine", (X, 10)),
+            chest=t("chest", (X, 8)),
+            head=t("head", (X, -2 + 4 * math.sin(a)), (Z, -6)),
+            scarf=t("scarf", (Z, 16 * math.sin(a * 2)), (X, -14)),
+        )
+        return self.ride(base, (0, 0, 0.02 + 0.016 * math.sin(a)), pitch=3 + 5 * math.cos(a), roll=4 * math.sin(a))
+
+    def back_up(self, base):
+        """The barrel backs up before the ram."""
+        t = self.t
+        base = self.pose(
+            base,
+            spine=t("spine", (X, -6)),
+            head=t("head", (X, -10), (Z, -6)),
+            scarf=t("scarf", (X, 10)),
+            flame_at_scale=0.5,
+        )
+        return self.ride(base, (0, 0.05, 0.03), pitch=-14)
+
+    def ram(self, base, squash=0.0):
+        """The barrel rams nose first, and `squash` is the hit."""
+        t = self.t
+        base = self.pose(
+            base,
+            spine=t("spine", (X, 18)),
+            chest=t("chest", (X, 14)),
+            neck=t("neck", (X, -14)),
+            head=t("head", (X, -12 + squash * 14), (Z, -6)),
+            scarf=t("scarf", (X, -30), (Z, -16)),
+            flame_at_scale=1.8 - squash * 0.6,
+        )
+        return self.ride(base, (0, -0.13, -0.01), pitch=10 + squash * 6, roll=-4)
+
+    def jolt(self, base, amount=1.0):
         """A hit knocks the barrel back, and she leans back with it."""
-        base = pose(
+        t = self.t
+        base = self.pose(
             base,
             spine=t("spine", (X, -10 * amount)),
             chest=t("chest", (X, -8 * amount)),
@@ -444,11 +604,19 @@ def build_clips(rig):
             scarf=t("scarf", (X, -20 * amount), (Z, 16 * amount)),
             flame_at_scale=0.6,
         )
-        return ride(base, (0, 0.04 * amount, 0.01 * amount), pitch=-12 * amount, roll=8 * amount)
+        return self.ride(base, (0, 0.04 * amount, 0.01 * amount), pitch=-12 * amount, roll=8 * amount)
 
-    def thrown(base, rise=1.0):
-        """Thrown off the barrel by the blast: up and back, arms and legs out."""
-        return pose(
+    def flare(self, base, roll):
+        """The barrel shakes and the fireball fills it: the blast starts."""
+        return self.pose(self.ride(base, (0, 0.01, 0.02), roll=roll), blast_at_scale=1.0)
+
+    def thrown(self, base, rise, barrel, blast):
+        """
+        Thrown off the barrel by the blast: up and back, arms and legs out.
+        `barrel` and `blast` are the scales of the barrel and the fireball.
+        """
+        t, at = self.t, self.at
+        base = self.pose(
             base,
             hips_at_loc=at("hips", (0, 0.1 * rise, 0.12 * rise)),
             hips=t("hips", (X, -50 * rise)),
@@ -462,12 +630,16 @@ def build_clips(rig):
             shin__R=t("shin.R", (X, -30)),
             scarf=t("scarf", (X, 30)),
         )
+        # The fireball grows round the barrel, so it rises as it grows: its lowest point stays above the ground.
+        lift = BLAST_LIFT * max(blast - 1.0, 0.0)
+        return self.pose(base, barrel_at_scale=barrel, blast_at_scale=blast, blast_at_loc=at("blast", (0, 0, lift)))
 
-    def landed(base, bounce=0.0):
-        """Flat on her back on the ground, where the barrel was."""
-        return pose(
+    def landed(self, base, bounce=0.0):
+        """Flat on her back on the ground, where the barrel was. The barrel and the fireball are gone."""
+        t, at = self.t, self.at
+        base = self.pose(
             base,
-            hips_at_loc=at("hips", (0, 0.06, -0.24)),
+            hips_at_loc=at("hips", (0, 0.06, -0.23)),
             hips=t("hips", (X, -84 + bounce)),
             spine=t("spine", (X, -6)),
             chest=t("chest", (X, -4)),
@@ -483,22 +655,22 @@ def build_clips(rig):
             shin__R=t("shin.R", (X, -30)),
             scarf=t("scarf", (X, 70), (Z, 30)),
         )
+        return self.pose(base, barrel_at_scale=0.02, blast_at_scale=0.01)
 
-    def crashed(base, bounce=0.0):
+    def tipped(self, base, bounce=0.0):
         """The barrel and the rider tip over onto their left side, the flame out: a Rebirth falls."""
-        return pose(
-            base,
-            root=t("root", (Y, 84 - bounce)),
-            # Her left boot sticks out under the barrel, so the barrel lies on it.
-            root_at_loc=at("root", (-0.11, 0, BARREL_R + 0.03)),
+        t = self.t
+        return self.pose(
+            super().tipped(base, bounce),
             head=t("head", (X, 6), (Z, -20)),
             scarf=t("scarf", (X, 30)),
             flame_at_scale=0.02,
         )
 
-    def grounded(base, flame=0.2):
+    def grounded(self, base, flame=0.2):
         """The barrel on the ground with a small flame, as a summon starts and a Rebirth gets up."""
-        base = pose(
+        t = self.t
+        base = self.pose(
             base,
             spine=t("spine", (X, 14)),
             chest=t("chest", (X, 10)),
@@ -506,11 +678,12 @@ def build_clips(rig):
             scarf=t("scarf", (X, 40)),
             flame_at_scale=flame,
         )
-        return ride(base, (0, 0, -0.045), pitch=-6)
+        return self.ride(base, (0, 0, -0.045), pitch=-6)
 
-    def launch(base):
+    def launch(self, base):
         """The rocket roars and the barrel jumps up, nose high: the end of a summon and a Rebirth."""
-        base = pose(
+        t = self.t
+        base = self.pose(
             base,
             spine=t("spine", (X, -8)),
             chest=t("chest", (X, -6)),
@@ -520,93 +693,12 @@ def build_clips(rig):
             scarf=t("scarf", (X, -20), (Z, 10)),
             flame_at_scale=1.6,
         )
-        return ride(base, (0, -0.02, 0.05), pitch=-16)
+        return self.ride(base, (0, -0.02, 0.05), pitch=-16)
 
-    def fly(phase, flame):
-        """The fast, bumpy flight of Swift: the barrel bucks and the flame roars."""
-        a = 2 * math.pi * phase
-        base = pose(
-            stand(flame=flame, flap=math.sin(a * 2)),
-            spine=t("spine", (X, 10)),
-            chest=t("chest", (X, 8)),
-            head=t("head", (X, -2 + 4 * math.sin(a)), (Z, -6)),
-            scarf=t("scarf", (Z, 16 * math.sin(a * 2)), (X, -14)),
-        )
-        return ride(base, (0, 0, 0.02 + 0.016 * math.sin(a)), pitch=3 + 5 * math.cos(a), roll=4 * math.sin(a))
 
-    # The attack: she rams the barrel nose first into the target. The slash
-    # effect starts at 50% of the attack (`MELEE_IMPACT` in fx.ts), so the
-    # barrel hits at frame 15 of 30.
-    def back_up(base):
-        base = pose(
-            base,
-            spine=t("spine", (X, -6)),
-            head=t("head", (X, -10), (Z, -6)),
-            scarf=t("scarf", (X, 10)),
-            flame_at_scale=0.5,
-        )
-        return ride(base, (0, 0.05, 0.03), pitch=-14)
-
-    def ram(base, squash=0.0):
-        base = pose(
-            base,
-            spine=t("spine", (X, 18)),
-            chest=t("chest", (X, 14)),
-            neck=t("neck", (X, -14)),
-            head=t("head", (X, -12 + squash * 14), (Z, -6)),
-            scarf=t("scarf", (X, -30), (Z, -16)),
-            flame_at_scale=1.8 - squash * 0.6,
-        )
-        return ride(base, (0, -0.13, -0.01), pitch=10 + squash * 6, roll=-4)
-
-    clips = []
-    idle = Clip("idle", 48, loop=True)
-    for frame, bob, flame, flap in ((0, 0, 1, 0), (6, 0.5, 0.75, 1), (12, 1, 1.15, 0), (18, 0.5, 0.8, -1), (24, 0, 1.1, 0), (30, -0.5, 0.75, 1), (36, -1, 1.15, 0), (42, -0.5, 0.8, -1), (48, 0, 1, 0)):
-        idle.key(frame, stand(bob, flame, flap))
-    clips.append(idle)
-
-    low = Clip("lowHp", 48, loop=True)
-    for frame, breath, flame in ((0, 0, 0.5), (8, 0.3, 0.15), (12, 0.5, 0.6), (24, 1, 0.3), (30, 0.8, 0.7), (36, 0.5, 0.1), (40, 0.3, 0.55), (48, 0, 0.5)):
-        low.key(frame, slump(breath, flame))
-    clips.append(low)
-
-    walk = Clip("walk", 16, loop=True)
-    for frame in range(0, 17, 4):
-        walk.key(frame, fly(frame / 16, 1.5 + 0.25 * ((frame // 4) % 2)))
-    clips.append(walk)
-
-    attack = Clip("attack", 30)
-    attack.key(0, stand()).key(8, back_up(stand())).key(13, ram(stand())).key(15, ram(stand(), 1.0))
-    attack.key(19, ram(stand(), 0.6)).key(25, stand(flame=1.2)).key(30, stand())
-    clips.append(attack)
-
-    hurt = Clip("hurt", 16)
-    hurt.key(0, stand()).key(3, recoil(stand())).key(8, recoil(stand(), 0.4)).key(16, stand())
-    clips.append(hurt)
-
-    # The death is the Last Breath: the barrel shakes, blows up under her,
-    # and she lands on her back where it was.
-    gone = {"barrel@scale": 0.02, "blast@scale": 0.01}
-    death = Clip("death", 36)
-    death.key(0, stand()).key(4, recoil(stand()))
-    death.key(7, pose(ride(stand(flame=1.8), (0, 0.01, 0.02), roll=8), blast_at_scale=1.0)).key(9, pose(ride(stand(flame=0.4), (0, 0.01, 0.02), roll=-8), blast_at_scale=1.0))
-    death.key(10, pose(thrown(stand(), 0.2), barrel_at_scale=1.0, blast_at_scale=3.0))
-    death.key(12, pose(thrown(stand(), 0.7), barrel_at_scale=0.02, blast_at_scale=8.0))
-    death.key(17, pose(thrown(stand()), barrel_at_scale=0.02, blast_at_scale=9.5))
-    death.key(23, pose(landed(stand()), **gone)).key(27, pose(landed(stand(), 6), **gone)).key(36, pose(landed(stand()), **gone))
-    clips.append(death)
-
-    # Rebirth: the Unit falls (45% of the event, `REBORN_FALL`), then gets up.
-    # The barrel tips over with no blast, and the rocket starts again.
-    rebirth = Clip("rebirth", 48)
-    rebirth.key(0, stand()).key(4, recoil(stand())).key(18, crashed(stand())).key(21, crashed(stand(), 4))
-    rebirth.key(30, grounded(stand())).key(40, launch(stand())).key(48, stand())
-    clips.append(rebirth)
-
-    summon = Clip("summon", 24)
-    summon.key(0, grounded(stand(), 0.05)).key(8, grounded(stand(), 0.5)).key(15, launch(stand())).key(24, stand())
-    clips.append(summon)
-    return clips
+def build_clips(rig):
+    poses = Poses(*kit.pose_tools(rig))
+    return clips.overrides.build(clips.machine.CLIPS, poses, PATCHES, without=("cast",))
 
 
 def build(export=True):

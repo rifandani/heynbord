@@ -477,13 +477,13 @@ export const BOSS_FLOOR_TEMPLATES: readonly BossFloorTemplate[] = [
         cardId: "goblin.junkBarricade",
         rank: "uncommon",
         lane: 0,
-        position: 10,
+        position: 9,
       },
       {
         cardId: "goblin.junkBarricade",
         rank: "uncommon",
         lane: 2,
-        position: 10,
+        position: 9,
       },
     ],
     deck: [

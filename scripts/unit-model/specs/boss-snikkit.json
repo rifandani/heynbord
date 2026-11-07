@@ -1,0 +1,157 @@
+{
+  "id": "boss-snikkit",
+  "bodyPlan": "machine",
+  "height": 0.9500001560944652,
+  "palette": {
+    "beard": "#efece4",
+    "beard_dark": "#a9987b",
+    "bomb": "#241a1c",
+    "brass": "#e4a75a",
+    "brass_dark": "#97642a",
+    "ear": "#e0a08e",
+    "ember": "#ec692a",
+    "emerald": "#2aa860",
+    "eyes": "#f4e2a6",
+    "flame": "#ffa22b",
+    "flame_core": "#ffe7a0",
+    "fuse": "#c8a878",
+    "glass": "#f2c46a",
+    "gold": "#f7c15c",
+    "gold_dark": "#c28943",
+    "iron": "#59493e",
+    "iron_dark": "#2c1e18",
+    "mouth": "#4a1e1c",
+    "pupil": "#1d140e",
+    "red": "#b3322a",
+    "red_dark": "#741e1a",
+    "robe": "#6a3a2a",
+    "ruby": "#c4202a",
+    "rust": "#8a5232",
+    "sand": "#c4823a",
+    "skin": "#c9a68b",
+    "skin_dark": "#90735a",
+    "spark": "#ffb43a",
+    "teeth": "#f4ecd2"
+  },
+  "parts": [
+    "cart",
+    "bombs",
+    "cloth",
+    "wheel.FL",
+    "wheel.FR",
+    "wheel.BL",
+    "wheel.BR",
+    "body",
+    "head",
+    "beard",
+    "crown",
+    "arm.L",
+    "upperarm.R",
+    "forearm.R",
+    "hourglass",
+    "torch",
+    "flame"
+  ],
+  "props": [
+    {
+      "id": "bombs",
+      "hand": "none",
+      "cameraSide": false,
+      "bone": "bombs"
+    },
+    {
+      "id": "hourglass",
+      "hand": "none",
+      "cameraSide": false,
+      "bone": "hourglass"
+    },
+    {
+      "id": "torch",
+      "hand": "right",
+      "cameraSide": true,
+      "bone": "torch"
+    }
+  ],
+  "clips": {
+    "idle": {
+      "override": "cackle"
+    },
+    "lowHp": {
+      "override": "slump"
+    },
+    "walk": {
+      "override": "small-wheels"
+    },
+    "attack": {
+      "override": "torch-strike"
+    },
+    "hurt": {},
+    "death": {},
+    "rebirth": {},
+    "summon": {}
+  },
+  "details": [
+    "an old goblin boss in a mine cart of riveted iron on four small wheels",
+    "the cart is full of black bombs with lit fuses",
+    "a tall gold crown with red and green gems, very large ears and a long white beard",
+    "a red ragged collar and gold chains",
+    "a burning brass torch in the right hand, on the camera side",
+    "an hourglass on a chain over the front of the cart",
+    "a red cloth with a gold crown hangs on the side of the cart"
+  ],
+  "regions": {
+    "arm.L": {
+      "x0": 0.66,
+      "x1": 0.92,
+      "y0": 0.48,
+      "y1": 0.6
+    },
+    "arm.R": {
+      "x0": 0.09,
+      "x1": 0.35,
+      "y0": 0.33,
+      "y1": 0.52
+    },
+    "effect": {
+      "x0": 0.04,
+      "x1": 0.26,
+      "y0": 0,
+      "y1": 0.18
+    },
+    "head": {
+      "x0": 0,
+      "x1": 1,
+      "y0": 0.04,
+      "y1": 0.6
+    },
+    "leg.L": {
+      "x0": 0.81,
+      "x1": 0.93,
+      "y0": 0.82,
+      "y1": 1
+    },
+    "leg.R": {
+      "x0": 0.15,
+      "x1": 0.27,
+      "y0": 0.82,
+      "y1": 1
+    },
+    "prop": {
+      "x0": 0.08,
+      "x1": 0.9,
+      "y0": 0.1,
+      "y1": 0.77
+    },
+    "torso": {
+      "x0": 0.09,
+      "x1": 0.99,
+      "y0": 0.46,
+      "y1": 0.92
+    }
+  },
+  "identity": {
+    "feature": "tall gold crown with red and green gems",
+    "azimuthDegrees": 0
+  },
+  "holedParts": ["hourglass", "body", "torch"]
+}

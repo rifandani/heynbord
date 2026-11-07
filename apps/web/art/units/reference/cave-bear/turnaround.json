@@ -1,0 +1,18 @@
+{
+  "id": "cave-bear",
+  "source": "apps/web/public/creature/feral/cave-bear.webp",
+  "views": {
+    "front": "front.webp",
+    "three-quarter": "three-quarter.webp",
+    "side": "side.webp",
+    "back": "back.webp",
+    "details": "details.webp"
+  },
+  "props": ["honeycomb"],
+  "approval": {
+    "status": "approved",
+    "by": "rifandani",
+    "date": "2026-11-06",
+    "notes": "Approved all five views and this prop list by a message to the agent. Hidden sides are inferred from the card painting."
+  }
+}

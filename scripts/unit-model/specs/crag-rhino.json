@@ -1,0 +1,118 @@
+{
+  "id": "crag-rhino",
+  "bodyPlan": "quadruped",
+  "height": 0.7280354,
+  "palette": {
+    "hide": "#806a54",
+    "hide_dark": "#5c493b",
+    "stone": "#9b958a",
+    "stone_dark": "#76665a",
+    "moss": "#7d8a3c",
+    "fur": "#8a5e3c",
+    "fur_light": "#b98c5e",
+    "fur_dark": "#5c3a22",
+    "horn": "#c2b9a6",
+    "horn_dark": "#7f776a",
+    "eye": "#1c140e",
+    "eye_rim": "#b08a5a",
+    "nose": "#3a302a",
+    "hoof": "#3d2d25",
+    "shield": "#30528c",
+    "shield_dark": "#1f3560",
+    "rim": "#766450",
+    "boss": "#cf9d51",
+    "wood": "#8a6440"
+  },
+  "parts": [
+    "body",
+    "plates",
+    "fur",
+    "tail",
+    "tail.tuft",
+    "head",
+    "horns",
+    "shield",
+    "ear.L",
+    "ear.R",
+    "upper.FL",
+    "lower.FL",
+    "foot.FL",
+    "upper.FR",
+    "lower.FR",
+    "foot.FR",
+    "upper.BL",
+    "lower.BL",
+    "foot.BL",
+    "upper.BR",
+    "lower.BR",
+    "foot.BR"
+  ],
+  "props": [
+    {
+      "id": "shield",
+      "hand": "none",
+      "cameraSide": true,
+      "bone": "horn"
+    }
+  ],
+  "clips": {
+    "idle": {},
+    "lowHp": {},
+    "walk": {
+      "override": "heavy-trot"
+    },
+    "attack": {
+      "override": "horn-charge"
+    },
+    "hurt": {},
+    "death": {
+      "override": "fall-left"
+    },
+    "summon": {}
+  },
+  "details": [
+    "grey-brown hide with stone back plates and moss",
+    "shaggy brown mane and belly fringe",
+    "large horn curves up and back with a small second horn",
+    "broken blue shield with a gold boss pierced by the large horn",
+    "shield face turns to the camera side",
+    "death falls onto the left side with the legs towards the camera"
+  ],
+  "identity": {
+    "feature": "large horn through a broken blue shield",
+    "azimuthDegrees": 30
+  },
+  "regions": {
+    "head": {
+      "x0": 0.19,
+      "x1": 0.83,
+      "y0": 0,
+      "y1": 0.82
+    },
+    "leg.L": {
+      "x0": 0.54,
+      "x1": 0.99,
+      "y0": 0.4,
+      "y1": 1
+    },
+    "leg.R": {
+      "x0": 0.07,
+      "x1": 0.52,
+      "y0": 0.4,
+      "y1": 1
+    },
+    "prop": {
+      "x0": 0.34,
+      "x1": 0.58,
+      "y0": 0.16,
+      "y1": 0.57
+    },
+    "torso": {
+      "x0": 0,
+      "x1": 1,
+      "y0": 0.04,
+      "y1": 0.7
+    }
+  },
+  "holedParts": ["plates", "fur"]
+}

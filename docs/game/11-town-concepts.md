@@ -271,7 +271,7 @@ The painted icons show at 66 px (48 px on a phone), and they stand out of the to
 - **One object for each icon.** No scene, no ground, no frame and no badge circle. The background is transparent.
 - **View.** A slight three-quarter view from above, about 30° down. The bottom edge of the object is flat, so that it sits on the bar.
 - **Light.** From the upper left, as in all other art.
-- **Outline.** A thick dark brown outline (`#2e1d10`, the dark end of the Town Bar wood) around each object. All icons have the same outline thickness.
+- **Outline.** A thick dark brown outline (`#2e1d10`) around each object. All icons have the same outline thickness.
 - **Size.** Square 1:1. Make at 1024 × 1024. The object fills about 85% of the canvas.
 - **No text.** No letters, numbers, runes or logo. The game shows the shortcut names from the Message Catalogs, in each language.
 - **States.** Make one image for each icon. The code makes the current, hover, focus and locked states (DESIGN.md Navigation).

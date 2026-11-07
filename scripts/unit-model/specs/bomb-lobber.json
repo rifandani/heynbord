@@ -1,0 +1,176 @@
+{
+  "id": "bomb-lobber",
+  "bodyPlan": "biped-small",
+  "height": 0.7016194015895402,
+  "palette": {
+    "bomb": "#322a29",
+    "bomb_light": "#4f433f",
+    "brass": "#cc9b55",
+    "brass_dark": "#946933",
+    "cheek": "#d8a89a",
+    "ear": "#e8a088",
+    "eyes": "#f0a43a",
+    "fuse": "#c8b88a",
+    "hair": "#f0e8d4",
+    "hair_dark": "#d4c8a8",
+    "leather": "#7a4a2a",
+    "leather_dark": "#4a2c1a",
+    "mouth": "#5a2422",
+    "neckerchief": "#494f5c",
+    "pupil": "#1d140e",
+    "skin": "#c2bdb2",
+    "skin_dark": "#8e887e",
+    "smoked": "#6e5c56",
+    "spark": "#fac668",
+    "spark_hot": "#dd8c53",
+    "teeth": "#f4eedc",
+    "tongue": "#c85a50",
+    "trousers": "#5e4232",
+    "trousers_dark": "#43302a",
+    "tunic": "#c4a476",
+    "tunic_dark": "#9a7c52",
+    "wicker": "#b08446",
+    "wicker_dark": "#7a5428",
+    "wire": "#3e3a36",
+    "wood": "#a0703a",
+    "wood_dark": "#6a4422",
+    "wrap": "#6a4228"
+  },
+  "parts": [
+    "head",
+    "face",
+    "hair",
+    "goggles",
+    "neck",
+    "tunic",
+    "kerchief",
+    "belt",
+    "hips",
+    "bomb.basket",
+    "basket",
+    "upperarm.L",
+    "forearm.L",
+    "hand.L",
+    "thigh.L",
+    "shin.L",
+    "foot.L",
+    "upperarm.R",
+    "forearm.R",
+    "hand.R",
+    "thigh.R",
+    "shin.R",
+    "foot.R",
+    "racket",
+    "bomb",
+    "spark"
+  ],
+  "props": [
+    {
+      "id": "bomb.basket",
+      "hand": "none",
+      "cameraSide": false,
+      "bone": "hips"
+    },
+    {
+      "id": "basket",
+      "hand": "none",
+      "cameraSide": false,
+      "bone": "hips"
+    },
+    {
+      "id": "racket",
+      "hand": "right",
+      "cameraSide": true,
+      "bone": "hand.R"
+    },
+    {
+      "id": "bomb",
+      "hand": "left",
+      "cameraSide": false,
+      "bone": "hand.L"
+    }
+  ],
+  "clips": {
+    "idle": {
+      "override": "fuse-spark"
+    },
+    "lowHp": {
+      "override": "low-fuse"
+    },
+    "walk": {},
+    "attack": {
+      "override": "racket-lob"
+    },
+    "hurt": {},
+    "death": {},
+    "rebirth": {},
+    "summon": {}
+  },
+  "details": [
+    "big mass of wild white hair with a puff on each side",
+    "very large ears that droop to the shoulders, with leather wraps",
+    "two open amber eyes and a wide grin",
+    "smoked brass goggles on the forehead, with a strap and a back buckle",
+    "blue neckerchief and torn tan tunic with straps",
+    "racket made from a barrel hoop and wire in the right hand",
+    "lit bomb in the left hand",
+    "wicker basket of bombs at the right hip",
+    "fuse spark that scales"
+  ],
+  "regions": {
+    "arm.L": {
+      "x0": 0.65,
+      "x1": 0.9,
+      "y0": 0.3,
+      "y1": 0.57
+    },
+    "arm.R": {
+      "x0": 0.1,
+      "x1": 0.34,
+      "y0": 0.3,
+      "y1": 0.58
+    },
+    "effect": {
+      "x0": 0.7,
+      "x1": 0.81,
+      "y0": 0.42,
+      "y1": 0.46
+    },
+    "head": {
+      "x0": 0,
+      "x1": 1,
+      "y0": 0,
+      "y1": 0.42
+    },
+    "leg.L": {
+      "x0": 0.52,
+      "x1": 0.76,
+      "y0": 0.58,
+      "y1": 1
+    },
+    "leg.R": {
+      "x0": 0.24,
+      "x1": 0.48,
+      "y0": 0.58,
+      "y1": 1
+    },
+    "prop": {
+      "x0": 0.04,
+      "x1": 0.81,
+      "y0": 0.13,
+      "y1": 0.75
+    },
+    "torso": {
+      "x0": 0.25,
+      "x1": 0.77,
+      "y0": 0.29,
+      "y1": 0.72
+    }
+  },
+  "identity": {
+    "feature": "barrel-hoop racket and a lit bomb",
+    "azimuthDegrees": 315
+  },
+  "posedPairs": ["forearm", "hand", "upperarm"],
+  "holedParts": ["body", "goggles", "racket"]
+}

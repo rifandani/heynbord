@@ -1,5 +1,5 @@
 import { keywordRange, keywordSpeed, keywordValue } from "../content/keywords";
-import { scaleForRank } from "../content/ranks";
+import { creatureStats } from "../content/ranks";
 import type {
   CreatureCardDefinition,
   DamageType,
@@ -127,8 +127,7 @@ export const createUnit = (options: {
     rank: card.rank,
     body: {
       ...definition,
-      attack: scaleForRank(definition.attack, card.rank),
-      hp: scaleForRank(definition.hp, card.rank),
+      ...creatureStats(definition, card.rank),
     },
   });
 };

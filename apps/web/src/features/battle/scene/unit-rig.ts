@@ -22,6 +22,7 @@ import {
 } from "three";
 import { clone } from "three/addons/utils/SkeletonUtils.js";
 
+import { UNIT_TURN } from "@/features/battle/scene/layout";
 import type { UnitClipName } from "@/features/battle/scene/unit-clips";
 import { UNIT_CLIP_NAMES } from "@/features/battle/scene/unit-clips";
 import type { UnitClip } from "@/features/battle/scene/unit-models";
@@ -31,12 +32,6 @@ import { SCENE_INK } from "@/features/battle/tokens";
 
 /** The feet of a Unit sit just above the ground. */
 const FOOT_Y = 0.02;
-
-/**
- * The Y turn of a model that faces +Z, so that it faces the enemy side and a
- * little toward the camera (3/4 view, art direction 3).
- */
-const TURN = Math.PI / 2 - 0.4;
 
 /** Seconds of the blend from one clip to the next. */
 const BLEND_SECONDS = 0.15;
@@ -211,7 +206,7 @@ export const buildRig = (
   );
 
   const holder = new Group();
-  holder.rotation.y = facing * TURN;
+  holder.rotation.y = facing * UNIT_TURN;
   holder.add(model);
   const root = new Group();
   root.add(holder);

@@ -442,6 +442,12 @@ export const badgeHeight = (source: UnitSourceView): number =>
 /** The cards and the Tokens that have a Unit Model, for the Component Catalog. */
 export const unitModelCards = (): readonly string[] => [...UNIT_MODELS.keys()];
 
+/** The card of the Unit Model that has this GLB file name, with no extension. */
+export const unitModelCardNamed = (name: string): string | undefined =>
+  unitModelCards().find(
+    (cardId) => unitModelOf(cardId)?.url === `/models/units/${name}.glb`
+  );
+
 /** The clip that a Unit plays in one frame. */
 export interface UnitClip {
   readonly name: UnitClipName;

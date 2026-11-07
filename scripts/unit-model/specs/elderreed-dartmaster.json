@@ -1,0 +1,137 @@
+{
+  "id": "elderreed-dartmaster",
+  "bodyPlan": "biped-medium",
+  "height": 0.9679999947547913,
+  "palette": {
+    "boot": "#6e4a2c",
+    "brow": "#8c877c",
+    "cream": "#ece0c2",
+    "eyes": "#2d1a1a",
+    "gold": "#d8a843",
+    "hair": "#c4bfb4",
+    "hair_dark": "#9a958a",
+    "hair_light": "#e4e0d6",
+    "leaf": "#6b6434",
+    "leaf_dark": "#595424",
+    "leaf_light": "#9a8e52",
+    "leather": "#6b4528",
+    "leather_dark": "#442b19",
+    "leggings": "#4f3522",
+    "reed": "#8a8c48",
+    "reed_dark": "#6d652f",
+    "sap": "#aea056",
+    "sap_dark": "#6f732a",
+    "skin": "#e2b28c",
+    "tunic": "#7b6f36"
+  },
+  "parts": [
+    "head",
+    "face",
+    "neck",
+    "hair",
+    "tunic",
+    "skirt",
+    "belt",
+    "case",
+    "cloak",
+    "sleeve.L",
+    "bracer.L",
+    "hand.L",
+    "thigh.L",
+    "boot.L",
+    "foot.L",
+    "sleeve.R",
+    "bracer.R",
+    "hand.R",
+    "thigh.R",
+    "boot.R",
+    "foot.R",
+    "pipe",
+    "puff"
+  ],
+  "props": [
+    {
+      "id": "pipe",
+      "hand": "right",
+      "cameraSide": true,
+      "bone": "hand.R"
+    },
+    {
+      "id": "case",
+      "hand": "none",
+      "cameraSide": true,
+      "bone": "hips"
+    }
+  ],
+  "clips": {
+    "idle": {},
+    "lowHp": {},
+    "walk": {},
+    "attack": {},
+    "hurt": {},
+    "death": {},
+    "summon": {}
+  },
+  "details": [
+    "older elf woman with silver hair in a low knot",
+    "layered green leaf cloak with the hood down",
+    "green tunic with gold trim and tall brown boots",
+    "reed blowpipe with gold bands in the right hand",
+    "case of thorn darts with green sap at the right hip"
+  ],
+  "regions": {
+    "arm.L": {
+      "x0": 0.7,
+      "x1": 1,
+      "y0": 0.2,
+      "y1": 0.52
+    },
+    "arm.R": {
+      "x0": 0.09,
+      "x1": 0.4,
+      "y0": 0.2,
+      "y1": 0.52
+    },
+    "effect": {
+      "x0": 0,
+      "x1": 0.19,
+      "y0": 0.87,
+      "y1": 1
+    },
+    "head": {
+      "x0": 0.29,
+      "x1": 0.8,
+      "y0": 0,
+      "y1": 0.27
+    },
+    "leg.L": {
+      "x0": 0.57,
+      "x1": 0.74,
+      "y0": 0.44,
+      "y1": 0.89
+    },
+    "leg.R": {
+      "x0": 0.36,
+      "x1": 0.52,
+      "y0": 0.44,
+      "y1": 0.89
+    },
+    "prop": {
+      "x0": 0.02,
+      "x1": 0.16,
+      "y0": 0.43,
+      "y1": 0.87
+    },
+    "torso": {
+      "x0": 0.18,
+      "x1": 0.91,
+      "y0": 0.17,
+      "y1": 0.73
+    }
+  },
+  "identity": {
+    "feature": "long reed blowpipe and thorn dart case",
+    "azimuthDegrees": 315
+  },
+  "holedParts": ["body", "hair", "case"]
+}

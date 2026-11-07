@@ -1,0 +1,32 @@
+{
+  "id": "ashcaller-grosh",
+  "passed": true,
+  "problems": [],
+  "measures": {
+    "front": {
+      "backgroundEdge": 0.963,
+      "offPalette": 0.087,
+      "fill": 0.965
+    },
+    "three-quarter": {
+      "backgroundEdge": 0.961,
+      "offPalette": 0.09,
+      "fill": 0.97
+    },
+    "side": {
+      "backgroundEdge": 0.955,
+      "offPalette": 0.087,
+      "fill": 0.965
+    },
+    "back": {
+      "backgroundEdge": 0.964,
+      "offPalette": 0.056,
+      "fill": 0.965
+    },
+    "details": {
+      "backgroundEdge": 0.864,
+      "offPalette": 0.101,
+      "fill": 0.96
+    }
+  }
+}

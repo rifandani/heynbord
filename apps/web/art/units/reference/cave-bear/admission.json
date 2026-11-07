@@ -1,0 +1,32 @@
+{
+  "id": "cave-bear",
+  "passed": true,
+  "problems": [],
+  "measures": {
+    "front": {
+      "backgroundEdge": 0.941,
+      "offPalette": 0.081,
+      "fill": 0.94
+    },
+    "three-quarter": {
+      "backgroundEdge": 0.928,
+      "offPalette": 0.113,
+      "fill": 0.947
+    },
+    "side": {
+      "backgroundEdge": 0.918,
+      "offPalette": 0.063,
+      "fill": 0.98
+    },
+    "back": {
+      "backgroundEdge": 0.938,
+      "offPalette": 0.047,
+      "fill": 0.95
+    },
+    "details": {
+      "backgroundEdge": 1,
+      "offPalette": 0.075,
+      "fill": 0.88
+    }
+  }
+}
