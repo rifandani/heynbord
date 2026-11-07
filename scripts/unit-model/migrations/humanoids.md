@@ -1,6 +1,6 @@
 # Migration: humanoids
 
-Issue #185. This record has the units, the batches and what stops the Migration. Status: **Batch 1 is on its plans. No unit of the batch passes CI, because no unit of the batch has a Turnaround.**
+Issue #185. This record has the units, the batches and what stops the Migration. Status: **Batch 1 is on its plans, and a person approved its lists and its art. No unit of the batch passes CI, because no unit of the batch has a Turnaround.**
 
 ## Units
 
@@ -27,8 +27,7 @@ Fuse Runner and Tusk Brute are on their plans, but they have no Unit Spec yet.
 ## What stops the Migration
 
 1. **Turnarounds.** The definition of done needs an approved Turnaround for each unit. Only warden-saelith has one in this scope. An external image model made the images, and a person approved them, so an agent cannot do this step. With no Turnaround, `interior-difference` gives an error, and an error is not a pass. So the Unit Model Review fails for each unit in the batch. The prompts are in `apps/web/art/units/raw/turnaround/<name>/prompts.md`.
-2. **A person must approve the art.** The batch changes colors and clips, and no person has looked at the result. See [What a person must check](#what-a-person-must-check).
-3. **Pole bones.** 24 units need pole bones that `add_arm_ik` does not make. Add these to `body_plans/biped.py` before these units move.
+2. **Pole bones.** 24 units need pole bones that `add_arm_ik` does not make. Add these to `body_plans/biped.py` before these units move.
 
 ## Batch 1
 
@@ -71,7 +70,9 @@ The first 4 fixes make a Review Gate accept more, and each list in a Unit Spec i
 
 ## What a person must check
 
-- **The Turnaround of each unit.** Then `interior-difference` runs for the first time.
+On 2026-11-07 rifandani approved the Batch 1 items below by a message to the agent ("approved all"), except the first item. No Turnaround image exists for these 5 units, so that message cannot approve one. `turnaround.json` is not written, `interior-difference` still gives an error, and the Unit Model Review still fails for these units.
+
+- **The Turnaround of each unit.** This is open. Then `interior-difference` runs for the first time.
 - `posedPairs` and `holedParts` of each Unit Spec. I read them from the failures of the Review Gates and from the build script, and I did not check each one against a Turnaround.
 - `regions` of each Unit Spec. These are measures of the current model, so they do not prove that the model is good.
 - **ashcaller-grosh skin.** The model was green, and the painting has a warm tan skin. The new color passes `palette`, but it is redder than the painting. `palette` rejected `#a57652`, a color that I sampled from the face.
