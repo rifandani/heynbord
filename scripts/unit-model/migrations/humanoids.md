@@ -124,7 +124,7 @@ On 2026-11-07 rifandani approved the Batch 1 items below by a message to the age
 
 **No person has approved the items of this list.**
 
-- **The new head of bomb-lobber.** It needs approval. The sheet is `artifacts/unit-model-review/migration-humanoids/batch-1-bomb-lobber-head.png`, and it now shows the right ear that is not a mirror of the left ear. A pass of `interior-difference` does not prove that the head looks correct.
+- **The new head of bomb-lobber.** On 2026-11-07 rifandani approved it by a message to the agent, with the known differences: the hair is a solid cap and the approved views have soft wisps. The sheet is `artifacts/unit-model-review/migration-humanoids/batch-1-bomb-lobber-head.png`.
 - **bomb-lobber hoop and right puff.** The right ear and the tufts are clear of the racket now. In 15 of 49 frames of `idle`, the rim of the hoop goes about 0.005 into the right puff, and a rivet goes about 0.008. Neither goes through the net. No Review Gate reads this. A fix must change the puff or the rest pose of the racket.
 - **bomb-lobber ears and hair.** The side view of the Turnaround has a longer sweep of hair behind the head and an ear tip farther back. `death` limits both, because the head turns the left ear down to the ground in the `fallen` pose. The tufts are simple cones, and the Turnaround has soft hair.
 - **bomb-lobber height.** A tuft reaches 0.7016, so it is 0.0016 above `head_top_z`. The strap and the leather wraps of the ears are partly in their surfaces, so their edges look ragged in the sheet.
