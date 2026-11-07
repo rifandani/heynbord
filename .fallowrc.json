@@ -111,7 +111,9 @@
     "@stryker-mutator/vitest-runner",
     "msw",
     "postcss-load-config",
+    "oxlint-plugin-react-doctor",
     "workbox-core",
-    "babel-plugin-react-compiler"
+    "babel-plugin-react-compiler",
+    "tailwindcss"
   ]
 }
