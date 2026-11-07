@@ -662,7 +662,47 @@ describe("self-intersection", () => {
   });
 });
 
+/** A body as wide as a big orc: its surface is far from a short spine bone. */
+const wideBody = (mesh: ExportedMesh): ExportedMesh =>
+  mesh.part === "chest"
+    ? {
+        ...mesh,
+        vertices: mesh.vertices.map(([x, y, z]): Vector3 => [x * 3, y, z * 3]),
+      }
+    : mesh;
+const oneRing = (mesh: ExportedMesh): ExportedMesh =>
+  mesh.part === "chest"
+    ? { ...mesh, vertices: mesh.vertices.map(([x, , z]) => [x, 0.6, z]) }
+    : mesh;
+const SHORT_SPINE = SKELETON.map((item) =>
+  item.id === "neck" ? bone("neck", "spine", [0, 0.75, 0]) : item
+);
+const TALL_SPEC: UnitSpec = { ...SPEC, height: 2 };
+
 describe("joint-loops", () => {
+  test("counts the rings of a wide body", async () => {
+    const report = await runGates(
+      sources({
+        meshes: { meshes: FIGURE.map(wideBody), bones: SHORT_SPINE },
+        spec: TALL_SPEC,
+      })
+    );
+    expect(statusOf(report, "joint-loops")).toBe("pass");
+  });
+
+  test("fails on one ring of a wide body", async () => {
+    const report = await runGates(
+      sources({
+        meshes: {
+          meshes: FIGURE.map(oneRing).map(wideBody),
+          bones: SHORT_SPINE,
+        },
+        spec: TALL_SPEC,
+      })
+    );
+    expect(statusOf(report, "joint-loops")).toBe("fail");
+  });
+
   test("fails on a joint with one ring of geometry", async () => {
     const report = await runGates(
       sources({ meshes: { meshes: FIGURE.map(flatArm), bones: SKELETON } })
@@ -834,6 +874,44 @@ describe("chirality", () => {
     const bones = SKELETON.map((item) => (item.id === moved.id ? moved : item));
     const report = await runGates(
       sources({ meshes: { meshes: FIGURE, bones } })
+    );
+    expect(statusOf(report, "chirality")).toBe("fail");
+  });
+
+  test("accepts a bone pair that the Unit Spec lists as posed", async () => {
+    const moved = bone("forearm.R", "upperarm.R", [-0.4, 0.5, 0]);
+    const bones = SKELETON.map((item) => (item.id === moved.id ? moved : item));
+    const report = await runGates(
+      sources({
+        meshes: { meshes: FIGURE, bones },
+        spec: { ...SPEC, posedPairs: ["forearm"] },
+      })
+    );
+    expect(statusOf(report, "chirality")).toBe("pass");
+    expect(recordOf(report, "chirality").report).toMatchObject({
+      posed: ["forearm.L"],
+    });
+  });
+
+  test("does not accept a posed pair that is a rotation", async () => {
+    const left = {
+      ...SLEEVE_L,
+      vertices: SLEEVE_L.vertices.map(([x, y, z]): Vector3 => [x, y, z + 0.1]),
+    };
+    const meshes: MeshExport = {
+      meshes: [
+        CHEST,
+        left,
+        {
+          ...SLEEVE_R,
+          vertices: left.vertices.map(([x, y, z]): Vector3 => [-x, y, -z]),
+        },
+        STAFF,
+      ],
+      bones: SKELETON,
+    };
+    const report = await runGates(
+      sources({ meshes, spec: { ...SPEC, posedPairs: ["sleeve"] } })
     );
     expect(statusOf(report, "chirality")).toBe("fail");
   });

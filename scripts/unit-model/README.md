@@ -2,7 +2,7 @@
 
 ## Unit Specs
 
-The specs are in `specs/`: the three pilots Warden Saelith, Crag Rhino and Bone Rampart, and Amberwing Dart. Check them with Python 3.11 or later. Blender and Python packages are not required.
+The specs are in `specs/`: the three pilots Warden Saelith, Crag Rhino and Bone Rampart, Amberwing Dart, and the units that have moved in a Migration. `migrations/humanoids.md` lists these units. Check them with Python 3.11 or later. Blender and Python packages are not required.
 
 ```sh
 rtk bun unit-model:spec:check
@@ -13,13 +13,15 @@ rtk bun unit-model:spec:check scripts/unit-model/fixtures/missing-clip.json
 
 The default command checks every `specs/*.json` file and exits with code 0 when all pass. Pass one or more file paths to check selected specs. Each error includes its file and field path.
 
-`unit-spec.schema.json` defines the fields, Body Plan names, part names, colors and clip slots. `unit_spec.py` checks those schema rules and the prop references. `load_spec(path)` returns a `UnitSpec` typed dictionary and raises `ValueError` on invalid data. Use it before building geometry. The loader also rejects duplicate JSON members.
+`unit-spec.schema.json` defines the fields, Body Plan names, the form of a part name, colors and clip slots. `unit_spec.py` checks those schema rules and the prop references. `load_spec(path)` returns a `UnitSpec` typed dictionary and raises `ValueError` on invalid data. Use it before building geometry. The loader also rejects duplicate JSON members.
 
-The Body Plan names are `biped-small`, `biped-medium`, `biped-large`, `quadruped`, `flyer`, `machine` and `structure`. Each plan has its shared builder in `body_plans/`. The part names match the existing scripts, including suffixes such as `.L`, `.FR` and `.0`. A prop ID must name a listed part. `hand` is `left`, `right` or `none` for a mounted prop. The left side is Blender +X. `cameraSide` identifies a prop on the right side that the player Unit camera sees.
+The Body Plan names are `biped-small`, `biped-medium`, `biped-large`, `quadruped`, `flyer`, `machine` and `structure`. Each plan has its shared builder in `body_plans/`. The part names match the build script, including suffixes such as `.L`, `.FR` and `.0`. The `part-coverage` Review Gate compares them with the model. A prop ID must name a listed part. `hand` is `left`, `right` or `none` for a mounted prop. The left side is Blender +X. `cameraSide` identifies a prop on the right side that the player Unit camera sees.
 
 The five required clips match `BASE_UNIT_CLIPS` in `apps/web/src/features/battle/scene/unit-clips.ts`: `idle`, `walk`, `attack`, `hurt` and `death`. The optional clips are `lowHp`, `cast`, `rebirth` and `summon`. Each pilot lists only the clips that its script builds. An empty clip object uses the Body Plan slot. An `override` names the unit's specific action, and it is the name of a `Patch` of the Clip Library.
 
 The palettes and parts come from the build scripts. Warden Saelith includes the inline belt and arrow colors, and #179 changed her coat to the olive of the card painting. Bone Rampart's hammer is part of `skel.A.arm`. Heights include props in the rest pose: 0.985 for Warden Saelith, 0.7280354 for Crag Rhino, 1.13 for Bone Rampart and 0.6598878 for Amberwing Dart. These values agree with the bounds in `source-contracts.json`. The specs record the current models.
+
+`bun unit-model:spec:draft <plan> <name> [name...]` writes a new Unit Spec from the build script and the Raw Export: the height, palette, parts, props, clips and `regions`. It does not replace a file. A person writes `details` and `identity`, and checks `props`.
 
 ## Packing
 
@@ -62,7 +64,7 @@ rtk bun test scripts/unit-model/source-contract.test.ts
 
 ## Clip Library
 
-`clips/` holds the 9 base clips of each Body Plan and the override layer. A unit subclasses the `Poses` of its plan and names each change in a `Patch`. See `clips/README.md`. One unit of each plan has moved: Warden Saelith, Fuse Runner, Tusk Brute, Crag Rhino, Amberwing Dart, Grand Gearjammer and Bone Rampart.
+`clips/` holds the 9 base clips of each Body Plan and the override layer. A unit subclasses the `Poses` of its plan and names each change in a `Patch`. See `clips/README.md`. One unit of each plan moved first: Warden Saelith, Fuse Runner, Tusk Brute, Crag Rhino, Amberwing Dart, Grand Gearjammer and Bone Rampart. `migrations/humanoids.md` lists the units that moved after them.
 
 ```sh
 bun unit-model:clips:check warden-saelith [name...]  # loop closure, pose return, hip return, ground and binding
@@ -133,10 +135,10 @@ Each Review Gate exits 0 clean, 1 fail or 2 error. A fail blocks publication. An
 | `turntable` | Are all four views present, and is there a hole through a part? | cutouts, parts | no missing view, no collapsed view, no hole through one part or through the body |
 | `interior-difference` | What differs from the Turnaround inside the silhouette, banded by height? | front and back cutouts, Turnaround | 0.28 for the head, the torso and the legs |
 | `self-intersection` | Does a closed island of the mesh cross itself? | closed islands | no vertex inside its own island |
-| `joint-loops` | Is there enough geometry at each joint? | all vertices, bones | 3 bands of vertices, over 0.25 of the search radius |
+| `joint-loops` | Is there enough geometry at each joint? | all vertices, bones | 3 bands of vertices, over 0.25 of the search radius. On `hips`, `spine`, `chest` and `neck`, a band can be 0.12 of the height from the bone |
 | `attachment-anchor` | Is each prop on the bone that the Unit Spec names? | parts, skin, `props[].bone` | 0.15 of the height, and the prop follows the bone |
 | `region-coverage` | Is each Body Region where the Unit Spec says? | `_REGION`, `regions` | 0.04 of the frame of the model, at azimuth 0 |
-| `chirality` | Is each left and right pair a reflection, not a rotation? | parts, bones | exact mirror |
+| `chirality` | Is each left and right pair a reflection, not a rotation? | parts, bones, `posedPairs` | exact mirror, or a pair in `posedPairs` that is not a rotation |
 | `palette` | Is each region within delta-E 5 of the card painting? | vertex colors, card painting | CIEDE2000 of 5 |
 | `part-coverage` | Is every part of the Unit Spec present? | `_PART`, `parts` | no missing part |
 | `ground-contact` | Is each part of a flyer on or above the ground at rest? | `_PART`, `bodyPlan`, `flying`, rest-pose vertices | no part below 0, with a tolerance of 0.000001 |
@@ -160,9 +162,10 @@ The Unit Spec gives 3 inputs:
 
 - `props[].bone` is the bone that holds each prop.
 - `regions` is a box from 0 to 1 for each region in the frame of the model, with y0 at the top. With no `regions`, `region-coverage` gives an error.
-- `holedParts` lists the parts with a hole by design, such as the tiara.
+- `holedParts` lists the parts with a hole by design, such as the tiara. `body` is the silhouette with no props: list it for an arm that closes a gap against the torso.
+- `posedPairs` lists the pairs that a figure holds differently at rest, with no suffix, for example `forearm`. The shield arm of Shieldbearer is an example.
 
-Only Warden Saelith has `regions` now. Her values are rounded measures of the model. `test_unit_spec.py` compares the heights of her head, arms and legs with her Body Plan table, and the sides of her arms and legs. The table does not give the other edges, for example the braid in the `head` box. They find a change, as a Source Contract does. They do not prove that the first value is good, so a person must approve them.
+Each unit of a Migration has `regions`. The values of Warden Saelith are rounded measures of the model. `test_unit_spec.py` compares the heights of her head, arms and legs with her Body Plan table, and the sides of her arms and legs. The table does not give the other edges, for example the braid in the `head` box. They find a change, as a Source Contract does. They do not prove that the first value is good, so a person must approve them.
 
 What each Review Gate cannot see:
 
@@ -170,7 +173,7 @@ What each Review Gate cannot see:
 - `interior-difference`: The model is compared with a painted target, not with an earlier render, so the value does not go to 0. The limit is thin: Warden Saelith is at 0.270, and a head with no face is at 0.282. It measures luminance only, and it does not find a missing part of the costume: her model passed before it had a mantle and a cape.
 - `self-intersection`: A ray test needs a closed shape. The record lists the open islands in `openIslandsNotTested`. A reversed surface reads as inside itself, so it also finds this.
 - `joint-loops`: A joint needs a child bone, because a glTF bone has no tail. The record lists the other bones in `bonesWithNoTip`. It counts bands of vertices, not true edge loops.
-- `chirality`: A pair that is wrong the same way on both sides is still a mirror of itself.
+- `chirality`: A pair that is wrong the same way on both sides is still a mirror of itself. A pair in `posedPairs` has no test of its shape.
 - `palette`: The card painting has a full scene behind the figure, and no region masks. So it asks if each main color of a region is a color of the painting. A main color has at least 10% of the vertices of the region, so a small detail has no test. It finds a wrong coat color. It does not find a correct color in the wrong place. Browns are in most paintings, so only a saturated color separates well.
 - `part-coverage`: It proves that the model has what the Unit Spec lists, and not that the Unit Spec lists enough.
 
@@ -196,7 +199,7 @@ CI does not build a model. A build on Linux gives other float values, about 1e-7
 
 CI does not find a Raw Export that is older than its build script. The Published Model then does not change either, so the game does not get the change.
 
-A unit with its own change and no Unit Spec fails, because it has no Review Scene. A new pack of such a unit also fails. A unit with a Unit Spec but no `regions` fails, because `region-coverage` gives an error. Only Warden Saelith passes all the gates now. Each other unit needs its Migration before a pull request can change it.
+A unit with its own change and no Unit Spec fails, because it has no Review Scene. A new pack of such a unit also fails. A unit with a Unit Spec but no `regions` fails, because `region-coverage` gives an error. Only Warden Saelith passes all the gates now. The units of `migrations/humanoids.md` pass all the Review Gates except `interior-difference`, because they have no Turnaround, so they fail this job. Each other unit needs its Migration before a pull request can change it.
 
 ## Warden Saelith rebuild
 
@@ -210,7 +213,7 @@ Warden Saelith is the first model through the full pipeline. `artifacts/unit-mod
 
 `kit.sheet` faces the side that its grid order gives, and `self-intersection` does not read an open sheet. A grid with its columns in the wrong order has the same fault as the old `kit.tube`. `warden-saelith.py` reverses the columns of the outer `skirt`.
 
-`kit.cone` has `loops`: a ring at each share of its length. A ring does not change the shape, so it does not change a Source Contract. A ring bends only if its vertices have a blend of two bones. `neck_weights` and `hips_weights` of `warden-saelith.py` are examples. The tests of the kit need Blender:
+`kit.cone` has `loops`: a ring at each share of its length. `kit.shares` changes heights to these shares. A ring does not change the shape, so it does not change a Source Contract. A ring bends only if its vertices have a blend of two bones. `plan.neck_weights(table)` and `plan.hips_weights(table)` give these blends. The tests of the kit need Blender:
 
 ```sh
 rtk proxy /Applications/Blender.app/Contents/MacOS/Blender --background --factory-startup --python-exit-code 1 --python scripts/unit-model/test_kit_geometry.py

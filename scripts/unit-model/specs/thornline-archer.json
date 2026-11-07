@@ -1,0 +1,150 @@
+{
+  "id": "thornline-archer",
+  "bodyPlan": "biped-medium",
+  "height": 0.9679999947547913,
+  "palette": {
+    "amber": "#dd9a38",
+    "amber_dark": "#a86a22",
+    "boot": "#6a4329",
+    "brow": "#94703a",
+    "cream": "#ece0c2",
+    "eyes": "#333516",
+    "fletch": "#4f9a3e",
+    "hair": "#d0a65e",
+    "hair_dark": "#a27a3c",
+    "hair_light": "#ead08e",
+    "leaf": "#6f9a40",
+    "leaf_dark": "#3f6228",
+    "leaf_light": "#9cbc5a",
+    "leather": "#7a4e2c",
+    "leather_dark": "#4a2e1a",
+    "sap": "#9ee04a",
+    "sap_dark": "#5fa02a",
+    "shaft": "#b88a52",
+    "skin": "#e6b48e",
+    "thorn": "#7a5a36",
+    "trousers": "#5c4232",
+    "tunic": "#656931",
+    "tunic_dark": "#52572b",
+    "wood": "#4a2d1a",
+    "wood_dark": "#2e1b0f"
+  },
+  "parts": [
+    "head",
+    "face",
+    "neck",
+    "hair",
+    "tunic",
+    "jerkin",
+    "belt",
+    "hips",
+    "skirt",
+    "mantle",
+    "quiver",
+    "sleeve.L",
+    "bracer.L",
+    "hand.L",
+    "thigh.L",
+    "boot.L",
+    "foot.L",
+    "sleeve.R",
+    "bracer.R",
+    "hand.R",
+    "thigh.R",
+    "boot.R",
+    "foot.R",
+    "bow",
+    "string",
+    "arrow"
+  ],
+  "props": [
+    {
+      "id": "quiver",
+      "hand": "none",
+      "cameraSide": false,
+      "bone": "hips"
+    },
+    {
+      "id": "bow",
+      "hand": "left",
+      "cameraSide": false,
+      "bone": "hand.L"
+    },
+    {
+      "id": "arrow",
+      "hand": "right",
+      "cameraSide": true,
+      "bone": "hand.R"
+    }
+  ],
+  "clips": {
+    "idle": {},
+    "lowHp": {},
+    "walk": {},
+    "attack": {
+      "override": "bow-draw"
+    },
+    "hurt": {},
+    "death": {},
+    "rebirth": {},
+    "summon": {}
+  },
+  "details": [
+    "golden hair swept back to a short tail",
+    "green tunic under a mantle of leaves",
+    "brown leather jerkin with straps",
+    "green coat skirt with an amber hem and a ragged leaf edge",
+    "quiver of green-fletched arrows at the right hip",
+    "recurved thorn-wood bow with amber tips",
+    "arrow head wet with green sap"
+  ],
+  "regions": {
+    "arm.L": {
+      "x0": 0.71,
+      "x1": 0.97,
+      "y0": 0.22,
+      "y1": 0.58
+    },
+    "arm.R": {
+      "x0": 0.2,
+      "x1": 0.46,
+      "y0": 0.22,
+      "y1": 0.58
+    },
+    "head": {
+      "x0": 0.38,
+      "x1": 0.79,
+      "y0": 0,
+      "y1": 0.24
+    },
+    "leg.L": {
+      "x0": 0.61,
+      "x1": 0.74,
+      "y0": 0.49,
+      "y1": 1
+    },
+    "leg.R": {
+      "x0": 0.43,
+      "x1": 0.56,
+      "y0": 0.49,
+      "y1": 1
+    },
+    "prop": {
+      "x0": 0,
+      "x1": 1,
+      "y0": 0.25,
+      "y1": 0.91
+    },
+    "torso": {
+      "x0": 0.34,
+      "x1": 0.83,
+      "y0": 0.22,
+      "y1": 0.77
+    }
+  },
+  "identity": {
+    "feature": "recurved thorn-wood bow with amber tips",
+    "azimuthDegrees": 45
+  },
+  "holedParts": ["quiver"]
+}

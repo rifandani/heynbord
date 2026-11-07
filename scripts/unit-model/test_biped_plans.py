@@ -56,6 +56,25 @@ class LargeTable(unittest.TestCase):
         self.assertLess(medium.Proportions().shoulder_width, large.Proportions().shoulder_width)
 
 
+class JointWeights(unittest.TestCase):
+    def test_a_neck_ring_at_the_joint_blends_the_chest_and_the_neck(self):
+        weights = medium.neck_weights(medium.Proportions())
+        self.assertAlmostEqual(weights(SimpleNamespace(x=0, y=0, z=0.75))["neck"], 0.5)
+        self.assertEqual(weights(SimpleNamespace(x=0, y=0, z=0.7)), {"chest": 1, "neck": 0})
+        self.assertEqual(weights(SimpleNamespace(x=0, y=0, z=0.8)), {"chest": 0, "neck": 1})
+
+    def test_the_hips_follow_the_thigh_on_their_side_below_the_joint(self):
+        weights = medium.hips_weights(medium.Proportions())
+        self.assertEqual(weights(SimpleNamespace(x=0.05, y=0, z=0.47)), {"hips": 1, "thigh.L": 0})
+        below = weights(SimpleNamespace(x=-0.05, y=0, z=0.42))
+        self.assertAlmostEqual(below["hips"], 0.4)
+        self.assertAlmostEqual(below["thigh.R"], 0.6)
+
+    def test_a_large_figure_blends_at_its_own_joints(self):
+        table = large.Proportions(neck_z=0.77, head_base_z=0.8, head_top_z=0.96)
+        self.assertAlmostEqual(large.neck_weights(table)(SimpleNamespace(x=0, y=0, z=0.77))["neck"], 0.5)
+
+
 class SharedRules(unittest.TestCase):
     def test_a_unit_overrides_only_the_values_that_it_names(self):
         for plan in (small, large):

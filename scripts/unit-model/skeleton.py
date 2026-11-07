@@ -33,20 +33,34 @@ sys.path.insert(0, os.path.join(REPO, "scripts", "unit-model"))
 
 import importlib  # noqa: E402
 
+import body_plans  # noqa: E402
+import clips  # noqa: E402
 import unit_model_kit as kit  # noqa: E402
 
 importlib.reload(kit)
+importlib.reload(body_plans.shared)
+importlib.reload(body_plans.biped)
+importlib.reload(body_plans.biped_medium)
+importlib.reload(clips.base)
+importlib.reload(clips.overrides)
+importlib.reload(clips.biped)
+importlib.reload(clips.biped_medium)
 
-from unit_model_kit import X, Y, Z, Clip, Part, blend, clamp01, faces_of, hex_color, turn  # noqa: E402
+from clips.base import Beat  # noqa: E402
+from clips.overrides import Fall, Patch  # noqa: E402
+
+from unit_model_kit import X, Y, Z, Part, blend, clamp01, faces_of, hex_color  # noqa: E402
+
+plan = body_plans.BODY_PLANS["biped-medium"]
 
 # --- Palette (the Token painting) ---------------------------------------------
 
-BONE = hex_color("#e6dcc4")
-BONE_DARK = hex_color("#b3a684")
+BONE = hex_color("#e9ddc5")
+BONE_DARK = hex_color("#afa288")
 SOCKET = hex_color("#1c1f22")
 GLOW = hex_color("#9fe8ff")
-TEAL = hex_color("#4f7f78")
-TEAL_DARK = hex_color("#365a55")
+TEAL = hex_color("#617874")
+TEAL_DARK = hex_color("#48584f")
 KILT = hex_color("#7a5a3c")
 KILT_DARK = hex_color("#54402c")
 LEATHER = hex_color("#6a4a2e")
@@ -64,15 +78,34 @@ STEEL_LIGHT = hex_color("#d6d1c4")
 # --- Proportions ---------------------------------------------------------------
 
 # A small, thin skeleton: thin bones and narrow hips show his low HP.
-HIP_Z = 0.33
-WAIST_Z = 0.39
-CHEST_Z = 0.45
-SHOULDER_Z = 0.53
-NECK_Z = 0.55
+TABLE = plan.Proportions(
+    hip_z=0.33,
+    waist_z=0.39,
+    chest_z=0.45,
+    shoulder_z=0.53,
+    neck_z=0.55,
+    head_base_z=0.585,
+    head_top_z=0.73,
+    knee_z=0.175,
+    ankle_z=0.045,
+    head_base_y=-0.005,
+    head_top_y=-0.01,
+    shoulder_width=0.17,
+    shoulder_root_x=0.02,
+    hip_x=0.042,
+    knee_x=0.042,
+    root_tip_z=0.1,
+    foot_tip_z=0.014,
+)
+HIP_Z = TABLE.hip_z
+WAIST_Z = TABLE.waist_z
+CHEST_Z = TABLE.chest_z
+SHOULDER_Z = TABLE.shoulder_z
+NECK_Z = TABLE.neck_z
 HEAD_C = Vector((0, -0.015, 0.635))
-KNEE_Z = 0.175
-ANKLE_Z = 0.045
-LEG_X = 0.042
+KNEE_Z = TABLE.knee_z
+ANKLE_Z = TABLE.ankle_z
+LEG_X = TABLE.hip_x
 THIGH = HIP_Z - KNEE_Z
 SHIN = KNEE_Z - ANKLE_Z
 UPPER_ARM = 0.1
@@ -91,11 +124,11 @@ def bend(shoulder, wrist, out):
 
 # The right arm holds the sword too high; the left arm holds the lid in front
 # of the chest. These are the rest (bind) positions.
-SR = Vector((-0.085, 0, SHOULDER_Z))
+SR = Vector(plan.shoulder_point(TABLE, -1))
 WR = Vector((-0.11, -0.03, 0.71))
 ER = bend(SR, WR, (-1, 0.3, 0))
 TR = WR + (WR - ER).normalized() * 0.035
-SL = Vector((0.085, 0, SHOULDER_Z))
+SL = Vector(plan.shoulder_point(TABLE, 1))
 WL = Vector((0.085, -0.125, 0.43))
 EL = bend(SL, WL, (1, 0.3, -0.5))
 TL = WL + (WL - EL).normalized() * 0.035
@@ -115,27 +148,12 @@ LID_N = Vector((-math.sin(math.radians(25)), -math.cos(math.radians(25)), 0.06))
 HELMET_AXIS = Vector((-0.3, -0.12, 1)).normalized()
 HELMET_BASE = HEAD_C + Vector((-0.004, 0.006, 0.022))
 
-BONES = [
-    ("root", (0, 0, 0), (0, 0, 0.1), None),
-    ("hips", (0, 0, HIP_Z), (0, 0, WAIST_Z), "root"),
-    ("spine", (0, 0, WAIST_Z), (0, 0, CHEST_Z), "hips"),
-    ("chest", (0, 0, CHEST_Z), (0, 0, NECK_Z), "spine"),
-    ("neck", (0, 0, NECK_Z), (0, -0.005, 0.585), "chest"),
-    ("head", (0, -0.005, 0.585), (0, -0.01, 0.73), "neck"),
+TRUNK_BONES = [
     ("jaw", (0, -0.012, 0.612), (0, -0.065, 0.594), "head"),
     ("helmet", tuple(HELMET_BASE), tuple(HELMET_BASE + HELMET_AXIS * 0.1), "head"),
     ("cloth", (0, 0.05, 0.54), (0, 0.11, 0.42), "chest"),
 ]
-for side, sign, (s, e, w, tip) in (("L", 1, (SL, EL, WL, TL)), ("R", -1, (SR, ER, WR, TR))):
-    BONES += [
-        (f"shoulder.{side}", (0.02 * sign, 0, SHOULDER_Z), tuple(s), "chest"),
-        (f"upperarm.{side}", tuple(s), tuple(e), f"shoulder.{side}"),
-        (f"forearm.{side}", tuple(e), tuple(w), f"upperarm.{side}"),
-        (f"hand.{side}", tuple(w), tuple(tip), f"forearm.{side}"),
-        (f"thigh.{side}", (LEG_X * sign, 0, HIP_Z), (LEG_X * sign, 0, KNEE_Z), "hips"),
-        (f"shin.{side}", (LEG_X * sign, 0, KNEE_Z), (LEG_X * sign, 0, ANKLE_Z), f"thigh.{side}"),
-        (f"foot.{side}", (LEG_X * sign, 0, ANKLE_Z), (LEG_X * sign, -0.08, 0.014), f"shin.{side}"),
-    ]
+ARMS = {"L": (EL, WL, TL), "R": (ER, WR, TR)}
 
 # --- Weights -------------------------------------------------------------------
 
@@ -422,9 +440,10 @@ def lid_part():
 
 def build_figure():
     kit.reset_scene()
-    rig = kit.build_armature("Skeleton", BONES)
+    rig, _ = plan.build_rig("Skeleton", TABLE, TRUNK_BONES, arms=ARMS)
     parts = head_parts() + body_parts() + limb_parts() + [sword_part(), lid_part()]
     objects = [kit.part_object(part) for part in parts]
+    plan.check_skin(parts, rig)
     mesh = kit.join_parts(objects, "SkeletonMesh")
     kit.skin(mesh, rig)
     return rig, mesh
@@ -433,25 +452,71 @@ def build_figure():
 # --- Clips -----------------------------------------------------------------------
 
 
-def build_clips(rig):
-    def t(bone, *rotations):
-        return turn(rig, bone, *rotations)
+PATCHES = (
+    # The idle: eager and nervous. He waves the sword, chatters, and keeps
+    # looking back over his shoulder for an ally (Swarm).
+    Patch(
+        "idle",
+        "nervous-glance",
+        beats=tuple(
+            Beat(frame, "stance", args)
+            for frame, *args in (
+                (0, 0, 0.3, 0, 0),
+                (8, 0.5, 0.25, 0.6, 0),
+                (14, 0.8, 1.0, 0.2, 0.6),
+                (20, 1, 1.0, -0.2, 0),
+                (24, 0.8, 0.9, 0, 0.5),
+                (30, 0.5, 0.2, -0.6, 0),
+                (38, 0.2, 0.3, 0.4, 0),
+                (48, 0, 0.3, 0, 0),
+            )
+        ),
+    ),
+    Patch(
+        "lowHp",
+        "cower",
+        beats=tuple(
+            Beat(frame, "slump", args)
+            for frame, *args in ((0, 0, 0), (5, 0.3, 1), (10, 0.5, -1), (20, 1, 0), (25, 0.7, 1), (30, 0.5, -1), (40, 0, 0))
+        ),
+        frames=40,
+    ),
+    Patch(
+        "walk",
+        "eager-march",
+        beats=(Beat(0, "step", (1,)), Beat(5, "step", (1, 1)), Beat(10, "step", (-1,)), Beat(15, "step", (-1, 1)), Beat(20, "step", (1,))),
+        frames=20,
+    ),
+    Patch(
+        "attack",
+        "wild-chop",
+        beats=(Beat(0), Beat(8, "windup"), Beat(15, "strike"), Beat(19, "strike"), Beat(25, "stance", (0.3, 0.8, 0.4, 0.6)), Beat(30)),
+    ),
+    # The helmet rolls off as he lands.
+    Patch(
+        "death",
+        "helmet-roll",
+        beats=(Beat(0), Beat(5, "recoil"), Beat(12, "stagger"), Beat(24, "fallen", (0, 0.2)), Beat(28, "fallen", (5, 0.7)), Beat(36, "fallen")),
+    ),
+    # The helmet goes back on and he gets up with a rattle.
+    Patch(
+        "rebirth",
+        "helmet-back",
+        beats=(Beat(0), Beat(4, "recoil"), Beat(16, "fallen", (0, 0.5)), Beat(21, "fallen"), Beat(32, "crouch"), Beat(41, "heroic"), Beat(48)),
+    ),
+)
 
-    def at(bone, offset):
-        return kit.shift(rig, bone, offset)
 
-    def pose(base, **changes):
-        result = dict(base)
-        for key, value in changes.items():
-            result[key.replace("__", ".").replace("_at_", "@")] = value
-        return result
+class Poses(clips.biped_medium.Poses):
+    fall = Fall(X, -86, (0, 0, 0.1))
 
-    def leg(side, swing, drop, tilt=0.0, splay=0.0):
+    def leg(self, side, swing, drop, tilt=0.0, splay=0.0):
         """
         One leg with its foot flat on the ground. `swing` is the angle of the
         thigh (negative: the knee goes forward), `drop` is how far the hips
         go down, and `tilt` is the forward tilt of the hips.
         """
+        t = self.t
         a = math.radians(swing)
         reach = clamp01((THIGH + SHIN - drop - THIGH * math.cos(a)) / SHIN)
         c = max(math.acos(reach), a)
@@ -462,16 +527,17 @@ def build_clips(rig):
             f"foot.{side}": t(f"foot.{side}", (X, -math.degrees(c))),
         }
 
-    def stride(drop, front=-24.0, back=14.0, tilt=6.0):
+    def stride(self, drop, front=-24.0, back=14.0, tilt=6.0):
         """The left foot forward and the right foot back, both flat: mid-step."""
-        return {**leg("L", front, drop, tilt, 3), **leg("R", back, drop, tilt, -3)}
+        return {**self.leg("L", front, drop, tilt, 3), **self.leg("R", back, drop, tilt, -3)}
 
-    def stand(breath=0.0, glance=0.4, wave=0.0, chat=0.0):
+    def stance(self, breath=0.0, glance=0.4, wave=0.0, chat=0.0):
         """
         He advances, the sword too high and the lid in front. `glance` (0 to 1)
         turns his head back over his right shoulder to look for an ally, `wave`
         (-1 to 1) wobbles the sword and `chat` opens the jaw.
         """
+        t, at = self.t, self.at
         drop = 0.025 + breath * 0.005
         return {
             "hips@loc": at("hips", (0, 0.006, -drop)),
@@ -487,14 +553,15 @@ def build_clips(rig):
             "hand.R": t("hand.R", (X, 10 * wave)),
             "upperarm.L": t("upperarm.L", (X, -breath * 3)),
             "cloth": t("cloth", (X, -14 - breath * 4), (Y, 8 * wave)),
-            **stride(drop),
+            **self.stride(drop),
         }
 
-    def cower(breath=0.0, shake=0.0):
+    def slump(self, base, breath=0.0, shake=0.0):
         """Low HP: low behind the lid, the sword drooping over his shoulder, looking back for friends."""
+        t, at = self.t, self.at
         drop = 0.1 + breath * 0.006
-        return pose(
-            stand(),
+        return self.pose(
+            self.stance(),
             hips_at_loc=at("hips", (0, 0.03, -drop)),
             hips=t("hips", (X, 10)),
             spine=t("spine", (X, 24 + breath * 3)),
@@ -508,13 +575,14 @@ def build_clips(rig):
             hand__R=t("hand.R", (X, 20)),
             upperarm__L=t("upperarm.L", (X, -10), (Z, -8)),
             cloth=t("cloth", (X, -6)),
-            **leg("L", -50, drop, 10, 4),
-            **leg("R", 4, drop, 10, -4),
+            **self.leg("L", -50, drop, 10, 4),
+            **self.leg("R", 4, drop, 10, -4),
         )
 
-    def recoil(base, amount=1.0):
+    def recoil(self, base, amount=1.0):
         """A hit knocks him back: the head snaps back, the helmet jumps and the sword flails."""
-        return pose(
+        t, at = self.t, self.at
+        return self.pose(
             base,
             hips_at_loc=at("hips", (0, 0.03 * amount, -0.04)),
             spine=t("spine", (X, -4 * amount)),
@@ -529,10 +597,11 @@ def build_clips(rig):
             cloth=t("cloth", (X, -36 * amount)),
         )
 
-    def stagger(base):
+    def stagger(self, base):
         """He totters, the bones loose, the sword arm limp."""
-        drop = 0.06
-        return pose(
+        t, at = self.t, self.at
+        drop = 0.04
+        return self.pose(
             base,
             hips_at_loc=at("hips", (0, 0.03, -drop)),
             hips=t("hips", (Z, -10), (Y, 8)),
@@ -545,16 +614,17 @@ def build_clips(rig):
             upperarm__R=t("upperarm.R", (X, 100), (Y, -30)),
             forearm__R=t("forearm.R", (X, 20)),
             upperarm__L=t("upperarm.L", (X, 30), (Y, 20)),
-            **leg("R", -18, drop, 0, -8),
-            **leg("L", 18, drop, 0, 8),
+            **self.leg("R", -18, drop, 0, -8),
+            **self.leg("L", 18, drop, 0, 8),
         )
 
-    def fallen(base, bounce=0.0, roll=1.0):
+    def fallen(self, base, bounce=0.0, roll=1.0):
         """Flat on the back, the arms out. `roll` takes the helmet off and rolls it to the camera side."""
-        return pose(
+        t, at = self.t, self.at
+        return self.pose(
             base,
             root=t("root", (X, -86 + bounce)),
-            root_at_loc=at("root", (0, 0, 0.05)),
+            root_at_loc=at("root", (0, 0, 0.056)),
             hips_at_loc=at("hips", (0, 0, -0.01)),
             hips=t("hips", (X, 0)),
             spine=t("spine", (X, -4)),
@@ -578,10 +648,11 @@ def build_clips(rig):
             cloth=t("cloth", (X, -50)),
         )
 
-    def crouch(base):
+    def crouch(self, base):
         """Very low, as a summon starts and a Rebirth gets up: the helmet slips over his eyes."""
+        t, at = self.t, self.at
         drop = 0.14
-        return pose(
+        return self.pose(
             base,
             hips_at_loc=at("hips", (0, 0.03, -drop)),
             spine=t("spine", (X, 30)),
@@ -594,12 +665,13 @@ def build_clips(rig):
             forearm__R=t("forearm.R", (X, 20)),
             upperarm__L=t("upperarm.L", (X, 10)),
             cloth=t("cloth", (X, 20)),
-            **stride(drop, -56, 22, 8),
+            **self.stride(drop, -56, 22, 8),
         )
 
-    def cheer(base):
+    def heroic(self, base):
         """Up with a rattle: the sword high over his head, the jaw wide, a look back at his friends."""
-        return pose(
+        t, at = self.t, self.at
+        return self.pose(
             base,
             hips_at_loc=at("hips", (0, 0.006, -0.0)),
             spine=t("spine", (X, 0)),
@@ -611,15 +683,16 @@ def build_clips(rig):
             helmet_at_loc=at("helmet", (0, 0, 0.02)),
             upperarm__R=t("upperarm.R", (X, -12), (Y, 6)),
             upperarm__L=t("upperarm.L", (X, -20), (Y, 14)),
-            **stride(0.01, -14, 10, 4),
+            **self.stride(0.01, -14, 10, 4),
         )
 
-    def step(front, lift=0.0):
+    def step(self, base, front, lift=0.0):
         """An eager march. `front` is 1 for the left foot, -1 for the right; `lift` is in the air."""
+        t, at = self.t, self.at
         lead, back = ("L", "R") if front == 1 else ("R", "L")
         drop = 0.03 - lift * 0.012
-        result = pose(
-            stand(0.0, 0.0),
+        result = self.pose(
+            self.stance(0.0, 0.0),
             hips_at_loc=at("hips", (0, 0.006, -drop)),
             hips=t("hips", (X, 8), (Z, -6 * front)),
             spine=t("spine", (X, 8), (Y, -3 * front)),
@@ -633,8 +706,8 @@ def build_clips(rig):
             hand__R=t("hand.R", (X, 12 * front)),
             upperarm__L=t("upperarm.L", (X, -8 * front)),
             cloth=t("cloth", (X, -22), (Y, 8 * front)),
-            **leg(back, 20, drop, 8),
-            **leg(lead, -28, drop, 8),
+            **self.leg(back, 20, drop, 8),
+            **self.leg(lead, -28, drop, 8),
         )
         if lift:
             result.update(
@@ -646,13 +719,11 @@ def build_clips(rig):
             )
         return result
 
-    # The attack: a wild chop from high above his head. The slash effect
-    # starts at 50% of the attack (`MELEE_IMPACT` in fx.ts), so the chop
-    # lands at frame 15 of 30.
-    def wind(base):
+    def windup(self, base):
         """He leans back and swings the sword far behind his head, eyes shut for courage."""
+        t, at = self.t, self.at
         drop = 0.03
-        return pose(
+        return self.pose(
             base,
             hips_at_loc=at("hips", (0, 0.02, -drop)),
             hips=t("hips", (X, 2), (Z, -10)),
@@ -667,13 +738,14 @@ def build_clips(rig):
             hand__R=t("hand.R", (X, -20)),
             upperarm__L=t("upperarm.L", (X, -14)),
             cloth=t("cloth", (X, -20)),
-            **stride(drop, -20, 18, 0),
+            **self.stride(drop, -20, 18, 0),
         )
 
-    def chop(base):
+    def strike(self, base):
         """He lunges and brings the sword down in front of him."""
+        t, at = self.t, self.at
         drop = 0.07
-        return pose(
+        return self.pose(
             base,
             hips_at_loc=at("hips", (0, -0.05, -drop)),
             hips=t("hips", (X, 12), (Z, 6)),
@@ -689,61 +761,15 @@ def build_clips(rig):
             hand__R=t("hand.R", (X, 8)),
             upperarm__L=t("upperarm.L", (X, -12), (Y, 8)),
             cloth=t("cloth", (X, -30)),
-            **stride(drop, -50, 26, 10),
+            **self.stride(drop, -50, 26, 10),
         )
 
-    clips = []
-    # The idle: eager and nervous. He waves the sword, chatters, and keeps
-    # looking back over his shoulder for an ally (Swarm).
-    idle = Clip("idle", 48, loop=True)
-    for frame, breath, glance, wave, chat in (
-        (0, 0, 0.3, 0, 0),
-        (8, 0.5, 0.25, 0.6, 0),
-        (14, 0.8, 1.0, 0.2, 0.6),
-        (20, 1, 1.0, -0.2, 0),
-        (24, 0.8, 0.9, 0, 0.5),
-        (30, 0.5, 0.2, -0.6, 0),
-        (38, 0.2, 0.3, 0.4, 0),
-        (48, 0, 0.3, 0, 0),
-    ):
-        idle.key(frame, stand(breath, glance, wave, chat))
-    clips.append(idle)
+    def rising(self, base):
+        return self.pose(self.crouch(base), jaw=self.t("jaw", (X, 24)))
 
-    low = Clip("lowHp", 40, loop=True)
-    for frame, breath, shake in ((0, 0, 0), (5, 0.3, 1), (10, 0.5, -1), (20, 1, 0), (25, 0.7, 1), (30, 0.5, -1), (40, 0, 0)):
-        low.key(frame, cower(breath, shake))
-    clips.append(low)
 
-    walk = Clip("walk", 20, loop=True)
-    walk.key(0, step(1)).key(5, step(1, 1)).key(10, step(-1)).key(15, step(-1, 1)).key(20, step(1))
-    clips.append(walk)
-
-    attack = Clip("attack", 30)
-    attack.key(0, stand()).key(8, wind(stand())).key(15, chop(stand())).key(19, chop(stand()))
-    attack.key(25, stand(0.3, 0.8, 0.4, 0.6)).key(30, stand())
-    clips.append(attack)
-
-    hurt = Clip("hurt", 16)
-    hurt.key(0, stand()).key(3, recoil(stand())).key(8, recoil(stand(), 0.4)).key(16, stand())
-    clips.append(hurt)
-
-    death = Clip("death", 36)
-    death.key(0, stand()).key(5, recoil(stand())).key(12, stagger(stand()))
-    death.key(24, fallen(stand(), 0, 0.2)).key(28, fallen(stand(), 5, 0.7)).key(36, fallen(stand()))
-    clips.append(death)
-
-    # Rebirth: the Unit falls (45% of the event, `REBORN_FALL`), then the
-    # helmet goes back on and he gets up with a rattle.
-    rebirth = Clip("rebirth", 48)
-    rebirth.key(0, stand()).key(4, recoil(stand())).key(16, fallen(stand(), 0, 0.5)).key(21, fallen(stand()))
-    rebirth.key(32, crouch(stand())).key(41, cheer(stand())).key(48, stand())
-    clips.append(rebirth)
-
-    summon = Clip("summon", 24)
-    summon.key(0, crouch(stand())).key(10, pose(crouch(stand()), jaw=t("jaw", (X, 24))))
-    summon.key(17, cheer(stand())).key(24, stand())
-    clips.append(summon)
-    return clips
+def build_clips(rig):
+    return clips.overrides.build(clips.biped_medium.CLIPS, Poses(*kit.pose_tools(rig)), PATCHES, without=("cast",))
 
 
 def build(export=True):

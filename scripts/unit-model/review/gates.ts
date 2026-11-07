@@ -74,6 +74,7 @@ export interface UnitSpec {
   readonly props: readonly { readonly id: string; readonly bone: string }[];
   readonly regions?: Readonly<Record<string, RegionBox>>;
   readonly holedParts?: readonly string[];
+  readonly posedPairs?: readonly string[];
 }
 
 /** What the Review Gates read. Each file must exist before one can answer. */
@@ -409,6 +410,12 @@ const dot = (one: readonly number[], other: readonly number[]): number =>
   (one[1] ?? 0) * (other[1] ?? 0) +
   (one[2] ?? 0) * (other[2] ?? 0);
 
+const unitGate = (gate: string, request: string): readonly string[] => [
+  UNIT_GATES,
+  gate,
+  request,
+];
+
 /**
  * The bones that bend and the next bone of each. A glTF bone has no tail, so
  * the tip is the child that goes on in the direction of the bone.
@@ -457,7 +464,7 @@ type JointRecord = Readonly<{
 }>;
 
 const thinJoints = (report: GateReportJson): readonly string[] =>
-  // SAFETY: `analyze_joint_loops` always returns these records.
+  // SAFETY: `joints` of `unit_gates.py` always returns these records.
   (report.joints as readonly JointRecord[]).flatMap(
     ({ axialSpan = 0, bone, passes, radius }) =>
       passes && axialSpan < radius * MIN_JOINT_SPAN
@@ -471,13 +478,14 @@ const jointLoops = async (context: GateContext): Promise<GateCommand> => {
     throw new MissingInputError("no joint to test");
   }
   return {
-    args: [
-      vendor("joint_loops.py"),
-      context.meshesFile,
-      "--bones",
-      await writeInput(context, "bones.json", joints),
-      "--json",
-    ],
+    args: unitGate(
+      "joints",
+      await writeInput(context, "joints.json", {
+        meshes: context.meshesFile,
+        bones: joints,
+        height: context.sources.spec.height,
+      })
+    ),
     problems: thinJoints,
     notes: { bonesWithNoTip: noTip },
   };
@@ -531,12 +539,6 @@ const regionCoverage = async (context: GateContext): Promise<GateCommand> => {
     ],
   };
 };
-
-const unitGate = (gate: string, request: string): readonly string[] => [
-  UNIT_GATES,
-  gate,
-  request,
-];
 
 const turntable = async (context: GateContext): Promise<GateCommand> => {
   const captures = TURNTABLE_VIEWS.flatMap((view) => {
@@ -609,6 +611,7 @@ const chirality = async (context: GateContext): Promise<GateCommand> => ({
     await writeInput(context, "chirality.json", {
       meshes: context.meshesFile,
       bones: context.sources.meshes.bones,
+      posedPairs: context.sources.spec.posedPairs ?? [],
     })
   ),
 });

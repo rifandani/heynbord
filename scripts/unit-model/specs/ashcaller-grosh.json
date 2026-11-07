@@ -1,0 +1,157 @@
+{
+  "id": "ashcaller-grosh",
+  "bodyPlan": "biped-large",
+  "height": 1.0499999742006219,
+  "palette": {
+    "brass": "#f4ae4d",
+    "brass_dark": "#8b5b37",
+    "brown": "#55331f",
+    "cloth_dark": "#3c2721",
+    "ember": "#ff5e1a",
+    "eyes": "#1a120c",
+    "flame": "#ffa22b",
+    "flame_core": "#fee9af",
+    "glass": "#f2a743",
+    "hair": "#2b1e17",
+    "hair_light": "#4a3326",
+    "leather": "#5a3622",
+    "paint": "#ece6d4",
+    "rag": "#8c6042",
+    "red": "#a1332b",
+    "red_dark": "#6a1f1b",
+    "skin": "#b86c4e",
+    "skin_dark": "#6e4a36",
+    "tusk": "#e9dcbc",
+    "wood": "#3d2a1d",
+    "wrap": "#7d4a32"
+  },
+  "parts": [
+    "head",
+    "brows",
+    "eyes",
+    "tusks",
+    "hair",
+    "locks",
+    "neck",
+    "tunic",
+    "hips",
+    "mantle",
+    "collar",
+    "medallion",
+    "sash",
+    "charms",
+    "robe",
+    "sleeve.L",
+    "arm.L",
+    "forearm.L",
+    "wrap.L",
+    "hand.L",
+    "thigh.L",
+    "shin.L",
+    "boot.L",
+    "sleeve.R",
+    "arm.R",
+    "forearm.R",
+    "wrap.R",
+    "hand.R",
+    "thigh.R",
+    "shin.R",
+    "boot.R",
+    "staff",
+    "staff.charms",
+    "flame"
+  ],
+  "props": [
+    {
+      "id": "charms",
+      "hand": "none",
+      "cameraSide": false,
+      "bone": "hips"
+    },
+    {
+      "id": "staff",
+      "hand": "left",
+      "cameraSide": false,
+      "bone": "hand.L"
+    }
+  ],
+  "clips": {
+    "idle": {},
+    "lowHp": {},
+    "walk": {},
+    "attack": {
+      "override": "flame-throw"
+    },
+    "cast": {
+      "override": "fire-flare"
+    },
+    "hurt": {},
+    "death": {
+      "override": "fire-out"
+    },
+    "rebirth": {},
+    "summon": {}
+  },
+  "details": [
+    "white face paint and long dark locks",
+    "ragged red and brown robe with brass charms",
+    "burning staff in the left hand",
+    "flame over the open right hand"
+  ],
+  "regions": {
+    "arm.L": {
+      "x0": 0.69,
+      "x1": 0.96,
+      "y0": 0.28,
+      "y1": 0.5
+    },
+    "arm.R": {
+      "x0": 0.02,
+      "x1": 0.35,
+      "y0": 0.28,
+      "y1": 0.63
+    },
+    "effect": {
+      "x0": 0,
+      "x1": 0.12,
+      "y0": 0.5,
+      "y1": 0.61
+    },
+    "head": {
+      "x0": 0.28,
+      "x1": 0.76,
+      "y0": 0.08,
+      "y1": 0.36
+    },
+    "leg.L": {
+      "x0": 0.54,
+      "x1": 0.72,
+      "y0": 0.54,
+      "y1": 1
+    },
+    "leg.R": {
+      "x0": 0.32,
+      "x1": 0.5,
+      "y0": 0.54,
+      "y1": 1
+    },
+    "prop": {
+      "x0": 0.3,
+      "x1": 1,
+      "y0": 0,
+      "y1": 1
+    },
+    "torso": {
+      "x0": 0.23,
+      "x1": 0.81,
+      "y0": 0.24,
+      "y1": 0.9
+    }
+  },
+  "identity": {
+    "feature": "flame over the open right hand",
+    "azimuthDegrees": 315
+  },
+  "posedPairs": ["arm", "forearm", "hand", "sleeve", "wrap"],
+  "holedParts": ["charms"]
+}

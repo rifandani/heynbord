@@ -96,6 +96,15 @@ class UnitSpecChecks(unittest.TestCase):
         self.assertGreater(regions["arm.L"]["x0"], regions["arm.R"]["x1"])
         self.assertGreater(regions["leg.L"]["x0"], regions["leg.R"]["x1"])
 
+    def test_a_part_name_of_a_build_script_is_valid(self):
+        valid = load_spec(DIRECTORY / "specs/warden-saelith.json")
+        parts = [*valid["parts"], "mailHem", "glove.L", "staff.charms", "bomb.basket"]
+        self.assertEqual(validate_spec({**valid, "parts": parts}), [])
+
+    def test_the_body_can_have_a_hole_by_design(self):
+        valid = load_spec(DIRECTORY / "specs/warden-saelith.json")
+        self.assertEqual(validate_spec({**valid, "holedParts": ["body"]}), [])
+
     def test_a_holed_part_must_be_a_part_of_the_unit(self):
         valid = load_spec(DIRECTORY / "specs/warden-saelith.json")
         self.assertEqual(validate_spec({**valid, "holedParts": ["tiara"]}), [])
@@ -118,7 +127,8 @@ class UnitSpecChecks(unittest.TestCase):
         valid = load_spec(DIRECTORY / "specs/warden-saelith.json")
         cases = [
             ({"bodyPlan": "unknown"}, "spec.bodyPlan: unknown value"),
-            ({"parts": ["unknown"]}, "spec.parts[0]: unknown value"),
+            ({"parts": ["Not a name"]}, "spec.parts[0]: expected pattern"),
+            ({"posedPairs": ["Not a name"]}, "spec.posedPairs[0]: expected pattern"),
             ({"palette": {"coat": "#abc"}}, "spec.palette.coat: expected pattern"),
             ({"palette": {"coat": "#1234567"}}, "spec.palette.coat: expected pattern"),
             ({"palette": {"coat": "#12345g"}}, "spec.palette.coat: expected pattern"),
@@ -195,6 +205,8 @@ class UnitSpecChecks(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual(result.stdout.splitlines(), [
             "PASS amberwing-dart.json: amberwing-dart (flyer)",
+            "PASS ashcaller-grosh.json: ashcaller-grosh (biped-large)",
+            "PASS bomb-lobber.json: bomb-lobber (biped-small)",
             "PASS bone-rampart.json: bone-rampart (structure)",
             "PASS boss-snikkit.json: boss-snikkit (machine)",
             "PASS cave-bear.json: cave-bear (quadruped)",
@@ -204,6 +216,9 @@ class UnitSpecChecks(unittest.TestCase):
             "PASS junk-walker.json: junk-walker (machine)",
             "PASS old-frostmaw.json: old-frostmaw (quadruped)",
             "PASS rocket-barrel-rider.json: rocket-barrel-rider (machine)",
+            "PASS shieldbearer.json: shieldbearer (biped-medium)",
+            "PASS skeleton.json: skeleton (biped-medium)",
+            "PASS thornline-archer.json: thornline-archer (biped-medium)",
             "PASS warden-saelith.json: warden-saelith (biped-medium)",
             "PASS woolly-mammoth.json: woolly-mammoth (quadruped)",
         ])

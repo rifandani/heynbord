@@ -90,6 +90,11 @@ def sphere(bm, center, radii, segments=12, rings=8):
     return geom["verts"]
 
 
+def shares(low, high, *heights):
+    """Each height as a share of the way from `low` to `high`: the `loops` of a cone."""
+    return tuple((z - low) / (high - low) for z in heights)
+
+
 def cone(bm, start, end, r_start, r_end, segments=8, caps=True, squash=1.0, loops=()):
     """
     A tapered cylinder from `start` to `end`. `squash` scales its depth (Y).

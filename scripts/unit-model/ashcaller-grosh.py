@@ -26,58 +26,85 @@ sys.path.insert(0, os.path.join(REPO, "scripts", "unit-model"))
 
 import importlib  # noqa: E402
 
+import body_plans  # noqa: E402
+import clips  # noqa: E402
 import unit_model_kit as kit  # noqa: E402
 
 importlib.reload(kit)
+importlib.reload(body_plans.shared)
+importlib.reload(body_plans.biped)
+importlib.reload(body_plans.biped_large)
+importlib.reload(clips.base)
+importlib.reload(clips.overrides)
+importlib.reload(clips.biped)
+importlib.reload(clips.biped_large)
 
-from unit_model_kit import X, Y, Z, Clip, Part, blend, clamp01, faces_of, hex_color, lerp, turn  # noqa: E402
+from clips.base import Beat  # noqa: E402
+from clips.overrides import Fall, Patch  # noqa: E402
+
+from unit_model_kit import X, Y, Z, Part, blend, clamp01, faces_of, hex_color, lerp  # noqa: E402
+
+plan = body_plans.BODY_PLANS["biped-large"]
 
 # --- Palette (the card painting) ----------------------------------------------
 
-SKIN = hex_color("#93915a")
-SKIN_DARK = hex_color("#6f6c40")
+SKIN = hex_color("#b86c4e")
+SKIN_DARK = hex_color("#6e4a36")
 PAINT = hex_color("#ece6d4")
 HAIR = hex_color("#2b1e17")
 HAIR_LIGHT = hex_color("#4a3326")
 EYES = hex_color("#1a120c")
 TUSK = hex_color("#e9dcbc")
-RED = hex_color("#a5312a")
+RED = hex_color("#a1332b")
 RED_DARK = hex_color("#6a1f1b")
-RAG = hex_color("#8d6a48")
+RAG = hex_color("#8c6042")
 BROWN = hex_color("#55331f")
 CLOTH_DARK = hex_color("#3c2721")
 WRAP = hex_color("#7d4a32")
-BRASS = hex_color("#c99a42")
-BRASS_DARK = hex_color("#8b6528")
+BRASS = hex_color("#f4ae4d")
+BRASS_DARK = hex_color("#8b5b37")
 LEATHER = hex_color("#5a3622")
 WOOD = hex_color("#3d2a1d")
 EMBER = hex_color("#ff5e1a")
 FLAME = hex_color("#ffa22b")
-FLAME_CORE = hex_color("#ffe7a0")
+FLAME_CORE = hex_color("#fee9af")
 GLASS = hex_color("#f2a743")
 
 # --- Proportions ---------------------------------------------------------------
 
-HIP_Z = 0.46
-WAIST_Z = 0.54
-CHEST_Z = 0.64
-SHOULDER_Z = 0.73
-NECK_Z = 0.77
+TABLE = plan.Proportions(
+    chest_z=0.64,
+    shoulder_z=0.73,
+    neck_z=0.77,
+    head_base_z=0.8,
+    head_top_z=0.96,
+    neck_y=0,
+    head_base_y=0,
+    head_top_y=0,
+    shoulder_width=0.28,
+    hip_x=0.064,
+    knee_x=0.064,
+)
+HIP_Z = TABLE.hip_z
+WAIST_Z = TABLE.waist_z
+CHEST_Z = TABLE.chest_z
+SHOULDER_Z = TABLE.shoulder_z
+NECK_Z = TABLE.neck_z
 HEAD_C = Vector((0, -0.012, 0.872))
-KNEE_Z = 0.26
-ANKLE_Z = 0.055
-LEG_X = 0.064
+KNEE_Z = TABLE.knee_z
+ANKLE_Z = TABLE.ankle_z
+LEG_X = TABLE.hip_x
 
 # The left hand holds the staff in front of the hip; the right arm hangs in an
 # A-pose. These are the rest (bind) positions.
-SL = Vector((0.14, 0, SHOULDER_Z))
+SL = Vector(plan.shoulder_point(TABLE, 1))
 EL = Vector((0.205, 0.01, 0.585))
 WL = Vector((0.22, -0.1, 0.56))
 TL = WL + (WL - EL).normalized() * 0.05
 GRIP_L = WL + (WL - EL).normalized() * 0.03
 
 ARM_DIR = Vector((-math.sin(math.radians(22)), 0, -math.cos(math.radians(22))))
-SR = Vector((-0.14, 0, SHOULDER_Z))
+SR = Vector(plan.shoulder_point(TABLE, -1))
 ER = SR + ARM_DIR * 0.16
 WR = ER + ARM_DIR * 0.15
 TR = WR + ARM_DIR * 0.055
@@ -87,31 +114,16 @@ PALM_R = WR + ARM_DIR * 0.03 + Vector((0, -0.03, 0))
 STAFF_BOTTOM = 0.0
 STAFF_TOP = 1.02
 
-BONES = [
-    ("root", (0, 0, 0), (0, 0, 0.12), None),
-    ("hips", (0, 0, HIP_Z), (0, 0, WAIST_Z), "root"),
-    ("spine", (0, 0, WAIST_Z), (0, 0, CHEST_Z), "hips"),
-    ("chest", (0, 0, CHEST_Z), (0, 0, NECK_Z), "spine"),
-    ("neck", (0, 0, NECK_Z), (0, 0, 0.8), "chest"),
-    ("head", (0, 0, 0.8), (0, 0, 0.96), "neck"),
+TRUNK_BONES = [
     ("locks", (0, 0.06, 0.84), (0, 0.09, 0.62), "head"),
     ("robe.B", (0, 0.07, 0.5), (0, 0.12, 0.12), "hips"),
 ]
-for side, sign, (s, e, w, t) in (("L", 1, (SL, EL, WL, TL)), ("R", -1, (SR, ER, WR, TR))):
-    BONES += [
-        (f"shoulder.{side}", (0.03 * sign, 0, SHOULDER_Z), tuple(s), "chest"),
-        (f"upperarm.{side}", tuple(s), tuple(e), f"shoulder.{side}"),
-        (f"forearm.{side}", tuple(e), tuple(w), f"upperarm.{side}"),
-        (f"hand.{side}", tuple(w), tuple(t), f"forearm.{side}"),
-        (f"thigh.{side}", (LEG_X * sign, 0, HIP_Z), (LEG_X * sign, 0, KNEE_Z), "hips"),
-        (f"shin.{side}", (LEG_X * sign, 0, KNEE_Z), (LEG_X * sign, 0, ANKLE_Z), f"thigh.{side}"),
-        (f"foot.{side}", (LEG_X * sign, 0, ANKLE_Z), (LEG_X * sign, -0.09, 0.02), f"shin.{side}"),
-    ]
-BONES += [
+PROP_BONES = [
     ("staff", tuple(GRIP_L), tuple(GRIP_L + Vector((0, 0, 0.1))), "hand.L"),
     # The flame always points up (the `Up` constraint), as a fire does.
     ("flame", tuple(PALM_R), tuple(PALM_R + Vector((0, 0, 0.06))), "hand.R"),
 ]
+ARMS = {"L": (EL, WL, TL), "R": (ER, WR, TR)}
 
 # --- Weights -------------------------------------------------------------------
 
@@ -198,8 +210,9 @@ def head_parts():
             locks.paint(faces_of(verts), HAIR_LIGHT)
     parts.append(locks)
 
-    neck = Part("neck", SKIN, "neck")
-    kit.cone(neck.bm, (0, 0, 0.75), (0, 0, 0.83), 0.036, 0.034, 8)
+    neck = Part("neck", SKIN, plan.neck_weights(TABLE))
+    rings = kit.shares(0.75, 0.83, NECK_Z - 0.01, NECK_Z, NECK_Z + 0.01)
+    kit.cone(neck.bm, (0, 0, 0.75), (0, 0, 0.83), 0.036, 0.034, 8, loops=rings)
     parts.append(neck)
     return parts
 
@@ -207,8 +220,15 @@ def head_parts():
 def body_parts():
     parts = []
     tunic = Part("tunic", BROWN, torso_weights)
-    kit.cone(tunic.bm, (0, 0, 0.5), (0, 0, 0.75), 0.1, 0.118, 14, squash=0.76)
+    rings = kit.shares(0.5, 0.75, CHEST_Z - 0.03, CHEST_Z, CHEST_Z + 0.03)
+    kit.cone(tunic.bm, (0, 0, 0.5), (0, 0, 0.75), 0.1, 0.118, 14, squash=0.76, loops=rings)
     parts.append(tunic)
+
+    # The hips under the robe. The robe starts above the joint.
+    hips = Part("hips", BROWN, plan.hips_weights(TABLE))
+    rings = kit.shares(0.42, 0.52, HIP_Z - 0.02, HIP_Z, HIP_Z + 0.02)
+    kit.cone(hips.bm, (0, 0, 0.42), (0, 0, 0.52), 0.092, 0.098, 14, squash=0.76, loops=rings)
+    parts.append(hips)
 
     def mantle_color(row, column):
         if column % 4 == 1:
@@ -374,9 +394,10 @@ def staff_parts():
 
 def build_figure():
     kit.reset_scene()
-    rig = kit.build_armature("AshcallerGrosh", BONES)
+    rig, _ = plan.build_rig("AshcallerGrosh", TABLE, TRUNK_BONES, PROP_BONES, ARMS)
     parts = head_parts() + body_parts() + limb_parts() + staff_parts()
     objects = [kit.part_object(part) for part in parts]
+    plan.check_skin(parts, rig)
     mesh = kit.join_parts(objects, "AshcallerGroshMesh")
     kit.skin(mesh, rig)
     return rig, mesh
@@ -397,24 +418,43 @@ def add_controls(rig):
 # --- Clips -----------------------------------------------------------------------
 
 
-def build_clips(rig):
-    def t(bone, *rotations):
-        return turn(rig, bone, *rotations)
+PATCHES = (
+    Patch(
+        "attack",
+        "flame-throw",
+        beats=(
+            Beat(0),
+            Beat(4, "windup"),
+            Beat(6, "strike", (0.9,)),
+            Beat(7, "strike", (0.0,)),
+            Beat(14, "strike", (0.0,)),
+            Beat(22, "stance", (0, 0, 0.5)),
+            Beat(30),
+        ),
+    ),
+    # Bolt: the staff and the flame high, and the fire flares.
+    Patch(
+        "cast",
+        "fire-flare",
+        beats=(Beat(0), Beat(6, "heroic"), Beat(10, "heroic", (2.0,)), Beat(16, "heroic", (1.4,)), Beat(24)),
+    ),
+    Patch(
+        "death",
+        "fire-out",
+        beats=(Beat(0), Beat(5, "recoil"), Beat(12, "stagger", (), (0, 0, 0.4)), Beat(26, "fallen"), Beat(30, "fallen", (5,)), Beat(36, "fallen")),
+    ),
+)
 
-    def at(bone, offset):
-        return kit.shift(rig, bone, offset)
 
-    def pose(base, **changes):
-        result = dict(base)
-        for key, value in changes.items():
-            result[key.replace("__", ".").replace("_at_", "@").replace("_slash_", "/")] = value
-        return result
+class Poses(clips.biped_large.Poses):
+    fall = Fall(X, -86, (0, 0, 0.1))
 
-    def stand(breath=0.0, sway=0.0, fire=1.0):
+    def stance(self, breath=0.0, sway=0.0, fire=1.0):
         """
         The idle stance: turned a little to his right, he leans on the staff
         and holds the flame up in the open right hand.
         """
+        t, at = self.t, self.at
         return {
             "hips@loc": at("hips", (0, 0, -0.01 - breath * 0.003)),
             "hips": t("hips", (Z, -14)),
@@ -438,10 +478,11 @@ def build_clips(rig):
             "flame@scale": fire * (1 + breath * 0.12),
         }
 
-    def hunch(breath=0.0):
+    def slump(self, base, breath=0.0):
         """Low HP: bent over the staff, the flame low and small."""
-        return pose(
-            stand(fire=0.45 + breath * 0.1),
+        t, at = self.t, self.at
+        return self.pose(
+            self.stance(fire=0.45 + breath * 0.1),
             hips_at_loc=at("hips", (0, 0.02, -0.04 - breath * 0.004)),
             spine=t("spine", (Z, -4), (X, 18 + breath * 3)),
             chest=t("chest", (X, 10 + breath * 2)),
@@ -461,9 +502,10 @@ def build_clips(rig):
             robe__B=t("robe.B", (X, 8)),
         )
 
-    def recoil(base, amount=1.0):
+    def recoil(self, base, amount=1.0):
         """The hit pushes the upper body back."""
-        return pose(
+        t, at = self.t, self.at
+        return self.pose(
             base,
             hips_at_loc=at("hips", (0, 0.02 * amount, -0.01 - 0.006 * amount)),
             spine=t("spine", (Z, -4), (X, -8 * amount)),
@@ -476,8 +518,9 @@ def build_clips(rig):
             robe__B=t("robe.B", (X, 12 * amount)),
         )
 
-    def stagger(base):
-        return pose(
+    def stagger(self, base):
+        t, at = self.t, self.at
+        return self.pose(
             base,
             hips_at_loc=at("hips", (0, 0.02, -0.05)),
             spine=t("spine", (X, 20)),
@@ -494,9 +537,10 @@ def build_clips(rig):
             locks=t("locks", (X, -26)),
         )
 
-    def fallen(base, bounce=0.0):
+    def fallen(self, base, bounce=0.0):
         """Flat on the back, the staff fallen across him and the flame out."""
-        return pose(
+        t, at = self.t, self.at
+        return self.pose(
             base,
             root=t("root", (X, -86 + bounce)),
             root_at_loc=at("root", (0, 0, 0.06)),
@@ -504,7 +548,8 @@ def build_clips(rig):
             spine=t("spine", (X, -4)),
             head=t("head", (X, -12), (Z, 25)),
             upperarm__L=t("upperarm.L", (Y, -30), (X, 20)),
-            hand__L=t("hand.L", (X, 40)),
+            # The staff lies level, so it does not go through the ground.
+            hand__L=t("hand.L", (X, -20)),
             upperarm__R=t("upperarm.R", (Y, 40), (X, 16)),
             forearm__R=t("forearm.R", (X, -20)),
             thigh__L=t("thigh.L", (X, -8), (Y, -6)),
@@ -516,9 +561,10 @@ def build_clips(rig):
             flame_at_scale=0.0,
         )
 
-    def crouch(base):
+    def crouch(self, base):
         """Down on one knee over the staff, as a summon starts and a Rebirth gets up."""
-        return pose(
+        t, at = self.t, self.at
+        return self.pose(
             base,
             hips_at_loc=at("hips", (0, 0.03, -0.19)),
             spine=t("spine", (Z, -4), (X, 24)),
@@ -538,9 +584,10 @@ def build_clips(rig):
             flame_at_scale=0.3,
         )
 
-    def exalt(base, fire=1.6):
+    def heroic(self, base, fire=1.6):
         """The staff and the flame high: a cast, and the end of a summon and a Rebirth."""
-        return pose(
+        t, at = self.t, self.at
+        return self.pose(
             base,
             hips_at_loc=at("hips", (0, 0, -0.002)),
             hips=t("hips", (Z, -8)),
@@ -558,11 +605,12 @@ def build_clips(rig):
             flame_at_scale=fire,
         )
 
-    def step(front):
+    def step(self, base, front):
         """A heel touches the ground. `front` is 1 for the left foot, -1 for the right."""
+        t, at = self.t, self.at
         lead, back = ("L", "R") if front == 1 else ("R", "L")
-        return pose(
-            stand(),
+        return self.pose(
+            self.stance(),
             hips_at_loc=at("hips", (0, 0, -0.018)),
             spine=t("spine", (Z, -3), (X, 7)),
             chest=t("chest", (Z, -5 * front)),
@@ -580,11 +628,12 @@ def build_clips(rig):
             },
         )
 
-    def passing(lifted):
+    def passing(self, base, lifted):
         """One foot passes the other. `lifted` is the side of the foot in the air."""
+        t, at = self.t, self.at
         planted = "R" if lifted == "L" else "L"
-        return pose(
-            stand(),
+        return self.pose(
+            self.stance(),
             hips_at_loc=at("hips", (0, 0, 0.0)),
             spine=t("spine", (Z, -3), (X, 7)),
             **{
@@ -599,11 +648,9 @@ def build_clips(rig):
             },
         )
 
-    # The attack: he pulls the flame back to the shoulder, then throws it.
-    # The fire bolt leaves at 20% of the attack (`FLIGHT_START` in fx.ts), so
-    # the throw ends at frame 6 of 30, and the flame grows back.
-    def windup(base):
-        return pose(
+    def windup(self, base):
+        t, at = self.t, self.at
+        return self.pose(
             base,
             hips_at_loc=at("hips", (0, 0.012, -0.024)),
             hips=t("hips", (Z, -30)),
@@ -621,8 +668,9 @@ def build_clips(rig):
             flame_at_scale=1.5,
         )
 
-    def throw(base, fire):
-        return pose(
+    def strike(self, base, fire):
+        t, at = self.t, self.at
+        return self.pose(
             base,
             hips_at_loc=at("hips", (0, -0.025, -0.026)),
             hips=t("hips", (Z, -6)),
@@ -643,51 +691,12 @@ def build_clips(rig):
             flame_at_scale=fire,
         )
 
-    clips = []
-    idle = Clip("idle", 48, loop=True)
-    for frame, breath, sway in ((0, 0, 0), (12, 0.5, 1), (24, 1, 0), (36, 0.5, -1), (48, 0, 0)):
-        idle.key(frame, stand(breath, sway))
-    clips.append(idle)
+    def rising(self, base):
+        return self.pose(self.crouch(base), hips_at_loc=self.at("hips", (0, 0.03, -0.17)))
 
-    low = Clip("lowHp", 48, loop=True)
-    for frame, breath in ((0, 0), (24, 1), (48, 0)):
-        low.key(frame, hunch(breath))
-    clips.append(low)
 
-    walk = Clip("walk", 24, loop=True)
-    walk.key(0, step(1)).key(6, passing("R")).key(12, step(-1)).key(18, passing("L")).key(24, step(1))
-    clips.append(walk)
-
-    attack = Clip("attack", 30)
-    attack.key(0, stand()).key(4, windup(stand())).key(6, throw(stand(), 0.9)).key(7, throw(stand(), 0.0))
-    attack.key(14, throw(stand(), 0.0)).key(22, stand(fire=0.5)).key(30, stand())
-    clips.append(attack)
-
-    # Bolt: the staff and the flame high, and the fire flares.
-    cast = Clip("cast", 24)
-    cast.key(0, stand()).key(6, exalt(stand())).key(10, exalt(stand(), 2.0)).key(16, exalt(stand(), 1.4)).key(24, stand())
-    clips.append(cast)
-
-    hurt = Clip("hurt", 16)
-    hurt.key(0, stand()).key(3, recoil(stand())).key(8, recoil(stand(), 0.4)).key(16, stand())
-    clips.append(hurt)
-
-    death = Clip("death", 36)
-    death.key(0, stand()).key(5, recoil(stand())).key(12, stagger(stand(fire=0.4)))
-    death.key(26, fallen(stand())).key(30, fallen(stand(), 5)).key(36, fallen(stand()))
-    clips.append(death)
-
-    # Rebirth: the Unit falls (45% of the event, `REBORN_FALL`), then gets up.
-    rebirth = Clip("rebirth", 48)
-    rebirth.key(0, stand()).key(4, recoil(stand())).key(20, fallen(stand())).key(22, fallen(stand(), 3))
-    rebirth.key(32, crouch(stand())).key(41, exalt(stand())).key(48, stand())
-    clips.append(rebirth)
-
-    summon = Clip("summon", 24)
-    summon.key(0, crouch(stand())).key(10, pose(crouch(stand()), hips_at_loc=at("hips", (0, 0.03, -0.17))))
-    summon.key(17, exalt(stand())).key(24, stand())
-    clips.append(summon)
-    return clips
+def build_clips(rig):
+    return clips.overrides.build(clips.biped_large.CLIPS, Poses(*kit.pose_tools(rig)), PATCHES)
 
 
 def build(export=True):

@@ -96,8 +96,13 @@ prisma/_sqlite/migrations
 apps/web/art/*/raw/*
 # The Unit Model Review reads these Raw Exports. Add a line for each new Unit Spec.
 !apps/web/art/units/raw/amberwing-dart.glb
+!apps/web/art/units/raw/ashcaller-grosh.glb
+!apps/web/art/units/raw/bomb-lobber.glb
 !apps/web/art/units/raw/bone-rampart.glb
 !apps/web/art/units/raw/crag-rhino.glb
+!apps/web/art/units/raw/shieldbearer.glb
+!apps/web/art/units/raw/skeleton.glb
+!apps/web/art/units/raw/thornline-archer.glb
 !apps/web/art/units/raw/warden-saelith.glb
 
 # Python bytecode cache (the Blender build scripts make it)

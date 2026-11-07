@@ -70,7 +70,7 @@ No script gives a pose where the count is 0 of 0. The biped-small `call` is the 
 
 ## Override record
 
-Each moved unit keeps its clip durations and its keyframe digests, with one approved exception: the `walk` of Grand Gearjammer. On 2026-11-06, after a new build of each Raw Export, `bun unit-model:contract:check` passed for all 7 units. We packed only Grand Gearjammer again.
+Each moved unit keeps its clip durations and its keyframe digests, with 2 exceptions: the `walk` of Grand Gearjammer, and the `death` and `rebirth` of the 3 units that `../migrations/humanoids.md` lists, because their figures went through the ground. On 2026-11-06, after a new build of each Raw Export, `bun unit-model:contract:check` passed for all 7 units. We packed only Grand Gearjammer again.
 
 "Base timing" is the count of clips that use the beats of the plan. "Lines" compares `build_clips` before the move with `PATCHES`, `Poses` and `build_clips` after the move.
 
@@ -86,6 +86,11 @@ Each moved unit keeps its clip durations and its keyframe digests, with one appr
 | Boss Snikkit | machine | 8 | 4 | `idle`, `lowHp`, `walk`, `attack` | 220 to 184 |
 | Junk Walker | machine | 8 | 1 | `idle`, `lowHp`, `walk`, `attack`, `death`, `rebirth`, `summon` | 279 to 279 |
 | Rocket Barrel Rider | machine | 8 | 1 | `idle`, `lowHp`, `walk`, of 16 frames, `attack`, `death`, `rebirth`, `summon` | 228 to 290 |
+| Shieldbearer | biped-medium | 8 | 5 | `walk`, of 28 frames, `attack`, `death` | 281 to 264 |
+| Thornline Archer | biped-medium | 8 | 7 | `attack` | 289 to 275 |
+| Skeleton | biped-medium | 8 | 2 | `idle`, `lowHp`, of 40 frames, `walk`, of 20 frames, `attack`, `death`, `rebirth` | 313 to 320 |
+| Bomb Lobber | biped-small | 8 | 5 | `idle`, `lowHp`, `attack` | 266 to 281 |
+| Ashcaller Grosh | biped-large | 9 | 6 | `attack`, `cast`, `death` | 293 to 281 |
 
 The 7 scripts have 485 fewer lines (1,687 to 1,202), and the library has 1,492 lines. So the line count goes down only when more units move. Amberwing Dart and Grand Gearjammer have 0 changes of timing. The survey took their values for ties, so they do not test the base timing.
 
@@ -103,6 +108,11 @@ These are the `Patch` names:
 | Boss Snikkit | `idle` cackle, `lowHp` slump, `walk` small-wheels, `attack` torch-strike |
 | Junk Walker | `idle` engine-thrum, `lowHp` steam-leak, `walk` pipe-stride, `attack` claw-snap, `death` buckle-tip, `rebirth` buckle-rise, `summon` steam-drop |
 | Rocket Barrel Rider | `idle` barrel-hover, `lowHp` barrel-sputter, `walk` swift-flight, `attack` barrel-ram, `death` barrel-blast, `rebirth` barrel-crash, `summon` rocket-launch |
+| Shieldbearer | `walk` heavy-march, `attack` shield-bash, `death` fall-back |
+| Thornline Archer | `attack` bow-draw |
+| Skeleton | `idle` nervous-glance, `lowHp` cower, `walk` eager-march, `attack` wild-chop, `death` helmet-roll, `rebirth` helmet-back |
+| Bomb Lobber | `idle` fuse-spark, `lowHp` low-fuse, `attack` racket-lob |
+| Ashcaller Grosh | `attack` flame-throw, `cast` fire-flare, `death` fire-out |
 
 These are the roles of each unit. "Fall" is yes if the unit sets its own `fall`:
 
@@ -119,6 +129,8 @@ These are the roles of each unit. "Fall" is yes if the unit sets its own `fall`:
 ### A patch is larger than the plan of #183
 
 Issue #183 says that a unit overrides only the prop path, the effect bone or the fall direction. That is not enough if the digests must not change. The units have different pose values and different timing, so a moved unit also overrides these values. Fuse Runner shows the limit. It has an effect in most clips, and its line count did not go down. 6 of its 8 clips have their own timing. A new unit can stay in the small patch. An existing unit can do this only if a person approves a change of its Source Contract.
+
+The units below the first 7 are from `../migrations/humanoids.md`. These units override almost every role, so the table of roles does not list them, and their line counts did not go down much.
 
 ## Clip checks
 

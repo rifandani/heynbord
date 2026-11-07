@@ -31,11 +31,25 @@ sys.path.insert(0, os.path.join(REPO, "scripts", "unit-model"))
 
 import importlib  # noqa: E402
 
+import body_plans  # noqa: E402
+import clips  # noqa: E402
 import unit_model_kit as kit  # noqa: E402
 
 importlib.reload(kit)
+importlib.reload(body_plans.shared)
+importlib.reload(body_plans.biped)
+importlib.reload(body_plans.biped_medium)
+importlib.reload(clips.base)
+importlib.reload(clips.overrides)
+importlib.reload(clips.biped)
+importlib.reload(clips.biped_medium)
 
-from unit_model_kit import X, Y, Z, Clip, Part, blend, clamp01, faces_of, hex_color, turn  # noqa: E402
+from clips.base import Beat  # noqa: E402
+from clips.overrides import Fall, Patch  # noqa: E402
+
+from unit_model_kit import X, Y, Z, Part, blend, clamp01, faces_of, hex_color  # noqa: E402
+
+plan = body_plans.BODY_PLANS["biped-medium"]
 
 # --- Palette (the card painting) ----------------------------------------------
 
@@ -48,9 +62,9 @@ STEEL = hex_color("#b6babe")
 STEEL_DARK = hex_color("#767c82")
 MAIL = hex_color("#8a8f95")
 MAIL_DARK = hex_color("#5c6168")
-BLUE = hex_color("#2f4c92")
-BLUE_FADED = hex_color("#4f6aa6")
-BLUE_DARK = hex_color("#1e3264")
+BLUE = hex_color("#334e90")
+BLUE_FADED = hex_color("#4e67a1")
+BLUE_DARK = hex_color("#35436c")
 GOLD = hex_color("#d6a443")
 GOLD_DARK = hex_color("#98722b")
 CREAM = hex_color("#e6dcc6")
@@ -62,23 +76,32 @@ WOOD = hex_color("#6b4a2c")
 
 # --- Proportions ---------------------------------------------------------------
 
-HIP_Z = 0.47
-WAIST_Z = 0.55
-CHEST_Z = 0.64
-SHOULDER_Z = 0.72
-NECK_Z = 0.745
+TABLE = plan.Proportions(
+    shoulder_z=0.72,
+    neck_z=0.745,
+    head_base_z=0.785,
+    head_top_z=0.96,
+    shoulder_width=0.236,
+    hip_x=0.062,
+    knee_x=0.062,
+)
+HIP_Z = TABLE.hip_z
+WAIST_Z = TABLE.waist_z
+CHEST_Z = TABLE.chest_z
+SHOULDER_Z = TABLE.shoulder_z
+NECK_Z = TABLE.neck_z
 HEAD_C = Vector((0, -0.004, 0.866))
-KNEE_Z = 0.27
-ANKLE_Z = 0.05
-LEG_X = 0.062
+KNEE_Z = TABLE.knee_z
+ANKLE_Z = TABLE.ankle_z
+LEG_X = TABLE.hip_x
 
 # The left arm holds the shield across the body; the right arm holds the
 # sword low. These are the rest (bind) positions.
-SL = Vector((0.118, 0, SHOULDER_Z))
+SL = Vector(plan.shoulder_point(TABLE, 1))
 EL = Vector((0.19, -0.05, 0.575))
 WL = Vector((0.08, -0.11, 0.53))
 TL = WL + (WL - EL).normalized() * 0.04
-SR = Vector((-0.118, 0, SHOULDER_Z))
+SR = Vector(plan.shoulder_point(TABLE, -1))
 ER = Vector((-0.16, 0.02, 0.575))
 WR = Vector((-0.165, -0.04, 0.45))
 DR = (WR - ER).normalized()
@@ -95,30 +118,15 @@ GRIP_L = WL + (WL - EL).normalized() * 0.02
 SWORD = Vector((0.1, -0.7, -0.7)).normalized()
 BLADE = 0.21
 
-BONES = [
-    ("root", (0, 0, 0), (0, 0, 0.12), None),
-    ("hips", (0, 0, HIP_Z), (0, 0, WAIST_Z), "root"),
-    ("spine", (0, 0, WAIST_Z), (0, 0, CHEST_Z), "hips"),
-    ("chest", (0, 0, CHEST_Z), (0, 0, NECK_Z), "spine"),
-    ("neck", (0, 0, NECK_Z), (0, 0, 0.785), "chest"),
-    ("head", (0, 0, 0.785), (0, 0, 0.96), "neck"),
+TRUNK_BONES = [
     ("skirt.F", (0, -0.08, 0.47), (0, -0.1, 0.28), "hips"),
     ("cape", (0, 0.08, 0.71), (0, 0.12, 0.36), "chest"),
 ]
-for side, sign, (s, e, w, t) in (("L", 1, (SL, EL, WL, TL)), ("R", -1, (SR, ER, WR, TR))):
-    BONES += [
-        (f"shoulder.{side}", (0.03 * sign, 0, SHOULDER_Z), tuple(s), "chest"),
-        (f"upperarm.{side}", tuple(s), tuple(e), f"shoulder.{side}"),
-        (f"forearm.{side}", tuple(e), tuple(w), f"upperarm.{side}"),
-        (f"hand.{side}", tuple(w), tuple(t), f"forearm.{side}"),
-        (f"thigh.{side}", (LEG_X * sign, 0, HIP_Z), (LEG_X * sign, 0, KNEE_Z), "hips"),
-        (f"shin.{side}", (LEG_X * sign, 0, KNEE_Z), (LEG_X * sign, 0, ANKLE_Z), f"thigh.{side}"),
-        (f"foot.{side}", (LEG_X * sign, 0, ANKLE_Z), (LEG_X * sign, -0.08, 0.02), f"shin.{side}"),
-    ]
-BONES += [
+PROP_BONES = [
     ("shield", tuple(GRIP_L), tuple(GRIP_L + Vector((0, 0, 0.1))), "hand.L"),
     ("sword", tuple(HAND_R), tuple(HAND_R + SWORD * 0.1), "hand.R"),
 ]
+ARMS = {"L": (EL, WL, TL), "R": (ER, WR, TR)}
 
 # --- Weights -------------------------------------------------------------------
 
@@ -201,8 +209,9 @@ def head_parts():
         cap.paint(faces_of(rivet), STEEL_DARK)
     parts.append(cap)
 
-    neck = Part("neck", SKIN, "neck")
-    kit.cone(neck.bm, (0, 0, 0.73), (0, 0, 0.81), 0.024, 0.022, 8)
+    neck = Part("neck", SKIN, plan.neck_weights(TABLE))
+    rings = kit.shares(0.73, 0.81, NECK_Z - 0.01, NECK_Z, NECK_Z + 0.01)
+    kit.cone(neck.bm, (0, 0, 0.73), (0, 0, 0.81), 0.024, 0.022, 8, loops=rings)
     parts.append(neck)
     return parts
 
@@ -211,7 +220,9 @@ def body_parts():
     parts = []
     # The mail shirt: grey rings in rows, from the neck to mid thigh.
     mail = Part("mail", MAIL, skirt_weights, shade=0.12)
-    verts = kit.cone(mail.bm, (0, 0, 0.42), (0, 0, 0.73), 0.088, 0.088, 14, squash=0.8)
+    heights = (HIP_Z - 0.02, HIP_Z, HIP_Z + 0.02, WAIST_Z - 0.02, WAIST_Z, WAIST_Z + 0.02, CHEST_Z - 0.025, CHEST_Z, CHEST_Z + 0.025)
+    rings = kit.shares(0.42, 0.73, *heights)
+    verts = kit.cone(mail.bm, (0, 0, 0.42), (0, 0, 0.73), 0.088, 0.088, 14, squash=0.8, loops=rings)
     for f in faces_of(verts):
         if int(f.calc_center_median().z * 90) % 2:
             mail.paint([f], MAIL_DARK)
@@ -361,9 +372,10 @@ def sword_parts():
 
 def build_figure():
     kit.reset_scene()
-    rig = kit.build_armature("Shieldbearer", BONES)
+    rig, _ = plan.build_rig("Shieldbearer", TABLE, TRUNK_BONES, PROP_BONES, ARMS)
     parts = head_parts() + body_parts() + limb_parts() + shield_parts() + sword_parts()
     objects = [kit.part_object(part) for part in parts]
+    plan.check_skin(parts, rig)
     mesh = kit.join_parts(objects, "ShieldbearerMesh")
     kit.skin(mesh, rig)
     return rig, mesh
@@ -372,24 +384,39 @@ def build_figure():
 # --- Clips -----------------------------------------------------------------------
 
 
-def build_clips(rig):
-    def t(bone, *rotations):
-        return turn(rig, bone, *rotations)
+PATCHES = (
+    # A slow, heavy walk (Heavy).
+    Patch(
+        "walk",
+        "heavy-march",
+        beats=(Beat(0, "step", (1,)), Beat(7, "passing", ("R",)), Beat(14, "step", (-1,)), Beat(21, "passing", ("L",)), Beat(28, "step", (1,))),
+        frames=28,
+    ),
+    # She pulls the shield in and sinks low, then drives it forward with her
+    # whole weight to push the foe back (Knockback). The slash effect starts at
+    # 50% of the attack (`MELEE_IMPACT` in fx.ts), so the bash lands at frame 15 of 30.
+    Patch(
+        "attack",
+        "shield-bash",
+        beats=(Beat(0), Beat(10, "windup"), Beat(15, "strike"), Beat(20, "strike"), Beat(27), Beat(30)),
+    ),
+    Patch(
+        "death",
+        "fall-back",
+        beats=(Beat(0), Beat(5, "recoil"), Beat(12, "stagger"), Beat(26, "fallen"), Beat(30, "fallen", (5,)), Beat(36, "fallen")),
+    ),
+)
 
-    def at(bone, offset):
-        return kit.shift(rig, bone, offset)
 
-    def pose(base, **changes):
-        result = dict(base)
-        for key, value in changes.items():
-            result[key.replace("__", ".").replace("_at_", "@")] = value
-        return result
+class Poses(clips.biped_medium.Poses):
+    fall = Fall(X, -86, (0, 0, 0.11))
 
-    def stand(breath=0.0, sway=0.0, guard=1.0):
+    def stance(self, breath=0.0, sway=0.0, guard=1.0):
         """
         A wide stance, turned to her right, crouched a little behind the
         shield. The sword is low and ready. She is calm: only her eyes move.
         """
+        t, at = self.t, self.at
         return {
             "hips@loc": at("hips", (0, 0, -0.04 * guard - breath * 0.004)),
             "hips": t("hips", (Z, -26 * guard)),
@@ -411,10 +438,11 @@ def build_clips(rig):
             "cape": t("cape", (X, -4 - breath * 3), (Y, sway * 3)),
         }
 
-    def kneel(breath=0.0):
+    def slump(self, base, breath=0.0):
         """Low HP: down on the right knee behind the planted shield."""
-        return pose(
-            stand(),
+        t, at = self.t, self.at
+        return self.pose(
+            self.stance(),
             hips_at_loc=at("hips", (0, 0.03, -0.17 - breath * 0.004)),
             hips=t("hips", (Z, -24)),
             spine=t("spine", (Z, -4), (X, 16 + breath * 3)),
@@ -436,9 +464,10 @@ def build_clips(rig):
             cape=t("cape", (X, 2)),
         )
 
-    def recoil(base, amount=1.0):
+    def recoil(self, base, amount=1.0):
         """The hit lands on the shield: it and the upper body go back, but the feet stay."""
-        return pose(
+        t, at = self.t, self.at
+        return self.pose(
             base,
             hips_at_loc=at("hips", (0, 0.02 * amount, -0.04 - 0.006 * amount)),
             spine=t("spine", (Z, -4), (X, 4 - 4 * amount)),
@@ -449,8 +478,9 @@ def build_clips(rig):
             cape=t("cape", (X, 12 * amount)),
         )
 
-    def stagger(base):
-        return pose(
+    def stagger(self, base):
+        t, at = self.t, self.at
+        return self.pose(
             base,
             hips_at_loc=at("hips", (0, 0.02, -0.06)),
             hips=t("hips", (Z, -12)),
@@ -467,9 +497,10 @@ def build_clips(rig):
             hand__R=t("hand.R", (X, 10)),
         )
 
-    def fallen(base, bounce=0.0):
+    def fallen(self, base, bounce=0.0):
         """Flat on the back, the shield on her chest and the sword beside her."""
-        return pose(
+        t, at = self.t, self.at
+        return self.pose(
             base,
             root=t("root", (X, -86 + bounce)),
             root_at_loc=at("root", (0, 0, 0.11)),
@@ -494,17 +525,19 @@ def build_clips(rig):
             cape=t("cape", (X, -30)),
         )
 
-    def crouch(base):
+    def crouch(self, base):
         """Down on one knee, as a summon starts and a Rebirth gets up."""
-        return pose(
-            kneel(),
+        t = self.t
+        return self.pose(
+            self.slump(base),
             spine=t("spine", (Z, -4), (X, 22)),
             head=t("head", (Z, 10), (X, 16)),
         )
 
-    def raised(base):
+    def heroic(self, base):
         """Up again, the sword high: the end of a summon and a Rebirth."""
-        return pose(
+        t, at = self.t, self.at
+        return self.pose(
             base,
             hips_at_loc=at("hips", (0, 0, -0.01)),
             hips=t("hips", (Z, -18)),
@@ -522,11 +555,12 @@ def build_clips(rig):
             cape=t("cape", (X, 12)),
         )
 
-    def step(front):
+    def step(self, base, front):
         """A heavy step behind the shield. `front` is 1 for the left foot, -1 for the right."""
+        t, at = self.t, self.at
         lead, back = ("L", "R") if front == 1 else ("R", "L")
-        return pose(
-            stand(guard=0.6),
+        return self.pose(
+            self.stance(guard=0.6),
             hips_at_loc=at("hips", (0, 0, -0.04)),
             spine=t("spine", (Z, -3), (X, 8), (Y, 3 * front)),
             chest=t("chest", (Z, -4 * front)),
@@ -543,11 +577,12 @@ def build_clips(rig):
             },
         )
 
-    def passing(lifted):
+    def passing(self, base, lifted):
         """One foot passes the other. `lifted` is the side of the foot in the air."""
+        t, at = self.t, self.at
         planted = "R" if lifted == "L" else "L"
-        return pose(
-            stand(guard=0.6),
+        return self.pose(
+            self.stance(guard=0.6),
             hips_at_loc=at("hips", (0, 0, -0.018)),
             spine=t("spine", (Z, -3), (X, 8)),
             **{
@@ -562,12 +597,9 @@ def build_clips(rig):
             },
         )
 
-    # The attack: she pulls the shield in and sinks low, then drives it
-    # forward with her whole weight to push the foe back (Knockback). The
-    # slash effect starts at 50% of the attack (`MELEE_IMPACT` in fx.ts), so
-    # the bash lands at frame 15 of 30.
-    def gather(base):
-        return pose(
+    def windup(self, base):
+        t, at = self.t, self.at
+        return self.pose(
             base,
             hips_at_loc=at("hips", (0, 0.04, -0.07)),
             hips=t("hips", (Z, -32)),
@@ -588,8 +620,9 @@ def build_clips(rig):
             cape=t("cape", (X, -8)),
         )
 
-    def bash(base):
-        return pose(
+    def strike(self, base):
+        t, at = self.t, self.at
+        return self.pose(
             base,
             hips_at_loc=at("hips", (0, -0.12, -0.06)),
             hips=t("hips", (Z, -24)),
@@ -610,47 +643,9 @@ def build_clips(rig):
             cape=t("cape", (X, -12)),
         )
 
-    clips = []
-    idle = Clip("idle", 48, loop=True)
-    for frame, breath, sway in ((0, 0, 0), (12, 0.5, 1), (24, 1, 0), (36, 0.5, -1), (48, 0, 0)):
-        idle.key(frame, stand(breath, sway))
-    clips.append(idle)
 
-    low = Clip("lowHp", 48, loop=True)
-    for frame, breath in ((0, 0), (24, 1), (48, 0)):
-        low.key(frame, kneel(breath))
-    clips.append(low)
-
-    # A slow, heavy walk (Heavy).
-    walk = Clip("walk", 28, loop=True)
-    walk.key(0, step(1)).key(7, passing("R")).key(14, step(-1)).key(21, passing("L")).key(28, step(1))
-    clips.append(walk)
-
-    attack = Clip("attack", 30)
-    attack.key(0, stand()).key(10, gather(stand())).key(15, bash(stand())).key(20, bash(stand()))
-    attack.key(27, stand()).key(30, stand())
-    clips.append(attack)
-
-    hurt = Clip("hurt", 16)
-    hurt.key(0, stand()).key(3, recoil(stand())).key(8, recoil(stand(), 0.4)).key(16, stand())
-    clips.append(hurt)
-
-    death = Clip("death", 36)
-    death.key(0, stand()).key(5, recoil(stand())).key(12, stagger(stand()))
-    death.key(26, fallen(stand())).key(30, fallen(stand(), 5)).key(36, fallen(stand()))
-    clips.append(death)
-
-    # Rebirth: the Unit falls (45% of the event, `REBORN_FALL`), then gets up.
-    rebirth = Clip("rebirth", 48)
-    rebirth.key(0, stand()).key(4, recoil(stand())).key(20, fallen(stand())).key(22, fallen(stand(), 3))
-    rebirth.key(32, crouch(stand())).key(41, raised(stand())).key(48, stand())
-    clips.append(rebirth)
-
-    summon = Clip("summon", 24)
-    summon.key(0, crouch(stand())).key(10, pose(crouch(stand()), hips_at_loc=at("hips", (0, 0.03, -0.19))))
-    summon.key(17, raised(stand())).key(24, stand())
-    clips.append(summon)
-    return clips
+def build_clips(rig):
+    return clips.overrides.build(clips.biped_medium.CLIPS, Poses(*kit.pose_tools(rig)), PATCHES, without=("cast",))
 
 
 def build(export=True):

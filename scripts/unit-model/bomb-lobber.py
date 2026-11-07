@@ -35,11 +35,25 @@ sys.path.insert(0, os.path.join(REPO, "scripts", "unit-model"))
 
 import importlib  # noqa: E402
 
+import body_plans  # noqa: E402
+import clips  # noqa: E402
 import unit_model_kit as kit  # noqa: E402
 
 importlib.reload(kit)
+importlib.reload(body_plans.shared)
+importlib.reload(body_plans.biped)
+importlib.reload(body_plans.biped_small)
+importlib.reload(clips.base)
+importlib.reload(clips.overrides)
+importlib.reload(clips.biped)
+importlib.reload(clips.biped_small)
 
-from unit_model_kit import X, Y, Z, Clip, Part, blend, faces_of, hex_color, turn  # noqa: E402
+from clips.base import Beat  # noqa: E402
+from clips.overrides import Fall, Patch  # noqa: E402
+
+from unit_model_kit import X, Y, Z, Part, blend, faces_of, hex_color  # noqa: E402
+
+plan = body_plans.BODY_PLANS["biped-small"]
 
 # --- Palette (the card painting) ----------------------------------------------
 
@@ -54,10 +68,10 @@ PUPIL = hex_color("#1d140e")
 MOUTH = hex_color("#5a2422")
 TEETH = hex_color("#f4eedc")
 TONGUE = hex_color("#c85a50")
-BRASS = hex_color("#d0a048")
-BRASS_DARK = hex_color("#93692a")
+BRASS = hex_color("#cc9b55")
+BRASS_DARK = hex_color("#946933")
 SMOKED = hex_color("#3a2a20")
-NECKERCHIEF = hex_color("#34485e")
+NECKERCHIEF = hex_color("#494f5c")
 TUNIC = hex_color("#c4a476")
 TUNIC_DARK = hex_color("#9a7c52")
 LEATHER = hex_color("#7a4a2a")
@@ -70,33 +84,46 @@ WOOD_DARK = hex_color("#6a4422")
 WIRE = hex_color("#3e3a36")
 WICKER = hex_color("#b08446")
 WICKER_DARK = hex_color("#7a5428")
-BOMB = hex_color("#2e2a28")
-BOMB_LIGHT = hex_color("#4a4440")
+BOMB = hex_color("#322a29")
+BOMB_LIGHT = hex_color("#4f433f")
 FUSE = hex_color("#c8b88a")
-SPARK = hex_color("#ffc040")
-SPARK_HOT = hex_color("#ff7020")
+SPARK = hex_color("#fac668")
+SPARK_HOT = hex_color("#dd8c53")
 
 # --- Proportions ---------------------------------------------------------------
 
 # She is plump: a round body and short, thick legs.
-HIP_Z = 0.28
-WAIST_Z = 0.34
-CHEST_Z = 0.41
-SHOULDER_Z = 0.47
-NECK_Z = 0.49
+TABLE = plan.Proportions(
+    hip_z=0.28,
+    waist_z=0.34,
+    chest_z=0.41,
+    shoulder_z=0.47,
+    neck_z=0.49,
+    head_base_z=0.52,
+    head_top_z=0.7,
+    knee_z=0.155,
+    head_base_y=-0.004,
+    hip_x=0.052,
+    knee_x=0.052,
+)
+HIP_Z = TABLE.hip_z
+WAIST_Z = TABLE.waist_z
+CHEST_Z = TABLE.chest_z
+SHOULDER_Z = TABLE.shoulder_z
+NECK_Z = TABLE.neck_z
 HEAD_C = Vector((0, -0.02, 0.59))
-KNEE_Z = 0.155
-ANKLE_Z = 0.04
-LEG_X = 0.052
+KNEE_Z = TABLE.knee_z
+ANKLE_Z = TABLE.ankle_z
+LEG_X = TABLE.hip_x
 
 # The right hand holds the racket at the chest, and the racket lies on the
 # right shoulder. The left hand holds a lit bomb in front of the belly. These
 # are the rest (bind) positions.
-SR = Vector((-0.092, 0, SHOULDER_Z))
+SR = Vector(plan.shoulder_point(TABLE, -1))
 ER = Vector((-0.13, -0.02, 0.37))
 WR = Vector((-0.1, -0.075, 0.325))
 TR = WR + (WR - ER).normalized() * 0.035
-SL = Vector((0.092, 0, SHOULDER_Z))
+SL = Vector(plan.shoulder_point(TABLE, 1))
 EL = Vector((0.13, -0.01, 0.37))
 WL = Vector((0.1, -0.085, 0.33))
 TL = WL + (WL - EL).normalized() * 0.035
@@ -113,28 +140,11 @@ SPARK_C = BOMB_C + Vector((0.006, -0.01, BOMB_R + 0.03))
 
 BASKET_C = Vector((-0.088, 0.045, 0.22))
 
-BONES = [
-    ("root", (0, 0, 0), (0, 0, 0.1), None),
-    ("hips", (0, 0, HIP_Z), (0, 0, WAIST_Z), "root"),
-    ("spine", (0, 0, WAIST_Z), (0, 0, CHEST_Z), "hips"),
-    ("chest", (0, 0, CHEST_Z), (0, 0, NECK_Z), "spine"),
-    ("neck", (0, 0, NECK_Z), (0, -0.004, 0.52), "chest"),
-    ("head", (0, -0.004, 0.52), (0, -0.01, 0.7), "neck"),
-]
-for side, sign, (s, e, w, t) in (("L", 1, (SL, EL, WL, TL)), ("R", -1, (SR, ER, WR, TR))):
-    BONES += [
-        (f"shoulder.{side}", (0.02 * sign, 0, SHOULDER_Z), tuple(s), "chest"),
-        (f"upperarm.{side}", tuple(s), tuple(e), f"shoulder.{side}"),
-        (f"forearm.{side}", tuple(e), tuple(w), f"upperarm.{side}"),
-        (f"hand.{side}", tuple(w), tuple(t), f"forearm.{side}"),
-        (f"thigh.{side}", (LEG_X * sign, 0, HIP_Z), (LEG_X * sign, 0, KNEE_Z), "hips"),
-        (f"shin.{side}", (LEG_X * sign, 0, KNEE_Z), (LEG_X * sign, 0, ANKLE_Z), f"thigh.{side}"),
-        (f"foot.{side}", (LEG_X * sign, 0, ANKLE_Z), (LEG_X * sign, -0.08, 0.016), f"shin.{side}"),
-    ]
-BONES += [
+PROP_BONES = [
     ("bomb", tuple(BOMB_C), tuple(BOMB_C + Z * 0.04), "hand.L"),
     ("spark", tuple(SPARK_C), tuple(SPARK_C + Z * 0.03), "bomb"),
 ]
+ARMS = {"L": (EL, WL, TL), "R": (ER, WR, TR)}
 
 # --- Weights -------------------------------------------------------------------
 
@@ -214,8 +224,9 @@ def head_parts():
         goggles.paint(faces_of(lens), SMOKED)
     parts.append(goggles)
 
-    neck = Part("neck", SKIN, "neck")
-    kit.cone(neck.bm, (0, 0, 0.47), (0, -0.004, 0.55), 0.028, 0.026, 8)
+    neck = Part("neck", SKIN, plan.neck_weights(TABLE))
+    rings = kit.shares(0.47, 0.55, NECK_Z - 0.01, NECK_Z, NECK_Z + 0.01)
+    kit.cone(neck.bm, (0, 0, 0.47), (0, -0.004, 0.55), 0.028, 0.026, 8, loops=rings)
     parts.append(neck)
     return parts
 
@@ -223,7 +234,8 @@ def head_parts():
 def body_parts():
     parts = []
     tunic = Part("tunic", TUNIC, torso_weights)
-    kit.cone(tunic.bm, (0, 0, 0.24), (0, 0, 0.47), 0.08, 0.07, 12, squash=0.85)
+    rings = kit.shares(0.24, 0.47, WAIST_Z - 0.02, WAIST_Z, WAIST_Z + 0.02, CHEST_Z - 0.02, CHEST_Z, CHEST_Z + 0.02)
+    kit.cone(tunic.bm, (0, 0, 0.24), (0, 0, 0.47), 0.08, 0.07, 12, squash=0.85, loops=rings)
     # A round belly.
     kit.sphere(tunic.bm, (0, -0.026, 0.33), (0.078, 0.068, 0.072), 12, 8)
     # A torn hem.
@@ -392,9 +404,10 @@ def bomb_parts():
 
 def build_figure():
     kit.reset_scene()
-    rig = kit.build_armature("BombLobber", BONES)
+    rig, _ = plan.build_rig("BombLobber", TABLE, (), PROP_BONES, ARMS)
     parts = head_parts() + body_parts() + list(basket_parts()) + limb_parts() + racket_parts() + bomb_parts()
     objects = [kit.part_object(part) for part in parts]
+    plan.check_skin(parts, rig)
     mesh = kit.join_parts(objects, "BombLobberMesh")
     kit.skin(mesh, rig)
     return rig, mesh
@@ -403,24 +416,61 @@ def build_figure():
 # --- Clips -----------------------------------------------------------------------
 
 
-def build_clips(rig):
-    def t(bone, *rotations):
-        return turn(rig, bone, *rotations)
+PATCHES = (
+    # The idle: the fuse of the bomb sparks.
+    Patch(
+        "idle",
+        "fuse-spark",
+        beats=tuple(
+            Beat(frame, "stance", args)
+            for frame, *args in (
+                (0, 0, 0, 1),
+                (6, 0.25, 0.5, 0.6),
+                (12, 0.5, 1, 1.3),
+                (18, 0.75, 0.5, 0.7),
+                (24, 1, 0, 1.2),
+                (30, 0.75, -0.5, 0.6),
+                (36, 0.5, -1, 1.3),
+                (42, 0.25, -0.5, 0.7),
+                (48, 0, 0, 1),
+            )
+        ),
+    ),
+    Patch(
+        "lowHp",
+        "low-fuse",
+        beats=tuple(Beat(frame, "slump", args) for frame, *args in ((0, 0, 0.6), (12, 0.5, 0.3), (24, 1, 0.6), (36, 0.5, 0.3), (48, 0, 0.6))),
+    ),
+    # She tosses the bomb up and hits it forward with the racket. The bomb
+    # leaves at 20% of the clip, when the projectile leaves.
+    Patch(
+        "attack",
+        "racket-lob",
+        beats=(
+            Beat(0),
+            Beat(4, "toss"),
+            Beat(5, "hit"),
+            Beat(6, "smash"),
+            Beat(9, "smash"),
+            Beat(13, "follow"),
+            Beat(20, "follow"),
+            Beat(25, "reload"),
+            Beat(28, "stance", (0, 0, 0.6)),
+            Beat(30),
+        ),
+    ),
+)
 
-    def at(bone, offset):
-        return kit.shift(rig, bone, offset)
 
-    def pose(base, **changes):
-        result = dict(base)
-        for key, value in changes.items():
-            result[key.replace("__", ".").replace("_at_", "@")] = value
-        return result
+class Poses(clips.biped_small.Poses):
+    fall = Fall(X, -86, (0, 0, 0.1))
 
-    def stand(breath=0.0, sway=0.0, spark=1.0):
+    def stance(self, breath=0.0, sway=0.0, spark=1.0):
         """
         The idle stance: feet apart, turned a little to her right, the racket
         on her shoulder. `spark` is the size of the spark on the fuse.
         """
+        t, at = self.t, self.at
         return {
             "hips@loc": at("hips", (0, 0, -0.008 - breath * 0.003)),
             "hips": t("hips", (Z, -12), (Y, sway * 2)),
@@ -440,10 +490,11 @@ def build_clips(rig):
             "spark@scale": spark,
         }
 
-    def slump(breath=0.0, spark=0.6):
+    def slump(self, base, breath=0.0, spark=0.6):
         """Low HP: she sits down hard, the racket across her lap."""
-        return pose(
-            stand(spark=spark),
+        t, at = self.t, self.at
+        return self.pose(
+            self.stance(spark=spark),
             hips_at_loc=at("hips", (0, 0.04, -0.15 - breath * 0.004)),
             hips=t("hips", (Z, -12), (X, -20)),
             spine=t("spine", (X, 26 + breath * 3)),
@@ -461,9 +512,10 @@ def build_clips(rig):
             foot__R=t("foot.R", (X, 0)),
         )
 
-    def recoil(base, amount=1.0):
+    def recoil(self, base, amount=1.0):
         """The hit pushes the upper body back."""
-        return pose(
+        t, at = self.t, self.at
+        return self.pose(
             base,
             hips_at_loc=at("hips", (0, 0.015 * amount, -0.008 - 0.006 * amount)),
             spine=t("spine", (X, -6 * amount)),
@@ -473,8 +525,9 @@ def build_clips(rig):
             upperarm__L=t("upperarm.L", (X, 20 * amount), (Y, 20 * amount)),
         )
 
-    def stagger(base):
-        return pose(
+    def stagger(self, base):
+        t, at = self.t, self.at
+        return self.pose(
             base,
             hips_at_loc=at("hips", (0, 0.02, -0.03)),
             spine=t("spine", (X, 20)),
@@ -489,9 +542,10 @@ def build_clips(rig):
             upperarm__L=t("upperarm.L", (X, 16), (Y, 30)),
         )
 
-    def fallen(base, bounce=0.0):
+    def fallen(self, base, bounce=0.0):
         """Flat on the back, the racket out to the side. The fuse goes out."""
-        return pose(
+        t, at = self.t, self.at
+        return self.pose(
             base,
             root=t("root", (X, -86 + bounce)),
             root_at_loc=at("root", (0, 0, 0.09)),
@@ -511,9 +565,10 @@ def build_clips(rig):
             spark_at_scale=0.0,
         )
 
-    def crouch(base):
+    def crouch(self, base):
         """Low on both knees, as a summon starts and a Rebirth gets up."""
-        return pose(
+        t, at = self.t, self.at
+        return self.pose(
             base,
             hips_at_loc=at("hips", (0, 0.01, -0.09)),
             spine=t("spine", (X, 26)),
@@ -527,9 +582,10 @@ def build_clips(rig):
             spark_at_scale=0.3,
         )
 
-    def proud(base):
+    def heroic(self, base):
         """Up again, the racket raised high: the end of a summon and a Rebirth."""
-        return pose(
+        t, at = self.t, self.at
+        return self.pose(
             base,
             hips_at_loc=at("hips", (0, 0, 0.004)),
             spine=t("spine", (X, -4)),
@@ -542,11 +598,12 @@ def build_clips(rig):
             spark_at_scale=1.4,
         )
 
-    def step(front, lift=0.0):
+    def step(self, base, front, lift=0.0):
         """A waddle: the body rocks from side to side. `front` is 1 for the left foot, -1 for the right."""
+        t, at = self.t, self.at
         lead, back = ("L", "R") if front == 1 else ("R", "L")
-        return pose(
-            stand(),
+        return self.pose(
+            self.stance(),
             hips_at_loc=at("hips", (0.012 * front, 0, -0.01 + lift * 0.012)),
             hips=t("hips", (Z, -10), (Y, 7 * front)),
             spine=t("spine", (X, 6), (Y, -4 * front)),
@@ -563,13 +620,9 @@ def build_clips(rig):
             },
         )
 
-    # The attack: she tosses the bomb up with the left hand and swings the
-    # racket back, then hits the bomb forward. The bomb leaves at 20% of the
-    # attack (`FLIGHT_START` in fx.ts), so the racket meets it at frame 6 of
-    # 30, and the `bomb` bone scales down. Then she covers her left ear, and
-    # takes a new bomb from the basket.
-    def toss(base):
-        return pose(
+    def toss(self, base):
+        t = self.t
+        return self.pose(
             base,
             hips=t("hips", (Z, -26)),
             spine=t("spine", (X, -6), (Z, -8)),
@@ -588,8 +641,9 @@ def build_clips(rig):
             foot__R=t("foot.R", (X, -30)),
         )
 
-    def smash(base, bomb=0.01):
-        return pose(
+    def smash(self, base, bomb=0.01):
+        t, at = self.t, self.at
+        return self.pose(
             base,
             hips_at_loc=at("hips", (0, -0.03, -0.02)),
             hips=t("hips", (Z, 18)),
@@ -611,10 +665,11 @@ def build_clips(rig):
             bomb_at_scale=bomb,
         )
 
-    def follow(base):
+    def follow(self, base):
         """The racket follows through low across her body, and the left hand covers her left ear."""
-        return pose(
-            smash(base),
+        t = self.t
+        return self.pose(
+            self.smash(base),
             hips=t("hips", (Z, 24)),
             chest=t("chest", (X, 14), (Z, 14)),
             head=t("head", (Z, -6), (X, -6), (Y, 14)),
@@ -626,47 +681,20 @@ def build_clips(rig):
             hand__L=t("hand.L", (X, 0)),
         )
 
-    clips = []
-    idle = Clip("idle", 48, loop=True)
-    for frame, breath, sway, spark in ((0, 0, 0, 1), (6, 0.25, 0.5, 0.6), (12, 0.5, 1, 1.3), (18, 0.75, 0.5, 0.7), (24, 1, 0, 1.2), (30, 0.75, -0.5, 0.6), (36, 0.5, -1, 1.3), (42, 0.25, -0.5, 0.7), (48, 0, 0, 1)):
-        idle.key(frame, stand(breath, sway, spark))
-    clips.append(idle)
+    def hit(self, base):
+        """The racket meets the bomb: the bomb is still there."""
+        return self.pose(self.smash(base, 1.0), **{"bomb@scale": 1.0})
 
-    low = Clip("lowHp", 48, loop=True)
-    for frame, breath, spark in ((0, 0, 0.6), (12, 0.5, 0.3), (24, 1, 0.6), (36, 0.5, 0.3), (48, 0, 0.6)):
-        low.key(frame, slump(breath, spark))
-    clips.append(low)
+    def reload(self, base):
+        """She has no bomb yet: she takes a new one from the basket."""
+        return self.pose(base, bomb_at_scale=0.01, spark_at_scale=0.0)
 
-    walk = Clip("walk", 24, loop=True)
-    walk.key(0, step(1)).key(6, step(1, 1)).key(12, step(-1)).key(18, step(-1, 1)).key(24, step(1))
-    clips.append(walk)
+    def rising(self, base):
+        return self.pose(self.crouch(base), hips_at_loc=self.at("hips", (0, 0.01, -0.07)))
 
-    attack = Clip("attack", 30)
-    attack.key(0, stand()).key(4, toss(stand())).key(5, pose(smash(stand(), 1.0), **{"bomb@scale": 1.0}))
-    attack.key(6, smash(stand())).key(9, smash(stand())).key(13, follow(stand())).key(20, follow(stand()))
-    attack.key(25, pose(stand(), bomb_at_scale=0.01, spark_at_scale=0.0)).key(28, stand(spark=0.6)).key(30, stand())
-    clips.append(attack)
 
-    hurt = Clip("hurt", 16)
-    hurt.key(0, stand()).key(3, recoil(stand())).key(8, recoil(stand(), 0.4)).key(16, stand())
-    clips.append(hurt)
-
-    death = Clip("death", 36)
-    death.key(0, stand()).key(5, recoil(stand())).key(12, stagger(stand()))
-    death.key(24, fallen(stand())).key(28, fallen(stand(), 6)).key(36, fallen(stand()))
-    clips.append(death)
-
-    # Rebirth: the Unit falls (45% of the event, `REBORN_FALL`), then gets up.
-    rebirth = Clip("rebirth", 48)
-    rebirth.key(0, stand()).key(4, recoil(stand())).key(20, fallen(stand())).key(22, fallen(stand(), 3))
-    rebirth.key(32, crouch(stand())).key(41, proud(stand())).key(48, stand())
-    clips.append(rebirth)
-
-    summon = Clip("summon", 24)
-    summon.key(0, crouch(stand())).key(10, pose(crouch(stand()), hips_at_loc=at("hips", (0, 0.01, -0.07))))
-    summon.key(17, proud(stand())).key(24, stand())
-    clips.append(summon)
-    return clips
+def build_clips(rig):
+    return clips.overrides.build(clips.biped_small.CLIPS, Poses(*kit.pose_tools(rig)), PATCHES, without=("cast",))
 
 
 def build(export=True):

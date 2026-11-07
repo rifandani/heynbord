@@ -47,6 +47,7 @@ DIRECTORY = Path(__file__).resolve().parent
 # The Unit Specs of the moved units. Fuse Runner and Tusk Brute have no Unit Spec yet.
 MOVED_WITH_SPECS = (
     "warden-saelith", "crag-rhino", "amberwing-dart", "bone-rampart",
+    "shieldbearer", "thornline-archer", "skeleton", "bomb-lobber", "ashcaller-grosh",
     "grand-gearjammer", "boss-snikkit", "junk-walker", "rocket-barrel-rider",
 )
 

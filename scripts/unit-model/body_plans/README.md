@@ -30,6 +30,8 @@ python3 -m unittest discover -s scripts/unit-model -p 'test_*.py'
 | The skinning rule | `SKIN_RULES`, `skin_problems`, `check_skin` |
 | The clip slots | `CLIP_SLOTS` |
 
+`neck_weights(table)` and `hips_weights(table)` give the weights of a neck part and a hips part, so these joints bend. A ring bends only with a blend of two bones. `kit.shares` puts the rings of a cone at the heights of the table.
+
 `build_rig(name, table, trunk, props, arms)` returns the rig and its proportion table. In Warden Saelith, the arm and leg joints of the geometry come from `arm_points` and `leg_points`. The bones and these joints cannot have different positions. The head and torso geometry has its own values, so a script that overrides a head or torso height must also change that geometry.
 
 A build script adds bones in two positions, and these positions keep the bone order of the existing scripts. `trunk` bones come after the head, for hair, cloth and tails. `props` bones come after the limbs.
@@ -114,11 +116,11 @@ The Source Contract did not change. After the move, `bun unit-model:contract:che
 
 ### Scripts that can move
 
-Only Warden Saelith has moved. For each other script, the survey put the script's own values in the proportion table and `arms`, then compared the bones with its `BONES`. All the scripts below give the same bones.
+`../migrations/humanoids.md` lists the scripts that have moved. For each other script, the survey put the script's own values in the proportion table and `arms`, then compared the bones with its `BONES`. All the scripts below give the same bones.
 
-These 24 scripts can move now. Their arm IK agrees with `add_arm_ik`, or they have no arm IK:
+These 21 scripts can move now. Their arm IK agrees with `add_arm_ik`, or they have no arm IK:
 
-- acorn-tender, banner-chaplain, canopy-skirmisher, canopy-vinewarden, dawn-cleric, dewkeeper, fernwing-courier, grave-bell-tender, hushbow, iron-bulwark, kings-courier, lantern-widow, lethiel-first-gardener, marshal-elian-voss, ossuary-piper, pale-cantor-ysolde, rattleknife, rootbound-guard, seedwind-shepherd, ser-aldric-stonewall, shieldbearer, sir-odo-last-taxman, skeleton and thornline-archer.
+- acorn-tender, banner-chaplain, canopy-skirmisher, canopy-vinewarden, dawn-cleric, dewkeeper, fernwing-courier, grave-bell-tender, hushbow, iron-bulwark, kings-courier, lantern-widow, lethiel-first-gardener, marshal-elian-voss, ossuary-piper, pale-cantor-ysolde, rattleknife, rootbound-guard, seedwind-shepherd, ser-aldric-stonewall and sir-odo-last-taxman.
 
 lantern-widow also needs the `region="prop"` fix on its `door` part.
 
@@ -189,7 +191,7 @@ The Source Contract did not change. After the move, `bun unit-model:contract:che
 
 The survey put the script's own values in the proportion table and `arms`, then compared the bones with its `BONES`.
 
-- 6 scripts can move now: bomb-lobber, junk-slinger, scrap-plate-guard, sidestep-shiv, tunnel-saboteur and badland-runt. Badland Runt is an orc, but it has the size of a goblin, so it is not in the survey. It has a walk clip of 12 frames.
+- 5 scripts can move now: junk-slinger, scrap-plate-guard, sidestep-shiv, tunnel-saboteur and badland-runt. Badland Runt is an orc, but it has the size of a goblin, so it is not in the survey. It has a walk clip of 12 frames.
 - 5 scripts need pole bones: ankle-snatcher, grease-trapper, grix-ratwhistle, mine-sapper and spyglass-sniper.
 - rocket-barrel-rider cannot move to this plan. Its barrel bones come before the hips, and it sits, so its legs and shoulders do not agree with the plan. Its plan is `machine`.
 
@@ -253,7 +255,7 @@ The Source Contract did not change. After the move, `bun unit-model:contract:che
 
 The survey put the script's own values in the proportion table and `arms`, then compared the bones with its `BONES`.
 
-- 7 scripts can move now: ashcaller-grosh, howling-charger, mesa-pit-fighter, pack-stalker, warband-standard-bearer, warchief-grukka and warhowler-drummer.
+- 6 scripts can move now: howling-charger, mesa-pit-fighter, pack-stalker, warband-standard-bearer, warchief-grukka and warhowler-drummer.
 - 6 scripts need pole bones: ashspit-hunter, cinderhorn-breaker, ember-shaman, pyreaxe-ravager, scrap-raider and skyreaver.
 - cave-troll cannot move. Its body bends forward, so its spine, shoulders and legs are off the center line. The table does not have these values. The same is true of avalanche-yeti and mountain-colossus, two feral scripts with the 20 core bones that are not in the survey.
 

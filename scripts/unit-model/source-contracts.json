@@ -173,12 +173,12 @@
       {
         "name": "death",
         "duration": 1.5,
-        "keyframes": "016311f264ef0eb98ae55ae209c9ae26365b91bf41c956b878447c70896f61a1"
+        "keyframes": "1ed5fe1b56c239414247f86aa7d4aa6a8416709bace734e5f53e5d833a9003bb"
       },
       {
         "name": "rebirth",
         "duration": 2,
-        "keyframes": "9c49ea3c5c311e394766c35e8b4a0f3ff658b72f05d6fae6b1436f6643a17d2f"
+        "keyframes": "ee6425bb16bca8ac0562af799b6414eab529e96c830b51f47b3fd406e74c1e06"
       },
       {
         "name": "summon",
@@ -4039,12 +4039,12 @@
       {
         "name": "death",
         "duration": 1.5,
-        "keyframes": "7725590ddd0940e4cb5d08944f8591674bd4d8735d2f14fb74fa8b8e26e0aa05"
+        "keyframes": "cc8f56bcc909421fc0d47f3053c6814024d88b3f6716db3774d3730db433d1aa"
       },
       {
         "name": "rebirth",
         "duration": 2,
-        "keyframes": "871c97ef4eb855950615eb3b8b0b49d95992600387be97387dea36a0f78088fd"
+        "keyframes": "86775256b0f0fc019a4405bc3d5ac9a8c206a2bde3a88c5adc677cc3722e3c8c"
       },
       {
         "name": "summon",
@@ -4561,12 +4561,12 @@
       {
         "name": "death",
         "duration": 1.5,
-        "keyframes": "4c489279c0fd792139d61f7ef0d1845eb46e1fd62112c7546dfba5346e377882"
+        "keyframes": "380e4d6de8581be5458eeb32ae5303e8995c0da97ea7a15882076876d0b4d62d"
       },
       {
         "name": "rebirth",
         "duration": 2,
-        "keyframes": "2301994dce17a1d9934b523d7a8de44a45f28bc4ebda4739dbf894d74fb41588"
+        "keyframes": "172d3ffe1f34d95e43e3fe11a301b7e57db83f09d5d8a995006b4ee9a29588c3"
       },
       {
         "name": "summon",

@@ -2,7 +2,7 @@
 
 `gates.ts` starts this file with a Review Gate name and a request file:
 
-    python3 unit_gates.py <turntable|interior|chirality|palette|ground|feet> <request.json>
+    python3 unit_gates.py <turntable|interior|joints|chirality|palette|ground|feet> <request.json>
 
 Each Review Gate prints one JSON report. The exit code is 0 clean, 1 fail, 2
 error. An error is not a pass. Python 3.11 standard library only.
@@ -18,6 +18,7 @@ from typing import Any
 sys.path.insert(0, str(Path(__file__).resolve().parent / "vendor"))
 
 import chirality  # noqa: E402
+import joint_loops  # noqa: E402
 from color_metrics import ciede2000, srgb_to_lab  # noqa: E402
 from extract_pbr_evidence import load_image  # noqa: E402
 import interior_difference  # noqa: E402
@@ -67,6 +68,9 @@ MIN_FALL_DEGREES = 45.0
 
 # The record name of the hole test of the body. It is not a part name.
 BODY = "body"
+# The bones on the center line of a biped, and how far from one a ring can be, as a share of the height.
+CENTER_BONES = {"hips", "spine", "chest", "neck"}
+CENTER_REACH = 0.12
 # The regions of the parts that are not the body.
 RIGID_REGIONS = {"prop", "base", "effect"}
 
@@ -204,6 +208,51 @@ def interior(request: dict[str, Any]) -> tuple[int, dict[str, Any]]:
     return code, report
 
 
+def _joint_vertices(vertices, joint, tip, radius):
+    """The vertices in the axial window of a joint."""
+    length = joint_loops._norm(joint_loops._sub(tip, joint))
+    axis = [value / length for value in joint_loops._sub(tip, joint)]
+    return [
+        vertex
+        for vertex in vertices
+        if abs(joint_loops._dot(joint_loops._sub(vertex, joint), axis)) <= radius
+    ]
+
+
+def joints(request: dict[str, Any]) -> tuple[int, dict[str, Any]]:
+    """
+    Is there enough geometry at each joint?
+
+    `joint_loops.py` keeps a ring only within 2 radii of the bone, and a radius is
+    a share of the bone length. A body is wider than that on a short bone of the
+    center line, so no ring of a goblin or an orc can count there. For these bones
+    the limit is a share of the height. The axial window does not change.
+    """
+    meshes = _load_meshes(request["meshes"])
+    if not meshes:
+        raise ValueError("no vertices supplied")
+    pooled = [vertex for mesh in meshes for vertex in mesh["vertices"]]
+    body_radius = request["height"] * CENTER_REACH / 2
+    records, failures = [], []
+    for bone in request["bones"]:
+        joint, tip = bone["jointPos"], bone["tipPos"]
+        radius = joint_loops._norm(joint_loops._sub(tip, joint)) * joint_loops.DEFAULT_RADIUS_SCALE
+        reach = max(radius, body_radius) if bone["id"] in CENTER_BONES else radius
+        window = _joint_vertices(pooled, joint, tip, radius)
+        measured = joint_loops.count_loops_at_joint(window, joint, joint, tip, reach)
+        minimum = joint_loops.MIN_LOOPS_PER_JOINT
+        record = {"bone": bone["id"], "radius": round(radius, 6), "minLoops": minimum, **measured}
+        record["passes"] = measured["loops"] >= minimum
+        if not record["passes"]:
+            failures.append(
+                f"{record['bone']}: {measured['loops']} loop(s) within {record['radius']} of the "
+                f"joint, needs {minimum}; this joint will crease rather than bend"
+            )
+        records.append(record)
+    report = {"joints": records, "failures": failures, "centerReach": round(body_radius * 2, 6)}
+    return (FAILED if failures else CLEAN), report
+
+
 def _pair_name(name: str) -> str | None:
     """`sleeve.L` as `sleeve-l` and `upper.FR` as `upper.F-r`, or None for no side."""
     match = _SIDE.match(name)
@@ -228,18 +277,25 @@ def _worst_points(left: list[list[float]], right: list[list[float]]):
     return best[1], best[2]
 
 
-def _check_pairs(kind: str, points: dict[str, list[list[float]]]) -> tuple[list[dict], list[str]]:
+def _check_pairs(
+    kind: str, points: dict[str, list[list[float]]], posed: list[str]
+) -> tuple[list[dict], list[str]]:
     named = {_pair_name(name): name for name in points if _pair_name(name)}
     pairs = chirality.find_pairs(named)
     paired = {name for pair in pairs for name in pair}
     records = []
     for right_name, left_name in pairs:
         right, left = points[named[right_name]], points[named[left_name]]
-        ok, message = chirality.check_pair(left_name[:-2], _centroid(right), _centroid(left))
+        stem = left_name[:-2]
+        relation = chirality.classify_relation(_centroid(right), _centroid(left))
+        if stem in posed and relation == "unrelated":
+            records.append({"kind": kind, "left": named[left_name], "ok": True, "posed": True, "detail": ""})
+            continue
+        ok, message = chirality.check_pair(stem, _centroid(right), _centroid(left))
         if ok:
             # A rotation and a mirror agree at a centroid with z = 0. They do not
             # agree at each vertex.
-            ok, message = chirality.check_pair(left_name[:-2], *_worst_points(left, right))
+            ok, message = chirality.check_pair(stem, *_worst_points(left, right))
         records.append({"kind": kind, "left": named[left_name], "ok": ok, "detail": message})
     return records, sorted(named[name] for name in named if name not in paired)
 
@@ -248,13 +304,15 @@ def mirror_pairs(request: dict[str, Any]) -> tuple[int, dict[str, Any]]:
     """Is each left and right pair a reflection, not a rotation?"""
     parts = {name: part["vertices"] for name, part in _parts(_load_meshes(request["meshes"])).items()}
     bones = {bone["id"]: [bone["jointPos"]] for bone in request["bones"]}
-    part_pairs, lone_parts = _check_pairs("part", parts)
-    bone_pairs, lone_bones = _check_pairs("bone", bones)
+    posed = request["posedPairs"]
+    part_pairs, lone_parts = _check_pairs("part", parts, posed)
+    bone_pairs, lone_bones = _check_pairs("bone", bones, posed)
     pairs = part_pairs + bone_pairs
     failures = [record["detail"] for record in pairs if not record["ok"]]
     report = {
         "pairCount": len(pairs),
         "failures": failures,
+        "posed": [record["left"] for record in pairs if record.get("posed")],
         "pairs": pairs,
         "unpaired": lone_parts + lone_bones,
         "note": "A pair that is wrong the same way on both sides is still a mirror of itself.",
@@ -388,6 +446,7 @@ def feet(request: dict[str, Any]) -> tuple[int, dict[str, Any]]:
 GATES = {
     "turntable": turntable,
     "interior": interior,
+    "joints": joints,
     "chirality": mirror_pairs,
     "palette": palette,
     "ground": ground,

@@ -24,7 +24,9 @@ __all__ = [
     "bones",
     "build_rig",
     "check_skin",
+    "hips_weights",
     "leg_points",
+    "neck_weights",
     "shoulder_point",
     "skin_problems",
 ]
@@ -45,6 +47,12 @@ SKIN_RULES = {
 # archers, the only scripts of the survey with poles that are empties.
 ARM_POLE_ANGLE = -90
 ARM_POLES = {"L": (0.25, -0.15, 0.7), "R": (-0.05, 0.45, 0.85)}
+
+# How far a neck blends on each side of its joint, how far below the hip joint a
+# hips part starts to follow the thigh, and how much it follows it.
+JOINT_BLEND = 0.01
+HIP_BLEND = 0.05
+HIP_FOLLOW = 0.6
 
 
 # The landmarks from the ground up. Each one must be below the next one.
@@ -154,6 +162,27 @@ def leg_points(table, sign):
         (table.knee_x * sign, 0, table.knee_z),
         (table.knee_x * sign, 0, table.ankle_z),
     )
+
+
+def neck_weights(table):
+    """The weights of a neck part: it goes from the chest to the neck across the joint."""
+
+    def weights(co):
+        share = min(max((co.z - (table.neck_z - JOINT_BLEND)) / (2 * JOINT_BLEND), 0), 1)
+        return {"chest": 1 - share, "neck": share}
+
+    return weights
+
+
+def hips_weights(table):
+    """The weights of a hips part: below the hip joint, it follows the thigh on its side."""
+
+    def weights(co):
+        below = min(max((table.hip_z - co.z) / HIP_BLEND, 0), 1)
+        share = below * min(abs(co.x) / table.hip_x, 1) * HIP_FOLLOW
+        return {"hips": 1 - share, "thigh.L" if co.x > 0 else "thigh.R": share}
+
+    return weights
 
 
 def bones(table, trunk=(), props=(), arms=None):
