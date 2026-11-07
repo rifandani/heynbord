@@ -12,7 +12,7 @@ import {
   getCard,
 } from "@workspace/rules";
 import { cn } from "cn";
-import type { CSSProperties, ReactNode } from "react";
+import type { ReactNode } from "react";
 import { useEffect, useRef, useState } from "react";
 import {
   Button,
@@ -20,6 +20,7 @@ import {
   Label,
   Radio,
   RadioGroup,
+  SelectionIndicator,
   TextField,
 } from "react-aria-components";
 
@@ -30,6 +31,7 @@ import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { classGlyph } from "@/features/battle/glyphs";
 import { useReducedMotion } from "@/features/battle/scene/reduced-motion";
 import { useGameText } from "@/features/battle/use-game-text";
+import { filterSummary } from "@/features/deck/components/pool-filters";
 import type { Peek } from "@/features/deck/components/use-card-peek";
 import { useDeckFlip } from "@/features/deck/components/use-deck-flip";
 import type { DeckRow } from "@/features/deck/deck";
@@ -39,12 +41,7 @@ import {
   deckRows,
   problemText,
 } from "@/features/deck/deck";
-import {
-  cssVars,
-  DECK_CSS,
-  DECK_METER_FILL,
-  DECK_PROBLEM_MARK,
-} from "@/features/deck/tokens";
+import { DECK_CSS, DECK_PROBLEM_MARK } from "@/features/deck/tokens";
 import { useCountTo } from "@/features/workshop/use-count-to";
 
 type PeekBind = (target: Peek) => object;
@@ -54,13 +51,18 @@ type PeekAt = (target: Peek) => ReactNode;
 
 const classOption = ({ isSelected }: { readonly isSelected: boolean }) =>
   cn(
-    "text-ink flex h-9 cursor-pointer items-center gap-2 rounded-lg border-2 pr-3 pl-1 text-sm font-bold transition-[transform,box-shadow] duration-100 outline-none select-none",
-    "data-[focus-visible]:ring-focus-cream data-[focus-visible]:ring-4 data-[hovered]:-translate-y-px motion-reduce:data-[hovered]:translate-y-0",
-    "[@media(max-height:500px)]:h-7 [@media(max-height:500px)]:pr-2 [@media(max-height:500px)]:text-xs",
+    "relative isolate flex h-7 cursor-pointer items-center gap-1.5 rounded-md px-2.5 text-xs font-bold whitespace-nowrap transition-colors duration-200 outline-none select-none",
+    "data-[focus-visible]:ring-focus-cream data-[focus-visible]:ring-4",
+    "[@media(max-height:500px)]:h-6 [@media(max-height:500px)]:gap-1 [@media(max-height:500px)]:px-2 [@media(max-height:500px)]:text-[11px]",
     isSelected
-      ? "border-gold-deep bg-parchment-lit shadow-selected"
-      : "border-ink-faded bg-parchment"
+      ? "text-ink-on-gold"
+      : "text-ink-soft data-[hovered]:bg-parchment data-[hovered]:text-ink"
   );
+
+const classOptionPlate = cn(
+  "from-gold-light to-gold absolute top-0 left-0 -z-10 size-full rounded-md bg-gradient-to-b",
+  "motion-safe:transition-[translate,width,height] motion-safe:duration-[220ms] motion-safe:ease-[cubic-bezier(0.2,0.8,0.2,1)]"
+);
 
 /** The name of the Deck: it reads as the page title, and the Player can change it. */
 const DeckName = ({
@@ -85,8 +87,8 @@ const DeckName = ({
         placeholder={fallback}
         spellCheck={false}
         className={cn(
-          "font-display text-ink placeholder:text-ink w-full truncate rounded-md border-b border-dashed border-transparent bg-transparent px-1 py-0.5 text-2xl font-black outline-none",
-          "data-[focused]:border-gold data-[focused]:bg-parchment-lit data-[hovered]:border-parchment-rule data-[focused]:border-solid",
+          "font-display text-ink placeholder:text-ink w-full truncate rounded-md border-b border-dashed border-transparent bg-transparent px-1 py-0.5 text-2xl font-black outline-none!",
+          "data-[focused]:bg-parchment-lit data-[hovered]:border-parchment-rule data-[focused]:border-transparent",
           "[@media(max-height:500px)]:text-base"
         )}
         data-testid="deck-name"
@@ -117,11 +119,9 @@ const ClassChoice = ({
         }
       }}
       orientation="horizontal"
-      className="flex items-center gap-2"
+      className="border-parchment-rule bg-parchment-deep flex w-fit max-w-full flex-wrap items-center gap-0.5 rounded-lg border-2 p-0.5"
     >
-      <Label className="text-ink-soft mr-1 text-xs font-bold [@media(max-height:500px)]:sr-only">
-        {tr("deckBuilder.heroClass")}
-      </Label>
+      <Label className="sr-only">{tr("deckBuilder.heroClass")}</Label>
       {CLASSES_WITH_CARDS.map((id) => (
         <Radio
           key={id}
@@ -129,18 +129,22 @@ const ClassChoice = ({
           className={classOption}
           data-testid={`deck-class-${id}`}
         >
-          <span
-            className="bg-frame-wood text-cream grid size-7 place-items-center rounded-md [@media(max-height:500px)]:size-5"
-            aria-hidden
-          >
-            <GlyphIcon
-              glyph={classGlyph(id)}
-              className="size-[18px] [@media(max-height:500px)]:size-3.5"
-            />
-          </span>
-          <span className="[@media(max-height:500px)]:sr-only">
-            {tr(`classes.${id}`)}
-          </span>
+          {({ isSelected }) => (
+            <>
+              <GlyphIcon
+                glyph={classGlyph(id)}
+                className="size-3.5 shrink-0 [@media(max-height:500px)]:size-3"
+              />
+              <span className="[@media(max-height:500px)]:sr-only">
+                {tr(`classes.${id}`)}
+              </span>
+              <SelectionIndicator
+                isSelected={isSelected}
+                className={classOptionPlate}
+                style={{ boxShadow: DECK_CSS.segmentPlate }}
+              />
+            </>
+          )}
         </Radio>
       ))}
     </RadioGroup>
@@ -153,17 +157,9 @@ const ClassChoice = ({
  */
 const REMOVE_MS = 160;
 
-/**
- * The Night Plate under a Deck card: the copies in the Deck, as on the
- * copies chip of the card pool. Under the pointer or the focus, it shows the
- * minus glyph that the press does, so the count and the action never need
- * two controls.
- */
-const copiesPlate = cn(
-  "border-gold-trim/70 bg-night-plate/90 text-cream relative flex h-6 max-w-full min-w-[3.75rem] items-center justify-center rounded-lg border-2 px-2 text-xs leading-none font-black tabular-nums shadow-(--copy-plate)",
-  "transition-[border-color,background-color] duration-100",
-  "group-data-[hovered]:border-wood-edge group-data-[hovered]:from-wood-light group-data-[hovered]:to-wood group-data-[hovered]:bg-gradient-to-b group-data-[hovered]:shadow-(--copy-plate-lift)",
-  "group-data-[focus-visible]:border-wood-edge group-data-[focus-visible]:from-wood-light group-data-[focus-visible]:to-wood group-data-[focus-visible]:bg-gradient-to-b group-data-[focus-visible]:shadow-(--copy-plate-lift)",
+/** The text under a Deck card: the copies in the Deck. */
+const copiesText = cn(
+  "text-ink-soft relative flex h-6 max-w-full min-w-[3.75rem] items-center justify-center px-2 font-sans text-xs leading-none font-semibold tabular-nums",
   "[@media(max-height:500px)]:h-5 [@media(max-height:500px)]:px-1.5 [@media(max-height:500px)]:text-[10px]"
 );
 
@@ -171,7 +167,7 @@ const copiesPlate = cn(
  * One card of the Deck grid: the card and its copies. A press removes one
  * copy; the last copy lifts off the page and is gone. A press that stays down
  * on a touch device shows the Card Details instead, as on the card pool. A
- * card that just came into the Deck lands on the page, and its copies plate
+ * card that just came into the Deck lands on the page, and its copies text
  * ticks to the new count.
  */
 const DeckCard = ({
@@ -255,29 +251,17 @@ const DeckCard = ({
           cardId={row.cardId}
           rank={row.rank}
           countdown={card.countdown}
+          thumbnail
           className="transition-transform duration-150 ease-out group-data-[hovered]:-translate-y-1.5 group-data-[pressed]:translate-y-0 motion-reduce:transition-none"
         />
-        <span
-          className={copiesPlate}
-          style={cssVars({
-            "--copy-plate": DECK_CSS.copyPlate,
-            "--copy-plate-lift": DECK_CSS.copyPlateLift,
-          })}
-          aria-hidden
-        >
+        <span className={copiesText} aria-hidden>
           <span className="block overflow-hidden">
             <span
               key={row.count}
-              className={cn(
-                "block transition-opacity duration-100 motion-safe:animate-[deck-count-tick_180ms_cubic-bezier(0.2,0.8,0.2,1)]",
-                "group-data-[focus-visible]:opacity-0 group-data-[hovered]:opacity-0"
-              )}
+              className="block motion-safe:animate-[deck-count-tick_180ms_cubic-bezier(0.2,0.8,0.2,1)]"
             >
               ×{row.count}
             </span>
-          </span>
-          <span className="absolute inset-0 grid place-items-center opacity-0 transition-opacity duration-100 group-data-[focus-visible]:opacity-100 group-data-[hovered]:opacity-100">
-            {tr("deckBuilder.removeAction")}
           </span>
         </span>
       </Button>
@@ -301,109 +285,60 @@ const EmptyDeck = () => {
   );
 };
 
-const meterValue =
-  "text-base font-black whitespace-nowrap text-ink tabular-nums [@media(max-height:500px)]:text-xs";
-
-/** The time of a meter: the number counts and the groove fills in step. */
-const METER_MS = 260;
-
-const GOLD_FILL = DECK_METER_FILL.gold;
-
-/** The groove of a meter, filled to `share` (0 to 1). */
-const MeterGroove = ({
-  share,
-  fill,
-  children,
-}: {
-  readonly share: number;
-  readonly fill: CSSProperties;
-  readonly children?: ReactNode;
-}) => (
-  <span
-    className="bg-frame-wood relative h-2.5 min-w-0 flex-1 rounded-full [@media(max-height:500px)]:h-2"
-    style={{ boxShadow: DECK_CSS.meterGroove }}
-    aria-hidden
-  >
-    <span
-      className="absolute inset-y-0 left-0 rounded-full transition-[width] duration-[260ms] ease-out motion-reduce:transition-none"
-      style={{ ...fill, width: `${Math.min(share, 1) * 100}%` }}
-    />
-    {children}
-  </span>
-);
+/** The time of the tally: the numbers count to their new values. */
+const TALLY_MS = 260;
 
 /**
- * The sum of the Countdowns against the Countdown Limit (ADR-0021). A Deck
- * over the limit is red, at the full width. The sum counts to its new value,
- * as the Coin on the Balance Plate does.
+ * The cards in the Deck and the sum of their Countdowns (ADR-0021), in the
+ * words of the owned count of the card pool. The limits stay for screen
+ * readers: a Deck outside them has a reason in the footer.
  */
-const CountdownMeter = ({ input }: { readonly input: DeckInput }) => {
-  const { tr } = useGameText();
-  const limit = countdownLimit(input.level);
-  const sum = deckCountdown(input.deck);
-  const shown = useCountTo(sum, 0, sum, METER_MS);
-  const over = sum > limit;
-  return (
-    <div
-      className="flex items-center gap-3 [@media(max-height:500px)]:gap-2"
-      data-over={over || undefined}
-    >
-      <span className={meterValue} data-testid="deck-countdown">
-        {tr("deckBuilder.countdownSum", { sum: shown, limit })}
-      </span>
-      <MeterGroove
-        share={sum / limit}
-        fill={over ? DECK_METER_FILL.over : GOLD_FILL}
-      />
-    </div>
-  );
-};
-
-/** The number of cards against the size limits: a groove with a notch at the minimum. */
-const SizeMeter = ({ input }: { readonly input: DeckInput }) => {
+const DeckTally = ({ input }: { readonly input: DeckInput }) => {
   const { tr } = useGameText();
   const { min, max } = deckSizeLimits(input.level);
+  const limit = countdownLimit(input.level);
   const count = input.deck.length;
-  const shown = useCountTo(count, 0, count, METER_MS);
-  const enough = count >= min && count <= max;
+  const sum = deckCountdown(input.deck);
+  const shownCount = useCountTo(count, 0, count, TALLY_MS);
+  const shownSum = useCountTo(sum, 0, sum, TALLY_MS);
   return (
-    <div className="flex items-center gap-3 [@media(max-height:500px)]:gap-2">
-      <span className={meterValue} data-testid="deck-size">
-        {tr("deckBuilder.size", { count: shown, max })}
+    <div className={cn(filterSummary, "ml-auto shrink-0")}>
+      <span aria-hidden>
+        <span data-testid="deck-size">
+          {shownCount === 1
+            ? tr("deckBuilder.sizeOne")
+            : tr("deckBuilder.sizeMany", { count: shownCount })}
+        </span>
+        {" · "}
+        <span data-testid="deck-countdown">
+          {tr("deckBuilder.countdownTally", { sum: shownSum })}
+        </span>
       </span>
-      <MeterGroove
-        share={count / max}
-        fill={enough ? GOLD_FILL : DECK_METER_FILL.under}
-      >
-        <span
-          className="bg-ink absolute -inset-y-1 w-0.5 -translate-x-1/2 rounded-full"
-          style={{ left: `${(min / max) * 100}%` }}
-        />
-      </MeterGroove>
-      {/* The minimum stays for screen readers: the notch shows it on the screen. */}
+      <span className="sr-only">
+        {tr("deckBuilder.size", { count: shownCount, max })}
+      </span>
+      <span className="sr-only">
+        {tr("deckBuilder.countdownSum", { sum: shownSum, limit })}
+      </span>
       <span className="sr-only">{tr("deckBuilder.sizeMin", { min })}</span>
     </div>
   );
 };
 
-/** Only the first reasons show, so that the list cannot hide the Deck list. */
-const MAX_PROBLEMS = 3;
-
-/** The reasons when the Deck is not valid (CRD-04). */
+/** Show the first reason only, so the Deck footer stays compact. */
 const Problems = ({
   problems,
 }: {
   readonly problems: readonly DeckProblem[];
 }) => {
-  const { text, tr } = useGameText();
+  const { text } = useGameText();
   if (problems.length === 0) {
     return null;
   }
-  const hidden = problems.length - MAX_PROBLEMS;
   return (
     <output className="block" data-testid="deck-problems">
       <ul className="flex flex-col gap-1">
-        {problems.slice(0, MAX_PROBLEMS).map((problem) => {
+        {problems.slice(0, 1).map((problem) => {
           const reason: TextRef = problemText(problem);
           return (
             <li
@@ -420,21 +355,13 @@ const Problems = ({
           );
         })}
       </ul>
-      {hidden > 0 && (
-        <p
-          className="text-ink-soft mt-1 pl-4 text-sm leading-snug italic [@media(max-height:500px)]:text-xs"
-          data-testid="deck-problems-more"
-        >
-          {tr("deckBuilder.moreProblems", { count: hidden })}
-        </p>
-      )}
     </output>
   );
 };
 
 /**
- * The right page: the Deck name and Hero Class, the grid of the Deck cards,
- * then the Countdown and size meters, the reasons and the actions.
+ * The right page: the Deck name, the Hero Class and the tally, the grid of the
+ * Deck cards, then the reasons and the actions.
  */
 export const DeckPage = ({
   slot,
@@ -481,9 +408,12 @@ export const DeckPage = ({
       aria-label={slot.name || fallbackName}
       className="flex min-h-0 flex-col gap-3 py-4 pr-5 pl-9 [@media(max-height:500px)]:gap-1.5 [@media(max-height:500px)]:py-2 [@media(max-height:500px)]:pr-3 [@media(max-height:500px)]:pl-6"
     >
-      <header className="border-parchment-rule flex flex-col gap-2 border-b-2 pb-3 [@media(max-height:500px)]:flex-row [@media(max-height:500px)]:items-center [@media(max-height:500px)]:gap-2 [@media(max-height:500px)]:pb-1.5">
+      <header className="flex flex-col gap-2 [@media(max-height:500px)]:gap-1">
         <DeckName slot={slot} fallback={fallbackName} onRename={onRename} />
-        <ClassChoice classId={slot.classId} onChange={onClass} />
+        <div className="flex min-w-0 flex-wrap items-center gap-x-4 gap-y-1">
+          <ClassChoice classId={slot.classId} onChange={onClass} />
+          <DeckTally input={input} />
+        </div>
       </header>
 
       <div className="flex min-h-0 flex-1 flex-col">
@@ -513,9 +443,7 @@ export const DeckPage = ({
         )}
       </div>
 
-      <footer className="border-parchment-rule flex flex-col gap-2.5 border-t-2 pt-3 [@media(max-height:500px)]:gap-1 [@media(max-height:500px)]:pt-1.5">
-        <CountdownMeter input={input} />
-        <SizeMeter input={input} />
+      <footer className="flex flex-col gap-2.5 pt-3 [@media(max-height:500px)]:gap-1 [@media(max-height:500px)]:pt-1.5">
         <Problems problems={problems} />
         <div className="flex items-center gap-2">
           <GameButton
@@ -549,18 +477,22 @@ export const DeckPage = ({
           <span className="flex-1" />
           {active ? (
             <span
-              className="font-display border-gold-deep bg-parchment-lit text-gold-deep inline-flex min-h-11 items-center gap-2 rounded-lg border-2 px-3 font-bold [@media(max-height:500px)]:min-h-8 [@media(max-height:500px)]:text-sm"
+              className="border-gold-deep bg-parchment-lit text-gold-deep inline-flex min-h-9 items-center gap-2 rounded-lg border-2 px-3 text-sm font-semibold [@media(max-height:500px)]:min-h-8 [@media(max-height:500px)]:text-xs"
               data-testid="deck-active"
             >
-              <GlyphIcon glyph="check" className="size-4" />
+              <GlyphIcon
+                glyph="check"
+                className="size-4 shrink-0 [@media(max-height:500px)]:size-3"
+              />
               {tr("deckBuilder.active")}
             </span>
           ) : (
             <GameButton
               intent="gold"
+              size="sm"
               onPress={onUse}
               isDisabled={problems.length > 0}
-              className="font-display [@media(max-height:500px)]:min-h-8 [@media(max-height:500px)]:text-sm"
+              className="[@media(max-height:500px)]:min-h-8 [@media(max-height:500px)]:text-xs"
               data-testid="deck-use"
             >
               {tr("deckBuilder.use")}

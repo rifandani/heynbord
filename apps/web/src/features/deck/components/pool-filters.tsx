@@ -22,6 +22,10 @@ import {
 } from "@/features/deck/deck";
 import { DECK_CSS } from "@/features/deck/tokens";
 
+/** The text of a count beside the filters: "96 / 96 owned". */
+export const filterSummary =
+  "text-ink-soft font-sans text-xs font-semibold whitespace-nowrap tabular-nums";
+
 const OWNERSHIP: readonly OwnershipFilter[] = ["all", "owned", "notOwned"];
 const KINDS: readonly KindFilter[] = ["all", "creature", "skill"];
 
@@ -133,11 +137,13 @@ export const PoolFilters = ({
   onFilter,
   tone = "parchment",
   ownershipText,
+  summary,
 }: {
   readonly filter: PoolFilter;
   readonly onFilter: (filter: PoolFilter) => void;
   readonly tone?: FilterTone;
   readonly ownershipText?: (ownership: OwnershipFilter) => string;
+  readonly summary?: ReactNode;
 }) => {
   const { tr, text } = useGameText();
   const change = (next: Partial<PoolFilter>) =>
@@ -165,6 +171,9 @@ export const PoolFilters = ({
             ownershipText ? ownershipText(id) : tr(`deckBuilder.filters.${id}`)
           }
         />
+        {summary ? (
+          <div className="ml-auto flex shrink-0 items-center">{summary}</div>
+        ) : null}
       </div>
       <div className="flex flex-col items-start gap-1.5 [@media(max-height:500px)]:gap-1">
         {filter.kind === "creature" ? (

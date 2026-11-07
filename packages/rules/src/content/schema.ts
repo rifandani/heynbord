@@ -247,6 +247,28 @@ const Keywords = Schema.Struct({
 });
 export type Keywords = typeof Keywords.Type;
 
+const Attack = between(0, 12);
+const Hp = between(1, 30);
+
+/** The stats of a copy at one Rank, in place of the Stat scale. */
+const RankOverride = Schema.Struct({
+  attack: Schema.optionalKey(Attack),
+  hp: Schema.optionalKey(Hp),
+});
+
+/**
+ * The exact stats at some Ranks (ADR-0058). An entry applies only at the Rank
+ * that it names, so a missing Rank uses the Stat scale. This is not the same as
+ * a Keyword table, where a missing Rank uses the nearest lower Rank.
+ */
+const RankOverrides = Schema.Struct({
+  common: Schema.optionalKey(RankOverride),
+  uncommon: Schema.optionalKey(RankOverride),
+  rare: Schema.optionalKey(RankOverride),
+  epic: Schema.optionalKey(RankOverride),
+  legendary: Schema.optionalKey(RankOverride),
+});
+
 const CreatureCardDefinition = Schema.Struct({
   kind: Schema.Literal("creature"),
   id: Schema.NonEmptyString,
@@ -258,8 +280,9 @@ const CreatureCardDefinition = Schema.Struct({
   class: Schema.optionalKey(ClassId),
   baseRank: RankId,
   countdown: between(1, 6),
-  attack: between(0, 12),
-  hp: between(1, 30),
+  attack: Attack,
+  hp: Hp,
+  overrides: Schema.optionalKey(RankOverrides),
   damageType: DamageType,
   keywords: Keywords,
 });
@@ -669,8 +692,8 @@ export type SkillCardDefinition = typeof SkillCardDefinition.Type;
 
 /** The values of a Token at one Rank. */
 const TokenRankValues = Schema.Struct({
-  attack: between(0, 12),
-  hp: between(1, 30),
+  attack: Attack,
+  hp: Hp,
 });
 
 /**

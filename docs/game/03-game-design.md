@@ -353,8 +353,9 @@ A **Unit** is the thing on the Board. A Creature Card is the thing in the Hand o
 
 - The Countdown never changes with the Rank.
 - Each Combine of a Skill Card changes its effect, and no value of the effect goes down at a higher Rank. A Recall gain alone is not sufficient ([ADR-0057](../adr/0057-each-combine-of-a-skill-card-changes-its-effect.md)).
+- Each Combine of a Creature Card raises at least 1 of its Attack, its HP or a Keyword value, and no value goes down at a higher Rank ([ADR-0058](../adr/0058-each-combine-of-a-creature-card-raises-a-value.md)).
 - Keyword values can also go up with the Rank. The card data defines this.
-- Stat values are integers. Round to the nearest integer.
+- Stat values are integers. Round to the nearest integer. A card can have an exact value at one Rank, in place of the Stat scale, when the rounding gives a flat step ([ADR-0058](../adr/0058-each-combine-of-a-creature-card-raises-a-value.md)).
 - Each card has a **Base Rank**. This is the lowest Rank in which the card exists. A card can go up to Legendary with Combine.
 - A Creature Card with Base Rank Legendary is a **Specialist**. It has one Class, and it has Unique. There is no Combine above Legendary, so a Specialist has no higher Rank ([ADR-0048](../adr/0048-a-base-rank-legendary-creature-card-is-a-specialist.md)).
 - The UI shows each Rank with a color **and** a number of pips, so that players with color blindness can see the Rank.

@@ -4,7 +4,6 @@ import { cn } from "cn";
 import { useState } from "react";
 import { Button, Meter, TooltipTrigger } from "react-aria-components";
 
-import { GameButton } from "@/core/components/game/game-button";
 import { GameTooltip } from "@/core/components/game/game-tooltip";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { useGameText } from "@/features/battle/use-game-text";
@@ -308,52 +307,32 @@ const LadderStep = ({
  * The Activity of the week on the left page of the ledger: the count, the time
  * to the next resets, and a gauge that fills up the page with its 5 chests.
  * Each chest has its reward beside it, so the Player reads the week at one
- * look. One Claim button claims all reached checkpoints, and a reached chest
- * claims itself and the reached chests below it.
+ * look. A reached chest claims itself and the reached chests below it.
  */
 export const ActivityLadder = ({
   bar,
-  onClaim,
   onClaimCheckpoint,
 }: {
   readonly bar: Bar;
-  readonly onClaim: () => void;
   readonly onClaimCheckpoint: OnClaimCheckpoint;
 }) => {
   const { tr } = useGameText();
-  const { activity, max, checkpoints, claimable } = bar;
+  const { activity, max, checkpoints } = bar;
   return (
     <section
       aria-label={tr("quests.tab.activity")}
       className="flex min-h-0 flex-1 flex-col"
       data-testid="activity-bar"
     >
-      <div className="flex items-center justify-between gap-3">
-        <h3 className="font-display text-ink text-3xl font-black">
-          {tr("quests.tab.activity")}{" "}
-          <span
-            className="font-sans text-2xl tabular-nums"
-            data-testid="activity-count"
-          >
-            {tr("objectives.count", { current: activity, target: max })}
-          </span>
-        </h3>
-        <GameButton
-          size="sm"
-          intent="gold"
-          isDisabled={claimable === 0}
-          onPress={onClaim}
-          aria-label={
-            claimable > 0
-              ? tr("quests.tab.claimCheckpointsLabel", { count: claimable })
-              : `${tr("objectives.claim")}, ${tr("objectives.noneToClaim")}`
-          }
-          className="shrink-0"
-          data-testid="activity-claim"
+      <h3 className="font-display text-ink text-3xl font-black">
+        {tr("quests.tab.activity")}{" "}
+        <span
+          className="font-sans text-2xl tabular-nums"
+          data-testid="activity-count"
         >
-          {tr("objectives.claim")}
-        </GameButton>
-      </div>
+          {tr("objectives.count", { current: activity, target: max })}
+        </span>
+      </h3>
       <div className="mt-1">
         <ResetTimes onPage />
       </div>
@@ -402,21 +381,18 @@ export const ActivityLadder = ({
 /**
  * The Activity plaque at the top of the Daily Quests tab (24 — Quests 3): a
  * dark wood plaque on the parchment with the Activity of the week, the gauge
- * with its 5 chests, the time to the next resets, and one Claim button for all
- * reached checkpoints. The button is off when no checkpoint is ready. A reached
- * chest claims itself and the reached chests below it.
+ * with its 5 chests and the time to the next resets. A reached chest claims
+ * itself and the reached chests below it.
  */
 export const ActivityBar = ({
   bar,
-  onClaim,
   onClaimCheckpoint,
 }: {
   readonly bar: Bar;
-  readonly onClaim: () => void;
   readonly onClaimCheckpoint: OnClaimCheckpoint;
 }) => {
   const { tr } = useGameText();
-  const { activity, max, checkpoints, claimable } = bar;
+  const { activity, max, checkpoints } = bar;
   return (
     <section
       aria-label={tr("quests.tab.activity")}
@@ -487,21 +463,6 @@ export const ActivityBar = ({
             ))}
           </div>
         </div>
-        <GameButton
-          size="sm"
-          intent="gold"
-          isDisabled={claimable === 0}
-          onPress={onClaim}
-          aria-label={
-            claimable > 0
-              ? tr("quests.tab.claimCheckpointsLabel", { count: claimable })
-              : `${tr("objectives.claim")}, ${tr("objectives.noneToClaim")}`
-          }
-          className="shrink-0"
-          data-testid="activity-claim"
-        >
-          {tr("objectives.claim")}
-        </GameButton>
       </div>
     </section>
   );

@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { Dialog, Heading, Modal, ModalOverlay } from "react-aria-components";
 
 import { GameButton } from "@/core/components/game/game-button";
+import { useBodyMark } from "@/core/hooks/use-body-mark";
 import { useReducedMotion } from "@/features/battle/scene/reduced-motion";
 import { useGameText } from "@/features/battle/use-game-text";
 import type { StoryKind, StorySpeaker } from "@/features/campaign/story-scenes";
@@ -151,6 +152,7 @@ export const StoryPlayer = ({
 }) => {
   const { tr } = useGameText();
   const [place, setPlace] = useState({ moment: 0, line: 0 });
+  useBodyMark("data-story");
   const { moment, line } = place;
   useStoryAudio(region, kind, moment);
   const lines = storyLines(region, kind, moment);

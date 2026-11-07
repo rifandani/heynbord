@@ -1,13 +1,9 @@
 import { RegistryContext } from "@effect/atom-react";
-import {
-  claimActivityCheckpoints,
-  claimActivityCheckpointsUpTo,
-  claimAllQuests,
-  claimQuest,
-} from "@workspace/rules";
+import { claimActivityCheckpointsUpTo, claimQuest } from "@workspace/rules";
 import { useContext } from "react";
 
 import { profileAtom } from "@/features/profile/profile.atoms";
+import { claimDailyQuestRewards } from "@/features/quests/quests";
 
 /**
  * The Claims of the Daily Quests tab (24 — Quests 1.1 and 1.2). Each Claim is
@@ -27,14 +23,6 @@ export const useQuests = () => {
       registry.set(profileAtom, change.profile);
       return change.quests.length;
     },
-    claimCheckpoints: (): number => {
-      const change = claimActivityCheckpoints(registry.get(profileAtom));
-      if (!change) {
-        return 0;
-      }
-      registry.set(profileAtom, change.profile);
-      return change.checkpoints.length;
-    },
     claimCheckpointsUpTo: (activity: number): number => {
       const change = claimActivityCheckpointsUpTo(
         registry.get(profileAtom),
@@ -47,12 +35,11 @@ export const useQuests = () => {
       return change.checkpoints.length;
     },
     claimAll: (): number => {
-      const change = claimAllQuests(registry.get(profileAtom));
-      if (!change) {
-        return 0;
+      const change = claimDailyQuestRewards(registry.get(profileAtom));
+      if (change.count > 0) {
+        registry.set(profileAtom, change.profile);
       }
-      registry.set(profileAtom, change.profile);
-      return change.claimed.length + change.checkpoints.length;
+      return change.count;
     },
   };
 };

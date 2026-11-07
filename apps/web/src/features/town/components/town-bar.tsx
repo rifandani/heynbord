@@ -8,7 +8,7 @@ import {
   useRef,
   useState,
 } from "react";
-import type { FocusEvent, RefObject } from "react";
+import type { CSSProperties, FocusEvent, RefObject } from "react";
 import type { PressEvent } from "react-aria-components";
 import { Button, DialogTrigger, TooltipTrigger } from "react-aria-components";
 
@@ -30,24 +30,25 @@ import { SettingsDialog } from "@/features/town/components/settings-dialog";
 import { useTownLockText } from "@/features/town/components/town-lock";
 import {
   TOWN_BADGE_DROP,
-  TOWN_BAR_LIP,
-  TOWN_BAR_LIP_SHADOW,
-  TOWN_BAR_SHELF,
-  TOWN_BAR_SHELF_SHADOW,
   TOWN_COUNT_DROP,
   TOWN_CURRENT_GLOW,
   TOWN_CURRENT_MARK_DROP,
-  TOWN_FIRST_GROOVE,
   TOWN_ICON_CONTACT,
-  TOWN_LAST_GROOVE,
   TOWN_PULL_DROP,
-  TOWN_PULL_LINE_DROP,
+  TOWN_ROLLER_CAP,
+  TOWN_ROLLER_CAP_DROP,
+  TOWN_ROLLER_CLOTH,
+  TOWN_ROLLER_DROP,
+  TOWN_SASH_CLOTH,
+  TOWN_SASH_DROP,
+  TOWN_SASH_NAME_SHADOW,
   TOWN_SEAL_DROP,
 } from "@/features/town/tokens";
 import type { GameScreen, TownLock, TownShortcut } from "@/features/town/town";
 import {
   isLocked,
   paintedIcon,
+  TOWN_BAR_GROUP_STARTS,
   TOWN_SHORTCUTS,
   shortcutImage,
   townLock,
@@ -59,9 +60,28 @@ import {
 
 const LONG_PRESS_MS = 450;
 
-/** The Deck builder loads in its own chunk at the first open (issue 139). */
+/**
+ * The Deck builder loads in its own chunk (issue 139). The Deck shortcut asks
+ * for the chunk when the Player goes to it, or after the Town is quiet, so a
+ * press has no wait. A touch has no hover, and a tap is too late to help.
+ */
+const loadDeckDialog = () => import("@/features/deck/components/deck-dialog");
+
+/** Asks for the chunk. After a failed load, a press asks for it again. */
+const prepareDeckDialog = async (setReady: (ready: boolean) => void) => {
+  try {
+    await loadDeckDialog();
+    setReady(true);
+  } catch {
+    setReady(false);
+  }
+};
+
+/** After the first load (NFR-02), so its JavaScript budget has no change. */
+const DECK_CHUNK_WAIT_MS = 5000;
+
 const DeckDialog = lazy(async () => {
-  const module = await import("@/features/deck/components/deck-dialog");
+  const module = await loadDeckDialog();
   return { default: module.DeckDialog };
 });
 
@@ -69,9 +89,44 @@ const pageCurrent = (current: boolean) => (current ? "page" : undefined);
 
 const lockedAttr = (locked: boolean) => locked || undefined;
 
+/** The curve of the sash and the roller. The two move as one piece of cloth. */
+const SASH_MOTION = "duration-[460ms] ease-[cubic-bezier(0.33,0.9,0.28,1)]";
+
+/** The cut end of the sash, as a swallowtail. */
+const SASH_CUT = "[clip-path:polygon(0_0,100%_0,100%_100%,0_100%,14px_50%)]";
+
 /**
- * The painted icon stands on the shelf of the bar, and its top stands out of
- * the top edge of the bar (11 — Town Concepts 7). The current one stands a
+ * The stow delay in ms of each place on the bar, from the left. Each value is
+ * the time that the cut end of the sash takes to reach that place on the
+ * `SASH_MOTION` curve, less 60ms, so a name never stands on the painting.
+ */
+const STOW_DELAYS_MS = [
+  0, 0, 0, 0, 0, 10, 23, 37, 52, 70, 92, 125, 194,
+] as const;
+
+/**
+ * A shortcut sinks when the cut end of the sash reaches it, from the left to
+ * the right, and it stands up again in the opposite order. Each motion of the
+ * bar waits for `data-town-bar-ready`, so a saved stowed bar shows at once.
+ */
+const SINK_CLASS = cn(
+  "in-data-[town-bar-ready]:transition-[translate,opacity] in-data-[town-bar-ready]:duration-[260ms]",
+  "ease-out motion-reduce:transition-none",
+  "[transition-delay:calc(var(--town-bar-after)*20ms+90ms)]",
+  "group-data-[collapsed]/town-bar:translate-y-[38px] group-data-[collapsed]/town-bar:opacity-0",
+  "group-data-[collapsed]/town-bar:[transition-delay:var(--town-bar-before)] group-data-[collapsed]/town-bar:duration-200"
+);
+
+/** The place of a shortcut in the sink order. */
+const sinkStyle = (index: number) =>
+  // SAFETY: both keys are custom properties, which `CSSProperties` does not list.
+  ({
+    "--town-bar-before": `${STOW_DELAYS_MS[index]}ms`,
+    "--town-bar-after": TOWN_SHORTCUTS.length - index,
+  }) as CSSProperties;
+
+/**
+ * The painted icon stands above its label (11 — Town Concepts 7). The current one stands a
  * little higher in a warm light; an open one lifts under the pointer. The
  * Settings icon stays lifted while its dialog is open.
  */
@@ -113,6 +168,7 @@ const labelClass = (locked: boolean, current: boolean, lifted: boolean) =>
 const shortcutButtonClass = (locked: boolean) =>
   cn(
     "group data-[focus-visible]:ring-focus-cream relative flex h-[66px] w-full flex-col items-center justify-end rounded-lg outline-none select-none data-[focus-visible]:ring-4",
+    SINK_CLASS,
     "[@media(max-height:500px)]:h-11",
     locked && "cursor-default"
   );
@@ -199,6 +255,17 @@ const ShortcutIcon = ({
     <HandbookIcon className={cn(className, "p-2")} />
   );
 
+/** The gold diamond on the sash, between two groups of shortcuts. */
+const GroupDiamond = () => (
+  <span
+    className={cn(
+      "bg-gold-trim pointer-events-none absolute bottom-1.5 -left-2.5 size-2 rotate-45 transition-opacity duration-200 motion-reduce:transition-none",
+      "group-data-[collapsed]/town-bar:opacity-0 [@media(max-height:500px)]:hidden"
+    )}
+    aria-hidden
+  />
+);
+
 /** The small gold token of a reward that waits behind the stowed bar. */
 const PULL_BADGE = cn(
   "grid h-4 min-w-4 place-items-center rounded-full border px-1 text-[10px] leading-none font-black tabular-nums",
@@ -207,13 +274,10 @@ const PULL_BADGE = cn(
 );
 
 /**
- * The brass pull on the front lip of the shelf. It is the one control of the
- * stowed bar: it opens and closes the shelf, and it carries the gold tokens of
- * the rewards that wait behind it (Achievements, Seaport). The drawing is a
- * drawer pull, not a web toggle: brass, a hard drop and a 1px press.
- *
- * When the bar stows, the pull leaves the lip and floats at the right corner
- * of the screen, because the bar itself is gone.
+ * The roller at the right corner, and its brass pull. It is the one control
+ * of the stowed bar: it opens and closes the bar, and it carries the gold
+ * tokens of the rewards that wait behind it (Achievements, Seaport). It stays
+ * in one place, and it grows when the sash winds onto it.
  */
 const BarPull = ({
   collapsed,
@@ -241,17 +305,15 @@ const BarPull = ({
       onPress={onPress}
       data-testid="town-bar-pull"
       className={cn(
-        "group/bar-pull absolute bottom-[max(4px,env(safe-area-inset-bottom))] z-40 flex h-11 min-w-7 items-end justify-end gap-1 rounded-lg pr-px outline-none select-none",
-        collapsed
-          ? "right-[max(0.5rem,env(safe-area-inset-right))]"
-          : "right-[calc(max(0.5rem,env(safe-area-inset-right))+var(--town-bar-settings-w)-0.75rem)]",
-        // The pull slides to the corner of the screen with the shelf.
-        "transition-[right] duration-300 ease-out motion-reduce:transition-none",
+        "group/bar-pull absolute right-[max(0.375rem,env(safe-area-inset-right))] bottom-0 z-40 flex h-[calc(2.75rem+env(safe-area-inset-bottom))] min-w-11 items-end justify-end gap-1 rounded-lg pr-1.5 outline-none select-none",
         "data-[focus-visible]:ring-focus-cream data-[focus-visible]:ring-4"
       )}
     >
       {collapsed && (claimable > 0 || shipBack) ? (
-        <span className="mb-[3px] flex items-center gap-1" aria-hidden>
+        <span
+          className="mb-[calc(0.75rem+env(safe-area-inset-bottom))] flex items-center gap-1 motion-safe:animate-[town-bar-seal-in_200ms_ease-out_340ms_backwards]"
+          aria-hidden
+        >
           {claimable > 0 ? (
             <span className={PULL_BADGE}>{claimable}</span>
           ) : null}
@@ -264,29 +326,49 @@ const BarPull = ({
       ) : null}
       <span
         className={cn(
-          "border-frame-wood relative flex h-[22px] w-[22px] flex-col items-center justify-center gap-px rounded-[3px] border",
-          "from-bronze-light via-bronze-mid to-bronze-deep bg-gradient-to-b",
-          TOWN_PULL_DROP,
-          "transition-[filter,transform,box-shadow] duration-100 group-hover/bar-pull:brightness-110",
-          "group-data-[pressed]/bar-pull:shadow-piece-press group-data-[pressed]/bar-pull:translate-y-px",
-          "motion-reduce:transition-none"
+          "relative block h-[calc(37px+env(safe-area-inset-bottom))] shrink-0 rounded-[3px]",
+          TOWN_ROLLER_DROP,
+          "in-data-[town-bar-ready]:transition-[width]",
+          SASH_MOTION,
+          "motion-reduce:transition-none",
+          collapsed ? "w-10" : "w-[30px]"
         )}
+        style={{ background: TOWN_ROLLER_CLOTH }}
       >
-        <span className="flex flex-col gap-px" aria-hidden>
-          {[0, 1, 2].map((line) => (
-            <span
-              key={line}
-              className={cn("bg-frame-wood/50 h-px w-2", TOWN_PULL_LINE_DROP)}
-            />
-          ))}
-        </span>
-        <GlyphIcon
-          glyph="chevron"
+        <span
           className={cn(
-            "text-ink-on-gold size-2.5 transition-transform duration-200 motion-reduce:transition-none",
-            collapsed && "rotate-180"
+            "absolute inset-x-[-2px] -top-[3px] h-1.5 rounded-[2px]",
+            TOWN_ROLLER_CAP_DROP
           )}
+          style={{ background: TOWN_ROLLER_CAP }}
+          aria-hidden
         />
+        <span
+          className={cn(
+            "absolute inset-x-[-2px] bottom-0 h-1.5 rounded-[2px]",
+            TOWN_ROLLER_CAP_DROP
+          )}
+          style={{ background: TOWN_ROLLER_CAP }}
+          aria-hidden
+        />
+        <span
+          className={cn(
+            "border-frame-wood absolute inset-x-0 bottom-[calc(9px+env(safe-area-inset-bottom))] mx-auto grid size-[22px] place-items-center rounded-[3px] border",
+            "from-bronze-light via-bronze-mid to-bronze-deep bg-gradient-to-b",
+            TOWN_PULL_DROP,
+            "transition-[filter,transform,box-shadow] duration-100 group-hover/bar-pull:brightness-110",
+            "group-data-[pressed]/bar-pull:shadow-piece-press group-data-[pressed]/bar-pull:translate-y-px",
+            "motion-reduce:transition-none"
+          )}
+        >
+          <GlyphIcon
+            glyph="chevron"
+            className={cn(
+              "text-ink-on-gold size-2.5 transition-transform duration-200 motion-reduce:transition-none",
+              collapsed && "rotate-180"
+            )}
+          />
+        </span>
       </span>
     </Button>
     <GameTooltip
@@ -301,7 +383,7 @@ const BarPull = ({
 
 /**
  * The face of a shortcut: its light, its contact shadow, its painted icon and
- * its name on the lip of the shelf.
+ * its name over the painting.
  */
 const ShortcutFace = ({
   image,
@@ -321,7 +403,7 @@ const ShortcutFace = ({
   /** The count on the badge of the icon, for the Achievements and Seaport shortcuts. */
   readonly count?: number;
   readonly badgeTestId?: string;
-  /** The name on the lip of the shelf. */
+  /** The name below the icon. */
   readonly labelTestId?: string;
 }) => (
   <>
@@ -351,7 +433,11 @@ const ShortcutFace = ({
       <LockSeal locked={locked} />
       <CountBadge count={count} testId={badgeTestId} />
     </span>
-    <span className={labelClass(locked, current, lifted)} aria-hidden>
+    <span
+      className={labelClass(locked, current, lifted)}
+      style={{ textShadow: current ? undefined : TOWN_SASH_NAME_SHADOW }}
+      aria-hidden
+    >
       <span className="truncate" data-testid={labelTestId}>
         {name}
       </span>
@@ -417,10 +503,12 @@ const useShortcutName = (
  */
 const Shortcut = ({
   shortcut,
+  index,
   current,
   onOpen,
 }: {
   readonly shortcut: TownShortcut;
+  readonly index: number;
   readonly current: boolean;
   readonly onOpen: (screen: GameScreen) => void;
 }) => {
@@ -431,7 +519,10 @@ const Shortcut = ({
   const [dialogOpen, setDialogOpen] = useState(false);
   // The dialog stays in the page after its first open, so it can close on its
   // spine. `dialogOpen` alone would remove it before the exit animation.
-  const deckShown = useEverOpened(dialogOpen);
+  const deckOpened = useEverOpened(dialogOpen);
+  // A closed dialog mounts when its chunk is ready, so that a press does not
+  // suspend: React holds the reveal after a Suspense fallback for 300 ms.
+  const [deckReady, setDeckReady] = useState(false);
   const handbook = useHandbook();
   const name = tr(`town.shortcuts.${shortcut.id}`);
   const { screen, dialog } = shortcut;
@@ -462,7 +553,24 @@ const Shortcut = ({
     count
   );
 
+  const prepare = () => {
+    if (dialog === "deck") {
+      prepareDeckDialog(setDeckReady);
+    }
+  };
+  useEffect(() => {
+    if (dialog !== "deck") {
+      return;
+    }
+    const wait = setTimeout(
+      prepareDeckDialog,
+      DECK_CHUNK_WAIT_MS,
+      setDeckReady
+    );
+    return () => clearTimeout(wait);
+  }, [dialog]);
   const onPressStart = (event: PressEvent) => {
+    prepare();
     longPressed.current = false;
     if (event.pointerType === "touch") {
       timer.current = setTimeout(() => {
@@ -498,15 +606,19 @@ const Shortcut = ({
     }
   };
 
+  const groupStart = TOWN_BAR_GROUP_STARTS.has(shortcut.id);
+
   return (
-    // The Town shortcut stands apart, at the left end, after a carved groove.
+    // The Town shortcut stands apart at the left end.
     <li
       className={cn(
-        "max-w-24 min-w-0 flex-1 basis-0",
-        "[@media(max-height:500px)]:max-w-11",
-        TOWN_FIRST_GROOVE
+        "relative max-w-38 min-w-0 flex-1 basis-0",
+        "first:mr-1.5 first:pr-1.5",
+        groupStart && "ml-3.5 [@media(max-height:500px)]:ml-0"
       )}
+      style={sinkStyle(index)}
     >
+      {groupStart ? <GroupDiamond /> : null}
       <TooltipTrigger
         isOpen={open}
         // Hover and focus open the tooltip of a locked shortcut only: an open shortcut shows its label.
@@ -519,6 +631,8 @@ const Shortcut = ({
         <Button
           aria-label={accessibleName}
           aria-current={pageCurrent(current)}
+          onHoverStart={prepare}
+          onFocus={prepare}
           onPressStart={onPressStart}
           onPressEnd={onPressEnd}
           onPress={onPress}
@@ -550,7 +664,7 @@ const Shortcut = ({
           )}
         </GameTooltip>
       </TooltipTrigger>
-      {dialog === "deck" && deckShown ? (
+      {dialog === "deck" && (deckOpened || deckReady) ? (
         <Suspense fallback={null}>
           <DeckDialog isOpen={dialogOpen} onOpenChange={setDialogOpen} />
         </Suspense>
@@ -560,7 +674,7 @@ const Shortcut = ({
 };
 
 /**
- * The Settings button at the right end of the Town Bar, after a carved groove
+ * The Settings button at the right end of the Town Bar
  * (GDD 11.4). It opens the Settings dialog over the current screen. It is not
  * a screen, so it never shows the current state or the lock.
  */
@@ -571,11 +685,10 @@ const SettingsButton = () => {
   const name = tr("settings.title");
   return (
     <div
-      className={cn(
-        "relative w-[calc(var(--town-bar-settings-w)-0.5rem)] shrink-0",
-        TOWN_LAST_GROOVE
-      )}
+      className="relative w-[calc(var(--town-bar-settings-w)-0.5rem)] shrink-0 pl-1.5"
+      style={sinkStyle(TOWN_SHORTCUTS.length)}
     >
+      <GroupDiamond />
       <DialogTrigger isOpen={open} onOpenChange={setOpen}>
         <Button
           ref={button}
@@ -600,17 +713,16 @@ const SettingsButton = () => {
 };
 
 /**
- * The Town Bar (GDD 11.4): a wood shelf with the shortcuts to the game
- * screens, then the Settings button. The names sit on the flat front lip of
- * the shelf. It shows on each screen except the Battle.
+ * The Town Bar (GDD 11.4), the Royal Sash: a thin blue cloth holds the names
+ * of the shortcuts and of Settings, and the painted icons stand on it, over
+ * the painting. It shows on each screen except the Battle.
  *
- * The shelf can stow away from any screen. The choice is saved per device. A
- * small brass pull is the only control that stays: it opens the shelf, carries
- * the tokens of the rewards that wait behind it, and takes the focus when the
- * shortcuts go away. A stowed bar is gone for good: it has no wood and no
- * rail, so the scene fills the screen and only the pull floats at the corner.
- * The painting and the docked panels follow the live `--town-bar` height, so
- * the scene grows as the wood moves down.
+ * The bar can stow away from any screen. The choice is saved per device. The
+ * cloth winds onto its roller, and each shortcut sinks when the cut end of the
+ * cloth passes it. The roller is the only control that stays: it opens the
+ * bar, carries the tokens of the rewards that wait behind it, and takes the
+ * focus when the shortcuts go away. The docked panels follow the live
+ * `--town-bar` height.
  */
 export const TownBar = ({
   screen,
@@ -633,8 +745,8 @@ export const TownBar = ({
   const seaportBack =
     shipBack && seaport !== undefined && !isLocked(seaport, progress);
 
-  // The Hints that point at a Town Bar shortcut. A stowed shelf cannot show
-  // it, so the shelf comes back for the Hint, unless the Player put it away
+  // The Hints that point at a Town Bar shortcut. A stowed menu cannot show
+  // it, so the menu comes back for the Hint, unless the Player put it away
   // again while the same Hint was open.
   const hintPlace = shownHint === null ? null : HINT_PLACE[shownHint];
   const hintWantsBar =
@@ -646,7 +758,7 @@ export const TownBar = ({
     savedCollapsed && !(hintWantsBar && dismissedHint !== shownHint);
 
   // One source of truth for every screen's floor. `--town-bar` transitions
-  // from this attribute (globals.css), so the painting and the panels follow.
+  // from this attribute (globals.css), so the docked panels follow.
   // The ready flag waits one frame: a saved stowed rail appears at once, and
   // only later toggles animate.
   useLayoutEffect(() => {
@@ -659,7 +771,7 @@ export const TownBar = ({
   }, [effectiveCollapsed]);
 
   // The shortcuts are about to leave the focus order. Move the focus to the
-  // pull when the Player was using them, also when a Hint closes the shelf.
+  // pull when the Player was using them, also when a Hint closes the menu.
   useLayoutEffect(() => {
     if (!effectiveCollapsed || !focusInBar.current) {
       return;
@@ -720,77 +832,70 @@ export const TownBar = ({
   return (
     <nav
       aria-label={tr("town.bar")}
-      className="fixed inset-x-0 bottom-0 z-30 h-[var(--town-bar)]"
+      className="group/town-bar fixed inset-x-0 bottom-0 z-30 h-[var(--town-bar)]"
       data-testid="town-bar"
       data-pad-town-bar
       data-collapsed={effectiveCollapsed || undefined}
     >
-      {/* The shelf of wood. It slides down and out of the screen when the bar
-          stows, so no wood and no rail stay: only the pull remains. */}
+      {/* The box keeps its height when the bar stows, so the shortcuts sink
+          and the cloth winds away on the screen. */}
       <div
+        id="town-bar-content"
+        inert={effectiveCollapsed}
+        onFocus={onContentFocus}
+        onBlur={onContentBlur}
         className={cn(
-          "border-wood-edge absolute inset-0 border-t-4",
-          TOWN_BAR_SHELF_SHADOW,
-          "[@media(max-height:500px)]:border-t-[3px]",
-          "transition-[opacity,transform] duration-300 ease-out motion-reduce:transition-none",
-          effectiveCollapsed
-            ? "-translate-y-full opacity-0"
-            : "translate-y-0 opacity-100"
+          // The icons extend above the top edge of the bar.
+          "absolute inset-x-0 bottom-0 h-[calc(var(--town-bar-shelf)+2rem)] overflow-hidden",
+          effectiveCollapsed && "pointer-events-none"
         )}
-        style={{
-          // Dark wood with a faint grain, as the Hand Bar.
-          background: TOWN_BAR_SHELF,
-        }}
       >
-        {/* The flat front lip of the shelf. It holds the names, so it sits
-            behind them. */}
+        {/* The cloth stops at the center of the roller, and it goes under it. */}
         <div
           className={cn(
-            "border-bronze-rim/20 pointer-events-none absolute inset-x-0 bottom-0 h-[calc(22px+max(4px,env(safe-area-inset-bottom)))] border-t",
-            "[@media(max-height:500px)]:hidden"
+            "absolute bottom-0 left-0 h-[calc(34px+env(safe-area-inset-bottom))] overflow-hidden",
+            "right-[calc(max(0.375rem,env(safe-area-inset-right))+1.25rem)]",
+            "[@media(max-height:500px)]:h-[calc(16px+env(safe-area-inset-bottom))]"
           )}
-          style={{
-            backgroundColor: TOWN_BAR_LIP,
-            boxShadow: TOWN_BAR_LIP_SHADOW,
-          }}
           aria-hidden
-        />
-        <div
-          id="town-bar-content"
-          inert={effectiveCollapsed}
-          onFocus={onContentFocus}
-          onBlur={onContentBlur}
-          className={cn(
-            "absolute inset-x-0 bottom-0 overflow-hidden",
-            // The icons stand out of the top edge of the shelf. A stowed bar
-            // has no room for them, so the box holds nothing.
-            effectiveCollapsed ? "top-0" : "-top-8",
-            effectiveCollapsed && "pointer-events-none"
-          )}
         >
           <div
             className={cn(
-              "absolute inset-x-0 bottom-[max(4px,env(safe-area-inset-bottom))] flex h-[66px] items-end justify-between gap-3",
-              "pr-[max(0.5rem,env(safe-area-inset-right))] pl-[max(0.5rem,env(safe-area-inset-left))]",
-              "transition-[opacity,transform] ease-out motion-reduce:transition-none",
-              "[@media(max-height:500px)]:h-11",
-              effectiveCollapsed
-                ? "translate-y-2.5 opacity-0 duration-150"
-                : "translate-y-0 opacity-100 delay-100 duration-200"
+              "absolute right-0 bottom-0 -left-6 h-[calc(27px+env(safe-area-inset-bottom))]",
+              "[@media(max-height:500px)]:h-[calc(11px+env(safe-area-inset-bottom))]",
+              TOWN_SASH_DROP,
+              "in-data-[town-bar-ready]:transition-transform",
+              SASH_MOTION,
+              "motion-reduce:transition-none",
+              effectiveCollapsed && "translate-x-full"
             )}
           >
-            <ul className="relative flex min-w-0 flex-1 items-end gap-1">
-              {TOWN_SHORTCUTS.map((shortcut) => (
-                <Shortcut
-                  key={shortcut.id}
-                  shortcut={shortcut}
-                  current={shortcut.screen === screen}
-                  onOpen={onOpen}
-                />
-              ))}
-            </ul>
-            <SettingsButton />
+            <div className={cn("bg-gold-trim absolute inset-0", SASH_CUT)} />
+            <div
+              className={cn("absolute inset-0 top-0.5 left-1", SASH_CUT)}
+              style={{ background: TOWN_SASH_CLOTH }}
+            />
           </div>
+        </div>
+        <div
+          className={cn(
+            "absolute inset-x-0 bottom-[max(4px,env(safe-area-inset-bottom))] flex h-[66px] items-end justify-between gap-3",
+            "pr-[calc(max(0.375rem,env(safe-area-inset-right))+2.75rem)] pl-[max(0.5rem,env(safe-area-inset-left))]",
+            "[@media(max-height:500px)]:h-11"
+          )}
+        >
+          <ul className="relative flex min-w-0 flex-1 items-end justify-center gap-1">
+            {TOWN_SHORTCUTS.map((shortcut, index) => (
+              <Shortcut
+                key={shortcut.id}
+                shortcut={shortcut}
+                index={index}
+                current={shortcut.screen === screen}
+                onOpen={onOpen}
+              />
+            ))}
+          </ul>
+          <SettingsButton />
         </div>
       </div>
       <BarPull

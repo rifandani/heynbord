@@ -9,6 +9,7 @@
   "scripts": {
     "sitemap:gen": "bun scripts/gen-sitemap.ts",
     "pwa-assets:gen": "pwa-assets-generator",
+    "thumbs:gen": "bun scripts/gen-card-thumbs.ts",
     "typecheck": "tsc --noEmit",
     "typerange": "fr",
     "typerange:audit": "fr --audit",
@@ -26,6 +27,7 @@
     "measure:first-load": "bun scripts/measure-first-load.ts",
     "measure:battle-budget": "bun scripts/measure-battle-budget.ts",
     "measure:frame-rate": "bun scripts/measure-frame-rate.ts",
+    "measure:deck-open": "bun scripts/measure-deck-open.ts",
     "preview": "vite preview",
     "start": "node .output/server/index.mjs",
     "build-and-preview": "bun run --sequential build preview"

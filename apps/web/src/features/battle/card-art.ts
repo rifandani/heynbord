@@ -24,6 +24,14 @@ export const cardIllustration = (cardId: string): string => {
 };
 
 /**
+ * The small art of a card for the card grids: the same picture at 200 × 267, at
+ * the same path under `/card-thumbs`. `bun web thumbs:gen` makes the files.
+ * A grid has many cards at a small size, so it must not decode the full art.
+ */
+export const cardThumbnail = (cardId: string): string =>
+  `/card-thumbs${cardIllustration(cardId)}`;
+
+/**
  * The path of the art of a Token. All Tokens are in one folder:
  * `token.restlessWisp` uses `/creature/token/restless-wisp.webp`. A Token has
  * one 3:4 portrait image with its background, as a card has.

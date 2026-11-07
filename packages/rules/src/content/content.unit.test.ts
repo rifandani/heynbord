@@ -39,6 +39,7 @@ import {
 } from "./keywords";
 import { firstTryPathLevel } from "./player-levels";
 import {
+  creatureStats,
   isRankAtLeast,
   RANKS,
   rankPips,
@@ -98,6 +99,29 @@ const checkDeck = (deck: readonly DeckEntry[]) => {
 const creatures = CARDS.flatMap((card) =>
   card.kind === "creature" ? [card] : []
 );
+
+/** A Creature Card, for a test that reads its Creature fields. */
+const creatureCard = (id: string): CreatureCardDefinition => {
+  const card = creatures.find((creature) => creature.id === id);
+  if (card === undefined) {
+    throw new Error(`${id} is not a Creature Card`);
+  }
+  return card;
+};
+
+/** The Attack, the HP and each Keyword value of a copy, in a fixed order. */
+const combineValues = (
+  card: CreatureCardDefinition,
+  rank: RankId
+): readonly number[] => {
+  const { attack, hp } = creatureStats(card, rank);
+  const keywordValues = Object.values(card.keywords).flatMap((amount) =>
+    Predicate.isBoolean(amount) || Predicate.isString(amount)
+      ? []
+      : [keywordValue(amount, rank)]
+  );
+  return [attack, hp, ...keywordValues];
+};
 
 /** Range 2 or more from the Range Keywords (ADR-0029). */
 const isRanged = (card: CreatureCardDefinition): boolean =>
@@ -1417,6 +1441,50 @@ describe("Ranks (GDD 5.3)", () => {
     expect(ranksOf(getCard("human.militiaRecruit"))).toEqual(RANKS);
     // A Specialist (Base Rank Legendary) has only the Legendary Rank (ADR-0048).
     expect(ranksOf({ baseRank: "legendary" })).toEqual(["legendary"]);
+  });
+
+  it("uses an override only at the Rank that it names (ADR-0058)", () => {
+    const card = creatureCard("goblin.ankleSnatcher");
+    expect(RANKS.map((rank) => creatureStats(card, rank))).toEqual([
+      { attack: 3, hp: 3 },
+      { attack: 4, hp: 4 },
+      { attack: 4, hp: 5 },
+      { attack: 5, hp: 5 },
+      { attack: 6, hp: 6 },
+    ]);
+    expect(
+      RANKS.map((rank) =>
+        creatureStats(creatureCard("elf.fernwingCourier"), rank)
+      )
+    ).toEqual(RANKS.map((rank) => creatureStats(card, rank)));
+  });
+
+  it("has no override below the Base Rank of a card (ADR-0058)", () => {
+    for (const card of creatures) {
+      for (const rank of RANKS) {
+        if (!isRankAtLeast(rank, card.baseRank)) {
+          expect(card.overrides?.[rank], `${card.id} ${rank}`).toBeUndefined();
+        }
+      }
+    }
+  });
+
+  it("raises a value on each Combine of a Creature Card, and lowers none (ADR-0058)", () => {
+    for (const card of creatures) {
+      const ranks = ranksOf(card);
+      for (const [index, rank] of ranks.entries()) {
+        const lower = ranks[index - 1];
+        if (lower === undefined) {
+          continue;
+        }
+        const before = combineValues(card, lower);
+        const after = combineValues(card, rank);
+        const step = `${card.id} ${lower} to ${rank}`;
+        const changes = after.map((value, at) => value - (before[at] ?? 0));
+        expect(Math.min(...changes), step).toBeGreaterThanOrEqual(0);
+        expect(Math.max(...changes), step).toBeGreaterThan(0);
+      }
+    }
   });
 });
 

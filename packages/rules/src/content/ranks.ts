@@ -1,4 +1,5 @@
 import type {
+  CreatureCardDefinition,
   RankId,
   SkillAmount,
   SkillCount,
@@ -39,6 +40,16 @@ export const rankPips = (rank: RankId): number => RANKS.indexOf(rank) + 1;
 /** Scales a printed Common value to a Rank, rounded to the nearest integer. */
 export const scaleForRank = (value: number, rank: RankId): number =>
   Math.floor((value * STAT_SCALE[rank] + 5000) / 10_000);
+
+/** The Attack and HP of a Creature Card copy: an override, or the Stat scale. */
+export const creatureStats = (
+  card: Pick<CreatureCardDefinition, "attack" | "hp" | "overrides">,
+  rank: RankId
+) => ({
+  attack: scaleForRank(card.attack, rank),
+  hp: scaleForRank(card.hp, rank),
+  ...card.overrides?.[rank],
+});
 
 const isScaledSkillAmount = (amount: SkillAmount): amount is number =>
   Number.isFinite(amount);

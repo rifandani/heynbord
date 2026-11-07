@@ -1,6 +1,9 @@
 import type { QuestsState, StageDefinition } from "@workspace/rules";
 import {
   activeExpedition,
+  ACHIEVEMENT_CATEGORIES,
+  ACHIEVEMENTS,
+  achievementState,
   CARDS,
   MAX_COPIES,
   MAX_GEAR_LEVEL,
@@ -15,6 +18,7 @@ import { describe, expect, it } from "vitest";
 import {
   canSetStars,
   addActivity,
+  completeAllAchievements,
   completeQuests,
   finishVoyage,
   floorsWon,
@@ -326,6 +330,82 @@ describe("setStageStars", () => {
 
   it("keeps the Stars from 1 to 3", () => {
     expect(setStageStars(STAGES_FIXTURE, {}, "1-1", 9)).toEqual({ "1-1": 3 });
+  });
+});
+
+describe("completeAllAchievements", () => {
+  it.each(ACHIEVEMENT_CATEGORIES)(
+    "completes only the %s category and preserves rewards and claims",
+    (category) => {
+      const achievements = ACHIEVEMENTS.filter(
+        (achievement) => achievement.category === category
+      );
+      const [claimed] = achievements;
+      const other = ACHIEVEMENTS.find(
+        (achievement) => achievement.category !== category
+      );
+      if (!(claimed && other)) {
+        throw new Error("The test needs Achievements in two categories");
+      }
+      const profile = {
+        ...newProfile(1),
+        completedAchievements: [claimed.id, other.id],
+        claimedAchievements: [claimed.id],
+      };
+      const next = completeAllAchievements(profile, category);
+      expect(next).toEqual({
+        ...profile,
+        completedAchievements: [
+          claimed.id,
+          other.id,
+          ...achievements.slice(1).map((achievement) => achievement.id),
+        ],
+      });
+      for (const achievement of ACHIEVEMENTS) {
+        const expected =
+          achievement.id === claimed.id
+            ? "claimed"
+            : achievement.category === category || achievement.id === other.id
+              ? "completed"
+              : "inProgress";
+        expect(achievementState(next, achievement)).toBe(expected);
+      }
+      expect(completeAllAchievements(next, category)).toBe(next);
+      expect(profile.completedAchievements).toEqual([claimed.id, other.id]);
+    }
+  );
+
+  it("keeps earned rewards and existing claims while completing the rest", () => {
+    const [completed, claimed] = ACHIEVEMENTS;
+    if (!(completed && claimed)) {
+      throw new Error("The test needs at least two Achievements");
+    }
+    const profile = {
+      ...newProfile(1),
+      completedAchievements: [completed.id, claimed.id],
+      claimedAchievements: [claimed.id],
+    };
+    const next = completeAllAchievements(profile);
+    expect(next).toEqual({
+      ...profile,
+      completedAchievements: expect.arrayContaining(
+        ACHIEVEMENTS.map((achievement) => achievement.id)
+      ),
+    });
+    expect(new Set(next.completedAchievements).size).toBe(ACHIEVEMENTS.length);
+    expect(next.completedAchievements).toHaveLength(ACHIEVEMENTS.length);
+    expect(achievementState(next, claimed)).toBe("claimed");
+    expect(
+      ACHIEVEMENTS.filter(
+        (achievement) => achievementState(next, achievement) === "completed"
+      )
+    ).toHaveLength(ACHIEVEMENTS.length - 1);
+    expect(profile.completedAchievements).toEqual([completed.id, claimed.id]);
+  });
+
+  it("keeps the same Profile when all Achievements are already complete", () => {
+    const profile = completeAllAchievements(newProfile(1));
+    expect(completeAllAchievements(profile)).toBe(profile);
   });
 });
 

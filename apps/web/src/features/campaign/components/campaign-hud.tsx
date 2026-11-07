@@ -10,7 +10,14 @@ import {
 } from "@workspace/rules";
 import { cn } from "cn";
 import type { ReactElement, ReactNode, RefObject } from "react";
-import { useCallback, useContext, useEffect, useRef, useState } from "react";
+import {
+  useCallback,
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import type { PressEvent } from "react-aria-components";
 import {
   Button,
@@ -555,6 +562,18 @@ const Chest = ({
   const button = useRef<HTMLButtonElement>(null);
   const claimable = state === "claimable";
   const claimed = state === "claimed";
+  // Each loop counts from the same clock, so that all waiting chests rock
+  // together, also a chest that starts to wait after the others.
+  useLayoutEffect(() => {
+    if (!claimable) {
+      return;
+    }
+    for (const loop of button.current?.getAnimations({ subtree: true }) ?? []) {
+      if (loop instanceof CSSAnimation) {
+        loop.startTime = 0;
+      }
+    }
+  }, [claimable]);
   /** Closes the plaque and gives the focus back to its chest, as a popover does. */
   const closeRewards = () => {
     const active = document.activeElement;
@@ -600,7 +619,7 @@ const Chest = ({
               className={cn(
                 "relative size-9 transition-transform duration-150 [@media(max-height:500px)]:size-7",
                 claimable &&
-                  "[transform-origin:50%_100%] group-data-[hovered]:animate-none motion-safe:animate-[chest-wiggle_3.4s_ease-in-out_infinite]",
+                  "[transform-origin:50%_100%] group-data-[hovered]:rotate-0! motion-safe:animate-[chest-wiggle_3.4s_ease-in-out_infinite]",
                 (claimable || claimed) &&
                   "group-data-[hovered]:-translate-y-0.5 group-data-[pressed]:translate-y-0"
               )}

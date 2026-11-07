@@ -2113,9 +2113,11 @@ export default {
     empty:
       "Dek ini tidak berisi kartu. Pilih kartu di halaman kiri untuk menambahkannya, atau pakai Isi Otomatis.",
     size: "{count} / {max} kartu",
+    sizeOne: "1 kartu",
+    sizeMany: "{count} kartu",
+    countdownTally: "{sum} hitung mundur",
     countdownSum: "Hitung mundur {sum} / {limit}",
     sizeMin: "Minimal {min}",
-    moreProblems: "Dan {count} lagi.",
     add: "Tambah {name}, {rank}, Hitung mundur {countdown}. Salinan dimiliki: {owned}. Sisa salinan: {left}.",
     remove: "Buang satu {name}, {rank}. Di Dek ini: {count}.",
     removeAction: "Buang",

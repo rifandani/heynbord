@@ -19,7 +19,8 @@ import {
 } from "@workspace/rules";
 import type { HeroRef, Profile, Side, StageDefinition } from "@workspace/rules";
 import { cn } from "cn";
-import { useContext, useState } from "react";
+import type { ReactNode } from "react";
+import { useContext, useRef, useState } from "react";
 import {
   HiArrowUturnLeft,
   HiMiniStar,
@@ -35,6 +36,7 @@ import {
   ToggleGroup,
   ToggleGroupItem,
 } from "@/core/components/ui/toggle-group";
+import { achievementGroups } from "@/features/achievements/achievements";
 import type { BattleSession } from "@/features/battle/battle-session";
 import { devHitHero, newestSession } from "@/features/battle/battle-session";
 import {
@@ -54,6 +56,7 @@ import { collectionAtom } from "@/features/deck/deck.atoms";
 import {
   addActivity,
   canSetStars,
+  completeAllAchievements,
   completeQuests,
   finishVoyage,
   lastWonStage,
@@ -80,14 +83,49 @@ import { balancesAtom } from "@/features/town/town.atoms";
 // Catalogs. Stage names and voyage names still come from the game text.
 const count = new Intl.NumberFormat("en-US");
 const STAR_OPTIONS = [1, 2, 3] as const;
+const DEV_GROUPS = [
+  "General",
+  "Campaign",
+  "Dungeons",
+  "Heynspire",
+  "Resources",
+  "Objectives",
+] as const;
 
 const Heading = ({ id, children }: { id: string; children: string }) => (
-  <h2
+  <h3
     id={id}
     className="text-muted-fg text-xs font-semibold tracking-wide uppercase"
   >
     {children}
-  </h2>
+  </h3>
+);
+
+/** Each group scrolls without moving the controls in the other columns. */
+const DevColumn = ({
+  name,
+  children,
+  wide = false,
+}: {
+  readonly name: string;
+  readonly children: ReactNode;
+  readonly wide?: boolean;
+}) => (
+  <section
+    aria-label={name}
+    data-dev-column={name}
+    className={cn(
+      "border-border flex min-h-0 min-w-0 shrink-0 flex-col border-b pb-4 md:border-e md:border-b-0 md:pb-0",
+      wide ? "md:w-xl" : "md:w-72"
+    )}
+  >
+    <h2 className="border-border mx-4 border-b py-3 text-sm font-semibold">
+      {name}
+    </h2>
+    <div className="grid shrink-0 content-start gap-6 p-4 md:shrink md:overflow-y-auto md:overscroll-contain">
+      {children}
+    </div>
+  </section>
 );
 
 const CollectionBlock = () => {
@@ -133,19 +171,29 @@ const coinParts = (copper: number) =>
     )
     .join(" · ");
 
-/** The 2 types of Sweep Ticket (ADR-0039). */
-const SWEEP_TICKET_FIELDS: readonly {
-  readonly kind: SweepKind;
-  readonly label: string;
-}[] = [
-  { kind: "campaign", label: "Campaign Sweep Tickets" },
-  { kind: "dungeon", label: "Dungeon Sweep Tickets" },
-];
+/** Keep each Sweep Ticket field with the game mode that uses it. */
+const SweepTicketsField = ({ kind }: { readonly kind: SweepKind }) => {
+  const { setSweepTickets } = useDevOverrides();
+  const profile = useAtomValue(profileAtom);
+  return (
+    <NumberField
+      value={ownedTickets(profile, kind)}
+      minValue={0}
+      step={1}
+      formatOptions={{ maximumFractionDigits: 0 }}
+      onChange={(value) => setSweepTickets(kind, value)}
+    >
+      <Label>
+        {kind === "campaign" ? "Campaign" : "Dungeon"} Sweep Tickets
+      </Label>
+      <NumberInput />
+    </NumberField>
+  );
+};
 
 const BalancesBlock = () => {
-  const { setBalance, setSweepTickets } = useDevOverrides();
+  const { setBalance } = useDevOverrides();
   const balances = useAtomValue(balancesAtom);
-  const profile = useAtomValue(profileAtom);
   return (
     <section
       aria-labelledby="dev-balances"
@@ -170,19 +218,6 @@ const BalancesBlock = () => {
           ) : null}
         </NumberField>
       ))}
-      {SWEEP_TICKET_FIELDS.map(({ kind, label }) => (
-        <NumberField
-          key={kind}
-          value={ownedTickets(profile, kind)}
-          minValue={0}
-          step={1}
-          formatOptions={{ maximumFractionDigits: 0 }}
-          onChange={(value) => setSweepTickets(kind, value)}
-        >
-          <Label>{label}</Label>
-          <NumberInput />
-        </NumberField>
-      ))}
     </section>
   );
 };
@@ -205,7 +240,7 @@ const ForgeStonesBlock = () => {
       className="grid content-start gap-3"
     >
       <Heading id="dev-forge-stones">Forge Stones</Heading>
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid gap-3">
         {FORGE_STONE_TIERS.map((tier) => (
           <NumberField
             key={tier}
@@ -246,7 +281,7 @@ const HeynspireBlock = () => {
       aria-labelledby="dev-heynspire"
       className="grid content-start gap-3"
     >
-      <Heading id="dev-heynspire">Heynspire</Heading>
+      <Heading id="dev-heynspire">Progress</Heading>
       <NumberField
         value={profile.heynspireFloorsWon}
         minValue={0}
@@ -371,6 +406,88 @@ const QuestsBlock = () => {
           Clear
         </Button>
       </div>
+    </section>
+  );
+};
+
+/** Saved Achievement state, with rewards left available for a test Claim. */
+const AchievementsBlock = () => {
+  const registry = useContext(RegistryContext);
+  const profile = useAtomValue(profileAtom);
+  const { tr } = useGameText();
+  const groups = achievementGroups(profile);
+  const states = groups.flatMap((group) => group.rows.map((row) => row.state));
+  const ready = states.filter((state) => state === "completed").length;
+  const claimed = states.filter((state) => state === "claimed").length;
+  const remaining = states.length - ready - claimed;
+
+  return (
+    <section
+      aria-labelledby="dev-achievements"
+      className="grid content-start gap-3"
+    >
+      <Heading id="dev-achievements">Achievements</Heading>
+      <p className="text-muted-fg tabular-nums">
+        {ready} ready to claim · {claimed} claimed · {remaining} in progress
+      </p>
+      <div>
+        <Button
+          size="xs"
+          isDisabled={remaining === 0}
+          onPress={() =>
+            registry.set(
+              profileAtom,
+              completeAllAchievements(registry.get(profileAtom))
+            )
+          }
+        >
+          Complete all
+        </Button>
+      </div>
+      <div className="grid gap-4">
+        {groups.map((group) => {
+          const name = tr(`achievements.tab.categories.${group.category}`);
+          const inProgress = group.rows.length - group.done;
+          return (
+            <section
+              key={group.category}
+              aria-labelledby={`dev-achievements-${group.category}`}
+              className="border-border grid gap-2 border-t pt-3"
+            >
+              <h4
+                id={`dev-achievements-${group.category}`}
+                className="font-semibold"
+              >
+                {name}
+              </h4>
+              <p className="text-muted-fg text-xs tabular-nums">
+                {group.claimable} ready to claim ·{" "}
+                {group.done - group.claimable} claimed · {inProgress} in
+                progress
+              </p>
+              <div>
+                <Button
+                  size="xs"
+                  aria-label={`Complete all ${name} achievements`}
+                  isDisabled={inProgress === 0}
+                  onPress={() =>
+                    registry.set(
+                      profileAtom,
+                      completeAllAchievements(
+                        registry.get(profileAtom),
+                        group.category
+                      )
+                    )
+                  }
+                >
+                  Complete all
+                </Button>
+              </div>
+            </section>
+          );
+        })}
+      </div>
+      <p className="text-muted-fg text-xs">Changes are saved to the Profile.</p>
     </section>
   );
 };
@@ -640,8 +757,9 @@ const CampaignBlock = () => {
       aria-labelledby="dev-campaign"
       className="grid min-w-0 content-start gap-3"
     >
-      <div className="flex items-baseline justify-between gap-4">
-        <Heading id="dev-campaign">Campaign</Heading>
+      <SweepTicketsField kind="campaign" />
+      <div className="flex flex-wrap items-baseline justify-between gap-2">
+        <Heading id="dev-campaign">Stages</Heading>
         <p className="text-muted-fg text-xs tabular-nums">
           {won} of {order.length} Stages · {stars} / {order.length * 3} Stars
         </p>
@@ -745,49 +863,88 @@ const CampaignBlock = () => {
  * Player level, the Gear, the balances, the 2 types of Sweep Ticket, the Forge
  * Stones and the won Heynspire Floors, wins Campaign Stages one by one, hits
  * the Heroes of the Battle on the screen, finishes the Seaport voyage, and
- * changes the Daily Quests and the Activity. Its values show over the Profile
- * and are not saved into it, except the finished voyage and the Quest state.
+ * changes the Daily Quests, the Activity and the Achievements. Its values show
+ * over the Profile and are not saved into it, except the finished voyage,
+ * the Quest state and the Achievements.
  * Development only.
  */
 export const GameDevPanel = () => {
   const { active, storageAvailable, clear } = useDevOverrides();
+  const columns = useRef<HTMLDivElement>(null);
   return (
     <div
       className={cn(
-        "bg-bg text-fg min-h-full text-sm",
+        "bg-bg text-fg flex h-full min-h-0 flex-col overflow-hidden text-sm",
         // The kit maps the semantic aliases in `:root`, not in the devtools
         // panel, so it maps them again here.
         "[--color-border:var(--border)] [--color-fg:var(--fg)] [--color-muted-fg:var(--muted-fg)] [--color-primary-fg:var(--primary-fg)] [--color-primary:var(--primary)] [--color-ring:var(--ring)] [--color-secondary-fg:var(--secondary-fg)] [--color-secondary:var(--secondary)] [--color-warning:var(--warning)]"
       )}
     >
-      <div className="grid gap-x-10 gap-y-6 p-4 lg:grid-cols-[minmax(14rem,18rem)_minmax(0,40rem)]">
-        <div className="grid content-start gap-6">
+      <nav
+        aria-label="Game dev groups"
+        className="border-border flex shrink-0 flex-wrap gap-1 border-b px-4 py-2"
+      >
+        {DEV_GROUPS.map((name) => (
+          <Button
+            key={name}
+            size="xs"
+            intent="plain"
+            onPress={() => {
+              const board = columns.current;
+              const group = board?.querySelector(`[data-dev-column="${name}"]`);
+              if (!(board && group)) {
+                return;
+              }
+              const from = board.getBoundingClientRect();
+              const to = group.getBoundingClientRect();
+              board.scrollBy({
+                top: to.top - from.top,
+                left: to.left - from.left,
+              });
+            }}
+          >
+            {name}
+          </Button>
+        ))}
+      </nav>
+      <div
+        ref={columns}
+        className="flex min-h-0 flex-1 flex-col overflow-auto overscroll-contain md:flex-row md:overflow-y-hidden"
+      >
+        <DevColumn name="General">
           <BattleBlock />
           <CollectionBlock />
           <PlayerBlock />
+          <SeaportBlock />
+        </DevColumn>
+        <DevColumn name="Campaign" wide>
+          <CampaignBlock />
+        </DevColumn>
+        <DevColumn name="Dungeons">
+          <SweepTicketsField kind="dungeon" />
+        </DevColumn>
+        <DevColumn name="Heynspire">
+          <HeynspireBlock />
+        </DevColumn>
+        <DevColumn name="Resources">
           <BalancesBlock />
           <ForgeStonesBlock />
-          <HeynspireBlock />
-          <SeaportBlock />
+        </DevColumn>
+        <DevColumn name="Objectives">
           <QuestsBlock />
-        </div>
-        <CampaignBlock />
-        <footer className="border-border flex flex-wrap items-center gap-3 border-t pt-3 lg:col-span-full">
-          <p className="text-muted-fg me-auto text-xs">
-            {storageAvailable
-              ? "Changes show over the Profile, not in it. They stay after a reload until you clear them."
-              : "Browser storage is blocked: changes end at the next reload."}
-          </p>
-          <Button
-            size="xs"
-            intent="outline"
-            isDisabled={!active}
-            onPress={clear}
-          >
-            Clear dev state
-          </Button>
-        </footer>
+          <AchievementsBlock />
+        </DevColumn>
       </div>
+      <footer className="border-border flex shrink-0 flex-wrap items-center gap-3 border-t px-4 py-3">
+        <p className="text-muted-fg me-auto text-xs">
+          {storageAvailable
+            ? "Changes show over the Profile, not in it. They stay after a reload until you clear them."
+            : "Browser storage is blocked: changes end at the next reload."}
+        </p>
+        <Button size="xs" intent="outline" isDisabled={!active} onPress={clear}>
+          Clear dev state
+        </Button>
+      </footer>
     </div>
   );
 };

@@ -1,12 +1,16 @@
 import type {
+  AchievementCategory,
   Collection,
   ForgeStoneTier,
   GearLevels,
+  Profile,
   QuestsState,
   SeaportState,
   StageDefinition,
 } from "@workspace/rules";
 import {
+  ACHIEVEMENTS,
+  achievementState,
   CARDS,
   getQuestTemplate,
   expeditionDurationMs,
@@ -138,6 +142,27 @@ export const completeQuests = (quests: QuestsState): QuestsState => ({
       : { ...quest, progress: getQuestTemplate(quest.templateId).count }
   ),
 });
+
+/** Complete the remaining Achievements in one category or all categories, without claiming rewards. */
+export const completeAllAchievements = (
+  profile: Profile,
+  category?: AchievementCategory
+): Profile => {
+  const remaining = ACHIEVEMENTS.filter(
+    (achievement) =>
+      (category === undefined || achievement.category === category) &&
+      achievementState(profile, achievement) === "inProgress"
+  );
+  return remaining.length === 0
+    ? profile
+    : {
+        ...profile,
+        completedAchievements: [
+          ...profile.completedAchievements,
+          ...remaining.map((achievement) => achievement.id),
+        ],
+      };
+};
 
 /** The Quest state with `amount` more Activity (24 — Quests 1.2). */
 export const addActivity = (

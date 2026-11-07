@@ -8,6 +8,7 @@ import {
 import { describe, expect, it } from "vitest";
 
 import {
+  claimDailyQuestRewards,
   questFocusAfter,
   questLines,
   questName,
@@ -225,5 +226,34 @@ describe("questLines", () => {
 
   it("is empty when nothing changed", () => {
     expect(questLines(PLAYER, PLAYER)).toEqual([]);
+  });
+});
+
+describe("claimDailyQuestRewards", () => {
+  it("claims completed quests and leaves reached Activity chests for a chest press", () => {
+    const profile = withDaily([
+      { templateId: "daily.win", param: null, progress: 3, claimed: false },
+      { templateId: "daily.kills", param: null, progress: 15, claimed: false },
+    ]);
+    const ready = { ...profile, quests: { ...profile.quests, activity: 100 } };
+    const change = claimDailyQuestRewards(ready);
+    expect(change.count).toBe(2);
+    expect(change.profile.quests.daily.every((quest) => quest.claimed)).toBe(
+      true
+    );
+    expect(change.profile.quests.activity).toBe(
+      100 + 2 * DAILY_QUEST_REWARD.activity
+    );
+    expect(change.profile.quests.claimedCheckpoints).toEqual(
+      ready.quests.claimedCheckpoints
+    );
+    expect(change.profile.coin - ready.coin).toBe(2 * DAILY_QUEST_REWARD.coin);
+    expect(claimDailyQuestRewards(change.profile).count).toBe(0);
+  });
+
+  it("does nothing when only Activity chests are ready", () => {
+    const profile = withDaily([]);
+    const ready = { ...profile, quests: { ...profile.quests, activity: 100 } };
+    expect(claimDailyQuestRewards(ready)).toEqual({ profile: ready, count: 0 });
   });
 });

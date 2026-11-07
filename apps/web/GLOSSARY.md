@@ -42,6 +42,8 @@ React app on TanStack Start. The server renders and streams each page.
 
 **Details Panel**: The text panel next to the card in the Card Details. It starts with the card name, then the fields that the card itself does not show, for example Keywords and flavor text. _Avoid_: side panel, info box, ability box
 
+**Card Thumbnail**: The small copy of the card art, 200 × 267, in `public/card-thumbs`. A grid of many cards shows it, so that the grid does not decode the full art. The Card Details show the full art. _Avoid_: small art, preview image
+
 **Rank Gem**: One pip on the Card Frame, in the Rank color. A card shows 1 Rank Gem for Common and 5 for Legendary. _Avoid_: star, pip socket
 
 **Hand Bar**: The panel at the bottom of the Battle screen. It holds the Deck Pile at the left, the Hand Slots in the middle and the Graveyard Pile at the right. _Avoid_: card tray, footer, hand panel
@@ -162,9 +164,9 @@ React app on TanStack Start. The server renders and streams each page.
 
 **Lock Plate**: The small plate with a lock that replaces the name label of a Building whose screen the Player has not unlocked. It shows the level that opens the screen, or, for the Heynspire tower, the ID of the Boss Stage to win first with a small crown. It has the same tooltip as the Town Bar shortcut: "Opens at level N", or "Win Marrow Castle (5-10) to open". _Avoid_: level badge, locked label
 
-**Town Bar**: The panel at the bottom of the Town and of each screen except the Battle. It has one shortcut for each screen that has a Building, the screens that do not exist yet too, a shortcut back to the Town, and shortcuts to the Objectives dialog and the Handbook. The names that the Player sees are singular: Dungeon, Pack, Objective and Setting. _Avoid_: menu bar, nav bar, footer, dock
+**Town Bar**: The Royal Sash at the bottom of the Town and of each screen except the Battle: a thin blue cloth that holds the names, with the painted icons on it. It has one shortcut for each screen that has a Building, the screens that do not exist yet too, a shortcut back to the Town, and shortcuts to the Objectives dialog and the Handbook. The names that the Player sees are singular: Dungeon, Pack, Objective and Setting. _Avoid_: menu bar, nav bar, footer, dock
 
-**Stowed Town Bar**: The Town Bar when the Player puts it away. It has no wood and takes no room, so the screen fills the space. Only the brass pull stays, at the corner of the screen. _Avoid_: collapsed bar, hidden bar, minimized bar, rail
+**Stowed Town Bar**: The Town Bar when the Player puts it away. It has no cloth and takes no room, so the screen fills the space. Only the roller stays, at the corner of the screen. _Avoid_: collapsed bar, hidden bar, minimized bar, rail
 
 **Handbook**: The dialog that tells how the game works: the rules, the terms and the icons that the Player meets. It opens over the current screen, from the Town Bar and from the Top Bar of the Battle. It has no Building. It explains concepts and does not list cards: the Deck builder lists cards. It has an entry only for a feature that is in the game, and the Player can read all its entries from the start. _Avoid_: Wiki, codex, help, encyclopedia, rulebook, guide
 

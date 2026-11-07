@@ -245,16 +245,8 @@ test.describe("Objectives dialog", () => {
     ).toBeVisible();
     await expect(dialog.getByTestId("quest-row")).toHaveCount(5);
     await expect(dialog.getByTestId("activity-count")).toHaveText("0 / 500");
-    await expect(dialog.getByTestId("activity-claim")).toBeDisabled();
+    await expect(dialog.getByTestId("activity-claim")).toHaveCount(0);
     await expect(dialog.getByTestId("quests-claim-all")).toBeDisabled();
-    // The 2 Claims that are off have the same face.
-    const claimAllFace = await dialog
-      .getByTestId("quests-claim-all")
-      .evaluate((claimAll) => getComputedStyle(claimAll).backgroundImage);
-    await expect(dialog.getByTestId("activity-claim")).toHaveCSS(
-      "background-image",
-      claimAllFace
-    );
     // The ladder goes up the page: the highest Activity is at the top.
     const lowest = await dialog
       .getByTestId("activity-checkpoint-100")
@@ -290,6 +282,9 @@ test.describe("Objectives dialog", () => {
     });
     const checkpoint = (activity: number) =>
       dialog.getByTestId(`activity-checkpoint-${activity}`);
+    // Activity chests do not enable the Daily Quest Claim all button.
+    await expect(dialog.getByTestId("quests-claim-all")).toBeDisabled();
+    await expect(dialog.getByTestId("activity-claim")).toHaveCount(0);
 
     // A locked chest only shows its tooltip.
     await checkpoint(500).click();
@@ -305,7 +300,7 @@ test.describe("Objectives dialog", () => {
     await checkpoint(400).click();
     await expect(checkpoint(300)).toHaveAttribute("data-state", "claimed");
     await expect(checkpoint(400)).toHaveAttribute("data-state", "claimed");
-    await expect(dialog.getByTestId("activity-claim")).toBeDisabled();
+    await expect(dialog.getByTestId("activity-claim")).toHaveCount(0);
   });
 
   test("Go to on an In progress Daily Quest closes the dialog and opens its screen", async ({

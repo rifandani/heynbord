@@ -194,6 +194,22 @@ const avoidFor = (place: HintPlace): readonly ScreenBox[] | undefined =>
 /** The space between the banner and the screen edge. */
 const EDGE = 8;
 
+/**
+ * The lowest line for a Hint at `place`. A Hint at a Town Building stays above
+ * the Town Bar and its roller, so the Player can always use them.
+ */
+const bottomFor = (place: HintPlace): number => {
+  const floors = TOWN_BUILDING_PLACES.has(place)
+    ? Array.from(
+        document.querySelectorAll(
+          "[data-pad-town-bar], [data-testid='town-bar-pull']"
+        ),
+        (piece) => piece.getBoundingClientRect().top
+      )
+    : [];
+  return Math.min(window.innerHeight, ...floors) - EDGE;
+};
+
 const anchorBox = (place: HintPlace): ScreenBox | null =>
   document.querySelector(hintAnchor(place))?.getBoundingClientRect() ?? null;
 
@@ -237,7 +253,7 @@ const usePlacement = (hint: HintId, leaving: boolean) => {
                 left: EDGE,
                 top: EDGE,
                 right: window.innerWidth - EDGE,
-                bottom: window.innerHeight - EDGE,
+                bottom: bottomFor(hintPlace),
               },
               sides: sidesFor(hintPlace),
               avoid: avoidFor(hintPlace),

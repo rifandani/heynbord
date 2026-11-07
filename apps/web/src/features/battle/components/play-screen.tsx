@@ -10,6 +10,7 @@ import { lazy, Suspense, useContext, useEffect, useRef } from "react";
 
 import { musicTrackFor } from "@/core/audio/music-catalog";
 import type { MusicFeature } from "@/core/audio/music-catalog";
+import { useBodyMark } from "@/core/hooks/use-body-mark";
 import { useEverOpened } from "@/core/hooks/use-ever-opened";
 import { useAchievementNotices } from "@/features/achievements/use-achievement-notices";
 import { battleStage } from "@/features/battle/battle-content";
@@ -277,6 +278,7 @@ export const PlayScreen = () => {
   );
   const ready = useAtomValue(profileReadyAtom);
   const handbook = useHandbook();
+  useBodyMark("data-game");
   // A dialog that the Player opened stays in the page, so it can close on its
   // spine. Its chunk loads at the first open.
   const handbookShown = useEverOpened(handbook.isOpen);

@@ -1,9 +1,15 @@
 import { useAtom, useAtomValue } from "@effect/atom-react";
 import type { DeckSlot } from "@workspace/rules";
-import { addCopy, autoFill, deckProblems, removeCopy } from "@workspace/rules";
+import {
+  addCopy,
+  autoFill,
+  deckProblems,
+  nextDeckSlotPrice,
+  removeCopy,
+} from "@workspace/rules";
 import { cn } from "cn";
 import type { FocusEvent } from "react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Dialog,
   Heading,
@@ -72,17 +78,35 @@ const Ribbon = ({
   slot,
   name,
   active,
+  selected,
 }: {
   readonly slot: DeckSlot;
   readonly name: string;
   readonly active: boolean;
+  readonly selected: boolean;
 }) => {
   const { tr } = useGameText();
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const tab = ref.current;
+    const list = tab?.parentElement;
+    if (!(selected && tab && list)) {
+      return;
+    }
+    const reveal = () =>
+      tab.scrollIntoView({ block: "nearest", inline: "nearest" });
+    reveal();
+    const observer = new ResizeObserver(reveal);
+    observer.observe(list);
+    return () => observer.disconnect();
+  }, [selected]);
+
   return (
     <Tab
+      ref={ref}
       id={slot.id}
       aria-label={active ? `${name}, ${tr("deckBuilder.active")}` : name}
-      className="group data-[focus-visible]:ring-focus-cream relative flex h-full w-44 min-w-0 shrink cursor-pointer items-end rounded-t-md outline-none data-[focus-visible]:ring-4"
+      className="group data-[focus-visible]:ring-focus-cream relative flex h-full w-full min-w-0 cursor-pointer items-end rounded-t-md outline-none data-[focus-visible]:ring-4 data-[focus-visible]:ring-inset"
       data-testid={`deck-slot-${slot.id}`}
     >
       <span
@@ -295,6 +319,8 @@ const DeckBook = ({ close }: { readonly close: () => void }) => {
   const { tr, text } = useGameText();
   const slots = useAtomValue(deckSlotsAtom);
   const activeId = useAtomValue(activeDeckIdAtom);
+  const visibleSlots = Math.min(slots.length, 5);
+  const hasBuySlot = nextDeckSlotPrice(slots.length) !== null;
   const [openId, setOpenId] = useState(() =>
     slots.some((slot) => slot.id === activeId) ? activeId : slots[0]?.id
   );
@@ -329,11 +355,20 @@ const DeckBook = ({ close }: { readonly close: () => void }) => {
             {tr("deckBuilder.title")}
           </Heading>
         </div>
-        {/* The ribbons, then the locked ribbon of the next Deck Slot right after the last one. */}
-        <div className="flex h-full min-w-0 flex-1 items-end gap-1.5 [@media(max-height:500px)]:gap-1">
+        {/* At most five ribbons fit; the next Deck Slot stays beside the scroll area. */}
+        <div
+          className="grid h-full min-w-0 flex-1 items-end gap-1.5"
+          style={{
+            gridTemplateColumns: `repeat(${visibleSlots + (hasBuySlot ? 1 : 0)}, minmax(0, 1fr))`,
+          }}
+        >
           <TabList
             aria-label={tr("deckBuilder.slots")}
-            className="flex h-full min-w-0 flex-initial items-end gap-1.5 [@media(max-height:500px)]:gap-1"
+            className="grid h-full min-w-0 [scrollbar-width:none] grid-flow-col items-end gap-1.5 overflow-x-auto overscroll-x-contain [&::-webkit-scrollbar]:hidden"
+            style={{
+              gridColumn: `span ${visibleSlots}`,
+              gridAutoColumns: `calc((100% - ${visibleSlots - 1} * var(--spacing) * 1.5) / ${visibleSlots})`,
+            }}
           >
             {slots.map((slot, index) => (
               <Ribbon
@@ -341,6 +376,7 @@ const DeckBook = ({ close }: { readonly close: () => void }) => {
                 slot={slot}
                 name={nameOf(slot, index)}
                 active={slot.id === activeId}
+                selected={slot.id === openId}
               />
             ))}
           </TabList>

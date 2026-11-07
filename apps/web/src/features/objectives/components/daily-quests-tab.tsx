@@ -209,7 +209,8 @@ const QuestRowView = ({
  * The Daily Quests tab of the Objectives dialog (24 — Quests 3): the Activity of
  * the week on the left page, or on a plaque when the ledger shows one page, the
  * 5 cards of the day, and Claim all. Claim all claims the Completed
- * Daily Quests and the reached checkpoints. The rules own the state; the tab
+ * Daily Quests. Activity rewards are claimed from their chests. The rules own
+ * the state; the tab
  * only sends the Claims.
  */
 export const DailyQuestsTab = ({
@@ -220,7 +221,7 @@ export const DailyQuestsTab = ({
   readonly onGoTo: (screen: QuestDestination) => void;
 }) => {
   const { tr, text } = useGameText();
-  const { rows, bar, counts } = useAtomValue(objectivesViewAtom);
+  const { rows, bar } = useAtomValue(objectivesViewAtom);
   const spread = useSpread();
   const quests = useQuests();
   const { list, claimAllButton, focusAfterClaim } = useClaimFocus();
@@ -233,14 +234,6 @@ export const DailyQuestsTab = ({
     focusAfterClaim(questFocusAfter(rows, row.quest.index));
     setStamps((current) => ({ ...current, [row.quest.id]: 0 }));
     onClaimed(tr("quests.tab.said.one", { name: text(row.name) }));
-  };
-
-  const claimCheckpoints = () => {
-    const count = quests.claimCheckpoints();
-    if (count > 0) {
-      focusAfterClaim(null);
-      onClaimed(tr("quests.tab.said.many", { count }));
-    }
   };
 
   /** The focus stays on the chest: it stays on the page after its Claim. */
@@ -282,18 +275,10 @@ export const DailyQuestsTab = ({
     >
       {spread ? (
         <LeftPage>
-          <ActivityLadder
-            bar={bar}
-            onClaim={claimCheckpoints}
-            onClaimCheckpoint={claimCheckpoint}
-          />
+          <ActivityLadder bar={bar} onClaimCheckpoint={claimCheckpoint} />
         </LeftPage>
       ) : (
-        <ActivityBar
-          bar={bar}
-          onClaim={claimCheckpoints}
-          onClaimCheckpoint={claimCheckpoint}
-        />
+        <ActivityBar bar={bar} onClaimCheckpoint={claimCheckpoint} />
       )}
       <div className="flex min-h-0 min-w-0 flex-1 flex-col">
         <ul
@@ -318,7 +303,7 @@ export const DailyQuestsTab = ({
           ))}
         </ul>
         <ClaimAllBar
-          count={counts.daily}
+          count={rows.filter((row) => row.quest.state === "completed").length}
           button={claimAllButton}
           testId="quests-claim-all"
           onClaimAll={claimAll}
