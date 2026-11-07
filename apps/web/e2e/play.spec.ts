@@ -16,6 +16,7 @@ import type { UnitPoint } from "./_diagnostics";
 interface HookWindow extends Window {
   readonly __THREE_GAME_TEST_HOOKS__?: {
     readonly setCoin: (copper: number) => void;
+    readonly setState: (state: string) => void;
     readonly setXp: (xp: number) => void;
     readonly winStage: (stageId: string) => void;
     readonly profileSaved: () => Promise<void>;
@@ -848,7 +849,7 @@ test.describe("Town", () => {
     await expect(pull).toHaveAttribute("aria-expanded", "true");
     const expanded = await bar.boundingBox();
 
-    // The name of a shortcut sits on the front lip of the shelf.
+    // The name of a shortcut stays inside the menu area.
     const name = page.getByTestId("town-shortcut-name-campaign");
     await expect(name).toBeVisible();
     const nameBox = await name.boundingBox();
@@ -862,7 +863,7 @@ test.describe("Town", () => {
     await page.keyboard.press("Enter");
     await expect(pull).toHaveAttribute("aria-expanded", "false");
     await expect(pull).toHaveAccessibleName("Show the Town Bar");
-    // The bar is gone for good: no wood, no rail, no room. Only the pull stays.
+    // The bar takes no room when hidden. Only the pull stays.
     await expect.poll(barHeight).toBe(0);
     await expect(pull).toBeVisible();
     expect(
@@ -1446,6 +1447,44 @@ test.describe("Region 1 rewards (issue #54)", () => {
       "claimed"
     );
   });
+
+  test("the waiting Star chests keep the same timing after a hover", async ({
+    page,
+  }) => {
+    await page.emulateMedia({ reducedMotion: "no-preference" });
+    // Stages 1-1 to 1-9 with 20 Stars: the chests at 10 and 20 Stars wait.
+    await page.goto("/play");
+    await page.waitForFunction(() =>
+      Reflect.has(window, "__THREE_GAME_TEST_HOOKS__")
+    );
+    await page.evaluate(() => {
+      // SAFETY: the dev and QA builds install the test hooks on `window`.
+      (window as HookWindow).__THREE_GAME_TEST_HOOKS__?.setState(
+        "campaign-progress"
+      );
+    });
+    await skipStory(page);
+    const first = page.getByTestId("star-chest-10");
+    await expect(first).toHaveAttribute("data-state", "claimable");
+    await expect(page.getByTestId("star-chest-20")).toHaveAttribute(
+      "data-state",
+      "claimable"
+    );
+
+    // A hover holds the chest still, but its loop does not start again.
+    await first.hover();
+    await expect(first.locator("svg")).toHaveCSS("rotate", "0deg");
+    await page.mouse.move(0, 0);
+
+    const starts = await page.evaluate(() =>
+      [...document.querySelectorAll('[data-state="claimable"]')]
+        .flatMap((chest) => chest.getAnimations({ subtree: true }))
+        .filter((loop) => loop instanceof CSSAnimation)
+        .map((loop) => loop.startTime)
+    );
+    // The rock and the glow of two chests, all on one clock.
+    expect(starts).toEqual([0, 0, 0, 0]);
+  });
 });
 
 test.describe("Battle Log Hint (issue #76)", () => {
@@ -1620,7 +1659,11 @@ test.describe("Town on a phone", () => {
     await expect(gate).toBeInViewport({ ratio: 1 });
     const bar = await page.getByTestId("town-bar").boundingBox();
     const gateBox = await gate.boundingBox();
-    expect(bar && gateBox && gateBox.y + gateBox.height <= bar.y).toBe(true);
+    // The menu overlays the painting, but the Gate label stays clear of it.
+    const gateLabel = await gate.locator("[data-building-label]").boundingBox();
+    expect(bar && gateLabel && gateLabel.y + gateLabel.height <= bar.y).toBe(
+      true
+    );
     await expect(page.getByTestId("town-shortcut-bazaar")).toBeInViewport({
       ratio: 1,
     });

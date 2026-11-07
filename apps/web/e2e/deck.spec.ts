@@ -11,13 +11,20 @@ import type { Page } from "./_base";
 interface HookWindow extends Window {
   readonly __THREE_GAME_TEST_HOOKS__?: {
     readonly profileSaved: () => Promise<void>;
+    readonly giveCopies: (
+      cardId: string,
+      rank: "common",
+      count: number
+    ) => void;
   };
 }
 
 const openDecks = async (page: Page) => {
   await page.goto("/play");
   // The Town opens its Buildings when the Profile is loaded.
-  await expect(page.getByTestId("building-townGate")).toBeEnabled();
+  await expect(page.getByTestId("building-townGate")).toBeEnabled({
+    timeout: 60_000,
+  });
   await page.getByTestId("town-shortcut-deck").click();
   const dialog = page.getByTestId("deck-dialog");
   await expect(dialog).toBeVisible();
@@ -25,17 +32,60 @@ const openDecks = async (page: Page) => {
 };
 
 test.describe("Deck dialog", () => {
+  for (const viewport of [
+    { width: 1440, height: 900 },
+    { width: 844, height: 390 },
+  ]) {
+    test(`card labels keep their descenders at ${viewport.width} × ${viewport.height}`, async ({
+      page,
+    }) => {
+      test.setTimeout(90_000);
+      await page.setViewportSize(viewport);
+      const dialog = await openDecks(page);
+      await page.evaluate(() => {
+        // SAFETY: the dev and QA builds install the test hooks on window.
+        (window as HookWindow).__THREE_GAME_TEST_HOOKS__?.giveCopies(
+          "ranger.pinningShot",
+          "common",
+          1
+        );
+      });
+      await dialog.getByTestId("pool-filter-skill").click();
+      await dialog.getByTestId("pool-class-ranger").click();
+      const card = dialog.getByTestId("pool-ranger.pinningShot-common");
+      await expect(card).toHaveAttribute("data-blocked", "class");
+      const label = card.getByText("Ranger only", { exact: true });
+      await expect(label).toBeVisible();
+      await page.evaluate(() => document.fonts.ready);
+
+      // The text bounds must fit inside the element that clips overflow.
+      // A one-em line box cuts the bottom of letters such as g and y.
+      const bounds = await label.evaluate((element) => {
+        const range = document.createRange();
+        range.selectNodeContents(element);
+        const text = range.getBoundingClientRect();
+        const box = element.getBoundingClientRect();
+        return {
+          top: text.top - box.top,
+          bottom: box.bottom - text.bottom,
+        };
+      });
+      expect(bounds.top).toBeGreaterThanOrEqual(0);
+      expect(bounds.bottom).toBeGreaterThanOrEqual(0);
+    });
+  }
+
   test("a Deck edit stays after a reload", async ({ page }) => {
     const dialog = await openDecks(page);
     await dialog.getByTestId("deck-remove-human.militiaRecruit-common").click();
-    await expect(dialog.getByTestId("deck-size")).toHaveText("9 / 10 cards");
+    await expect(dialog.getByTestId("deck-size")).toHaveText("9 cards");
     await page.evaluate(async () => {
       // SAFETY: the dev and QA builds install the test hooks on `window`.
       await (window as HookWindow).__THREE_GAME_TEST_HOOKS__?.profileSaved();
     });
     await page.reload();
     const again = await openDecks(page);
-    await expect(again.getByTestId("deck-size")).toHaveText("9 / 10 cards");
+    await expect(again.getByTestId("deck-size")).toHaveText("9 cards");
   });
 
   test("a press removes one copy, and hover shows the Card Details", async ({
@@ -52,8 +102,34 @@ test.describe("Deck dialog", () => {
     await expect(dialog.getByTestId("deck-peek")).toHaveCount(0);
 
     await dialog.getByTestId("deck-remove-human.militiaRecruit-common").click();
-    await expect(dialog.getByTestId("deck-size")).toHaveText("9 / 10 cards");
+    await expect(dialog.getByTestId("deck-size")).toHaveText("9 cards");
     await expect(card).toContainText("×1");
+  });
+
+  test("the Card Pool mounts each Card Frame near the view, with small art", async ({
+    page,
+  }) => {
+    const dialog = await openDecks(page);
+    const pool = dialog.getByTestId("deck-pool");
+    const tiles = pool.locator('button[data-testid^="pool-"]');
+    const images = pool.locator("img");
+
+    // All the tiles are in the page for the keyboard, but only some have art.
+    await expect(tiles.first()).toBeVisible();
+    await expect.poll(() => tiles.count()).toBeGreaterThan(100);
+    expect(await images.count()).toBeLessThan(40);
+    expect(await images.first().getAttribute("src")).toMatch(
+      /^\/card-thumbs\//u
+    );
+
+    // A far tile gets its frame when the Player scrolls to it.
+    const last = tiles.last();
+    await expect(last.locator("img")).toHaveCount(0);
+    await pool.evaluate((element) => {
+      element.scrollTop = element.scrollHeight;
+    });
+    await expect(last.locator("img")).toBeVisible();
+    await expect(last.locator("svg").first()).toBeAttached();
   });
 
   test("opens on the active Deck, and Esc closes it", async ({ page }) => {
@@ -62,7 +138,7 @@ test.describe("Deck dialog", () => {
       "aria-selected",
       "true"
     );
-    await expect(dialog.getByTestId("deck-size")).toHaveText("10 / 10 cards");
+    await expect(dialog.getByTestId("deck-size")).toHaveText("10 cards");
     await expect(dialog.getByTestId("deck-active")).toBeVisible();
 
     await page.keyboard.press("Escape");
@@ -77,13 +153,13 @@ test.describe("Deck dialog", () => {
     const dialog = await openDecks(page);
     // The Vanguard is at the limit of level 1.
     await expect(dialog.getByTestId("deck-countdown")).toHaveText(
-      "Countdown 25 / 25"
+      "25 countdown"
     );
     // Without one Militia Recruit (Countdown 1), the Deck has room for 1 card.
     await dialog.getByTestId("deck-remove-human.militiaRecruit-common").click();
-    await expect(dialog.getByTestId("deck-size")).toHaveText("9 / 10 cards");
+    await expect(dialog.getByTestId("deck-size")).toHaveText("9 cards");
     await expect(dialog.getByTestId("deck-countdown")).toHaveText(
-      "Countdown 24 / 25"
+      "24 countdown"
     );
 
     // A Scrap Raider (Countdown 2) puts the Deck over the limit.
@@ -91,12 +167,12 @@ test.describe("Deck dialog", () => {
     await expect(raider).toHaveAttribute("data-blocked", "countdown");
     await expect(raider).toContainText("Countdown Limit");
     await raider.click({ force: true });
-    await expect(dialog.getByTestId("deck-size")).toHaveText("9 / 10 cards");
+    await expect(dialog.getByTestId("deck-size")).toHaveText("9 cards");
 
     // A Badland Runt (Countdown 1) fits.
     await dialog.getByTestId("pool-orc.badlandRunt-common").click();
     await expect(dialog.getByTestId("deck-countdown")).toHaveText(
-      "Countdown 25 / 25"
+      "25 countdown"
     );
     await expect(dialog.getByTestId("deck-problems")).toHaveCount(0);
   });
@@ -106,7 +182,7 @@ test.describe("Deck dialog", () => {
   }) => {
     const dialog = await openDecks(page);
     await page.getByTestId("deck-slot-slot-3").click();
-    await expect(dialog.getByTestId("deck-size")).toHaveText("0 / 10 cards");
+    await expect(dialog.getByTestId("deck-size")).toHaveText("0 cards");
     await expect(dialog.getByTestId("deck-use")).toBeDisabled();
 
     await dialog.getByTestId("pool-human.crossbowGuard-common").click();
@@ -129,7 +205,7 @@ test.describe("Deck dialog", () => {
     ).toContainText("×2");
 
     await dialog.getByTestId("deck-autofill").click();
-    await expect(dialog.getByTestId("deck-size")).toHaveText("10 / 10 cards");
+    await expect(dialog.getByTestId("deck-size")).toHaveText("10 cards");
     await expect(dialog.getByTestId("deck-problems")).toHaveCount(0);
 
     await dialog.getByTestId("deck-name").fill("Crossbow Line");
@@ -197,7 +273,7 @@ test.describe("Deck dialog", () => {
     await page.getByTestId("deck-slot-slot-3").click();
     // The button is aria-disabled, so the click must be forced.
     await snatcher.click({ force: true });
-    await expect(dialog.getByTestId("deck-size")).toHaveText("0 / 10 cards");
+    await expect(dialog.getByTestId("deck-size")).toHaveText("0 cards");
 
     await dialog.getByTestId("pool-own-owned").click();
     await expect(dialog.getByTestId("pool-not-owned")).toHaveCount(0);

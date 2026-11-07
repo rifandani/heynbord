@@ -824,9 +824,9 @@ const clampTo = (value: number, low: number, high: number) =>
 
 /**
  * The position of the painting at a size where no Stage Marker goes under a
- * HUD piece, or `null`. It covers the screen above the Town Bar when it can.
- * If a marker goes under the top HUD there, the painting moves down as far as
- * the Town Bar lets it.
+ * HUD piece, or `null`. It covers the screen, behind the Town Bar too, when it
+ * can. If a marker goes under the top HUD there, the painting moves down as
+ * far as the Town Bar lets it.
  */
 const place = (
   map: FramedMap,
@@ -848,12 +848,11 @@ const place = (
   );
   const low = viewport.top - bounds.top;
   const high = floor - bounds.bottom;
-  // The painting covers the screen above the Town Bar and moves down as far
-  // as it can, so that the Player sees as much of the Boss landmark as the
-  // Stage Markers let.
+  // The painting covers the screen and moves down as far as it can, so that
+  // the Player sees as much of the Boss landmark as the Stage Markers let.
   const coverY = clampTo(
     viewport.top - map.bossLandmark.top * scale,
-    floor - height,
+    viewport.height - height,
     0
   );
   // That position first; then the painting moves down, then sideways.
@@ -948,9 +947,9 @@ const largestFittingScale = (
 };
 
 /**
- * Places the painting on the screen. The full height of the painting fits
- * above the Town Bar, so the screen does not cut its top or its bottom. To
- * fill the screen width, the painting stretches on the x axis by at most
+ * Places the painting on the screen. The full height of the painting fits the
+ * screen, behind the Town Bar as the Town painting, so the screen does not cut
+ * its top or its bottom. To fill the screen width, the painting stretches on the x axis by at most
  * `FIT_STRETCH`, or squashes by at most `MAX_STRETCH`. A soft backdrop fills
  * each side of a wider screen that the painting then does not cover, and a
  * narrower screen cuts the sides. On a small screen (a phone), the Stage
@@ -961,7 +960,7 @@ const largestFittingScale = (
  */
 export const mapFrame = (map: FramedMap, viewport: Viewport): MapFrame => {
   const across = viewport.width / MAP.width;
-  const down = (viewport.height - viewport.bottom) / MAP.height;
+  const down = viewport.height / MAP.height;
   const sizeAt = (scale: number): Size => ({
     scale,
     // At the cover size and larger, `across / scale` is never more than
@@ -972,8 +971,9 @@ export const mapFrame = (map: FramedMap, viewport: Viewport): MapFrame => {
     ),
   });
   const cover = Math.max(across, down);
-  // The full height of the painting fits above the Town Bar. The stretch
-  // fills the width of a screen that is wider than the painting.
+  // The full height of the painting fits the screen, and the Town Bar is over
+  // its bottom edge. The stretch fills the width of a screen that is wider
+  // than the painting.
   let scale = down;
   if (!apart(map, sizeAt(scale)) && apart(map, sizeAt(cover))) {
     scale = smallestApartScale(scale, cover, (middle) =>

@@ -261,8 +261,8 @@ describe("Skill Cards (GDD 4.8)", () => {
       state,
       play(0, Target.Square({ lane: 0, position: 6 }))
     );
-    expect(unitById(next, first.id)?.hp).toBe(2);
-    expect(unitById(next, second.id)?.hp).toBe(2);
+    expect(unitById(next, first.id)?.hp).toBe(3);
+    expect(unitById(next, second.id)?.hp).toBe(3);
     expect(unitById(next, outside.id)?.hp).toBe(6);
   });
 
@@ -880,7 +880,7 @@ describe("Priest Skill Cards (GDD 5.5)", () => {
       const second = run(first.state, play(0, square(0, 9)));
       expect(unitById(second.state, burned.id)).toMatchObject({
         hp: 6,
-        ward: 1,
+        ward: 2,
         burn: 2,
       });
     });

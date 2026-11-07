@@ -1,0 +1,55 @@
+{
+  "skill": "img2threejs",
+  "commit": "a669e9a97cea4452b1c2310c5cca6aa0f6657c1f",
+  "license": "Apache-2.0",
+  "files": {
+    "attachment_anchor.py": {
+      "source": "forge/stage4_review/attachment_anchor.py",
+      "sha256": "ee7383d7dc6a6583778904fc3e4a12dd8392bd496aa771a0075e89e4a40d3fb7"
+    },
+    "check_part_coverage.py": {
+      "source": "forge/stage4_review/check_part_coverage.py",
+      "sha256": "ef806daf7b44e36a4f62284b8c233a5bdfb59bd3ee1b03cee6022eca01ec7183"
+    },
+    "chirality.py": {
+      "source": "forge/_shared/chirality.py",
+      "sha256": "b3343e5d8a51f5a6c416326701b7b070b32c58dce4c51ea5d5135738e9e20069"
+    },
+    "color_metrics.py": {
+      "source": "forge/_shared/color_metrics.py",
+      "sha256": "e4b720e9c95dd716e6710bc4e4aa61d1e1e9652ce5b658d3bacdc89a1a1b7b75"
+    },
+    "diagnose_render_multi_angle.py": {
+      "source": "forge/stage4_review/diagnose_render_multi_angle.py",
+      "sha256": "eaab01750df112810e4c28e37c37fbdaf5c876a3dd63f2940272d65e98fba055"
+    },
+    "extract_pbr_evidence.py": {
+      "source": "forge/stage1_intake/extract_pbr_evidence.py",
+      "sha256": "f7a121d241e9403646f7eaee9d62f757941b90b251e279bc9ed6cc22bba74b63"
+    },
+    "interior_difference.py": {
+      "source": "forge/stage4_review/interior_difference.py",
+      "sha256": "34fb24b6858d66fb19b00d7395102985ed92085f47cb6d4453cfd4054f6017b3"
+    },
+    "joint_loops.py": {
+      "source": "forge/stage4_review/joint_loops.py",
+      "sha256": "eaedbf75761d1942ca48575856c2012920e2b05fdf222c83d429f70607d1ba51"
+    },
+    "jpeg.py": {
+      "source": "forge/_shared/jpeg.py",
+      "sha256": "24ff90402f052e1a83fdb8e9bf354aeda492948054e4c7e4f3ab87793978d2d4"
+    },
+    "self_intersection.py": {
+      "source": "forge/stage4_review/self_intersection.py",
+      "sha256": "f6581c1ccca653832ae9ef5e7b7fae7be7e29f1403e42355a906203b222f784a"
+    },
+    "turntable_gate.py": {
+      "source": "forge/stage4_review/turntable_gate.py",
+      "sha256": "56f503855c3449c7cc0a807731e3c00c1603f076271100c6dcf16926f64e0d25"
+    },
+    "vertex_region_gate.py": {
+      "source": "forge/stage4_review/vertex_region_gate.py",
+      "sha256": "463c13256c94880c6f859730c378a0966f82806bfe9199dd8fb468839619f101"
+    }
+  }
+}

@@ -37,7 +37,7 @@ import {
   keywordValue,
 } from "../content/keywords";
 import {
-  scaleForRank,
+  creatureStats,
   skillAmountForRank,
   skillCountForRank,
   skillSquaresForRank,
@@ -337,9 +337,10 @@ const scoreCreature = (
     return 0;
   }
   const { keywords } = definition;
+  const { attack, hp } = creatureStats(definition, card.rank);
   const value =
-    scaleForRank(definition.attack, card.rank) * 2 +
-    scaleForRank(definition.hp, card.rank) +
+    attack * 2 +
+    hp +
     keywordSpeed(keywords) * 2 +
     scoreSabotage(state, side, target.lane, keywords.sabotage ?? 0) +
     scoreHobble(

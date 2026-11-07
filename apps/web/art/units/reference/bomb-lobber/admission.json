@@ -1,0 +1,32 @@
+{
+  "id": "bomb-lobber",
+  "passed": true,
+  "problems": [],
+  "measures": {
+    "front": {
+      "backgroundEdge": 0.975,
+      "offPalette": 0.034,
+      "fill": 0.9
+    },
+    "three-quarter": {
+      "backgroundEdge": 0.981,
+      "offPalette": 0.026,
+      "fill": 0.925
+    },
+    "side": {
+      "backgroundEdge": 0.973,
+      "offPalette": 0.04,
+      "fill": 0.945
+    },
+    "back": {
+      "backgroundEdge": 0.991,
+      "offPalette": 0.026,
+      "fill": 0.895
+    },
+    "details": {
+      "backgroundEdge": 0.945,
+      "offPalette": 0.063,
+      "fill": 0.953
+    }
+  }
+}

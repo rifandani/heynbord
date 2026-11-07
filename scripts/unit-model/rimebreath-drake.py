@@ -408,7 +408,7 @@ def stand_part():
         shard = kit.cone(part.bm, a, a + out * 0.05, 0.01, 0.001, 4)
         part.paint(faces_of(shard), ICE_DEEP)
     # The mound of snow, with shards of ice in it.
-    snow = Part("snow", SNOW, "snow", shade=0.1)
+    snow = Part("snow", SNOW, "snow", shade=0.1, region="effect")
     base = path[-1] * Vector((1, 1, 0))
     mound = kit.sphere(snow.bm, base + Vector((0, 0, 0.022)), (0.09, 0.09, 0.028), 10, 5)
     snow.paint([f for f in faces_of(mound) if f.normal.z < 0.5], SNOW_SHADE)

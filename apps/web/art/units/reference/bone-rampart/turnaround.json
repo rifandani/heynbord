@@ -1,0 +1,18 @@
+{
+  "id": "bone-rampart",
+  "source": "apps/web/public/creature/undead/bone-rampart.webp",
+  "views": {
+    "front": "front.webp",
+    "three-quarter": "three-quarter.webp",
+    "side": "side.webp",
+    "back": "back.webp",
+    "details": "details.webp"
+  },
+  "props": ["coffin planks", "chains", "teal pennants"],
+  "approval": {
+    "status": "approved",
+    "by": "rifandani",
+    "date": "2026-11-06",
+    "notes": "The arrow sign was fixed in the front and three-quarter views. The hammers, the lanterns and the skull wheel are on the card but not in its Props row, so they are recorded here and not in props. The detail sheet has no close-up of the sign. The side and back are inferred."
+  }
+}

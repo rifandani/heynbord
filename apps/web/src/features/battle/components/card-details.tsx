@@ -9,10 +9,10 @@ import type {
   TokenId,
 } from "@workspace/rules";
 import {
+  creatureStats,
   getCard,
   getToken,
   keywordSpeed,
-  scaleForRank,
 } from "@workspace/rules";
 import { cn } from "cn";
 import type { ReactNode } from "react";
@@ -325,8 +325,7 @@ const cardInfo = (
   wall: card.keywords.wall ?? false,
   damageType: card.damageType,
   speed: keywordSpeed(card.keywords),
-  attack: scaleForRank(card.attack, rank),
-  hp: scaleForRank(card.hp, rank),
+  ...creatureStats(card, rank),
   classId: card.class,
 });
 

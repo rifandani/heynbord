@@ -42,6 +42,8 @@ React app on TanStack Start. The server renders and streams each page.
 
 **Details Panel**: The text panel next to the card in the Card Details. It starts with the card name, then the fields that the card itself does not show, for example Keywords and flavor text. _Avoid_: side panel, info box, ability box
 
+**Card Thumbnail**: The small copy of the card art, 200 × 267, in `public/card-thumbs`. A grid of many cards shows it, so that the grid does not decode the full art. The Card Details show the full art. _Avoid_: small art, preview image
+
 **Rank Gem**: One pip on the Card Frame, in the Rank color. A card shows 1 Rank Gem for Common and 5 for Legendary. _Avoid_: star, pip socket
 
 **Hand Bar**: The panel at the bottom of the Battle screen. It holds the Deck Pile at the left, the Hand Slots in the middle and the Graveyard Pile at the right. _Avoid_: card tray, footer, hand panel
@@ -78,13 +80,23 @@ React app on TanStack Start. The server renders and streams each page.
 
 **Source Contract**: The committed record of the bounds, the skeleton and the animation of a Raw Export. A Published Model must match its Source Contract. _Avoid_: manifest, checksum, metadata file
 
+**Body Region**: One of the 9 named areas of a Unit Model that a Review Gate can check: head, torso, arm.L, arm.R, leg.L, leg.R, prop, base and effect. Each part has one Body Region. A Raw Export keeps it on each vertex, and a Published Model does not. It is not a **Region** of the Campaign. _Avoid_: zone, part group
+
 **Body Plan**: The shared skeleton, proportions, IK and clip slots that a group of Unit Models uses. A Unit Model belongs to one Body Plan and changes only its own parts, palette and overrides. _Avoid_: rig family, archetype (a rules term), model type, base rig
+
+**Clip Library**: The set of **Base Clips** of each **Body Plan**, and the override layer of each Unit Model. _Avoid_: animation pack, clip bank
+
+**Base Clip**: One of the 9 clips of a **Body Plan**. It has the timing, the weight and the ground contact. _Avoid_: template clip, default animation
+
+**Patch**: The record that a Unit Model changes one **Base Clip**. It names the clip and the override of the **Unit Spec**, and it can replace the timing. _Avoid_: mod, variant
 
 **Unit Spec**: The per-unit record that a Body Plan and the model kit read to build one Unit Model. It names the Body Plan, the height, the palette, the parts, the props and the clip overrides. _Avoid_: config, manifest, model data
 
 **Turnaround**: The approved four-view drawing of one Unit Model: front, three-quarter, side and back, with a detail sheet. It is the target for every side of the model. _Avoid_: reference sheet, model sheet, concept sheet
 
 **Review Scene**: The fixed camera, light and clip setup that captures a Unit Model for review. It shows the Unit Model as the player sees it. _Avoid_: preview, viewer, render scene
+
+**Cutout**: A capture of the **Review Scene** with the Unit Model on transparent pixels, with no Battle Painting and no shadow. A **Review Gate** reads it to find the silhouette. It is a full 3D render, not a flat cut-out figure. _Avoid_: mask, matte
 
 **Review Gate**: A deterministic check that blocks a Unit Model from publication when it fails. Each Review Gate answers one question and leaves a JSON record. _Avoid_: check, test (test is code), gate (a Town word and a rules word)
 
@@ -152,9 +164,9 @@ React app on TanStack Start. The server renders and streams each page.
 
 **Lock Plate**: The small plate with a lock that replaces the name label of a Building whose screen the Player has not unlocked. It shows the level that opens the screen, or, for the Heynspire tower, the ID of the Boss Stage to win first with a small crown. It has the same tooltip as the Town Bar shortcut: "Opens at level N", or "Win Marrow Castle (5-10) to open". _Avoid_: level badge, locked label
 
-**Town Bar**: The panel at the bottom of the Town and of each screen except the Battle. It has one shortcut for each screen that has a Building, the screens that do not exist yet too, a shortcut back to the Town, and shortcuts to the Objectives dialog and the Handbook. The names that the Player sees are singular: Dungeon, Pack, Objective and Setting. _Avoid_: menu bar, nav bar, footer, dock
+**Town Bar**: The Royal Sash at the bottom of the Town and of each screen except the Battle: a thin blue cloth that holds the names, with the painted icons on it. It has one shortcut for each screen that has a Building, the screens that do not exist yet too, a shortcut back to the Town, and shortcuts to the Objectives dialog and the Handbook. The names that the Player sees are singular: Dungeon, Pack, Objective and Setting. _Avoid_: menu bar, nav bar, footer, dock
 
-**Stowed Town Bar**: The Town Bar when the Player puts it away. It has no wood and takes no room, so the screen fills the space. Only the brass pull stays, at the corner of the screen. _Avoid_: collapsed bar, hidden bar, minimized bar, rail
+**Stowed Town Bar**: The Town Bar when the Player puts it away. It has no cloth and takes no room, so the screen fills the space. Only the roller stays, at the corner of the screen. _Avoid_: collapsed bar, hidden bar, minimized bar, rail
 
 **Handbook**: The dialog that tells how the game works: the rules, the terms and the icons that the Player meets. It opens over the current screen, from the Town Bar and from the Top Bar of the Battle. It has no Building. It explains concepts and does not list cards: the Deck builder lists cards. It has an entry only for a feature that is in the game, and the Player can read all its entries from the start. _Avoid_: Wiki, codex, help, encyclopedia, rulebook, guide
 

@@ -31,11 +31,21 @@ sys.path.insert(0, os.path.join(REPO, "scripts", "unit-model"))
 
 import importlib  # noqa: E402
 
+import body_plans  # noqa: E402
+import clips  # noqa: E402
 import unit_model_kit as kit  # noqa: E402
 
 importlib.reload(kit)
+importlib.reload(body_plans.shared)
+importlib.reload(body_plans.flyer)
+importlib.reload(clips.base)
+importlib.reload(clips.overrides)
+importlib.reload(clips.flyer)
 
-from unit_model_kit import X, Y, Z, Clip, Part, blend, clamp01, faces_of, hex_color, lerp, turn  # noqa: E402
+from clips.overrides import Patch  # noqa: E402
+from unit_model_kit import X, Y, Z, Part, blend, clamp01, faces_of, hex_color, lerp  # noqa: E402
+
+plan = body_plans.BODY_PLANS["flyer"]
 
 # --- Palette (the card painting) ----------------------------------------------
 
@@ -61,8 +71,11 @@ POISON = hex_color("#9ee04a")
 
 # --- Proportions ---------------------------------------------------------------
 
+TABLE = plan.Proportions()
+# The vine is its flight stand, so the clips only bob the root.
+LIFT = plan.STAND_LIFT._replace(bob_z=0.012)
 # The body hovers at this height, and faces -Y.
-BODY_Z = 0.55
+BODY_Z = TABLE.body_back_z
 THORAX = Vector((0, 0, BODY_Z))
 HEAD_C = Vector((0, -0.088, 0.565))
 LANCE_ROOT = Vector((0, -0.122, 0.56))
@@ -100,21 +113,22 @@ def tendril_path(s):
 VINE_POINTS = [vine_path(index / 3) for index in range(4)]
 TENDRIL_POINTS = [tendril_path(index / 3) for index in range(4)]
 
-BONES = [
-    ("root", (0, 0, 0), (0, 0, 0.12), None),
-    ("body", tuple(THORAX + Vector((0, 0.04, 0))), tuple(THORAX + Vector((0, -0.05, 0))), "root"),
+TRUNK_BONES = [
     ("head", tuple(HEAD_C + Vector((0, 0.03, 0))), tuple(HEAD_C + Vector((0, -0.04, 0))), "body"),
     ("tail", tuple(TAIL[0]), tuple(TAIL[1]), "body"),
     ("tail.2", tuple(TAIL[1]), tuple(TAIL[2]), "tail"),
     ("tail.3", tuple(TAIL[2]), tuple(TAIL[3]), "tail.2"),
 ]
-for name, (root, direction, _length, _width) in WINGS.items():
-    BONES.append((f"wing.{name}", tuple(root), tuple(root + direction.normalized() * 0.1), "body"))
+for position in ("F", "B"):
+    root, direction, _length, _width = WINGS[f"{position}L"]
+    TRUNK_BONES += plan.wing_pair(position, root, root + direction.normalized() * 0.1)
+
+STAND_BONES = []
 for chain, points in (("vine", VINE_POINTS), ("tendril", TENDRIL_POINTS)):
     for index in range(3):
         name = chain if index == 0 else f"{chain}.{index + 1}"
         parent = "body" if index == 0 else (chain if index == 1 else f"{chain}.{index}")
-        BONES.append((name, tuple(points[index]), tuple(points[index + 1]), parent))
+        STAND_BONES.append((name, tuple(points[index]), tuple(points[index + 1]), parent))
 
 # --- Weights -------------------------------------------------------------------
 
@@ -328,12 +342,13 @@ def vine_part(name, curve, points, names, radius, ground):
 
 def build_figure():
     kit.reset_scene()
-    rig = kit.build_armature("AmberwingDart", BONES)
+    rig, _ = plan.build_rig("AmberwingDart", TABLE, TRUNK_BONES, STAND_BONES)
     parts = body_parts()
     parts += [wing_part(name, *spec) for name, spec in WINGS.items()]
     parts.append(vine_part("vine", vine_path, VINE_POINTS, ["vine", "vine.2", "vine.3"], 0.011, True))
     parts.append(vine_part("tendril", tendril_path, TENDRIL_POINTS, ["tendril", "tendril.2", "tendril.3"], 0.007, False))
     objects = [kit.part_object(part) for part in parts]
+    plan.check_skin(parts, rig)
     mesh = kit.join_parts(objects, "AmberwingDartMesh")
     kit.skin(mesh, rig)
     return rig, mesh
@@ -342,21 +357,19 @@ def build_figure():
 # --- Clips -----------------------------------------------------------------------
 
 
-def build_clips(rig):
-    def t(bone, *rotations):
-        return turn(rig, bone, *rotations)
+PATCHES = (
+    Patch("walk", "hover-dart"),
+    Patch("attack", "lance-dive"),
+    Patch("death", "fall-left"),
+)
 
-    def at(bone, offset):
-        return kit.shift(rig, bone, offset)
 
-    def pose(base, **changes):
-        result = dict(base)
-        for key, value in changes.items():
-            result[key.replace("__", ".").replace("_at_", "@")] = value
-        return result
+class Poses(clips.flyer.Poses):
+    lift = LIFT
 
-    def wings(front=0.0, hind=0.0, sweep=0.0):
+    def wings(self, front=0.0, hind=0.0, sweep=0.0):
         """The wings: `front` and `hind` lift each pair (degrees), and `sweep` takes them back."""
+        t = self.t
         result = {}
         for pair, lift in (("F", front), ("B", hind)):
             # A left wing (+X) goes up with a turn of -Y, and back with +Z.
@@ -364,181 +377,122 @@ def build_clips(rig):
             result[f"wing.{pair}R"] = t(f"wing.{pair}R", (Y, lift), (Z, -sweep))
         return result
 
-    def vines(curl=0.0, sway=0.0):
+    def vines(self, curl=0.0, sway=0.0):
         """The vines trail back (`curl` > 0) or forward, and swing to the side (`sway`)."""
         result = {}
         for chain, sign in (("vine", 1), ("tendril", -1)):
             for index, name in enumerate((chain, f"{chain}.2", f"{chain}.3")):
-                result[name] = t(name, (X, 10 * curl * (index + 1)), (Y, 6 * sway * sign * (index + 1)))
+                result[name] = self.t(name, (X, 10 * curl * (index + 1)), (Y, 6 * sway * sign * (index + 1)))
         return result
 
-    def hover(flap=0.0, bob=0.0, sway=0.0):
-        """
-        The idle: it hovers, the body a little nose-up, the tail swings, and
-        the wings beat. `flap` is -1..1: the front pair up and the hind pair
-        down at 1.
-        """
-        return {
-            "root@loc": at("root", (0, 0, 0.012 * bob)),
-            "body": t("body", (X, -4 + 2 * bob), (Y, 3 * sway)),
-            "head": t("head", (X, 4), (Z, 6 * sway)),
-            "tail": t("tail", (X, 4 + 3 * bob), (Z, 4 * sway)),
-            "tail.2": t("tail.2", (X, 4 + 3 * bob), (Z, 6 * sway)),
-            "tail.3": t("tail.3", (X, 6 + 4 * bob), (Z, 8 * sway)),
-            **wings(10 + 32 * flap, 10 - 32 * flap, 0),
-            **vines(-0.3 * bob, sway),
-        }
+    def tail(self, first, second, third=None):
+        """The rotations of the tail bones. With no `third`, the last bone stays as it is."""
+        t = self.t
+        result = {"tail": t("tail", *first), "tail.2": t("tail.2", *second)}
+        if third is not None:
+            result["tail.3"] = t("tail.3", *third)
+        return result
 
-    def droop(flap=0.0, bob=0.0):
-        """Low HP: it hangs lower and tilts, the tail drops, and the wings beat weakly."""
-        return pose(
-            hover(0, bob, 0),
-            root_at_loc=at("root", (0, 0, -0.05 + 0.01 * bob)),
-            body=t("body", (X, 10 + 3 * bob), (Y, -14)),
-            head=t("head", (X, 14), (Y, -8)),
-            tail=t("tail", (X, -12)),
-            tail__2=t("tail.2", (X, -14)),
-            tail__3=t("tail.3", (X, -16)),
-            **wings(-4 + 16 * flap, 2 - 14 * flap, 8),
-            **vines(1.2, 0.5),
+    def stance(self, flap=0.0, bob=0.0, sway=0.0):
+        """
+        The idle: it hovers, the tail swings, and the wings beat. `flap` is
+        -1..1: the front pair up and the hind pair down at 1.
+        """
+        return self.pose(
+            super().stance(flap, bob, sway),
+            head=self.t("head", (X, 4), (Z, 6 * sway)),
+            **self.tail(((X, 4 + 3 * bob), (Z, 4 * sway)), ((X, 4 + 3 * bob), (Z, 6 * sway)), ((X, 6 + 4 * bob), (Z, 8 * sway))),
+            **self.wings(10 + 32 * flap, 10 - 32 * flap, 0),
+            **self.vines(-0.3 * bob, sway),
         )
 
-    def dart(flap=0.0, bob=0.0, sway=0.0):
-        """The walk: a fast dart, nose down, the tail out straight and the wings a blur."""
-        return pose(
-            hover(flap, bob, sway),
-            root_at_loc=at("root", (0, 0, 0.015 * bob)),
-            body=t("body", (X, 12), (Y, 6 * sway)),
-            head=t("head", (X, -6)),
-            tail=t("tail", (X, -8)),
-            tail__2=t("tail.2", (X, -4)),
-            tail__3=t("tail.3", (X, -2)),
-            **wings(6 + 38 * flap, 6 - 38 * flap, 10),
-            **vines(1.0, sway * 0.6),
+    def droop(self, base, flap=0.0, bob=0.0):
+        """The tail drops, and the wings beat weakly."""
+        return self.pose(
+            super().droop(base, flap, bob),
+            head=self.t("head", (X, 14), (Y, -8)),
+            **self.tail(((X, -12),), ((X, -14),), ((X, -16),)),
+            **self.wings(-4 + 16 * flap, 2 - 14 * flap, 8),
+            **self.vines(1.2, 0.5),
+        )
+
+    def dart(self, base, flap=0.0, bob=0.0, sway=0.0):
+        """The tail out straight and the wings a blur."""
+        return self.pose(
+            super().dart(base, flap, bob, sway),
+            head=self.t("head", (X, -6)),
+            **self.tail(((X, -8),), ((X, -4),), ((X, -2),)),
+            **self.wings(6 + 38 * flap, 6 - 38 * flap, 10),
+            **self.vines(1.0, sway * 0.6),
         )
 
     # The attack (melee): it rears up and back, then dives at the enemy with
     # the lance and swings back up.
-    def rear(base):
-        return pose(
-            base,
-            root_at_loc=at("root", (0, 0.06, 0.05)),
-            body=t("body", (X, -26)),
-            head=t("head", (X, -6)),
-            tail=t("tail", (X, 14)),
-            tail__2=t("tail.2", (X, 16)),
-            tail__3=t("tail.3", (X, 18)),
-            **wings(60, 50, -6),
-            **vines(-0.4),
+    def rear(self, base):
+        return self.pose(
+            super().rear(base),
+            head=self.t("head", (X, -6)),
+            **self.tail(((X, 14),), ((X, 16),), ((X, 18),)),
+            **self.wings(60, 50, -6),
+            **self.vines(-0.4),
         )
 
-    def dive(base, depth=1.0):
-        return pose(
-            base,
-            root_at_loc=at("root", (0, -0.24 * depth, -0.1 * depth)),
-            body=t("body", (X, 34 * depth)),
-            head=t("head", (X, 6)),
-            tail=t("tail", (X, -14)),
-            tail__2=t("tail.2", (X, -8)),
-            tail__3=t("tail.3", (X, -6)),
-            **wings(-10, -20, 34),
-            **vines(1.2 * depth),
+    def dive(self, base, depth=1.0):
+        return self.pose(
+            super().dive(base, depth),
+            head=self.t("head", (X, 6)),
+            **self.tail(((X, -14),), ((X, -8),), ((X, -6),)),
+            **self.wings(-10, -20, 34),
+            **self.vines(1.2 * depth),
         )
 
-    def knocked(base, amount=1.0):
-        """The hit knocks it back and up, and the wings jolt."""
-        return pose(
-            base,
-            root_at_loc=at("root", (0, 0.06 * amount, 0.03 * amount)),
-            body=t("body", (X, -20 * amount), (Y, 12 * amount)),
-            head=t("head", (X, -14 * amount)),
-            tail=t("tail", (X, 18 * amount)),
-            tail__2=t("tail.2", (X, 14 * amount)),
-            **wings(50 * amount, -20 * amount, -10 * amount),
-            **vines(-0.6 * amount, -amount),
+    def recover(self, base):
+        return self.pose(super().recover(base), **self.wings(50, -10, 0))
+
+    def knocked(self, base, amount=1.0):
+        """The wings jolt."""
+        return self.pose(
+            super().knocked(base, amount),
+            head=self.t("head", (X, -14 * amount)),
+            **self.tail(((X, 18 * amount),), ((X, 14 * amount),)),
+            **self.wings(50 * amount, -20 * amount, -10 * amount),
+            **self.vines(-0.6 * amount, -amount),
         )
 
-    def falling(base):
-        return pose(
-            base,
-            root_at_loc=at("root", (0, 0.02, -0.18)),
-            body=t("body", (X, 26), (Y, 30)),
-            tail=t("tail", (X, -20)),
-            tail__2=t("tail.2", (X, -16)),
-            **wings(30, 40, 30),
-            **vines(1.6, 1),
+    def falling(self, base):
+        return self.pose(
+            super().falling(base),
+            **self.tail(((X, -20),), ((X, -16),)),
+            **self.wings(30, 40, 30),
+            **self.vines(1.6, 1),
         )
 
-    def fallen(base, bounce=0.0):
-        """On its left side on the ground, the wings folded back."""
-        return pose(
-            base,
-            root=t("root", (Y, 84 - bounce)),
-            root_at_loc=at("root", (-0.5, 0, 0.05)),
-            body=t("body", (X, 0)),
-            head=t("head", (X, 10)),
-            tail=t("tail", (X, -6), (Z, 6)),
-            tail__2=t("tail.2", (X, -6), (Z, 8)),
-            tail__3=t("tail.3", (X, -4)),
-            **wings(20, 20, 70),
-            **vines(2.4, 1.5),
+    def fallen(self, base, bounce=0.0):
+        """The wings folded back."""
+        return self.pose(
+            super().fallen(base, bounce),
+            head=self.t("head", (X, 10)),
+            **self.tail(((X, -6), (Z, 6)), ((X, -6), (Z, 8)), ((X, -4),)),
+            **self.wings(20, 20, 70),
+            **self.vines(2.4, 1.5),
         )
 
-    def folded(base):
+    def folded(self, base):
         """The wings up and closed over the back, as a summon starts."""
-        return pose(
-            base,
-            root_at_loc=at("root", (0, 0, -0.06)),
-            body=t("body", (X, -10)),
-            tail=t("tail", (X, -10)),
-            tail__2=t("tail.2", (X, -12)),
-            **wings(84, 84, 16),
-            **vines(1.4),
+        return self.pose(
+            super().folded(base),
+            **self.tail(((X, -10),), ((X, -12),)),
+            **self.wings(84, 84, 16),
+            **self.vines(1.4),
         )
 
-    clips = []
-    # Eight beats in the idle loop: a beat is 6 frames.
-    idle = Clip("idle", 48, loop=True)
-    for frame in range(0, 49, 3):
-        a = frame / 48 * 2 * math.pi
-        idle.key(frame, hover(1 if (frame // 3) % 2 == 0 else -1, math.sin(a), math.sin(a * 2) * 0.6))
-    clips.append(idle)
+    def unfold(self, base):
+        return self.pose(super().unfold(base), **self.wings(-20, -10, -10))
 
-    low = Clip("lowHp", 48, loop=True)
-    for frame in range(0, 49, 4):
-        a = frame / 48 * 2 * math.pi
-        low.key(frame, droop(1 if (frame // 4) % 2 == 0 else -1, math.sin(a)))
-    clips.append(low)
 
-    walk = Clip("walk", 24, loop=True)
-    for frame in range(0, 25, 2):
-        a = frame / 24 * 2 * math.pi
-        walk.key(frame, dart(1 if (frame // 2) % 2 == 0 else -1, math.sin(a * 2), math.sin(a)))
-    clips.append(walk)
-
-    attack = Clip("attack", 30)
-    attack.key(0, hover(1)).key(3, rear(hover())).key(5, rear(hover(-1)))
-    attack.key(8, dive(hover())).key(11, dive(hover(), 0.9)).key(14, pose(hover(1), **wings(50, -10, 0)))
-    attack.key(18, hover(-1)).key(21, hover(1)).key(24, hover(-1)).key(27, hover(1)).key(30, hover(1))
-    clips.append(attack)
-
-    hurt = Clip("hurt", 16)
-    hurt.key(0, hover(1)).key(3, knocked(hover())).key(6, knocked(hover(-1), 0.6)).key(9, knocked(hover(1), 0.3))
-    hurt.key(12, hover(-1)).key(16, hover(1))
-    clips.append(hurt)
-
-    death = Clip("death", 36)
-    death.key(0, hover(1)).key(4, knocked(hover())).key(8, knocked(hover(-1), 0.6)).key(14, falling(hover()))
-    death.key(24, fallen(hover())).key(28, fallen(hover(), 8)).key(36, fallen(hover()))
-    clips.append(death)
-
-    summon = Clip("summon", 24)
-    summon.key(0, folded(hover())).key(9, folded(hover())).key(13, pose(hover(1), **wings(-20, -10, -10)))
-    for frame in (15, 18, 21):
-        summon.key(frame, hover(-1 if frame % 2 else 1))
-    summon.key(24, hover(1))
-    clips.append(summon)
-    return clips
+def build_clips(rig):
+    poses = Poses(*kit.pose_tools(rig))
+    return clips.overrides.build(clips.flyer.CLIPS, poses, PATCHES, without=("cast", "rebirth"))
 
 
 def build(export=True):

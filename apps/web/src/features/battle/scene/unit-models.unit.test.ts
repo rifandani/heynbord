@@ -14,6 +14,7 @@ import {
   isLowHp,
   requireUnitModel,
   unitClipFor,
+  unitModelCardNamed,
   unitModelOf,
 } from "@/features/battle/scene/unit-models";
 import { NEW_PLAYER } from "@/features/profile/profile";
@@ -252,6 +253,16 @@ describe("unitModelOf", () => {
     for (const tokenId of Object.keys(TOKENS)) {
       expect(requireUnitModel(tokenId).url).toMatch(/^\/models\/units\//u);
     }
+  });
+});
+
+describe("unitModelCardNamed", () => {
+  it("finds the card of a published model by its file name", () => {
+    expect(unitModelCardNamed("warden-saelith")).toBe("elf.wardenSaelith");
+  });
+
+  it("finds no card for a name that has no model", () => {
+    expect(unitModelCardNamed("warden")).toBeUndefined();
   });
 });
 

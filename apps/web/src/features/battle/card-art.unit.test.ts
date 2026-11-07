@@ -17,6 +17,7 @@ import {
   battleModelCopies,
   battleUnitSources,
   cardIllustration,
+  cardThumbnail,
   sourceId,
   hasCardArt,
   hasTokenArt,
@@ -46,6 +47,21 @@ const firstUnit = (state: BattleState) => {
 
 const inPublic = (file: string) =>
   existsSync(new URL(`../../../public${file}`, import.meta.url));
+
+describe("cardThumbnail", () => {
+  it("keeps the path of the art under the thumbnail folder", () => {
+    expect(cardThumbnail("human.crossbowGuard")).toBe(
+      "/card-thumbs/creature/human/crossbow-guard.webp"
+    );
+  });
+
+  it("has a file for each card with art (`bun web thumbs:gen`)", () => {
+    const missing = CARDS.filter(
+      (card) => hasCardArt(card.id) && !inPublic(cardThumbnail(card.id))
+    ).map((card) => card.id);
+    expect(missing).toEqual([]);
+  });
+});
 
 describe("cardIllustration", () => {
   it("puts the kebab-case card name in the folder of its Race or Class", () => {

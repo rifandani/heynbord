@@ -6,6 +6,7 @@ import { MeshoptDecoder } from "three/addons/libs/meshopt_decoder.module.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { describe, expect, it } from "vitest";
 
+import { clipChecks } from "../../../../scripts/clip-checks";
 import { modelContract } from "../../../../scripts/model-contract";
 import type { ModelContract } from "../../../../scripts/model-contract";
 
@@ -27,6 +28,58 @@ const load = (file: string) => {
 };
 
 describe("published compressed Unit Models", () => {
+  it.each([
+    "crag-rhino",
+    "gorehorn-red-maw",
+    "old-frostmaw",
+    "woolly-mammoth",
+    "cave-bear",
+  ])("%s passes the clip checks of the beast migration", async (name) => {
+    const model = await load(path.join(PACKED, `${name}.glb`));
+    expect(clipChecks(model).filter((check) => !check.pass)).toEqual([]);
+  });
+
+  it.each([
+    "grand-gearjammer",
+    "boss-snikkit",
+    "junk-walker",
+    "rocket-barrel-rider",
+    "bone-rampart",
+  ])(
+    "%s passes the clip checks of the machine and structure migration",
+    async (name) => {
+      const model = await load(path.join(PACKED, `${name}.glb`));
+      expect(clipChecks(model).filter((check) => !check.pass)).toEqual([]);
+    }
+  );
+
+  it("Woolly Mammoth moves all four legs during its walk", async () => {
+    const model = await load(path.join(PACKED, "woolly-mammoth.glb"));
+    const walk = model.animations.find((clip) => clip.name === "walk");
+    if (!walk) {
+      throw new Error("Woolly Mammoth has no walk clip");
+    }
+    const mixer = new AnimationMixer(model.scene);
+    mixer.clipAction(walk).play();
+    for (const leg of ["FL", "FR", "BL", "BR"]) {
+      const bone = model.scene.getObjectByName(`upper${leg}`);
+      if (!bone) {
+        throw new Error(`Woolly Mammoth has no upper leg ${leg}`);
+      }
+      mixer.setTime(0);
+      const start = bone.quaternion.clone();
+      const turns = [0.25, 0.5, 0.75].map((share) => {
+        mixer.setTime(walk.duration * share);
+        return start.angleTo(bone.quaternion);
+      });
+      expect(Math.max(...turns), `${leg} must take a step`).toBeGreaterThan(
+        Math.PI / 36
+      );
+    }
+    mixer.stopAllAction();
+    mixer.uncacheRoot(model.scene);
+  });
+
   it.each(readdirSync(PACKED).filter((file) => file.endsWith(".glb")))(
     "%s retains skinning, painted geometry and animation data in the game loader",
     async (file) => {

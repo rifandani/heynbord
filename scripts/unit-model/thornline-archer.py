@@ -32,11 +32,25 @@ sys.path.insert(0, os.path.join(REPO, "scripts", "unit-model"))
 
 import importlib  # noqa: E402
 
+import body_plans  # noqa: E402
+import clips  # noqa: E402
 import unit_model_kit as kit  # noqa: E402
 
 importlib.reload(kit)
+importlib.reload(body_plans.shared)
+importlib.reload(body_plans.biped)
+importlib.reload(body_plans.biped_medium)
+importlib.reload(clips.base)
+importlib.reload(clips.overrides)
+importlib.reload(clips.biped)
+importlib.reload(clips.biped_medium)
 
-from unit_model_kit import X, Y, Z, Clip, Part, blend, clamp01, faces_of, hex_color, lerp, turn  # noqa: E402
+from clips.base import Beat  # noqa: E402
+from clips.overrides import Fall, Patch  # noqa: E402
+
+from unit_model_kit import X, Y, Z, Part, blend, clamp01, faces_of, hex_color, lerp  # noqa: E402
+
+plan = body_plans.BODY_PLANS["biped-medium"]
 
 # --- Palette (the card painting) ----------------------------------------------
 
@@ -44,10 +58,10 @@ SKIN = hex_color("#e6b48e")
 HAIR = hex_color("#d0a65e")
 HAIR_LIGHT = hex_color("#ead08e")
 HAIR_DARK = hex_color("#a27a3c")
-EYES = hex_color("#1f2a1a")
+EYES = hex_color("#333516")
 BROW = hex_color("#94703a")
-TUNIC = hex_color("#4f7c36")
-TUNIC_DARK = hex_color("#375a28")
+TUNIC = hex_color("#656931")
+TUNIC_DARK = hex_color("#52572b")
 LEAF = hex_color("#6f9a40")
 LEAF_LIGHT = hex_color("#9cbc5a")
 LEAF_DARK = hex_color("#3f6228")
@@ -68,13 +82,14 @@ FLETCH = hex_color("#4f9a3e")
 
 # --- Proportions ---------------------------------------------------------------
 
-HIP_Z = 0.47
-WAIST_Z = 0.55
-CHEST_Z = 0.64
-SHOULDER_Z = 0.725
-NECK_Z = 0.75
+TABLE = plan.Proportions(shoulder_width=0.208, shoulder_root_x=0.02, hip_x=0.054, knee_x=0.054)
+HIP_Z = TABLE.hip_z
+WAIST_Z = TABLE.waist_z
+CHEST_Z = TABLE.chest_z
+SHOULDER_Z = TABLE.shoulder_z
+NECK_Z = TABLE.neck_z
 HEAD_C = Vector((0, -0.004, 0.872))
-LEG_X = 0.054
+LEG_X = TABLE.hip_x
 
 # The arms hang in an A-pose, 22 degrees from the body.
 ARM_DIR = Vector((math.sin(math.radians(22)), 0, -math.cos(math.radians(22))))
@@ -104,32 +119,17 @@ BRACE = BOW_SAG - (1 - 0.78) * BOW_RECURVE
 STRING_P = GRIP_L + Vector((0, BRACE, 0))
 ARROW_LENGTH = 0.32
 
-BONES = [
-    ("root", (0, 0, 0), (0, 0, 0.12), None),
-    ("hips", (0, 0, HIP_Z), (0, 0, WAIST_Z), "root"),
-    ("spine", (0, 0, WAIST_Z), (0, 0, CHEST_Z), "hips"),
-    ("chest", (0, 0, CHEST_Z), (0, 0, NECK_Z), "spine"),
-    ("neck", (0, 0, NECK_Z), (0, 0, 0.79), "chest"),
-    ("head", (0, 0, 0.79), (0, 0, 0.97), "neck"),
+TRUNK_BONES = [
     ("hair", (0, 0.07, 0.86), (0, 0.1, 0.74), "head"),
     ("coat.B", (0, 0.07, 0.5), (0, 0.11, 0.16), "hips"),
 ]
-for side, sign, (s, e, w, t, _) in (("L", 1, arm_points(1)), ("R", -1, arm_points(-1))):
-    BONES += [
-        (f"shoulder.{side}", (0.02 * sign, 0, SHOULDER_Z), tuple(s), "chest"),
-        (f"upperarm.{side}", tuple(s), tuple(e), f"shoulder.{side}"),
-        (f"forearm.{side}", tuple(e), tuple(w), f"upperarm.{side}"),
-        (f"hand.{side}", tuple(w), tuple(t), f"forearm.{side}"),
-        (f"thigh.{side}", (LEG_X * sign, 0, HIP_Z), (LEG_X * sign, 0, 0.27), "hips"),
-        (f"shin.{side}", (LEG_X * sign, 0, 0.27), (LEG_X * sign, 0, 0.05), f"thigh.{side}"),
-        (f"foot.{side}", (LEG_X * sign, 0, 0.05), (LEG_X * sign, -0.08, 0.02), f"shin.{side}"),
-    ]
-BONES += [
+PROP_BONES = [
     ("bow", tuple(GRIP_L), tuple(GRIP_L + Vector((0, 0, 0.1))), "hand.L"),
     ("string", tuple(STRING_P), tuple(STRING_P + Vector((0, 0, 0.05))), "bow"),
     # At rest the arrow hangs along the right hand, head down. The attack aims it at the bow.
     ("arrow", tuple(HAND_R), tuple(HAND_R + DR * 0.1), "hand.R"),
 ]
+ARMS = {"L": (EL, WL, TL), "R": (ER, WR, TR)}
 
 # --- Weights -------------------------------------------------------------------
 
@@ -194,8 +194,9 @@ def head_parts():
         face.paint(faces_of(brow), BROW)
     parts.append(face)
 
-    neck = Part("neck", SKIN, "neck")
-    kit.cone(neck.bm, (0, 0, 0.74), (0, 0, 0.81), 0.025, 0.023, 8)
+    neck = Part("neck", SKIN, plan.neck_weights(TABLE))
+    rings = kit.shares(0.74, 0.81, NECK_Z, NECK_Z + 0.01)
+    kit.cone(neck.bm, (0, 0, 0.74), (0, 0, 0.81), 0.025, 0.023, 8, loops=rings)
     parts.append(neck)
 
     # Golden hair swept back from the brow, to a short tail at the nape.
@@ -222,7 +223,8 @@ def head_parts():
 def body_parts():
     parts = []
     tunic = Part("tunic", TUNIC, torso_weights, shade=0.14)
-    kit.cone(tunic.bm, (0, 0, 0.48), (0, 0, 0.735), 0.068, 0.082, 12, squash=0.76)
+    rings = kit.shares(0.48, 0.735, WAIST_Z - 0.025, WAIST_Z, WAIST_Z + 0.025)
+    kit.cone(tunic.bm, (0, 0, 0.48), (0, 0, 0.735), 0.068, 0.082, 12, squash=0.76, loops=rings)
     parts.append(tunic)
 
     # The leather jerkin over the tunic, laced at the front.
@@ -244,8 +246,9 @@ def body_parts():
     belt.paint(faces_of(buckle), AMBER)
     parts.append(belt)
 
-    hips = Part("hips", TROUSERS, "hips")
-    kit.cone(hips.bm, (0, 0, 0.41), (0, 0, 0.49), 0.068, 0.066, 12, squash=0.8)
+    hips = Part("hips", TROUSERS, plan.hips_weights(TABLE))
+    rings = kit.shares(0.41, 0.49, HIP_Z - 0.02, HIP_Z)
+    kit.cone(hips.bm, (0, 0, 0.41), (0, 0, 0.49), 0.068, 0.066, 12, squash=0.8, loops=rings)
     parts.append(hips)
 
     def skirt_color(row, column):
@@ -390,9 +393,10 @@ def bow_parts():
 
 def build_figure():
     kit.reset_scene()
-    rig = kit.build_armature("ThornlineArcher", BONES)
+    rig, _ = plan.build_rig("ThornlineArcher", TABLE, TRUNK_BONES, PROP_BONES, ARMS)
     parts = head_parts() + body_parts() + limb_parts() + bow_parts()
     objects = [kit.part_object(part) for part in parts]
+    plan.check_skin(parts, rig)
     mesh = kit.join_parts(objects, "ThornlineArcherMesh")
     kit.skin(mesh, rig)
     return rig, mesh
@@ -401,26 +405,13 @@ def build_figure():
 # --- Controls --------------------------------------------------------------------
 
 # The pole angle that bends each elbow toward its pole target.
-POLE_ANGLE = -90
 
 
 def add_controls(rig):
     """IK for the arms, and the constraints of the bow, the string and the arrow."""
-    empties = {
-        "ik_hand.L": kit.add_empty("ik_hand.L", WL),
-        "ik_hand.R": kit.add_empty("ik_hand.R", WR),
-        "pole.L": kit.add_empty("pole.L", (0.25, -0.15, 0.7)),
-        "pole.R": kit.add_empty("pole.R", (-0.05, 0.45, 0.85)),
-        "bow_aim": kit.add_empty("bow_aim"),
-    }
+    empties = plan.add_arm_ik(rig, TABLE, ARMS)
+    empties["bow_aim"] = kit.add_empty("bow_aim")
     bones = rig.pose.bones
-    for side in ("L", "R"):
-        ik = bones[f"forearm.{side}"].constraints.new("IK")
-        ik.name = "IK"
-        ik.target = empties[f"ik_hand.{side}"]
-        ik.pole_target = empties[f"pole.{side}"]
-        ik.pole_angle = math.radians(POLE_ANGLE)
-        ik.chain_count = 2
     aim = bones["bow"].constraints.new("COPY_ROTATION")
     aim.name = "Aim"
     aim.target = empties["bow_aim"]
@@ -440,29 +431,50 @@ def add_controls(rig):
 # --- Clips -----------------------------------------------------------------------
 
 
-def build_clips(rig):
-    def t(bone, *rotations):
-        return turn(rig, bone, *rotations)
+# Where the right hand goes as he nocks, draws, lets go and follows through.
+NOCKED = (0.03, -0.3, 0.78)
+DRAWN = (0.035, -0.06, 0.8)
+LOOSE = (0.04, 0.0, 0.82)
+FOLLOW = (0.045, 0.02, 0.8)
 
-    def at(bone, offset):
-        return kit.shift(rig, bone, offset)
+PATCHES = (
+    # A composed standing shot. He takes the next arrow from the quiver as he
+    # lowers the bow.
+    Patch(
+        "attack",
+        "bow-draw",
+        beats=(
+            Beat(0),
+            Beat(2, "aiming", (NOCKED, 1.0)),
+            Beat(6, "aiming", (DRAWN, 1.0)),
+            Beat(7, "aiming", (LOOSE, 0.0, 0.0)),
+            Beat(14, "aiming", (FOLLOW, 0.0, 0.0)),
+            Beat(21, "next_arrow"),
+            Beat(26),
+            Beat(30),
+        ),
+    ),
+)
 
-    def pose(base, **changes):
-        result = dict(base)
-        for key, value in changes.items():
-            result[key.replace("__", ".").replace("_at_", "@").replace("_slash_", "/")] = value
-        return result
 
-    bow_rest = rig.data.bones["bow"].matrix_local.to_quaternion()
-    # At rest the bow stands nearly upright, its top a little forward.
-    rest_aim = Quaternion(X, math.radians(12)) @ bow_rest
+class Poses(clips.biped_medium.Poses):
+    fall = Fall(X, -86, (0, 0, 0.1))
 
-    def stand(breath=0.0, sway=0.0):
+    def __init__(self, rig):
+        super().__init__(*kit.pose_tools(rig))
+        self.bow_rest = rig.data.bones["bow"].matrix_local.to_quaternion()
+        # At rest the bow stands nearly upright, its top a little forward.
+        self.rest_aim = Quaternion(X, math.radians(12)) @ self.bow_rest
+        self.aim_q = Quaternion(Y, math.radians(-8)) @ self.bow_rest
+        self.bow_wrist = Vector((0.03, -0.34, 0.78))
+
+    def stance(self, breath=0.0, sway=0.0):
         """
         The idle stance: calm and upright, the bow low in the left hand, and
         the poisoned arrow in the right hand, its head down and a little
         forward, so the camera sees the sap.
         """
+        t = self.t
         return {
             "hips": t("hips", (Z, -6)),
             "spine": t("spine", (X, 2 + breath * 0.5)),
@@ -484,12 +496,13 @@ def build_clips(rig):
             "arrow@scale": 1.0,
             "arrow/Nock": 0.0,
             "bow/Aim": 1.0,
-            "bow_aim@rot": rest_aim,
+            "bow_aim@rot": self.rest_aim,
         }
 
-    def crouch(base):
+    def crouch(self, base):
         """Down on both knees bent, as a summon starts and a Rebirth gets up."""
-        return pose(
+        t, at = self.t, self.at
+        return self.pose(
             base,
             hips_at_loc=at("hips", (0, 0, -0.135)),
             thigh__L=t("thigh.L", (X, -50), (Y, -4)),
@@ -508,10 +521,11 @@ def build_clips(rig):
             coat__B=t("coat.B", (X, -25)),
         )
 
-    def slump(breath=0.0):
+    def slump(self, base, breath=0.0):
         """Low HP: bent over, the right hand on the side, the bow low."""
-        return pose(
-            stand(),
+        t, at = self.t, self.at
+        return self.pose(
+            self.stance(),
             bow_slash_Aim=0.0,
             hips_at_loc=at("hips", (0, 0, -0.02)),
             spine=t("spine", (X, 12 + breath * 3)),
@@ -533,9 +547,10 @@ def build_clips(rig):
             foot__R=t("foot.R", (X, -10)),
         )
 
-    def recoil(base, amount=1.0):
+    def recoil(self, base, amount=1.0):
         """The hit pushes the upper body back."""
-        return pose(
+        t, at = self.t, self.at
+        return self.pose(
             base,
             hips_at_loc=at("hips", (0, 0.015 * amount, -0.005 * amount)),
             spine=t("spine", (X, -10 * amount)),
@@ -548,14 +563,17 @@ def build_clips(rig):
             coat__B=t("coat.B", (X, 10 * amount)),
         )
 
-    def fallen(base, bounce=0.0):
+    def fallen(self, base, bounce=0.0):
         """Flat on the back, the bow flat on the ground beside him."""
-        return pose(
+        t, at = self.t, self.at
+        return self.pose(
             base,
             bow_slash_Aim=1.0,
-            bow_aim_at_rot=Quaternion(X, math.radians(-90)) @ bow_rest,
+            bow_aim_at_rot=Quaternion(X, math.radians(-90)) @ self.bow_rest,
             root=t("root", (X, -86 + bounce)),
-            root_at_loc=at("root", (0, 0, 0.045)),
+            root_at_loc=at("root", (0, 0, 0.05)),
+            # The arrow falls from his hand, so it does not go through the ground.
+            arrow_at_scale=0.0,
             spine=t("spine", (X, -6)),
             head=t("head", (X, -12), (Z, -25)),
             hair=t("hair", (X, -40)),
@@ -569,8 +587,9 @@ def build_clips(rig):
             coat__B=t("coat.B", (X, -50)),
         )
 
-    def stagger(base):
-        return pose(
+    def stagger(self, base):
+        t, at = self.t, self.at
+        return self.pose(
             base,
             bow_slash_Aim=0.0,
             hips_at_loc=at("hips", (0, 0.01, -0.03)),
@@ -588,9 +607,10 @@ def build_clips(rig):
             hand__L=t("hand.L", (X, 30)),
         )
 
-    def ready(base):
+    def heroic(self, base):
         """Up again, the bow high in salute: the end of a summon and a Rebirth."""
-        return pose(
+        t, at = self.t, self.at
+        return self.pose(
             base,
             hips_at_loc=at("hips", (0, 0, 0.008)),
             chest=t("chest", (X, -10)),
@@ -602,11 +622,12 @@ def build_clips(rig):
             coat__B=t("coat.B", (X, 10)),
         )
 
-    def step(front):
+    def step(self, base, front):
         """A heel touches the ground. `front` is 1 for the left foot, -1 for the right."""
+        t, at = self.t, self.at
         lead, back = ("L", "R") if front == 1 else ("R", "L")
-        return pose(
-            stand(),
+        return self.pose(
+            self.stance(),
             hips_at_loc=at("hips", (0, 0, -0.012)),
             spine=t("spine", (X, 6)),
             chest=t("chest", (Z, -5 * front)),
@@ -624,11 +645,12 @@ def build_clips(rig):
             },
         )
 
-    def passing(lifted):
+    def passing(self, base, lifted):
         """One foot passes the other. `lifted` is the side of the foot in the air."""
+        t, at = self.t, self.at
         planted = "R" if lifted == "L" else "L"
-        return pose(
-            stand(),
+        return self.pose(
+            self.stance(),
             hips_at_loc=at("hips", (0, 0, 0.008)),
             spine=t("spine", (X, 6)),
             **{
@@ -642,11 +664,9 @@ def build_clips(rig):
             },
         )
 
-    # The attack: he turns side-on, nocks, draws to the cheek and lets go.
-    # The arrow effect leaves at 20% of the attack (`FLIGHT_START` in fx.ts),
-    # so the string is released at frame 6 of 30.
-    def stance(base):
-        return pose(
+    def side_on(self, base):
+        t = self.t
+        return self.pose(
             base,
             hips=t("hips", (Z, -40)),
             spine=t("spine", (Z, -20)),
@@ -658,12 +678,9 @@ def build_clips(rig):
             foot__R=t("foot.R", (Z, 0)),
         )
 
-    aim_q = Quaternion(Y, math.radians(-8)) @ bow_rest
-    bow_wrist = Vector((0.03, -0.34, 0.78))
-
-    def aiming(base, right, draw, arrow=1.0):
-        return pose(
-            stance(base),
+    def aiming(self, base, right, draw, arrow=1.0):
+        return self.pose(
+            self.side_on(base),
             **{
                 "forearm__L_slash_IK": 1.0,
                 "forearm__R_slash_IK": 1.0,
@@ -671,62 +688,22 @@ def build_clips(rig):
                 "string_slash_Draw": draw,
                 "arrow_slash_Nock": 1.0,
                 "arrow_at_scale": arrow,
-                "ik_hand__L_at_pos": bow_wrist,
+                "ik_hand__L_at_pos": self.bow_wrist,
                 "ik_hand__R_at_pos": Vector(right),
-                "bow_aim_at_rot": aim_q,
+                "bow_aim_at_rot": self.aim_q,
             },
         )
 
-    clips = []
-    idle = Clip("idle", 48, loop=True)
-    for frame, breath, sway in ((0, 0, 0), (12, 0.5, 1), (24, 1, 0), (36, 0.5, -1), (48, 0, 0)):
-        idle.key(frame, stand(breath, sway))
-    clips.append(idle)
+    def next_arrow(self, base):
+        t = self.t
+        return self.pose(base, arrow_at_scale=0.0, upperarm__R=t("upperarm.R", (X, 20), (Y, -16)), forearm__R=t("forearm.R", (X, -60)))
 
-    low = Clip("lowHp", 48, loop=True)
-    for frame, breath in ((0, 0), (24, 1), (48, 0)):
-        low.key(frame, slump(breath))
-    clips.append(low)
+    def rising(self, base):
+        return self.pose(self.crouch(base), hips_at_loc=self.at("hips", (0, 0, -0.06)))
 
-    walk = Clip("walk", 24, loop=True)
-    walk.key(0, step(1)).key(6, passing("R")).key(12, step(-1)).key(18, passing("L")).key(24, step(1))
-    clips.append(walk)
 
-    attack = Clip("attack", 30)
-    nocked = (0.03, -0.3, 0.78)
-    drawn = (0.035, -0.06, 0.8)
-    loose = (0.04, 0.0, 0.82)
-    attack.key(0, stand())
-    attack.key(2, aiming(stand(), nocked, 1.0))
-    attack.key(6, aiming(stand(), drawn, 1.0))
-    attack.key(7, aiming(stand(), loose, 0.0, 0.0))
-    attack.key(14, aiming(stand(), (0.045, 0.02, 0.8), 0.0, 0.0))
-    # He takes the next arrow from the quiver as he lowers the bow.
-    attack.key(21, pose(stand(), arrow_at_scale=0.0, upperarm__R=t("upperarm.R", (X, 20), (Y, -16)), forearm__R=t("forearm.R", (X, -60))))
-    attack.key(26, stand())
-    attack.key(30, stand())
-    clips.append(attack)
-
-    hurt = Clip("hurt", 16)
-    hurt.key(0, stand()).key(3, recoil(stand())).key(8, recoil(stand(), 0.4)).key(16, stand())
-    clips.append(hurt)
-
-    death = Clip("death", 36)
-    death.key(0, stand()).key(5, recoil(stand())).key(12, stagger(stand()))
-    death.key(26, fallen(stand())).key(30, fallen(stand(), 6)).key(36, fallen(stand()))
-    clips.append(death)
-
-    # Rebirth: the Unit falls (45% of the event, `REBORN_FALL`), then gets up.
-    rebirth = Clip("rebirth", 48)
-    rebirth.key(0, stand()).key(4, recoil(stand())).key(20, fallen(stand())).key(22, fallen(stand(), 3))
-    rebirth.key(32, crouch(stand())).key(41, ready(stand())).key(48, stand())
-    clips.append(rebirth)
-
-    summon = Clip("summon", 24)
-    summon.key(0, crouch(stand())).key(10, pose(crouch(stand()), hips_at_loc=at("hips", (0, 0, -0.06))))
-    summon.key(17, ready(stand())).key(24, stand())
-    clips.append(summon)
-    return clips
+def build_clips(rig):
+    return clips.overrides.build(clips.biped_medium.CLIPS, Poses(rig), PATCHES, without=("cast",))
 
 
 def build(export=True):

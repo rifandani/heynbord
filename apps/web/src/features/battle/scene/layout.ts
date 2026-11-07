@@ -84,10 +84,16 @@ export const worldOf = (
 /** The half width of what the camera must always show: both Heroes and a margin. */
 const HALF_WIDTH = heroX("enemy") + 0.9;
 
-const toRadians = (degrees: number): number => (degrees * Math.PI) / 180;
+export const toRadians = (degrees: number): number => (degrees * Math.PI) / 180;
 
 /** The camera looks down at this angle (art direction 3: 35° to 45°). 45° gives the Lanes the most depth. */
 export const CAMERA_PITCH = 45;
+
+/**
+ * The Y turn of a Unit Model that faces +Z, so that it faces the enemy side
+ * and a little toward the camera (3/4 view, art direction 3).
+ */
+export const UNIT_TURN = Math.PI / 2 - 0.4;
 
 export interface CameraFrame {
   readonly position: readonly [number, number, number];

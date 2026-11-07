@@ -6,14 +6,24 @@ import {
   ToggleGroup,
   ToggleGroupItem,
 } from "@/core/components/ui/toggle-group";
+import { BattlePainting } from "@/features/battle/components/battle-painting";
+import { REVIEW_CANVAS } from "@/features/battle/scene/review-camera";
 import type { UnitClipName } from "@/features/battle/scene/unit-clips";
 import { UNIT_CLIP_NAMES } from "@/features/battle/scene/unit-clips";
-import { unitModelCards } from "@/features/battle/scene/unit-models";
+import {
+  unitModelCardNamed,
+  unitModelCards,
+} from "@/features/battle/scene/unit-models";
 
 import { Variant } from "../variant";
 
 // The stage has Three.js: it loads in its own chunk, and only in the browser.
 const UnitModelStage = lazy(() => import("./unit-model-stage"));
+
+const UnitModelReviewStage = lazy(async () => {
+  const stage = await import("./unit-model-stage");
+  return { default: stage.UnitModelReviewStage };
+});
 
 const noSubscribe = () => () => {
   // The browser flag never changes.
@@ -34,6 +44,38 @@ const MODEL_CARDS = unitModelCards();
 
 const isModelCard = (key: Key | undefined): key is string =>
   MODEL_CARDS.some((id) => id === key);
+
+/** The largest z-index: the dev tools and the toasts must not show in a capture. */
+const ABOVE_DEV_TOOLS = 2_147_483_647;
+
+/**
+ * The Review Scene of one Unit Model (`/master-design?review=<name>`). `name`
+ * is the file name of the GLB. It covers the page, so a screenshot shows only
+ * the scene. The capture API is on `window` when the model is ready.
+ */
+export const UnitModelReview = ({ name }: { readonly name: string }) => {
+  const cardId = unitModelCardNamed(name);
+  const mounted = useInBrowser();
+  return (
+    <div
+      data-unit-model-review
+      className="fixed top-0 left-0 isolate overflow-hidden"
+      style={{
+        width: REVIEW_CANVAS.width,
+        height: REVIEW_CANVAS.height,
+        zIndex: ABOVE_DEV_TOOLS,
+      }}
+    >
+      <BattlePainting src={null} />
+      {cardId === undefined ? <p>No Unit Model has the name {name}.</p> : null}
+      {mounted && cardId !== undefined ? (
+        <Suspense fallback={null}>
+          <UnitModelReviewStage cardId={cardId} />
+        </Suspense>
+      ) : null}
+    </div>
+  );
+};
 
 /**
  * The Unit Model of a card or a Token (art direction 2.2), on the Battle

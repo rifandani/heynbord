@@ -122,12 +122,12 @@ test.describe("@browser-matrix main flows", () => {
     await press(page.getByTestId("town-shortcut-deck"), hasTouch);
     const dialog = page.getByTestId("deck-dialog");
     await expect(dialog).toBeVisible();
-    await expect(dialog.getByTestId("deck-size")).toHaveText("10 / 10 cards");
+    await expect(dialog.getByTestId("deck-size")).toHaveText("10 cards");
     await press(
       dialog.getByTestId("deck-remove-human.militiaRecruit-common"),
       hasTouch
     );
-    await expect(dialog.getByTestId("deck-size")).toHaveText("9 / 10 cards");
+    await expect(dialog.getByTestId("deck-size")).toHaveText("9 cards");
   });
 
   test("a Battle starts and a card is played", async ({ page, hasTouch }) => {

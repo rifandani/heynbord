@@ -5,6 +5,7 @@ import {
 } from "../../apps/web/src/features/battle/scene/unit-clips.ts";
 import { compressedPrimitive, readModelGltf } from "../model-gltf.ts";
 import type { ModelGltf } from "../model-gltf.ts";
+import { REVIEW_ATTRIBUTES } from "./region.ts";
 
 /** Individual Unit limits stay separate from the whole-Battle allowance. */
 export const UNIT_MODEL_LIMITS = {
@@ -75,6 +76,11 @@ const checkGeometry = (
       triangles += (gltf.accessors[index]?.count ?? 0) / 3;
       if (requireCompression && !compressedPrimitive(gltf, primitive)) {
         problems.push("primitive has no Draco or Meshopt compression");
+      }
+      for (const name of REVIEW_ATTRIBUTES) {
+        if (requireCompression && name in primitive.attributes) {
+          problems.push(`primitive has a ${name} attribute`);
+        }
       }
     }
   }

@@ -1,0 +1,205 @@
+bun test v1.4.4 (38afee6c8)
+
+scripts/unit-model/spec-draft.test.ts:
+(pass) regionBoxes > measures each Body Region in the frame of the whole model [1.08ms]
+(pass) regionBoxes > rounds to 2 places, as the Unit Specs do [0.10ms]
+(pass) paletteOf > reads the named colors of a build script [0.51ms]
+(pass) paletteOf > ignores a color that is not at the top level of the script [0.02ms]
+
+scripts/unit-model/source-contract.test.ts:
+(pass) contractProblems > an export that repeats the record has no problem [0.13ms]
+(pass) contractProblems > the smallest change to a bound is a problem [0.02ms]
+(pass) contractProblems > a different bone count is a problem [0.03ms]
+(pass) contractProblems > a clip with a different duration is a problem [0.02ms]
+(pass) contractProblems > a clip with different keyframes is a problem [0.01ms]
+(pass) contractProblems > a missing clip is a problem [0.01ms]
+(pass) contractProblems > a different clip order is a problem
+
+scripts/unit-model/model-check.test.ts:
+(pass) published Unit Model checks > accepts the raw rig contract but rejects publishing it uncompressed [0.46ms]
+(pass) published Unit Model checks > does not accept an extension name without compressed primitive data [0.38ms]
+(pass) published Unit Model checks > accepts the real compressed texture-free result and all required clips [0.78ms]
+(pass) published Unit Model checks > retains the individual byte, triangle, bone, image and animation limits [1.25ms]
+(pass) published Unit Model checks > checks embedded KTX2 image dimensions, including the 1024 px boundary [1.47ms]
+(pass) published Unit Model checks > with _REGION data > rejects a Published Model [0.18ms]
+(pass) published Unit Model checks > with _REGION data > accepts a Raw Export [0.12ms]
+(pass) published Unit Model checks > with _PART data > rejects a Published Model [0.12ms]
+(pass) published Unit Model checks > with _PART data > accepts a Raw Export [0.11ms]
+(pass) published Unit Model checks > rejects a truncated GLB [0.54ms]
+
+scripts/unit-model/region.test.ts:
+(pass) stripReviewData > gives the same bytes as a model that never had review data [2.50ms]
+(pass) stripReviewData > removes the attributes from the glTF that it writes [0.34ms]
+(pass) regionProblems > accepts a region on every vertex, from the first id to the last [0.19ms]
+(pass) regionProblems > rejects a Raw Export with no region attribute [0.18ms]
+(pass) regionProblems > rejects the 0 that the join gives to a part with no region [0.09ms]
+(pass) regionProblems > rejects an id after the end of the fixed list [0.08ms]
+reorder: No qualifying primitives found; may need to weld first.
+prune: Removed types... Accessor (1)
+(pass) compressUnitModel > gives a compressed glTF with no review data [3.22ms]
+(pass) Published Models > have no review data [51.17ms]
+(pass) Raw Exports > have a Body Region on every vertex [650.38ms]
+prune: Removed types... Accessor (6)
+prune: Removed types... Skin (1), Accessor (5)
+(pass) Raw Exports > pass the publication checks when they are compressed [42.94ms]
+(pass) Raw Exports > put each Body Region where it is on the figure [39.26ms]
+
+scripts/hero-model/model-check.test.ts:
+(pass) published Hero Model checks > accepts the raw rig contract but rejects publishing it uncompressed [0.42ms]
+(pass) published Hero Model checks > accepts the packed Hero Model and its ten clips [0.12ms]
+(pass) published Hero Model checks > rejects a missing clip and an unknown clip [0.64ms]
+(pass) published Hero Model checks > rejects more bones than the Hero limit [0.37ms]
+(pass) published Hero Model checks > rejects images because Hero Models use vertex colors [0.33ms]
+(pass) published Hero Model checks > rejects a file that is not a GLB version 2 [0.02ms]
+
+scripts/unit-model/turnaround/check.test.ts:
+(pass) the reference admission gate > passes a good Turnaround [8.72ms]
+(pass) the reference admission gate > fails on a missing view [4.57ms]
+(pass) the reference admission gate > fails on a missing detail sheet [3.72ms]
+(pass) the reference admission gate > fails on a view of the wrong size [6.25ms]
+(pass) the reference admission gate > fails on a view with a painted background [11.39ms]
+(pass) the reference admission gate > fails on a palette outside the card painting [4.10ms]
+(pass) the reference admission gate > does not count the background of the painting as a palette [6.38ms]
+(pass) the reference admission gate > fails on a figure that does not fill the frame [3.96ms]
+(pass) the reference admission gate > does not ask the detail sheet to fill the frame [4.17ms]
+(pass) the reference admission gate > fails on a missing record [4.72ms]
+(pass) the reference admission gate > fails on a record of another unit [5.58ms]
+(pass) the reference admission gate > fails on a pending approval [6.57ms]
+(pass) the reference admission gate > fails on a rejected approval [4.38ms]
+(pass) the reference admission gate > fails on an approval with no person or no date [9.22ms]
+(pass) the reference admission gate > fails on an empty list of props [4.35ms]
+(pass) the reference admission gate > fails on a prop that is not in the Props row [4.48ms]
+(pass) the reference admission gate > reads a prop with no regard to capital letters [4.00ms]
+(pass) the reference admission gate > reports all problems of a unit together [3.87ms]
+
+scripts/unit-model/turnaround/prompts.test.ts:
+(pass) the Turnaround prompts > cover each Unit Model and its card painting [0.68ms]
+(pass) the Turnaround prompts > give one prompt and one file name for each of the 5 views [0.38ms]
+(pass) the Turnaround prompts > advance to the right only in the three-quarter view [0.05ms]
+(pass) the Turnaround prompts > ask for the proportions of a miniature, not of a painted figure [0.01ms]
+(pass) the Turnaround prompts > define the front of a fortification
+(pass) the Turnaround prompts > leave out the scene of the card [0.02ms]
+(pass) the Turnaround prompts > use the character sheet of a card that has one [0.03ms]
+
+scripts/unit-model/review/gates.test.ts:
+(pass) ground-contact > a flyer with each part above the ground passes [292.17ms]
+(pass) ground-contact > names the flyer part that is below the ground [334.35ms]
+(pass) ground-contact > a part on the ground passes with the noise of a 32-bit float [206.22ms]
+(pass) ground-contact > does not apply to a plan that walks on the ground [582.38ms]
+(pass) ground-contact > reads a figure on a biped plan that has the flying field [1066.58ms]
+(pass) ground-contact > gives an error when a flyer has no mesh [525.81ms]
+(pass) foot-bones > a piece that stands on its bone and falls in death passes [588.39ms]
+(pass) foot-bones > names a piece that stays up in death [447.40ms]
+(pass) foot-bones > names a bone that is not at the foot of its piece [450.34ms]
+(pass) foot-bones > names a foot bone that the model does not have [493.80ms]
+(pass) foot-bones > does not apply to a plan with no big pieces [394.21ms]
+(pass) foot-bones > gives an error when a structure has no foot bones [340.82ms]
+(pass) runGates > gives one passed record for each gate of a clean model [4575.89ms]
+(pass) runGates > writes gates.json and meshes.json [4254.54ms]
+(pass) runGates > gives exit code 1 for a fail [4602.38ms]
+(pass) runGates > gives exit code 2 when an error and a fail are in the same run [4883.15ms]
+(pass) runGates > does not pass a clean run with a problem in its sources [4377.40ms]
+(pass) turntable > fails when a view has no cutout [4200.56ms]
+(pass) turntable > gives an error, not a pass, with no cutouts [2044.26ms]
+(pass) turntable > fails on a hole through one part [2302.57ms]
+(pass) turntable > accepts a hole in a part that the Unit Spec lists [2273.77ms]
+(pass) turntable > fails on a hole between 2 parts of the body [2208.56ms]
+(pass) turntable > does not count a gap of a prop as a hole in the body [2140.67ms]
+(pass) interior-difference > fails when the figure is far from the Turnaround inside the silhouette [2207.37ms]
+(pass) interior-difference > gives an error, not a pass, with no Turnaround [1599.13ms]
+(pass) self-intersection > fails on a surface that points into its own volume [2066.93ms]
+(pass) self-intersection > does not read an open island, and the record names it [2099.83ms]
+(pass) joint-loops > counts the rings of a wide body [2345.74ms]
+(pass) joint-loops > fails on one ring of a wide body [1905.33ms]
+(pass) joint-loops > fails on a joint with one ring of geometry [1768.45ms]
+(pass) joint-loops > fails on bands that are one thin ring [2029.73ms]
+(pass) joint-loops > does not read a bone of a prop [2029.78ms]
+(pass) attachment-anchor > a prop can share its name with the bone that holds it [2042.67ms]
+(pass) attachment-anchor > fails on a prop far from its bone [2041.70ms]
+(pass) attachment-anchor > fails on a prop that does not follow its bone [2077.09ms]
+(pass) attachment-anchor > fails on a prop with no geometry, because nothing measured it [2029.17ms]
+(pass) attachment-anchor > fails on a prop on the root [2035.01ms]
+(pass) region-coverage > fails on a region that is not where the Unit Spec says [2016.03ms]
+(pass) region-coverage > gives an error, not a pass, when the Unit Spec has no regions [1987.50ms]
+(pass) chirality > names a pair that is a rotation, not a reflection [2036.68ms]
+(pass) chirality > finds a rotation at a centroid with z = 0 [2395.68ms]
+(pass) chirality > fails on a bone pair that is not a mirror [2095.25ms]
+(pass) chirality > accepts a bone pair that the Unit Spec lists as posed [2088.36ms]
+(pass) chirality > does not accept a posed pair that is a rotation [2035.50ms]
+(pass) chirality > accepts the front and back pairs of a beast [2360.44ms]
+(pass) palette > fails on a region color that the card painting does not have [2159.64ms]
+(pass) palette > gives an error, not a pass, with no card painting [1991.16ms]
+(pass) part-coverage > fails on a part of the Unit Spec with no geometry [2164.06ms]
+(pass) vendor > has the exact files of the recorded source commit [140.89ms]
+(pass) the command > gives exit code 2 when it cannot load a model [236.76ms]
+(pass) runCommand > gives an error for exit code 2 [53.34ms]
+(pass) runCommand > gives an error for exit code 0 with no report [56.18ms]
+(pass) runCommand > gives an error for a crash of Python, which exits with code 1 [68.41ms]
+(pass) runCommand > gives a fail for exit code 1 with a report [48.49ms]
+(pass) runCommand > gives a fail for exit code 0 with a problem [48.45ms]
+
+scripts/unit-model/review/manifest.test.ts:
+(pass) reviewCaptures > plans 6 views, 3 frames of 3 clips and 4 cutouts [40.55ms]
+(pass) reviewCaptures > gives a cutout the camera of its view [27.05ms]
+(pass) reviewCaptures > uses the cutout pass only for a cutout [30.95ms]
+(pass) validateManifest > passes a complete set of images [56.81ms]
+(pass) validateManifest > names a required view that the manifest does not have [48.43ms]
+(pass) validateManifest > names a required cutout that the manifest does not have [44.14ms]
+(pass) validateManifest > names an image that has no file [47.13ms]
+(pass) validateManifest > names an image that cannot decode [59.99ms]
+(pass) validateManifest > names an image of the wrong size [50.01ms]
+(pass) validateManifest > names an image that changed after the capture [48.13ms]
+(pass) validateManifest > names a capture that had a browser console error [49.17ms]
+(pass) validateManifest > names a reference or a model that changed after the capture [51.75ms]
+
+scripts/unit-model/review/changed.test.ts:
+(pass) changedUnits > finds the unit of a build script [0.17ms]
+(pass) changedUnits > finds the unit of a build script with a one-word name [0.01ms]
+(pass) changedUnits > finds the unit of a Unit Spec
+(pass) changedUnits > finds the unit of a Turnaround
+(pass) changedUnits > finds the unit of a Raw Export
+(pass) changedUnits > finds the unit of a Published Model
+(pass) changedUnits > gives each unit one time, in name order [0.04ms]
+(pass) changedUnits > keeps a changed unit that has no Unit Spec, so that the review fails on it [0.01ms]
+(pass) changedUnits > keeps a unit whose Unit Spec the pull request removes
+(pass) changedUnits > ignores a unit that the pull request removes in full
+(pass) changedUnits > ignores a test
+(pass) changedUnits > ignores a guide
+(pass) changedUnits > ignores a Python cache
+(pass) changedUnits > ignores a review script
+(pass) changedUnits > ignores the kit
+(pass) changedUnits > ignores a Body Plan
+(pass) changedUnits > ignores a file of the game
+(pass) changedUnits > ignores an ignored prompt
+(pass) changedUnits > stops on a Published Model with a name that it cannot review [0.03ms]
+(pass) changedUnits > does not read a name that a shell could run [0.01ms]
+
+scripts/unit-model/review/mesh-export.test.ts:
+(pass) exportMeshes > gives each island the name of its part and its Body Region [2.50ms]
+(pass) exportMeshes > joins the split vertices of a closed shape into one island [0.28ms]
+(pass) exportMeshes > marks a shape with a free edge as open [0.30ms]
+(pass) exportMeshes > gives positions in world space [0.21ms]
+(pass) exportMeshes > numbers the islands of a part with 2 shapes [0.20ms]
+(pass) exportMeshes > names the bones of an island, the main bone first [0.32ms]
+(pass) exportMeshes > gives each bone its parent and its world position [0.16ms]
+(pass) exportMeshes > stops at a Raw Export from before the part data [0.09ms]
+(pass) exportMeshes > stops at a vertex with no part [0.09ms]
+(pass) publishedProblems > accepts the 8-bit colors of a Published Model [0.22ms]
+(pass) publishedProblems > finds a Raw Export with a new color [0.11ms]
+(pass) publishedProblems > finds a Raw Export with new geometry [0.09ms]
+
+scripts/unit-model/review/death-pose.test.ts:
+(pass) deathPose > reads the last key of the death clip [0.61ms]
+(pass) deathPose > a piece tilts with the piece that holds it [0.15ms]
+(pass) deathPose > a wall that tips as one block has no piece that falls out [0.08ms]
+(pass) deathPose > a turn about the bone itself is not a tilt [0.06ms]
+(pass) deathPose > gives the drop of the bone head [0.05ms]
+(pass) deathPose > gives the height of the bone head at rest [0.05ms]
+(pass) deathPose > a bone with no key keeps its rest pose [0.06ms]
+(pass) deathPose > reads no other clip [0.09ms]
+(pass) deathPose > a model with no death clip is an error [0.02ms]
+
+ 171 pass
+ 0 fail
+ 227 expect() calls
+Ran 171 tests across 12 files. [98.64s]

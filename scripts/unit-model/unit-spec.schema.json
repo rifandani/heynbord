@@ -1,0 +1,177 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Unit Spec",
+  "description": "Unit Model build data. Parts use the names in the pilot scripts.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "bodyPlan",
+    "height",
+    "palette",
+    "parts",
+    "props",
+    "clips",
+    "details",
+    "identity"
+  ],
+  "properties": {
+    "id": { "$ref": "#/$defs/id" },
+    "bodyPlan": {
+      "type": "string",
+      "enum": [
+        "biped-small",
+        "biped-medium",
+        "biped-large",
+        "quadruped",
+        "flyer",
+        "machine",
+        "structure"
+      ]
+    },
+    "height": {
+      "description": "Rest-pose height in scene units, including props. Blender Z becomes glTF Y.",
+      "type": "number",
+      "exclusiveMinimum": 0
+    },
+    "palette": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" },
+      "additionalProperties": {
+        "type": "string",
+        "pattern": "^#[0-9a-fA-F]{6}$"
+      }
+    },
+    "parts": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/part" }
+    },
+    "props": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "hand", "cameraSide", "bone"],
+        "properties": {
+          "id": { "$ref": "#/$defs/part" },
+          "hand": { "type": "string", "enum": ["left", "right", "none"] },
+          "cameraSide": { "type": "boolean" },
+          "bone": {
+            "description": "The bone that holds the prop. The prop or its own bone must follow this bone.",
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "clips": {
+      "description": "The five required clips match BASE_UNIT_CLIPS. Other slots are optional.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["idle", "walk", "attack", "hurt", "death"],
+      "properties": {
+        "idle": { "$ref": "#/$defs/clip" },
+        "lowHp": { "$ref": "#/$defs/clip" },
+        "walk": { "$ref": "#/$defs/clip" },
+        "attack": { "$ref": "#/$defs/clip" },
+        "cast": { "$ref": "#/$defs/clip" },
+        "hurt": { "$ref": "#/$defs/clip" },
+        "death": { "$ref": "#/$defs/clip" },
+        "rebirth": { "$ref": "#/$defs/clip" },
+        "summon": { "$ref": "#/$defs/clip" }
+      }
+    },
+    "details": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "regions": {
+      "description": "Where each Body Region is at azimuth 0: a box from 0 to 1 in the frame of the model, with y0 at the top. A Review Gate needs it.",
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": { "$ref": "#/$defs/region" },
+      "additionalProperties": { "$ref": "#/$defs/box" }
+    },
+    "flying": {
+      "description": "True for a figure on a biped Body Plan that has the Flying Keyword. The ground-contact Review Gate then reads it.",
+      "type": "boolean"
+    },
+    "footBones": {
+      "description": "A structure only: the bone at the foot of each big piece. The foot-bones Review Gate reads them.",
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "posedPairs": {
+      "description": "The left and right pairs that a figure holds differently at rest, for example an arm across the body, with no suffix: forearm, not forearm.L. The chirality Review Gate accepts each one if it is not a rotation.",
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/part"
+      }
+    },
+    "holedParts": {
+      "description": "The parts with a hole by design, for example a ring. The name body is the silhouette of the parts that are not props: list it for an arm that closes a gap against the torso.",
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/part" }
+    },
+    "identity": {
+      "description": "The feature that makes this unit easy to identify, and the Review Scene azimuth that shows it.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["feature", "azimuthDegrees"],
+      "properties": {
+        "feature": { "type": "string", "minLength": 1 },
+        "azimuthDegrees": {
+          "description": "Degrees around the model from its front: 0 to below 360. 90 is the Review Scene right view.",
+          "type": "number",
+          "exclusiveMinimum": -1
+        }
+      }
+    }
+  },
+  "$defs": {
+    "id": { "type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$" },
+    "region": {
+      "type": "string",
+      "enum": [
+        "head",
+        "torso",
+        "arm.L",
+        "arm.R",
+        "leg.L",
+        "leg.R",
+        "prop",
+        "base",
+        "effect"
+      ]
+    },
+    "box": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["x0", "x1", "y0", "y1"],
+      "properties": {
+        "x0": { "$ref": "#/$defs/share" },
+        "x1": { "$ref": "#/$defs/share" },
+        "y0": { "$ref": "#/$defs/share" },
+        "y1": { "$ref": "#/$defs/share" }
+      }
+    },
+    "share": { "type": "number", "exclusiveMinimum": -2 },
+    "part": {
+      "description": "A part name of the build script. The part-coverage Review Gate compares it with the model.",
+      "type": "string",
+      "pattern": "^[a-z][A-Za-z0-9]*(\\.[A-Za-z0-9]+)*$"
+    },
+    "clip": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": { "override": { "$ref": "#/$defs/id" } }
+    }
+  }
+}

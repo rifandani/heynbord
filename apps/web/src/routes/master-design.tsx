@@ -11,6 +11,11 @@ const MasterDesignPage = lazy(async () => {
   return { default: m.MasterDesignPage };
 });
 
+const UnitModelReview = lazy(async () => {
+  const m = await import("@/master-design/showcases/unit-model");
+  return { default: m.UnitModelReview };
+});
+
 const searchSchema = Schema.Struct({
   /** Component Catalog filter. Coerced: `?q=123` filters by the text "123". */
   q: Schema.optionalKey(
@@ -21,7 +26,18 @@ const searchSchema = Schema.Struct({
       })
     )
   ),
+  /** The file name of a Unit Model: the page shows only its Review Scene. */
+  review: Schema.optionalKey(Schema.String),
 });
+
+const MasterDesignRoute = () => {
+  const { review } = Route.useSearch();
+  return review === undefined ? (
+    <MasterDesignPage />
+  ) : (
+    <UnitModelReview name={review} />
+  );
+};
 
 export const Route = createFileRoute("/master-design")({
   validateSearch: Schema.toStandardSchemaV1(searchSchema),
@@ -41,5 +57,5 @@ export const Route = createFileRoute("/master-design")({
       { content: "noindex, nofollow", name: "robots" },
     ],
   }),
-  component: MasterDesignPage,
+  component: MasterDesignRoute,
 });

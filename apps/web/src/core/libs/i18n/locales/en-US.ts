@@ -2074,9 +2074,11 @@ export default {
     empty:
       "This Deck has no cards. Select a card on the left page to add it, or use Auto-fill.",
     size: "{count} / {max} cards",
+    sizeOne: "1 card",
+    sizeMany: "{count} cards",
+    countdownTally: "{sum} countdown",
     countdownSum: "Countdown {sum} / {limit}",
     sizeMin: "At least {min}",
-    moreProblems: "And {count} more.",
     add: "Add {name}, {rank}, Countdown {countdown}. Copies owned: {owned}. Copies left: {left}.",
     remove: "Remove one {name}, {rank}. In this Deck: {count}.",
     removeAction: "Remove",

@@ -1,0 +1,168 @@
+name: Unit Model Review
+
+# Issue 184: a Unit Model that fails a Review Gate cannot reach `main`.
+#
+# The workflow has no `paths` filter. GitHub keeps a required check at "pending"
+# when a filter skips its workflow. The `changed` job does that work, and the
+# `unit-model-review` job gives one result for each pull request. Make that job
+# the required status check.
+#
+# It runs on a pull request to any branch, so a stacked pull request gets a
+# review of its own changes.
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+env:
+  FORCE_COLOR: "1"
+
+concurrency:
+  group: unit-model-review-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  changed:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      units: ${{ steps.find.outputs.units }}
+    steps:
+      # Depth 2 gives the merge commit of the pull request and its 2 parents.
+      - name: Checkout branch
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 2
+
+      - name: Install bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.2
+
+      - name: Test the search
+        run: bun test scripts/unit-model/review/changed.test.ts
+
+      # The first parent is the base branch, so the diff is what the merge adds.
+      - name: Find the changed Unit Models
+        id: find
+        run: |
+          units="$(bun unit-model:changed --base HEAD^1)"
+          echo "$units"
+          echo "units=$units" >> "$GITHUB_OUTPUT"
+
+  review:
+    needs: changed
+    if: needs.changed.outputs.units != '[]'
+    name: Review ${{ matrix.unit }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      # One failed Unit Model must not stop the record of the others.
+      fail-fast: false
+      matrix:
+        unit: ${{ fromJSON(needs.changed.outputs.units) }}
+    env:
+      # `changed.ts` gives only lowercase letters, digits and hyphens.
+      UNIT: ${{ matrix.unit }}
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v7
+
+      # The steps below use one date, so a run over midnight has one folder.
+      - name: Set the review date
+        run: echo "REVIEW_DATE=$(date -u +%F)" >> "$GITHUB_ENV"
+
+      # A unit with no Unit Spec has no Review Scene, so it stops here.
+      - name: Check the Unit Spec
+        run: python3 scripts/unit-model/unit_spec.py "scripts/unit-model/specs/$UNIT.json"
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: .node-version
+
+      - name: Install bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.2
+
+      - name: Install deps and disallow changes to lockfile
+        run: bun ci
+
+      # A Raw Export is in git, built on the Mac of its author. A build on Linux
+      # gives other float values, so it cannot pass the exact Source Contract.
+      - name: Check the pack
+        run: bun unit-model:pack:check "$UNIT"
+
+      - name: Check the Source Contract
+        run: bun unit-model:contract:check "$UNIT"
+
+      # `admission.json` has no hash of the views, so a new view keeps its old
+      # verdict. This gate replaces the file with a verdict on the current views.
+      - name: Check the Turnaround
+        run: bun unit-model:turnaround:check "$UNIT"
+
+      - name: Resolve playwright version
+        id: pw
+        run: |
+          echo "version=$(node -p "require('./apps/web/node_modules/@playwright/test/package.json').version")" >> "$GITHUB_OUTPUT"
+
+      - name: Restore playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: ms-playwright-chromium-${{ runner.os }}-${{ steps.pw.outputs.version }}
+
+      - name: Install playwright browser
+        working-directory: apps/web
+        run: bunx playwright install --with-deps chromium
+
+      # `/master-design` is only in a dev server. The first request makes Vite
+      # compile the route, so the capture does not spend its timeout on that.
+      - name: Start the dev server
+        working-directory: apps/web
+        run: |
+          cp .env.example .env.local
+          nohup bunx vite --port 4100 --strictPort > vite.log 2>&1 &
+          curl -fs -o /dev/null --retry 60 --retry-delay 2 --retry-all-errors \
+            http://localhost:4100/master-design
+
+      - name: Capture the Review Scene
+        run: bun unit-model:review "$UNIT" --date "$REVIEW_DATE"
+
+      # This command exits 0 clean, 1 fail or 2 error. Each code that is not 0
+      # fails this step, so an error is not a pass.
+      - name: Run the Review Gates
+        run: bun unit-model:gates "$UNIT" --date "$REVIEW_DATE"
+
+      - name: Upload the review record
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: unit-model-review-${{ matrix.unit }}
+          path: |
+            artifacts/unit-model-review/${{ matrix.unit }}/${{ env.REVIEW_DATE }}/
+            !artifacts/unit-model-review/${{ matrix.unit }}/${{ env.REVIEW_DATE }}/gate-inputs/
+            apps/web/vite.log
+          retention-days: 14
+
+  # The required status check. A skipped `review` passes only when no Unit Model
+  # changed: a failed or a cancelled job does not pass.
+  unit-model-review:
+    name: Unit Model Review
+    needs: [changed, review]
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Require a clean review
+        env:
+          CHANGED: ${{ needs.changed.result }}
+          REVIEW: ${{ needs.review.result }}
+          UNITS: ${{ needs.changed.outputs.units }}
+        run: |
+          echo "changed: $CHANGED, review: $REVIEW, units: $UNITS"
+          [ "$CHANGED" = success ] || exit 1
+          [ "$REVIEW" = success ] || { [ "$REVIEW" = skipped ] && [ "$UNITS" = '[]' ]; }

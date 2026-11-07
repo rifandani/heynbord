@@ -292,6 +292,7 @@ const hud = (width: number, short: boolean): readonly Box[] => {
 
 const SCREENS: readonly (readonly [string, number, number])[] = [
   ["4:3 laptop", 1024, 768],
+  ["720p laptop", 1280, 720],
   ["16:10 laptop", 1440, 900],
   ["16:9 desktop", 1920, 1080],
   ["wide browser window", 1916, 967],
@@ -367,7 +368,7 @@ describe("mapFrame", () => {
   );
 
   it.each(MAP_SCREENS.filter((screen) => screen[4] > 500))(
-    "%s: the full height of the painting is above the Town Bar of a %s screen, and it fills the width or stays in the middle",
+    "%s: the full height of the painting fills a %s screen behind the Town Bar, and it fills the width or stays in the middle",
     (_, __, map, width, height) => {
       const frame = mapFrame(map, {
         width,
@@ -377,8 +378,12 @@ describe("mapFrame", () => {
         obstacles: hud(width, false),
       });
       const paintingWidth = MAP.width * frame.scale * frame.stretch;
-      expect(frame.y).toBeCloseTo(0);
-      expect(MAP.height * frame.scale).toBeCloseTo(height - 80);
+      const paintingHeight = MAP.height * frame.scale;
+      expect(paintingHeight).toBeCloseTo(height);
+      // A low Stage Marker can lift the painting, by less than the solid
+      // cloth of the Town Bar, which hides the mirrored foot of the painting.
+      expect(frame.y).toBeLessThanOrEqual(0.5);
+      expect(height - (frame.y + paintingHeight)).toBeLessThan(27);
       if (paintingWidth >= width - 0.5) {
         expect(frame.x).toBeLessThanOrEqual(0.5);
         expect(frame.x + paintingWidth).toBeGreaterThanOrEqual(width - 0.5);
@@ -392,7 +397,7 @@ describe("mapFrame", () => {
     }
   );
 
-  it("shows all of the painting above the Town Bar of a wide browser window", () => {
+  it("shows all of the painting on a wide browser window, behind the Town Bar", () => {
     const frame = mapFrame(hearthvale, {
       width: 1917,
       height: 960,
@@ -400,15 +405,13 @@ describe("mapFrame", () => {
       bottom: 80,
       obstacles: hud(1917, false),
     });
+    expect(frame.x).toBeCloseTo(0);
     expect(frame.y).toBeCloseTo(0);
-    expect(MAP.height * frame.scale).toBeCloseTo(880);
-    expect(frame.stretch).toBeCloseTo(1 + FIT_STRETCH);
-    // Less than 1.5% of the screen width at each side is the soft copy.
-    expect(frame.x).toBeGreaterThan(0);
-    expect(frame.x).toBeLessThan(1917 * 0.015);
+    expect(MAP.height * frame.scale).toBeCloseTo(960);
+    expect(MAP.width * frame.scale * frame.stretch).toBeCloseTo(1917);
   });
 
-  it("shows all of the painting above the Town Bar of a 16:9 screen", () => {
+  it("shows all of the painting on a 16:9 screen, behind the Town Bar", () => {
     const frame = mapFrame(hearthvale, {
       width: 1920,
       height: 1080,
@@ -419,7 +422,21 @@ describe("mapFrame", () => {
     expect(frame.x).toBeCloseTo(0);
     expect(frame.y).toBeCloseTo(0);
     expect(MAP.width * frame.scale * frame.stretch).toBeCloseTo(1920);
-    expect(MAP.height * frame.scale).toBeCloseTo(1000);
+    expect(MAP.height * frame.scale).toBeCloseTo(1080);
+    expect(frame.stretch).toBeCloseTo(1);
+  });
+
+  it("keeps the painting in place when the Town Bar is stowed", () => {
+    const viewport: Viewport = {
+      width: 1920,
+      height: 1080,
+      top: 8,
+      bottom: 80,
+      obstacles: hud(1920, false),
+    };
+    expect(mapFrame(hearthvale, { ...viewport, bottom: 0 })).toEqual(
+      mapFrame(hearthvale, viewport)
+    );
   });
 
   it("makes the painting smaller than the screen height when the Stage Markers do not fit", () => {

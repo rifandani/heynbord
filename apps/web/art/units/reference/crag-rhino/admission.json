@@ -1,0 +1,32 @@
+{
+  "id": "crag-rhino",
+  "passed": true,
+  "problems": [],
+  "measures": {
+    "front": {
+      "backgroundEdge": 1,
+      "offPalette": 0.1,
+      "fill": 0.875
+    },
+    "three-quarter": {
+      "backgroundEdge": 0.953,
+      "offPalette": 0.062,
+      "fill": 0.953
+    },
+    "side": {
+      "backgroundEdge": 0.916,
+      "offPalette": 0.049,
+      "fill": 0.973
+    },
+    "back": {
+      "backgroundEdge": 0.999,
+      "offPalette": 0.075,
+      "fill": 0.895
+    },
+    "details": {
+      "backgroundEdge": 0.998,
+      "offPalette": 0.074,
+      "fill": 0.92
+    }
+  }
+}

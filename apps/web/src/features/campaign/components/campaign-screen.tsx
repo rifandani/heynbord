@@ -107,8 +107,9 @@ const useViewport = (root: RefObject<HTMLElement | null>): Viewport => {
 };
 
 /**
- * The edges of the painting fade into the backdrop on a side where the
- * painting does not reach the screen edge, or the Town Bar at the bottom.
+ * The top and side edges of the painting fade into the backdrop on a side
+ * where the painting does not reach the screen edge. The bottom edge does not
+ * fade: the painting goes behind the Town Bar (`PaintingFoot`).
  */
 const fade = (side: boolean) => (side ? "transparent" : "black");
 
@@ -116,18 +117,16 @@ const paintingMask = (
   frame: MapFrame,
   viewport: Viewport
 ): CSSProperties | undefined => {
-  const width = MAP.width * frame.scale * frame.stretch;
-  const height = MAP.height * frame.scale;
   const left = frame.x > 0.5;
-  const right = frame.x + width < viewport.width - 0.5;
+  const right =
+    frame.x + MAP.width * frame.scale * frame.stretch < viewport.width - 0.5;
   const top = frame.y > 0.5;
-  const bottom = frame.y + height < viewport.height - viewport.bottom - 0.5;
-  if (!(left || right || top || bottom)) {
+  if (!(left || right || top)) {
     return undefined;
   }
   const mask = [
     `linear-gradient(to right, ${fade(left)}, black 6%, black 94%, ${fade(right)})`,
-    `linear-gradient(to bottom, ${fade(top)}, black 6%, black 94%, ${fade(bottom)})`,
+    `linear-gradient(to bottom, ${fade(top)}, black 6%)`,
   ].join(", ");
   return {
     maskImage: mask,
@@ -196,6 +195,31 @@ const PlaceholderRoad = ({ map }: { readonly map: RegionMap }) => (
 );
 
 /**
+ * The painting, mirrored under its bottom edge. A low Stage Marker can lift
+ * the painting above the screen bottom, because the marker must stay above the
+ * Town Bar. The mirror then continues the ground behind the Town Bar, so the
+ * soft backdrop does not show there.
+ */
+const PaintingFoot = ({
+  src,
+  top,
+  height,
+}: {
+  readonly src: string;
+  readonly top: number;
+  readonly height: number;
+}) => (
+  <img
+    src={src}
+    alt=""
+    draggable={false}
+    className="absolute inset-x-0 w-full -scale-y-100 select-none"
+    style={{ top, height }}
+    aria-hidden
+  />
+);
+
+/**
  * The painted map, the Trail and the Stage Markers. A Region with no
  * painting yet shows the placeholder: a plain ground with the Trail. A Region
  * with no Stages yet shows only the ground.
@@ -219,8 +243,10 @@ const RegionCanvas = ({
   const viewport = useViewport(root);
   const frame = mapFrame(map, viewport);
   const { scale, stretch } = frame;
-  // The backdrop: the same painting, soft, behind any side that the map does
-  // not cover. A Region with no painting has the plain ground there.
+  const height = MAP.height * scale;
+  const foot = viewport.height - (frame.y + height);
+  // The backdrop: the same painting, soft, behind a top or side edge that the
+  // map does not reach. A Region with no painting has the plain ground there.
   const backdrop =
     map.image === null ? (
       <div
@@ -250,21 +276,26 @@ const RegionCanvas = ({
           left: frame.x,
           top: frame.y,
           width: MAP.width * scale * stretch,
-          height: MAP.height * scale,
+          height: height + Math.max(0, foot),
           ...paintingMask(frame, viewport),
         }}
       >
-        {map.image === null ? (
-          <PlaceholderRoad map={map} />
-        ) : (
-          <img
-            src={map.image}
-            alt=""
-            draggable={false}
-            className="absolute inset-0 size-full select-none"
-          />
-        )}
-        <TrailLine map={map} walked={walkedLegs(trail)} />
+        {map.image !== null && foot > 0.5 ? (
+          <PaintingFoot src={map.image} top={height} height={height} />
+        ) : null}
+        <div className="absolute inset-x-0 top-0" style={{ height }}>
+          {map.image === null ? (
+            <PlaceholderRoad map={map} />
+          ) : (
+            <img
+              src={map.image}
+              alt=""
+              draggable={false}
+              className="absolute inset-0 size-full select-none"
+            />
+          )}
+          <TrailLine map={map} walked={walkedLegs(trail)} />
+        </div>
       </div>
       <nav
         aria-label={tr("campaign.trail")}

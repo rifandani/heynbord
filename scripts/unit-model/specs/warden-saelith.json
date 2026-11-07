@@ -1,0 +1,110 @@
+{
+  "id": "warden-saelith",
+  "bodyPlan": "biped-medium",
+  "height": 0.985,
+  "palette": {
+    "skin": "#eab68c",
+    "hair": "#3a2316",
+    "hair_light": "#5b3822",
+    "coat": "#5a6434",
+    "coat_dark": "#404a24",
+    "amber": "#e3a336",
+    "cream": "#efe1bd",
+    "leather": "#5c3921",
+    "leggings": "#4a3020",
+    "boot": "#6b4126",
+    "gold": "#ecb546",
+    "wood": "#4a2b17",
+    "grip": "#2c1b0f",
+    "eyes": "#1f2a1a",
+    "fletch": "#3f8f3e",
+    "steel": "#c9ccc8",
+    "belt": "#7a4a26",
+    "arrow": "#b88a52"
+  },
+  "parts": [
+    "head",
+    "eyes",
+    "hair",
+    "braid",
+    "tiara",
+    "neck",
+    "chest",
+    "collar",
+    "corset",
+    "belt",
+    "hips",
+    "skirt",
+    "cape",
+    "mantle",
+    "pauldron.L",
+    "sleeve.L",
+    "cuff.L",
+    "bracer.L",
+    "hand.L",
+    "thigh.L",
+    "boot.L",
+    "foot.L",
+    "pauldron.R",
+    "sleeve.R",
+    "cuff.R",
+    "bracer.R",
+    "hand.R",
+    "thigh.R",
+    "boot.R",
+    "foot.R",
+    "bow",
+    "string",
+    "arrow"
+  ],
+  "props": [
+    {
+      "id": "bow",
+      "hand": "left",
+      "cameraSide": false,
+      "bone": "hand.L"
+    },
+    {
+      "id": "arrow",
+      "hand": "right",
+      "cameraSide": true,
+      "bone": "hand.R"
+    }
+  ],
+  "clips": {
+    "idle": {},
+    "lowHp": {},
+    "walk": {},
+    "attack": {
+      "override": "bow-draw"
+    },
+    "cast": {},
+    "hurt": {},
+    "death": {},
+    "rebirth": {},
+    "summon": {}
+  },
+  "details": [
+    "long dark braid with a light strand and an amber tie",
+    "green coat with amber trim and cream panels",
+    "layered leaf mantle over the shoulders",
+    "long cream cape with a green back panel",
+    "gold tiara and leaf clasps",
+    "recurved longbow with gold tips and amber thorns",
+    "arrow hidden at rest and nocked during attack"
+  ],
+  "regions": {
+    "head": { "x0": 0.38, "x1": 0.76, "y0": 0, "y1": 0.58 },
+    "torso": { "x0": 0.32, "x1": 0.82, "y0": 0.21, "y1": 0.88 },
+    "arm.L": { "x0": 0.68, "x1": 0.94, "y0": 0.24, "y1": 0.58 },
+    "arm.R": { "x0": 0.2, "x1": 0.46, "y0": 0.24, "y1": 0.58 },
+    "leg.L": { "x0": 0.58, "x1": 0.71, "y0": 0.5, "y1": 1 },
+    "leg.R": { "x0": 0.44, "x1": 0.56, "y0": 0.5, "y1": 1 },
+    "prop": { "x0": 0, "x1": 1, "y0": 0.15, "y1": 0.96 }
+  },
+  "holedParts": ["tiara", "mantle"],
+  "identity": {
+    "feature": "recurved longbow with gold tips",
+    "azimuthDegrees": 45
+  }
+}

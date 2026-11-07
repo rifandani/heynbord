@@ -39,6 +39,7 @@ import {
 } from "./keywords";
 import { firstTryPathLevel } from "./player-levels";
 import {
+  creatureStats,
   isRankAtLeast,
   RANKS,
   rankPips,
@@ -98,6 +99,29 @@ const checkDeck = (deck: readonly DeckEntry[]) => {
 const creatures = CARDS.flatMap((card) =>
   card.kind === "creature" ? [card] : []
 );
+
+/** A Creature Card, for a test that reads its Creature fields. */
+const creatureCard = (id: string): CreatureCardDefinition => {
+  const card = creatures.find((creature) => creature.id === id);
+  if (card === undefined) {
+    throw new Error(`${id} is not a Creature Card`);
+  }
+  return card;
+};
+
+/** The Attack, the HP and each Keyword value of a copy, in a fixed order. */
+const combineValues = (
+  card: CreatureCardDefinition,
+  rank: RankId
+): readonly number[] => {
+  const { attack, hp } = creatureStats(card, rank);
+  const keywordValues = Object.values(card.keywords).flatMap((amount) =>
+    Predicate.isBoolean(amount) || Predicate.isString(amount)
+      ? []
+      : [keywordValue(amount, rank)]
+  );
+  return [attack, hp, ...keywordValues];
+};
 
 /** Range 2 or more from the Range Keywords (ADR-0029). */
 const isRanged = (card: CreatureCardDefinition): boolean =>
@@ -213,18 +237,6 @@ const effectValues = (card: SkillCardDefinition, rank: RankId): number[] =>
   });
 
 /**
- * The Common to Uncommon steps with no effect change. The Common and Uncommon
- * values did not change with ADR-0057, because the sim checks are sensitive to
- * them. A separate issue fixes these steps.
- */
-const FLAT_FIRST_COMBINE: ReadonlySet<string> = new Set([
-  "mage.fireball:uncommon",
-  "mage.frostBolt:uncommon",
-  "mage.frostShards:uncommon",
-  "mage.spark:uncommon",
-]);
-
-/**
  * The cards above the maximum Rank Growth, because no smaller rising line of
  * whole numbers exists (ADR-0057).
  */
@@ -234,6 +246,7 @@ const NEAREST_STEP_CARDS: ReadonlySet<string> = new Set([
   "warrior.groundSlam",
   "warrior.exposeWeakness",
   "mage.flameWave",
+  "mage.frostShards",
   "mage.frostWave",
 ]);
 
@@ -315,12 +328,13 @@ const pairwiseViolations = (): readonly PairwiseViolation[] => {
 
 /**
  * The cards that are outside the fitted Base Rank budget or the pairwise
- * rule (ADR-0055). The full rebalance of issue #189 emptied this set, so a
- * card that leaves the budget or the pairwise rule now fails the test at
- * once. The set stays as the one place where a later tuning pass can write a
- * temporary exception.
+ * rule (ADR-0055). A card that leaves the budget or the pairwise rule fails
+ * the test at once, unless it is here with a written reason.
+ *
+ * `mage.fireball`: Common 3 is not its nearest step, because a higher line
+ * fails the pairwise rule for 6 other cards (ADR-0057).
  */
-const POWER_BUDGET_EXCEPTIONS = new Set<string>();
+const POWER_BUDGET_EXCEPTIONS: ReadonlySet<string> = new Set(["mage.fireball"]);
 
 describe("card content (CRD-01, technical design 3.5)", () => {
   it("passes the card schema and has unique IDs", () => {
@@ -369,7 +383,7 @@ describe("card content (CRD-01, technical design 3.5)", () => {
       target: "enemyUnit",
       effect: { type: "damageUnit", damageType: "lightning" },
     });
-    expect(skillAmounts("mage.spark")).toEqual([2, 2, 3, 5, 6]);
+    expect(skillAmounts("mage.spark")).toEqual([2, 3, 4, 5, 6]);
     expect(getCard("mage.arcLightning")).toMatchObject({
       target: "enemyUnit",
       effect: { type: "damageArc", damageType: "lightning" },
@@ -615,6 +629,12 @@ describe("card content (CRD-01, technical design 3.5)", () => {
     }
   });
 
+  it("gives Fireball, Frost Bolt and Frost Shards a rising first Combine (ADR-0057)", () => {
+    expect(skillAmounts("mage.fireball")).toEqual([3, 4, 5, 6, 7]);
+    expect(skillAmounts("mage.frostBolt")).toEqual([5, 6, 7, 8, 10]);
+    expect(skillAmounts("mage.frostShards")).toEqual([2, 3, 4, 5, 6]);
+  });
+
   it("changes the effect of each Skill Card with each Combine, and no value goes down (ADR-0057)", () => {
     for (const card of CARDS) {
       if (card.kind !== "skill") {
@@ -625,10 +645,7 @@ describe("card content (CRD-01, technical design 3.5)", () => {
         const lower = effectValues(card, ranks[index] ?? rank);
         const higher = effectValues(card, rank);
         const rises = higher.some((value, at) => value > (lower[at] ?? 0));
-        expect(
-          rises || FLAT_FIRST_COMBINE.has(`${card.id}:${rank}`),
-          `${card.id} at ${rank}`
-        ).toBe(true);
+        expect(rises, `${card.id} at ${rank}`).toBe(true);
         for (const [at, value] of higher.entries()) {
           expect(value, `${card.id} at ${rank}`).toBeGreaterThanOrEqual(
             lower[at] ?? 0
@@ -1424,6 +1441,50 @@ describe("Ranks (GDD 5.3)", () => {
     expect(ranksOf(getCard("human.militiaRecruit"))).toEqual(RANKS);
     // A Specialist (Base Rank Legendary) has only the Legendary Rank (ADR-0048).
     expect(ranksOf({ baseRank: "legendary" })).toEqual(["legendary"]);
+  });
+
+  it("uses an override only at the Rank that it names (ADR-0058)", () => {
+    const card = creatureCard("goblin.ankleSnatcher");
+    expect(RANKS.map((rank) => creatureStats(card, rank))).toEqual([
+      { attack: 3, hp: 3 },
+      { attack: 4, hp: 4 },
+      { attack: 4, hp: 5 },
+      { attack: 5, hp: 5 },
+      { attack: 6, hp: 6 },
+    ]);
+    expect(
+      RANKS.map((rank) =>
+        creatureStats(creatureCard("elf.fernwingCourier"), rank)
+      )
+    ).toEqual(RANKS.map((rank) => creatureStats(card, rank)));
+  });
+
+  it("has no override below the Base Rank of a card (ADR-0058)", () => {
+    for (const card of creatures) {
+      for (const rank of RANKS) {
+        if (!isRankAtLeast(rank, card.baseRank)) {
+          expect(card.overrides?.[rank], `${card.id} ${rank}`).toBeUndefined();
+        }
+      }
+    }
+  });
+
+  it("raises a value on each Combine of a Creature Card, and lowers none (ADR-0058)", () => {
+    for (const card of creatures) {
+      const ranks = ranksOf(card);
+      for (const [index, rank] of ranks.entries()) {
+        const lower = ranks[index - 1];
+        if (lower === undefined) {
+          continue;
+        }
+        const before = combineValues(card, lower);
+        const after = combineValues(card, rank);
+        const step = `${card.id} ${lower} to ${rank}`;
+        const changes = after.map((value, at) => value - (before[at] ?? 0));
+        expect(Math.min(...changes), step).toBeGreaterThanOrEqual(0);
+        expect(Math.max(...changes), step).toBeGreaterThan(0);
+      }
+    }
   });
 });
 

@@ -5,11 +5,22 @@ import type { ReactNode } from "react";
 import { Button } from "react-aria-components";
 
 import { GameButton } from "@/core/components/game/game-button";
-import { CardFrame } from "@/features/battle/components/card-frame";
+import {
+  CardFrame,
+  CardFrameSlot,
+} from "@/features/battle/components/card-frame";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { useGameText } from "@/features/battle/use-game-text";
-import { PoolFilters } from "@/features/deck/components/pool-filters";
+import {
+  filterSummary,
+  PoolFilters,
+} from "@/features/deck/components/pool-filters";
 import type { Peek } from "@/features/deck/components/use-card-peek";
+import {
+  useNearScrollRoot,
+  useNearView,
+} from "@/features/deck/components/use-near-view";
+import type { WatchNear } from "@/features/deck/components/use-near-view";
 import type { PoolBlock, PoolFilter, PoolTile } from "@/features/deck/deck";
 import {
   classText,
@@ -18,18 +29,18 @@ import {
   poolBlock,
   poolEntries,
 } from "@/features/deck/deck";
-import { DECK_COLORS, DECK_CSS } from "@/features/deck/tokens";
+import { DECK_CSS } from "@/features/deck/tokens";
 
 type PeekBind = (target: Peek) => object;
 
 /** The Card Details of a card, when they show; they come right after the card. */
 type PeekAt = (target: Peek) => ReactNode;
 
-const plate =
-  "flex h-6 max-w-full items-center rounded-lg border-2 px-2 text-xs leading-none font-bold [@media(max-height:500px)]:h-5 [@media(max-height:500px)]:px-1.5 [@media(max-height:500px)]:text-[10px]";
+const copiesText =
+  "text-ink-soft flex h-6 max-w-full items-center justify-center px-2 font-sans text-xs leading-normal font-semibold tabular-nums [@media(max-height:500px)]:h-5 [@media(max-height:500px)]:px-1.5 [@media(max-height:500px)]:text-[10px]";
 
-/** The plate under a card: the owned and free copies, or why the card cannot go in now. */
-const CopiesPlate = ({
+/** The text under a card: the owned and free copies, or why the card cannot go in now. */
+const CopiesText = ({
   owned,
   left,
   block,
@@ -43,10 +54,7 @@ const CopiesPlate = ({
   const { tr } = useGameText();
   if (block === null) {
     return (
-      <span
-        className="border-gold-trim/70 bg-night-plate/90 text-cream flex h-6 max-w-full min-w-9 items-center justify-center rounded-lg border-2 px-2 text-xs leading-none font-black tabular-nums [@media(max-height:500px)]:h-5 [@media(max-height:500px)]:px-1.5 [@media(max-height:500px)]:text-[10px]"
-        style={{ boxShadow: DECK_CSS.copyPlate }}
-      >
+      <span className={copiesText}>
         <span className="truncate">
           {tr("deckBuilder.left", { owned, left })}
         </span>
@@ -55,21 +63,13 @@ const CopiesPlate = ({
   }
   if (block === "notOwned") {
     return (
-      <span
-        className={cn(plate, "text-ink-soft border-dashed bg-transparent")}
-        style={{ borderColor: DECK_COLORS.dashedInk }}
-      >
+      <span className={copiesText}>
         <span className="truncate">{tr("deckBuilder.notOwned")}</span>
       </span>
     );
   }
   return (
-    <span
-      className={cn(
-        plate,
-        "border-parchment-rule bg-parchment-deep text-ink-soft"
-      )}
-    >
+    <span className={copiesText}>
       <span className="truncate">
         {block === "class"
           ? tr("deckBuilder.blocked.class", { className: classLabel })
@@ -79,9 +79,22 @@ const CopiesPlate = ({
   );
 };
 
+/**
+ * The tiles that mount at once, so the first screen of a phone or a desktop
+ * book has no empty slots. The other tiles get their frame near the view.
+ */
+const FIRST_TILES = 15;
+
+/**
+ * One tile of the pool. The tile is always in the page, so that the keyboard
+ * and a screen reader can reach all the cards. Only its Card Frame waits: a
+ * frame has about 120 elements, and the pool has about 130 tiles.
+ */
 const PoolCard = ({
   tile,
   input,
+  first,
+  watchNear,
   onAdd,
   bind,
   wasLongPress,
@@ -89,12 +102,16 @@ const PoolCard = ({
 }: {
   readonly tile: PoolTile;
   readonly input: DeckInput;
+  /** True for a tile of the first screen. */
+  readonly first: boolean;
+  readonly watchNear: WatchNear;
   readonly onAdd: (tile: PoolTile) => void;
   readonly bind: PeekBind;
   readonly wasLongPress: () => boolean;
   readonly peekAt: PeekAt;
 }) => {
   const { tr, text } = useGameText();
+  const { place, near } = useNearView(watchNear, first);
   const card = getCard(tile.cardId);
   const block = poolBlock(input, tile.cardId, tile.rank);
   const owned = ownedCopies(input.collection, tile.cardId, tile.rank);
@@ -107,7 +124,7 @@ const PoolCard = ({
     countdown: card.countdown,
   };
   return (
-    <li className="flex justify-center">
+    <li ref={place} className="flex justify-center">
       <Button
         {...bind({ cardId: tile.cardId, rank: tile.rank, from: "pool" })}
         onPress={() => {
@@ -132,21 +149,26 @@ const PoolCard = ({
         data-testid={`pool-${tile.cardId}-${tile.rank}`}
         data-blocked={block ?? undefined}
       >
-        <CardFrame
-          cardId={tile.cardId}
-          rank={tile.rank}
-          countdown={card.countdown}
-          className={cn(
-            "transition-[transform,filter,opacity] duration-150 ease-out",
-            block === null &&
-              "group-data-[hovered]:-translate-y-1.5 group-data-[pressed]:translate-y-0 motion-reduce:group-data-[hovered]:translate-y-0",
-            block === "notOwned" && "grayscale",
-            block !== null &&
-              block !== "notOwned" &&
-              "brightness-[0.82] saturate-[0.55]"
-          )}
-        />
-        <CopiesPlate
+        {near ? (
+          <CardFrame
+            cardId={tile.cardId}
+            rank={tile.rank}
+            countdown={card.countdown}
+            thumbnail
+            className={cn(
+              "transition-[transform,filter,opacity] duration-150 ease-out",
+              block === null &&
+                "group-data-[hovered]:-translate-y-1.5 group-data-[pressed]:translate-y-0 motion-reduce:group-data-[hovered]:translate-y-0",
+              block === "notOwned" && "grayscale",
+              block !== null &&
+                block !== "notOwned" &&
+                "brightness-[0.82] saturate-[0.55]"
+            )}
+          />
+        ) : (
+          <CardFrameSlot />
+        )}
+        <CopiesText
           owned={owned}
           left={left}
           block={block}
@@ -175,7 +197,7 @@ const EmptyPool = ({
   const ownsAll = filter.ownership === "notOwned";
   return (
     <div
-      className="flex flex-col items-center gap-3 px-6 py-12 text-center [@media(max-height:500px)]:gap-2 [@media(max-height:500px)]:py-4"
+      className="flex flex-1 flex-col items-center justify-center gap-3 px-6 py-12 text-center [@media(max-height:500px)]:gap-2 [@media(max-height:500px)]:py-4"
       data-testid="pool-empty"
     >
       {ownsAll ? (
@@ -229,11 +251,14 @@ export const CardPool = ({
   const { tr } = useGameText();
   const pool = poolEntries(input.collection, filter);
   const both = pool.owned.length > 0 && pool.notOwned.length > 0;
-  const card = (tile: PoolTile) => (
+  const { rootRef, watchNear } = useNearScrollRoot();
+  const card = (tile: PoolTile, index: number) => (
     <PoolCard
       key={`${tile.cardId}:${tile.rank}`}
       tile={tile}
       input={input}
+      first={index < FIRST_TILES}
+      watchNear={watchNear}
       onAdd={onAdd}
       bind={bind}
       wasLongPress={wasLongPress}
@@ -242,30 +267,27 @@ export const CardPool = ({
   );
   return (
     <section
-      aria-labelledby="deck-pool-title"
+      aria-label={tr("deckBuilder.cards")}
       className="flex min-h-0 flex-col gap-3 py-4 pr-9 pl-5 [@media(max-height:500px)]:gap-1.5 [@media(max-height:500px)]:py-2 [@media(max-height:500px)]:pr-6 [@media(max-height:500px)]:pl-3"
     >
       <header className="flex flex-col gap-2 [@media(max-height:500px)]:gap-1">
-        <h3
-          id="deck-pool-title"
-          className="font-display flex items-baseline gap-2 text-lg font-bold [@media(max-height:500px)]:text-sm"
-        >
-          {tr("deckBuilder.cards")}
-          <span
-            className="text-ink-soft font-sans text-xs font-semibold tabular-nums"
-            data-testid="pool-count"
-          >
-            {tr("deckBuilder.ownedOf", {
-              owned: pool.ownedCards,
-              total: pool.totalCards,
-            })}
-          </span>
-        </h3>
-        <PoolFilters filter={filter} onFilter={onFilter} />
+        <PoolFilters
+          filter={filter}
+          onFilter={onFilter}
+          summary={
+            <span className={filterSummary} data-testid="pool-count">
+              {tr("deckBuilder.ownedOf", {
+                owned: pool.ownedCards,
+                total: pool.totalCards,
+              })}
+            </span>
+          }
+        />
       </header>
       {/* A new key for each filter, so that the list starts at the top. */}
       <div
         key={`${filter.ownership}:${filter.kind}:${filter.race}:${filter.classId}`}
+        ref={rootRef}
         className={cn(
           "-mx-2 flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto overscroll-contain px-2 pt-2 pb-4 text-[11px]",
           "[scrollbar-width:thin]",
@@ -300,7 +322,9 @@ export const CardPool = ({
             aria-label={both ? undefined : tr("deckBuilder.filters.notOwned")}
             data-testid="pool-not-owned"
           >
-            {pool.notOwned.map(card)}
+            {pool.notOwned.map((tile, index) =>
+              card(tile, pool.owned.length + index)
+            )}
           </ul>
         ) : null}
         {pool.owned.length === 0 && pool.notOwned.length === 0 ? (

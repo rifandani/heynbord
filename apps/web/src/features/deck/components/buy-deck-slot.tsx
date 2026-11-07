@@ -94,7 +94,7 @@ export const BuyDeckSlot = ({
       >
         <span
           className={cn(
-            "border-bronze-rim/45 text-cream/90 relative flex h-10 w-full items-center gap-1.5 border-2 border-b-0 border-dashed px-3 pt-2.5 pb-2 text-sm font-black transition-[filter] duration-150 group-data-[hovered]:brightness-125 motion-reduce:transition-none",
+            "border-bronze-rim/45 text-cream/90 relative flex h-10 w-full items-center justify-center gap-1.5 border-2 border-b-0 border-dashed px-3 pt-2.5 pb-2 text-sm font-black transition-[filter] duration-150 group-data-[hovered]:brightness-125 motion-reduce:transition-none",
             "[clip-path:polygon(0_0,50%_7px,100%_0,100%_100%,0_100%)]",
             "[@media(max-height:500px)]:h-7 [@media(max-height:500px)]:gap-1 [@media(max-height:500px)]:px-2 [@media(max-height:500px)]:pt-1.5 [@media(max-height:500px)]:pb-1 [@media(max-height:500px)]:text-[11px]"
           )}
