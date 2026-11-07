@@ -57,11 +57,18 @@ const exportUnit = async (unit: TurnaroundUnit) => {
     )
   );
   const record = path.join(folder, "turnaround.json");
-  if (!existsSync(record)) {
+  // The `wx` flag keeps an existing record: one call checks and creates it.
+  try {
     writeFileSync(
       record,
-      `${JSON.stringify(pendingRecordOf(unit), null, 2)}\n`
+      `${JSON.stringify(pendingRecordOf(unit), null, 2)}\n`,
+      { flag: "wx" }
     );
+  } catch (error) {
+    // SAFETY: writeFileSync throws an ErrnoException with a string code.
+    if ((error as NodeJS.ErrnoException).code !== "EEXIST") {
+      throw error;
+    }
   }
   console.log(
     `${unit.name}: 5 views, approval ${readRecord(record)?.approval.status ?? "not valid"}`

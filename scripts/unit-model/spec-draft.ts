@@ -10,7 +10,7 @@
  * checks `props`. `regions` are measures of the current model, so they find a
  * later change and do not prove that the model is good.
  */
-import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import { closeSync, openSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 
 import { NodeIO } from "@gltf-transform/core";
@@ -150,18 +150,37 @@ const draft = async (plan: string, name: string) => {
   };
 };
 
+// One call checks and creates the file, so no other process can create it
+// between the check and the write. It gives undefined when the file exists.
+const createOnly = (file: string): number | undefined => {
+  try {
+    return openSync(file, "wx");
+  } catch (error) {
+    // SAFETY: openSync throws an ErrnoException with a string code.
+    if ((error as NodeJS.ErrnoException).code === "EEXIST") {
+      return undefined;
+    }
+    throw error;
+  }
+};
+
 const main = async ([plan, ...names]: readonly string[]) => {
   for (const name of names) {
     const file = path.join(DIRECTORY, "specs", `${name}.json`);
-    if (existsSync(file)) {
+    const handle = createOnly(file);
+    if (handle === undefined) {
       console.log(`KEEP ${name}: it has a Unit Spec`);
-    } else {
+      continue;
+    }
+    try {
       writeFileSync(
-        file,
+        handle,
         `${JSON.stringify(await draft(String(plan), name), null, 2)}\n`
       );
-      console.log(`DRAFT ${name}`);
+    } finally {
+      closeSync(handle);
     }
+    console.log(`DRAFT ${name}`);
   }
 };
 
