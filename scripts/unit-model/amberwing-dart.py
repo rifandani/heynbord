@@ -22,7 +22,7 @@ import os
 import sys
 
 import bpy
-from mathutils import Vector
+from mathutils import Matrix, Vector
 
 REPO = os.environ.get("HEYNBORD_REPO") or os.path.abspath(
     os.path.join(os.path.dirname(__file__), "..", "..")
@@ -49,24 +49,24 @@ plan = body_plans.BODY_PLANS["flyer"]
 
 # --- Palette (the card painting) ----------------------------------------------
 
-BODY = hex_color("#6f8a3a")
-BODY_DARK = hex_color("#4a6128")
-BODY_LIGHT = hex_color("#9cb455")
+BODY = hex_color("#ac9a52")
+BODY_DARK = hex_color("#6c643b")
+BODY_LIGHT = hex_color("#c5b76d")
 AMBER = hex_color("#e8a83a")
 AMBER_LIGHT = hex_color("#f6cf62")
 EYE = hex_color("#f0a52e")
 EYE_DARK = hex_color("#8a4a14")
-WING = hex_color("#d9c45a")
+WING = hex_color("#d9c45c")
 WING_EDGE = hex_color("#e89a34")
 WING_VEIN = hex_color("#8a6a26")
 WING_GREEN = hex_color("#b8c060")
 REPAIR = hex_color("#f2e6c4")
 BARK = hex_color("#6b4a2a")
 BARK_DARK = hex_color("#4a321c")
-VINE = hex_color("#5d6e2c")
-VINE_DARK = hex_color("#3f4c1e")
-LEAF = hex_color("#7da040")
-LEAF_LIGHT = hex_color("#a8c45a")
+VINE = hex_color("#c1a85f")
+VINE_DARK = hex_color("#a58b47")
+LEAF = hex_color("#909973")
+LEAF_LIGHT = hex_color("#bfb166")
 POISON = hex_color("#9ee04a")
 
 # --- Proportions ---------------------------------------------------------------
@@ -87,12 +87,30 @@ TAIL = [Vector((0, 0.05, 0.55)), Vector((0, 0.16, 0.54)), Vector((0, 0.27, 0.515
 # The wings: a root on the thorax, a length and a width, and the direction
 # of the wing (out, a little back and up).
 WINGS = {
-    "FL": (Vector((0.03, -0.02, 0.6)), Vector((1, 0.08, 0.16)), 0.36, 0.05),
-    "FR": (Vector((-0.03, -0.02, 0.6)), Vector((-1, 0.08, 0.16)), 0.36, 0.05),
-    "BL": (Vector((0.03, 0.035, 0.595)), Vector((1, 0.3, 0.12)), 0.32, 0.056),
-    "BR": (Vector((-0.03, 0.035, 0.595)), Vector((-1, 0.3, 0.12)), 0.32, 0.056),
+    "FL": (Vector((0.03, -0.02, 0.6)), Vector((1, 0.08, 0.16)), 0.36, 0.075),
+    "FR": (Vector((-0.03, -0.02, 0.6)), Vector((-1, 0.08, 0.16)), 0.36, 0.075),
+    "BL": (Vector((0.03, 0.035, 0.595)), Vector((1, 0.3, 0.12)), 0.32, 0.07),
+    "BR": (Vector((-0.03, 0.035, 0.595)), Vector((-1, 0.3, 0.12)), 0.32, 0.07),
 }
 
+
+
+def fixed_tube(bm, points, radii, sides):
+    """A tube with a fixed frame axis, so a bend does not turn its rings."""
+    points = [Vector(point) for point in points]
+    rings = []
+    for index, point in enumerate(points):
+        axis = (points[min(index + 1, len(points) - 1)] - points[max(index - 1, 0)]).normalized()
+        side = axis.cross(X).normalized()
+        up = side.cross(axis).normalized()
+        rings.append([bm.verts.new(point + radii[index] * (side * math.cos(2 * math.pi * step / sides) + up * math.sin(2 * math.pi * step / sides))) for step in range(sides)])
+    for first, second in zip(rings, rings[1:]):
+        for step in range(sides):
+            following = (step + 1) % sides
+            bm.faces.new((first[step], second[step], second[following], first[following]))
+    bm.faces.new(rings[0])
+    bm.faces.new(list(reversed(rings[-1])))
+    return [vertex for ring in rings for vertex in ring]
 
 
 def vine_path(s):
@@ -256,8 +274,15 @@ def body_parts():
 
 def wing_part(name, root, direction, length, width):
     """A leaf wing: two thin layers with a vein down the middle and amber edges."""
+    # Build the same left wing frame on both sides, then reflect the right.
+    mirrored = direction.x < 0
+    if mirrored:
+        root = Vector((-root.x, root.y, root.z))
+        direction = Vector((-direction.x, direction.y, direction.z))
     direction = direction.normalized()
-    across = (Vector((0, -1, 0)) - direction * direction.dot(Vector((0, -1, 0)))).normalized()
+    # The membranes turn toward front and back, rather than showing only an edge.
+    spread = Vector((0, -0.45, 1))
+    across = (spread - direction * direction.dot(spread)).normalized()
     normal = direction.cross(across).normalized()
     if normal.z < 0:
         normal = -normal
@@ -313,6 +338,9 @@ def wing_part(name, root, direction, length, width):
             for a, b in ((middle - span_u, middle + span_u), (middle - span_v, middle + span_v)):
                 twig = kit.tube(part.bm, [a + normal * offset, b + normal * offset], [0.0022, 0.0022], 3)
                 part.paint(faces_of(twig), BARK)
+    if mirrored:
+        kit.bmesh.ops.transform(part.bm, matrix=Matrix.Diagonal((-1, 1, 1, 1)), verts=list(part.bm.verts))
+        kit.bmesh.ops.reverse_faces(part.bm, faces=list(part.bm.faces))
     return part
 
 
@@ -322,7 +350,7 @@ def vine_part(name, curve, points, names, radius, ground):
     steps = 18
     path = [curve(step / steps) for step in range(steps + 1)]
     radii = [lerp(radius, radius * 0.45, step / steps) for step in range(steps + 1)]
-    verts = kit.tube(part.bm, path, radii, 5)
+    verts = fixed_tube(part.bm, path, radii, 5)
     for face in faces_of(verts):
         if int(face.calc_center_median().z * 70) % 3 == 0:
             part.paint([face], VINE_DARK)
@@ -331,9 +359,18 @@ def vine_part(name, curve, points, names, radius, ground):
         out = (b - a).cross(Z if index % 4 else X).normalized()
         thorn = kit.cone(part.bm, a, a + out * radius * 2.2 + (b - a).normalized() * 0.006, radius * 0.5, 0.001, 4)
         part.paint(faces_of(thorn), BARK)
-    for index in (3, 7, 11, 15):
-        out = Vector((math.cos(index), math.sin(index), 0.3))
-        leaf(part, path[index], out, 0.045, 0.016, LEAF if index % 2 else LEAF_LIGHT)
+    # Leaves present their broad faces on both sides of the trailing vine.
+    for index in range(2, steps):
+        sign = 1 if index % 2 else -1
+        base = path[index]
+        direction = Vector((sign * 0.8, 0, -0.4)).normalized()
+        across = Vector((-direction.z, 0, direction.x))
+        front, back = [], []
+        for along, width in ((0, 0.001), (0.024, 0.014), (0.055, 0.001)):
+            center = base + direction * along
+            front.append([center + across * width * side - Y * 0.002 for side in (-1, 1)])
+            back.append([center + across * width * side + Y * 0.002 for side in (-1, 1)])
+        kit.panel(part, front, back, lambda side, row, column: LEAF_LIGHT if index % 3 else LEAF)
     if ground:
         # A curl at the foot of the vine, on the ground.
         kit.torus(part.bm, path[-1] + Vector((0, 0, 0.004)), (0, 0, 1), 0.02, radius * 0.45, 8, 3)
@@ -345,7 +382,7 @@ def build_figure():
     rig, _ = plan.build_rig("AmberwingDart", TABLE, TRUNK_BONES, STAND_BONES)
     parts = body_parts()
     parts += [wing_part(name, *spec) for name, spec in WINGS.items()]
-    parts.append(vine_part("vine", vine_path, VINE_POINTS, ["vine", "vine.2", "vine.3"], 0.011, True))
+    parts.append(vine_part("vine", vine_path, VINE_POINTS, ["vine", "vine.2", "vine.3"], 0.018, True))
     parts.append(vine_part("tendril", tendril_path, TENDRIL_POINTS, ["tendril", "tendril.2", "tendril.3"], 0.007, False))
     objects = [kit.part_object(part) for part in parts]
     plan.check_skin(parts, rig)

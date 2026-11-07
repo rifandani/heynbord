@@ -22,11 +22,11 @@ The scope has 65 units. The lists come from the surveys in `../body_plans/README
 | `biped-large` | Needs pole bones | 6 | ashspit-hunter, cinderhorn-breaker, ember-shaman, pyreaxe-ravager, scrap-raider, skyreaver |
 | None | Cannot move | 1 | cave-troll: its body bends forward, and the table does not have these values |
 
-Fuse Runner and Tusk Brute are on their plans, but they have no Unit Spec yet.
+Fuse Runner and Tusk Brute are on their plans and now have Unit Specs. Elderreed Dartmaster also has a Unit Spec for its current rig. Its pole bones still block a move to the shared builder. All three have approved Turnarounds and pass all 11 Review Gates. See the [Unit Spec fix record](../../../artifacts/unit-model-review/specs-pass.md).
 
 ## What stops the Migration
 
-1. **Turnarounds.** The definition of done needs an approved Turnaround for each unit. In this scope, 6 of 65 units have one: warden-saelith and the 5 units of Batch 1. An external image model made the images, and a person approved them, so an agent cannot do this step. With no Turnaround, `interior-difference` gives an error, and an error is not a pass. So the Unit Model Review fails for each of the other 59 units. The prompts are in `apps/web/art/units/raw/turnaround/<name>/prompts.md`.
+1. **Turnarounds.** The definition of done needs an approved Turnaround for each unit. In this scope, 9 of 65 units have one: warden-saelith, the 5 units of Batch 1, fuse-runner, tusk-brute and elderreed-dartmaster. An external image model made the images, and a person approved them, so an agent cannot do this step. With no Turnaround, `interior-difference` gives an error, and an error is not a pass. So the Unit Model Review fails for each of the other 56 units. The prompts are in `apps/web/art/units/raw/turnaround/<name>/prompts.md`.
 2. **Pole bones.** 24 units need pole bones that `add_arm_ik` does not make. Add these to `body_plans/biped.py` before these units move.
 3. **One head of Batch 1.** bomb-lobber now passes `interior-difference` with a new head, but no person has seen that head. See "What a person must check".
 

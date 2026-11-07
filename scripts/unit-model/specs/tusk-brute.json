@@ -1,0 +1,145 @@
+{
+  "id": "tusk-brute",
+  "bodyPlan": "biped-large",
+  "height": 1.0019999372337798,
+  "palette": {
+    "cloth": "#9e3024",
+    "cloth_dark": "#661c16",
+    "eyes": "#1b120c",
+    "fur": "#b1906c",
+    "fur_dark": "#76644a",
+    "hair": "#3a2618",
+    "hair_dark": "#22160e",
+    "iron": "#6f5650",
+    "iron_dark": "#43342f",
+    "leather": "#6a4228",
+    "leather_dark": "#3e2818",
+    "mouth": "#4a1612",
+    "rust": "#8a4e30",
+    "skin": "#b68c50",
+    "skin_dark": "#767c32",
+    "tusk": "#f2e8ca",
+    "tusk_dark": "#c4b690",
+    "wood": "#8c6440",
+    "wood_dark": "#5e4028",
+    "wood_light": "#c4a070"
+  },
+  "parts": [
+    "head",
+    "face",
+    "jaw",
+    "hair",
+    "neck",
+    "torso",
+    "top",
+    "cloth.F",
+    "cloth.B",
+    "arm.L",
+    "plate.L",
+    "forearm.L",
+    "bracer.L",
+    "hand.L",
+    "thigh.L",
+    "shin.L",
+    "boot.L",
+    "arm.R",
+    "plate.R",
+    "forearm.R",
+    "bracer.R",
+    "hand.R",
+    "thigh.R",
+    "shin.R",
+    "boot.R",
+    "club",
+    "door",
+    "bracer.spikes"
+  ],
+  "props": [
+    {
+      "id": "club",
+      "hand": "right",
+      "cameraSide": true,
+      "bone": "hand.R"
+    },
+    {
+      "id": "door",
+      "hand": "none",
+      "cameraSide": false,
+      "bone": "door"
+    }
+  ],
+  "clips": {
+    "idle": {
+      "override": "roar"
+    },
+    "lowHp": {},
+    "walk": {
+      "override": "heavy-stomp"
+    },
+    "attack": {
+      "override": "club-smash"
+    },
+    "hurt": {},
+    "death": {
+      "override": "slow-fall"
+    },
+    "rebirth": {},
+    "summon": {}
+  },
+  "details": [
+    "large muscular orc woman with long tusks",
+    "rough iron shoulder plates and leather top",
+    "fur belt and torn red cloth",
+    "large wooden club in the right hand",
+    "broken wooden door across the upper back"
+  ],
+  "regions": {
+    "arm.L": {
+      "x0": 0.69,
+      "x1": 0.96,
+      "y0": 0.06,
+      "y1": 0.59
+    },
+    "arm.R": {
+      "x0": 0.02,
+      "x1": 0.35,
+      "y0": 0.06,
+      "y1": 0.59
+    },
+    "head": {
+      "x0": 0.34,
+      "x1": 0.7,
+      "y0": 0,
+      "y1": 0.32
+    },
+    "leg.L": {
+      "x0": 0.53,
+      "x1": 0.76,
+      "y0": 0.48,
+      "y1": 1
+    },
+    "leg.R": {
+      "x0": 0.28,
+      "x1": 0.51,
+      "y0": 0.48,
+      "y1": 1
+    },
+    "prop": {
+      "x0": 0,
+      "x1": 0.27,
+      "y0": 0.47,
+      "y1": 1
+    },
+    "torso": {
+      "x0": 0.07,
+      "x1": 1,
+      "y0": 0.03,
+      "y1": 0.7
+    }
+  },
+  "identity": {
+    "feature": "large tusks and wooden club",
+    "azimuthDegrees": 315
+  },
+  "holedParts": ["body", "door"]
+}

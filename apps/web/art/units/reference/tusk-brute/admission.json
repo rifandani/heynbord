@@ -1,0 +1,32 @@
+{
+  "id": "tusk-brute",
+  "passed": true,
+  "problems": [],
+  "measures": {
+    "front": {
+      "backgroundEdge": 0.982,
+      "offPalette": 0.08,
+      "fill": 0.935
+    },
+    "three-quarter": {
+      "backgroundEdge": 0.968,
+      "offPalette": 0.074,
+      "fill": 0.95
+    },
+    "side": {
+      "backgroundEdge": 0.948,
+      "offPalette": 0.071,
+      "fill": 0.97
+    },
+    "back": {
+      "backgroundEdge": 0.98,
+      "offPalette": 0.079,
+      "fill": 0.945
+    },
+    "details": {
+      "backgroundEdge": 0.744,
+      "offPalette": 0.076,
+      "fill": 0.97
+    }
+  }
+}

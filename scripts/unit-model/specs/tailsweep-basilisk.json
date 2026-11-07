@@ -1,0 +1,87 @@
+{
+  "id": "tailsweep-basilisk",
+  "bodyPlan": "quadruped",
+  "height": 0.6667906502928611,
+  "palette": {
+    "belly": "#e4c58e",
+    "claw": "#2e2a26",
+    "club": "#8a6a44",
+    "club_dark": "#5a4028",
+    "eye": "#e39b42",
+    "mouth": "#6a2a24",
+    "pupil": "#1a1208",
+    "scale": "#c1925a",
+    "scale_dark": "#6e4e2c",
+    "scale_light": "#d2b07a",
+    "spike": "#6a4a2a",
+    "spike_tip": "#d8c49a"
+  },
+  "parts": [
+    "body",
+    "ridge",
+    "tail",
+    "club",
+    "head",
+    "jaw",
+    "upper.FL",
+    "lower.FL",
+    "foot.FL",
+    "upper.FR",
+    "lower.FR",
+    "foot.FR",
+    "upper.BL",
+    "lower.BL",
+    "foot.BL",
+    "upper.BR",
+    "lower.BR",
+    "foot.BR",
+    "neck.core"
+  ],
+  "props": [],
+  "clips": {
+    "idle": {},
+    "lowHp": {},
+    "walk": {},
+    "attack": {},
+    "hurt": {},
+    "death": {},
+    "summon": {}
+  },
+  "details": [
+    "long low body with sandy scales and dark bands",
+    "pale belly and a ridge of back spikes",
+    "short horn crown and half-closed yellow eyes",
+    "four legs spread to the sides with dark claws",
+    "long curved tail with a heavy spiked club"
+  ],
+  "regions": {
+    "head": {
+      "x0": 0.32,
+      "x1": 0.68,
+      "y0": 0.5,
+      "y1": 0.74
+    },
+    "leg.L": {
+      "x0": 0.61,
+      "x1": 1,
+      "y0": 0.6,
+      "y1": 1
+    },
+    "leg.R": {
+      "x0": 0,
+      "x1": 0.39,
+      "y0": 0.6,
+      "y1": 1
+    },
+    "torso": {
+      "x0": 0.25,
+      "x1": 0.75,
+      "y0": 0,
+      "y1": 0.83
+    }
+  },
+  "identity": {
+    "feature": "heavy spiked club at the end of the tail",
+    "azimuthDegrees": 150
+  }
+}

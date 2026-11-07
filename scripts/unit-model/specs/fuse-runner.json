@@ -1,0 +1,158 @@
+{
+  "id": "fuse-runner",
+  "bodyPlan": "biped-small",
+  "height": 0.7250000444782899,
+  "palette": {
+    "bomb": "#2e2a28",
+    "bomb_light": "#4e4844",
+    "brass": "#d0a048",
+    "brass_dark": "#93692a",
+    "ear": "#e4a08a",
+    "eyes": "#f2a846",
+    "fire": "#ffb048",
+    "fire_dark": "#d2762a",
+    "fire_hot": "#ffeca0",
+    "fuse": "#c8b88a",
+    "hair": "#fff4e4",
+    "hair_dark": "#b99f87",
+    "leather": "#7a4a2a",
+    "leather_dark": "#4a2c1a",
+    "lens": "#65584a",
+    "mouth": "#4a1e1a",
+    "nose": "#d88e7e",
+    "pupil": "#1d140e",
+    "rust": "#7a5236",
+    "scarf": "#3c4a64",
+    "scarf_light": "#dcc49a",
+    "shirt": "#ccb092",
+    "shirt_dark": "#b19474",
+    "skin": "#c0b0a7",
+    "skin_dark": "#8a867e",
+    "smoke": "#7c726c",
+    "soot": "#6a6662",
+    "spark": "#ffbb50",
+    "spark_hot": "#b8f048",
+    "teeth": "#ece2c4",
+    "trousers": "#6e5640",
+    "trousers_dark": "#4c3a2a",
+    "wrap": "#8a6038"
+  },
+  "parts": [
+    "head",
+    "face",
+    "hair",
+    "goggles",
+    "neck",
+    "shirt",
+    "scarf",
+    "belt",
+    "hips",
+    "upperarm.L",
+    "forearm.L",
+    "hand.L",
+    "thigh.L",
+    "shin.L",
+    "foot.L",
+    "upperarm.R",
+    "forearm.R",
+    "hand.R",
+    "thigh.R",
+    "shin.R",
+    "foot.R",
+    "bomb",
+    "spark",
+    "blast"
+  ],
+  "props": [
+    {
+      "id": "bomb",
+      "hand": "none",
+      "cameraSide": false,
+      "bone": "bomb"
+    }
+  ],
+  "clips": {
+    "idle": {
+      "override": "spark-flicker"
+    },
+    "lowHp": {
+      "override": "short-fuse"
+    },
+    "walk": {
+      "override": "swift-stride"
+    },
+    "attack": {
+      "override": "bomb-bonk"
+    },
+    "hurt": {},
+    "death": {
+      "override": "last-breath-blast"
+    },
+    "rebirth": {
+      "override": "fuse-out"
+    },
+    "summon": {}
+  },
+  "details": [
+    "thin grey goblin with large ears and white hair",
+    "round black bomb held in both arms",
+    "short lit fuse with green sparks",
+    "soot on the face and brass goggles",
+    "long blue and cream striped scarf"
+  ],
+  "regions": {
+    "arm.L": {
+      "x0": 0.71,
+      "x1": 0.88,
+      "y0": 0.3,
+      "y1": 0.55
+    },
+    "arm.R": {
+      "x0": 0.35,
+      "x1": 0.52,
+      "y0": 0.3,
+      "y1": 0.55
+    },
+    "effect": {
+      "x0": 0.42,
+      "x1": 0.82,
+      "y0": 0.27,
+      "y1": 0.58
+    },
+    "head": {
+      "x0": 0.24,
+      "x1": 1,
+      "y0": 0,
+      "y1": 0.36
+    },
+    "leg.L": {
+      "x0": 0.63,
+      "x1": 0.76,
+      "y0": 0.57,
+      "y1": 1
+    },
+    "leg.R": {
+      "x0": 0.48,
+      "x1": 0.6,
+      "y0": 0.57,
+      "y1": 1
+    },
+    "prop": {
+      "x0": 0.45,
+      "x1": 0.79,
+      "y0": 0.31,
+      "y1": 0.6
+    },
+    "torso": {
+      "x0": 0,
+      "x1": 0.75,
+      "y0": 0.29,
+      "y1": 0.7
+    }
+  },
+  "identity": {
+    "feature": "round black bomb and short lit fuse",
+    "azimuthDegrees": 315
+  },
+  "holedParts": ["body", "goggles"]
+}

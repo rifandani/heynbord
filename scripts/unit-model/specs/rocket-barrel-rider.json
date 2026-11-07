@@ -6,7 +6,7 @@
     "barrel": "#b2402c",
     "barrel_dark": "#923424",
     "blast": "#ffb838",
-    "blast_dark": "#e05418",
+    "blast_dark": "#ea6f2d",
     "boot": "#5e3a22",
     "brass": "#d0a048",
     "brass_dark": "#93692a",
@@ -20,7 +20,7 @@
     "glove": "#7a4a2a",
     "hair": "#f0eadc",
     "hair_dark": "#d4ccb8",
-    "iron": "#4a4440",
+    "iron": "#4c403c",
     "iron_dark": "#2e2a28",
     "jacket": "#6e4a30",
     "jacket_dark": "#4e3220",
@@ -32,7 +32,7 @@
     "scarf_dark": "#86221c",
     "shirt": "#d8ccb0",
     "shut": "#2a1a14",
-    "skin": "#c4bfb4",
+    "skin": "#c6b6ab",
     "smoke": "#6a6058",
     "star": "#f0e4cc",
     "teeth": "#f4eedc",
@@ -144,5 +144,5 @@
     "feature": "red powder barrel with a white star",
     "azimuthDegrees": 0
   },
-  "holedParts": ["cap"]
+  "holedParts": ["cap", "body", "scarf"]
 }

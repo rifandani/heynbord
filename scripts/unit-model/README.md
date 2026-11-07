@@ -2,7 +2,7 @@
 
 ## Unit Specs
 
-The specs are in `specs/`: the three pilots Warden Saelith, Crag Rhino and Bone Rampart, Amberwing Dart, and the units that have moved in a Migration. `migrations/humanoids.md` lists these units. Check them with Python 3.11 or later. Blender and Python packages are not required.
+The specs are in `specs/`: the three pilots Warden Saelith, Crag Rhino and Bone Rampart, Amberwing Dart, the units that have moved in a Migration, and Rimebreath Drake, Fuse Runner, Elderreed Dartmaster, Tailsweep Basilisk and Tusk Brute. `migrations/humanoids.md` lists these units. Check them with Python 3.11 or later. Blender and Python packages are not required.
 
 ```sh
 rtk bun unit-model:spec:check
@@ -199,7 +199,7 @@ CI does not build a model. A build on Linux gives other float values, about 1e-7
 
 CI does not find a Raw Export that is older than its build script. The Published Model then does not change either, so the game does not get the change.
 
-A unit with its own change and no Unit Spec fails, because it has no Review Scene. A new pack of such a unit also fails. A unit with a Unit Spec but no `regions` fails, because `region-coverage` gives an error. Warden Saelith and the 6 units of the [gate fix record](../../artifacts/unit-model-review/gates-pass.md) pass all the gates now. The units of `migrations/humanoids.md` pass all the Review Gates except `interior-difference`, because they have no Turnaround, so they fail this job. Each other unit needs its Migration before a pull request can change it.
+A unit with its own change and no Unit Spec fails, because it has no Review Scene. A new pack of such a unit also fails. A unit with a Unit Spec but no `regions` fails, because `region-coverage` gives an error. Warden Saelith and the 6 units of the [gate fix record](../../artifacts/unit-model-review/gates-pass.md) pass all the gates now. The five units of humanoid Batch 1 also pass all 11 Review Gates. Rimebreath Drake, Fuse Runner, Elderreed Dartmaster, Tailsweep Basilisk and Tusk Brute now have Unit Specs and approved Turnarounds, and they pass all 11 Review Gates: see the [Unit Spec fix record](../../artifacts/unit-model-review/specs-pass.md). Amberwing Dart and the four machines also pass all 11: see the [machine gate fix record](../../artifacts/unit-model-review/machines-pass.md). Each other unit needs its Migration before a pull request can change it.
 
 ## Warden Saelith rebuild
 
@@ -240,6 +240,6 @@ Issue #186 starts with Crag Rhino, Gorehorn Red Maw, Old Frostmaw, Woolly Mammot
 
 ## Machine and Structure Migration
 
-Issue #187 starts with the four machines and Bone Rampart. Boss Snikkit, Junk Walker and Rocket Barrel Rider moved to the `machine` plan, and `bun unit-model:contract:check` passed after each move. Then their defect fixes changed some clips and the bones of Boss Snikkit, as the report records. Grand Gearjammer got a Unit Spec. The [batch report](../../artifacts/unit-model-review/migration-machines-structures/report.md) has the inventory, the before and after gates, the intentional clip changes and the reason that the batch stops: `palette` fails on all five units, and the four machines have no Turnaround. Bone Rampart now passes the Review Gates on a local run: see the [gate fix record](../../artifacts/unit-model-review/gates-pass.md). The four machines still have no Turnaround.
+Issue #187 starts with the four machines and Bone Rampart. Boss Snikkit, Junk Walker and Rocket Barrel Rider moved to the `machine` plan, and `bun unit-model:contract:check` passed after each move. Then their defect fixes changed some clips and the bones of Boss Snikkit, as the report records. Grand Gearjammer got a Unit Spec. The [batch report](../../artifacts/unit-model-review/migration-machines-structures/report.md) has the inventory, the before and after gates, the intentional clip changes and the reason that the batch stops: `palette` fails on all five units, and the four machines have no Turnaround. Bone Rampart now passes the Review Gates on a local run: see the [gate fix record](../../artifacts/unit-model-review/gates-pass.md). The [machine gate fix record](../../artifacts/unit-model-review/machines-pass.md) has the later fixes for Amberwing Dart and the four machines. Their Turnarounds are approved, and each unit now passes all 11 Review Gates on a local run.
 
 `attachment-anchor` measures from the bone to the nearest point on the triangles of the prop, not to the nearest vertex. A long pole has vertices at its ends only, so the old measure failed a banner held at its middle.

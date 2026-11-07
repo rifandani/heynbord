@@ -50,23 +50,23 @@ plan = body_plans.BODY_PLANS["machine"]
 
 # --- Palette (the card painting) ----------------------------------------------
 
-IRON = hex_color("#54463c")
-IRON_DARK = hex_color("#342c28")
+IRON = hex_color("#59493e")
+IRON_DARK = hex_color("#2c1e18")
 RUST = hex_color("#8a5232")
-BRASS = hex_color("#d4a24a")
-BRASS_DARK = hex_color("#94692a")
-GOLD = hex_color("#f0c24a")
-GOLD_DARK = hex_color("#b58a2a")
+BRASS = hex_color("#e4a75a")
+BRASS_DARK = hex_color("#97642a")
+GOLD = hex_color("#f7c15c")
+GOLD_DARK = hex_color("#c28943")
 RUBY = hex_color("#c4202a")
 EMERALD = hex_color("#2aa860")
-BOMB = hex_color("#2e2a2c")
+BOMB = hex_color("#241a1c")
 FUSE = hex_color("#c8a878")
 SPARK = hex_color("#ffb43a")
-SKIN = hex_color("#9aa46a")
-SKIN_DARK = hex_color("#727c46")
+SKIN = hex_color("#c9a68b")
+SKIN_DARK = hex_color("#90735a")
 EAR = hex_color("#e0a08e")
 BEARD = hex_color("#efece4")
-BEARD_DARK = hex_color("#c4bfb2")
+BEARD_DARK = hex_color("#a9987b")
 EYES = hex_color("#f4e2a6")
 PUPIL = hex_color("#1d140e")
 MOUTH = hex_color("#4a1e1c")
@@ -78,7 +78,7 @@ GLASS = hex_color("#f2c46a")
 SAND = hex_color("#c4823a")
 FLAME = hex_color("#ffa22b")
 FLAME_CORE = hex_color("#ffe7a0")
-EMBER = hex_color("#ff5e1a")
+EMBER = hex_color("#ec692a")
 
 # --- Proportions ---------------------------------------------------------------
 
@@ -149,21 +149,21 @@ PROP_BONES = [
 def cart_parts():
     parts = []
     cart = Part("cart", IRON, "cart", shade=0.14)
-    # The tapered box: four walls and a floor, from quads between the corners.
+    # Each iron wall is a closed plate. The plates overlap at the corners.
+    # A single hollow shell has concave floor corners with no outward hemisphere.
     corners = [(-1, -1), (1, -1), (1, 1), (-1, 1)]
-    bottom = [cart.bm.verts.new(cart_point(u, v, 0)) for u, v in corners]
-    top = [cart.bm.verts.new(cart_point(u, v, 1)) for u, v in corners]
-    inner = [cart.bm.verts.new(cart_point(u * 0.9, v * 0.92, 1) - Vector((0, 0, 0.0))) for u, v in corners]
-    floor_in = [cart.bm.verts.new(cart_point(u * 0.88, v * 0.9, 0.15)) for u, v in corners]
-    cart.bm.faces.new(list(reversed(bottom)))
-    for i in range(4):
-        n = (i + 1) % 4
-        cart.bm.faces.new((bottom[i], bottom[n], top[n], top[i]))
-        rim = cart.bm.faces.new((top[i], top[n], inner[n], inner[i]))
-        cart.paint([rim], IRON_DARK)
-        wall = cart.bm.faces.new((inner[i], inner[n], floor_in[n], floor_in[i]))
-        cart.paint([wall], IRON_DARK)
-    cart.bm.faces.new(floor_in)
+    kit.box(cart.bm, (0, 0, 0.13), (0.3, 0.4, 0.04))
+    for index, (u, v) in enumerate(corners):
+        u2, v2 = corners[(index + 1) % 4]
+        along = Vector((u2 - u, v2 - v, 0)).normalized() * 0.002
+        outer = [cart_point(u, v, 0) - along, cart_point(u2, v2, 0) + along,
+                 cart_point(u2, v2, 1) + along, cart_point(u, v, 1) - along]
+        inward = Vector((-(u + u2), -(v + v2), 0)).normalized() * 0.018
+        vertices = [cart.bm.verts.new(point) for point in outer + [point + inward for point in outer]]
+        for face_indices in ((0, 1, 2, 3), (7, 6, 5, 4), (0, 4, 5, 1), (1, 5, 6, 2), (2, 6, 7, 3), (3, 7, 4, 0)):
+            face = cart.bm.faces.new([vertices[i] for i in face_indices])
+            if face_indices != (0, 1, 2, 3):
+                cart.paint([face], IRON_DARK)
     kit.bmesh.ops.recalc_face_normals(cart.bm, faces=list(cart.bm.faces))
     # Brass straps at the corners and across the walls, with rivets.
     for u, v in corners:
@@ -173,8 +173,10 @@ def cart_parts():
         for u, v, u2, v2 in ((-1, -1, -1, 1), (1, -1, 1, 1), (-1, -1, 1, -1), (-1, 1, 1, 1)):
             band = kit.tube(cart.bm, [cart_point(u, v, w) * 1.0 + Vector((0.006 * u, 0.006 * v, 0)), cart_point(u2, v2, w) + Vector((0.006 * u2, 0.006 * v2, 0))], [0.007, 0.007], 4)
             cart.paint(faces_of(band), BRASS_DARK if w < 0.5 else RUST)
-    rim = kit.tube(cart.bm, [cart_point(u, v, 1.0) for u, v in corners + corners[:1]], [0.014] * 5, 4)
-    cart.paint(faces_of(rim), BRASS)
+    # Separate straight bars keep the corner rings from turning into each other.
+    for (u, v), (u2, v2) in zip(corners, corners[1:] + corners[:1]):
+        rim = kit.cone(cart.bm, cart_point(u, v, 1.0), cart_point(u2, v2, 1.0), 0.014, 0.014, 4)
+        cart.paint(faces_of(rim), BRASS)
     # The gold crown on the front wall.
     front = cart_point(0, -1, 0.55) + Vector((0, -0.012, 0))
     crown = set(kit.box(cart.bm, front + Vector((0, 0, -0.03)), (0.1, 0.012, 0.03)))
@@ -211,7 +213,7 @@ def cart_parts():
             line = []
             for column in range(columns + 1):
                 u = lerp(-1, 1, column / columns)
-                torn = 0.04 * v * (((column * 7) % 5) / 4) if row == rows else 0.0
+                torn = 0.025 * v * (((column * 7) % 5) / 4) if row == rows else 0.0
                 base = cart_point(-1, u * 0.6, lerp(1.0, 0.25, v))
                 line.append((base.x - 0.012 - offset, base.y, base.z + torn))
             result.append(line)
@@ -289,9 +291,17 @@ def boss_parts():
     head.paint(faces_of(teeth), TEETH)
     parts.append(head)
 
-    beard = Part("beard", BEARD, "head", shade=0.12)
+    beard = Part("beard", BEARD_DARK, "head", shade=0.12)
     # A long white beard from the cheeks, down over the chest.
-    kit.cone(beard.bm, c + Vector((0, -0.04, -0.045)), c + Vector((0, -0.09, -0.2)), 0.06, 0.008, 8, squash=0.6)
+    # Separate shaded locks replace the flat white beard panel.
+    for index in range(3):
+        x = (index - 1) * 0.032
+        root = c + Vector((x, -0.05, -0.045))
+        tip = c + Vector((x * 0.7, -0.09, -0.2 + abs(index - 1) * 0.025))
+        lock = kit.cone(beard.bm, root, tip, 0.027, 0.004, 7, squash=0.7)
+        beard.paint([face for face in faces_of(lock) if face.normal.x < -0.4], BEARD)
+        cuff = kit.cone(beard.bm, root.lerp(tip, 0.65), root.lerp(tip, 0.71), 0.014, 0.012, 7)
+        beard.paint(faces_of(cuff), GOLD_DARK)
     for sign in (1, -1):
         strand = kit.cone(beard.bm, c + Vector((0.05 * sign, -0.03, -0.03)), c + Vector((0.07 * sign, -0.07, -0.17)), 0.03, 0.004, 6, squash=0.6)
         beard.paint(faces_of(strand), BEARD_DARK)
@@ -302,14 +312,17 @@ def boss_parts():
     # The tall gold crown with gems.
     crown = Part("crown", GOLD, "head", shade=0.08)
     band_c = c + Vector((0, 0.005, 0.045))
-    kit.cone(crown.bm, band_c, band_c + Vector((0, 0, 0.05)), 0.07, 0.08, 12)
+    band = kit.cone(crown.bm, band_c, band_c + Vector((0, 0, 0.105)), 0.07, 0.08, 12)
+    # Dark brass on the back gives the crown the metal shade of the card.
+    crown.paint([face for face in faces_of(band) if face.normal.y > 0.2], GOLD_DARK)
     for index in range(8):
         a = 2 * math.pi * index / 8
         out = Vector((math.sin(a), -math.cos(a), 0))
-        base = band_c + out * 0.074 + Vector((0, 0, 0.045))
-        height = 0.1 if index % 2 == 0 else 0.07
+        base = band_c + out * 0.074 + Vector((0, 0, 0.1))
+        height = 0.18 if index % 2 == 0 else 0.14
         point = kit.cone(crown.bm, base, base + out * 0.03 + Vector((0, 0, height)), 0.024, 0.003, 4)
-        crown.paint(faces_of(point), GOLD if index % 2 == 0 else GOLD_DARK)
+        for face in faces_of(point):
+            crown.paint([face], GOLD_DARK if face.normal.y > 0.2 else (GOLD if index % 2 == 0 else GOLD_DARK))
         knob = kit.sphere(crown.bm, base + out * 0.031 + Vector((0, 0, height + 0.006)), (0.009, 0.009, 0.009), 5, 3)
         crown.paint(faces_of(knob), GOLD)
     for index, (angle, gem) in enumerate(((0, RUBY), (45, EMERALD), (-45, EMERALD), (90, RUBY), (-90, RUBY))):

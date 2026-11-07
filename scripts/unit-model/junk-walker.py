@@ -53,18 +53,18 @@ plan = body_plans.BODY_PLANS["machine"]
 
 # --- Palette (the card painting) ----------------------------------------------
 
-BOILER = hex_color("#6e5646")
-BOILER_DARK = hex_color("#4a3a30")
+BOILER = hex_color("#6b5347")
+BOILER_DARK = hex_color("#57433b")
 RUST = hex_color("#8a5a34")
-BRASS = hex_color("#d2a046")
-BRASS_DARK = hex_color("#93692a")
-IRON = hex_color("#5a5650")
-IRON_DARK = hex_color("#3a3733")
+BRASS = hex_color("#e5ab61")
+BRASS_DARK = hex_color("#956325")
+IRON = hex_color("#715f58")
+IRON_DARK = hex_color("#33241b")
 GLOW = hex_color("#a8ff3e")
 GLOW_DARK = hex_color("#5fae22")
-RED = hex_color("#b0362c")
+RED = hex_color("#984b36")
 RED_DARK = hex_color("#7a221c")
-SKIN = hex_color("#b0aca2")
+SKIN = hex_color("#d6b89b")
 EAR = hex_color("#d89a92")
 HAIR = hex_color("#eeece6")
 EYES = hex_color("#f2c040")
@@ -74,7 +74,7 @@ TEETH = hex_color("#efe6cc")
 LENS = hex_color("#2c3a46")
 JACKET = hex_color("#6a4228")
 GAUGE = hex_color("#f2ead6")
-STEAM = hex_color("#e8e4dc")
+STEAM = hex_color("#fff3ea")
 
 # --- Proportions ---------------------------------------------------------------
 
@@ -105,9 +105,9 @@ WRIST = Vector((-0.28, -0.31, 0.4))
 JAW_TOP = WRIST + Vector((0, -0.13, 0.04))
 JAW_LOW = WRIST + Vector((0, -0.13, -0.05))
 
-CHIMNEY = Vector((-0.085, 0.17, 0.0))
+CHIMNEY = Vector((0.085, 0.17, 0.0))
 CHIMNEY_TOP = 0.9
-TANK = Vector((0.075, 0.175, 0.0))
+TANK = Vector((-0.105, 0.175, 0.0))
 LEAK = Vector((-0.17, 0.08, 0.4))
 PLATE_TOP = Vector((-0.185, 0.1, 0.62))
 
@@ -136,6 +136,27 @@ for side, sign in (("L", 1), ("R", -1)):
 TRUNK_BONES += plan.crew_bones("driver", DRIVER, DRIVER_SIZE, "body")
 
 # --- Parts ---------------------------------------------------------------------
+
+
+def fixed_tube(bm, points, radii, sides):
+    """A tube with a fixed frame axis, so a bend does not turn its rings."""
+    first, corner, last = [Vector(point) for point in points]
+    # A round bend keeps the return pipe from folding at the back of the tank.
+    points = [first.lerp(corner, step / 8).lerp(corner.lerp(last, step / 8), step / 8) for step in range(9)]
+    radii = [radii[0]] * len(points)
+    rings = []
+    for index, point in enumerate(points):
+        axis = (points[min(index + 1, len(points) - 1)] - points[max(index - 1, 0)]).normalized()
+        side = axis.cross(X).normalized()
+        up = side.cross(axis).normalized()
+        rings.append([bm.verts.new(point + radii[index] * (side * math.cos(2 * math.pi * step / sides) + up * math.sin(2 * math.pi * step / sides))) for step in range(sides)])
+    for first, second in zip(rings, rings[1:]):
+        for step in range(sides):
+            following = (step + 1) % sides
+            bm.faces.new((first[step], second[step], second[following], first[following]))
+    bm.faces.new(rings[0])
+    bm.faces.new(list(reversed(rings[-1])))
+    return [vertex for ring in rings for vertex in ring]
 
 
 def rivet(part, center, radius=0.008, color=BRASS):
@@ -226,8 +247,17 @@ def boiler_parts():
         back.paint(faces_of(bar), BRASS_DARK)
     glow = kit.cone(back.bm, TANK + Vector((0.02, -0.055, 0.46)), TANK + Vector((0.02, -0.058, 0.76)), 0.012, 0.012, 4)
     back.paint(faces_of(glow), GLOW_DARK)
-    cap = kit.cone(back.bm, TANK + Vector((0, 0, 0.81)), TANK + Vector((0, 0, 0.84)), 0.05, 0.02, 10)
+    cap = kit.cone(back.bm, TANK + Vector((0, 0, 0.81)), TANK + Vector((0, 0, 0.84)), 0.068, 0.068, 10)
     back.paint(faces_of(cap), BRASS_DARK)
+    # A broad riveted crown closes the tank, below its brass lip.
+    lip = kit.torus(back.bm, TANK + Vector((0, 0, 0.833)), Z, 0.064, 0.007, 12, 4)
+    back.paint(faces_of(lip), BRASS)
+    for index in range(8):
+        angle = 2 * math.pi * index / 8
+        rivet(back, TANK + Vector((0.069 * math.cos(angle), 0.069 * math.sin(angle), 0.824)), 0.006, IRON_DARK)
+    # The fluid tank rises above the driver, as in the approved views.
+    for vertex in back.bm.verts:
+        vertex.co.z = 0.42 + (vertex.co.z - 0.42) * 1.38
     # The chimney.
     kit.cone(back.bm, CHIMNEY + Vector((0, 0, 0.5)), CHIMNEY + Vector((0, 0, CHIMNEY_TOP - 0.03)), 0.03, 0.034, 8)
     top = kit.cone(back.bm, CHIMNEY + Vector((0, 0, CHIMNEY_TOP - 0.03)), CHIMNEY + Vector((0, 0, CHIMNEY_TOP)), 0.048, 0.044, 8)
@@ -236,9 +266,9 @@ def boiler_parts():
         ring = kit.torus(back.bm, CHIMNEY + Vector((0, 0, z)), (0, 0, 1), 0.034, 0.006, 8, 3)
         back.paint(faces_of(ring), BRASS_DARK)
     # Pipes that bend from the tank into the boiler.
-    pipe = kit.tube(back.bm, [TANK + Vector((0.05, -0.02, 0.7)), TANK + Vector((0.11, -0.06, 0.66)), Vector((0.19, -0.02, 0.56))], [0.014, 0.014, 0.014], 6)
+    pipe = fixed_tube(back.bm, [TANK + Vector((0.05, -0.02, 0.7)), TANK + Vector((0.11, -0.06, 0.66)), Vector((0.19, -0.02, 0.56))], [0.014, 0.014, 0.014], 6)
     back.paint(faces_of(pipe), BRASS)
-    pipe = kit.tube(back.bm, [TANK + Vector((0.02, 0.05, 0.45)), TANK + Vector((0.02, 0.09, 0.38)), Vector((0.05, 0.16, 0.36))], [0.012] * 3, 6)
+    pipe = fixed_tube(back.bm, [TANK + Vector((0.02, 0.05, 0.45)), TANK + Vector((0.02, 0.09, 0.38)), Vector((0.05, 0.16, 0.36))], [0.012] * 3, 6)
     back.paint(faces_of(pipe), BRASS_DARK)
     valve = kit.cone(back.bm, TANK + Vector((0.11, -0.06, 0.66)), TANK + Vector((0.11, -0.06, 0.7)), 0.02, 0.02, 6)
     back.paint(faces_of(valve), RED)
@@ -414,6 +444,10 @@ def driver_parts():
         out = side * math.sin(a) - look * math.cos(a)
         tuft = kit.cone(head.bm, head_c + Vector((0, 0, 0.035 * s)) + out * 0.025, head_c + Vector((0, 0, 0.05 * s)) + out * 0.075 * s, 0.018 * s, 0.002, 4)
         head.paint(faces_of(tuft), HAIR)
+    # A raised white forelock and side locks frame the goggles.
+    for offset, radius in (((0, 0, 0.065), 0.032), ((-0.022, 0.004, 0.085), 0.025), ((0.012, 0.006, 0.1), 0.018)):
+        lock = kit.sphere(head.bm, head_c + Vector(offset), (radius, radius * 0.85, radius * 0.9), 7, 5)
+        head.paint(faces_of(lock), HAIR)
     band = kit.torus(head.bm, head_c + Vector((0, 0, 0.028 * s)), (0, 0, 1), 0.052 * s, 0.006 * s, 12, 3)
     head.paint(faces_of(band), BRASS)
     for sign in (1, -1):

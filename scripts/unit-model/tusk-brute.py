@@ -55,9 +55,9 @@ plan = body_plans.BODY_PLANS["biped-large"]
 
 # --- Palette (the card painting) ----------------------------------------------
 
-SKIN = hex_color("#a6ac48")
+SKIN = hex_color("#b68c50")
 SKIN_DARK = hex_color("#767c32")
-EYES = hex_color("#1a120c")
+EYES = hex_color("#1b120c")
 MOUTH = hex_color("#4a1612")
 TUSK = hex_color("#f2e8ca")
 TUSK_DARK = hex_color("#c4b690")
@@ -65,10 +65,10 @@ HAIR = hex_color("#3a2618")
 HAIR_DARK = hex_color("#22160e")
 LEATHER = hex_color("#6a4228")
 LEATHER_DARK = hex_color("#3e2818")
-IRON = hex_color("#5c5650")
-IRON_DARK = hex_color("#38342f")
+IRON = hex_color("#6f5650")
+IRON_DARK = hex_color("#43342f")
 RUST = hex_color("#8a4e30")
-FUR = hex_color("#a8906c")
+FUR = hex_color("#b1906c")
 FUR_DARK = hex_color("#76644a")
 CLOTH = hex_color("#9e3024")
 CLOTH_DARK = hex_color("#661c16")
@@ -220,7 +220,7 @@ def body_parts():
     torso = Part("torso", SKIN, torso_weights, shade=0.14)
     # A broad chest and a hard, bare stomach.
     kit.sphere(torso.bm, (0, 0.0, 0.73), (0.17, 0.105, 0.105), 14, 8)
-    kit.cone(torso.bm, (0, 0, 0.49), (0, 0, 0.7), 0.13, 0.15, 12, squash=0.75)
+    kit.cone(torso.bm, (0, 0, 0.49), (0, 0, 0.7), 0.13, 0.15, 12, squash=0.75, loops=kit.shares(0.49, 0.7, WAIST_Z - 0.02, WAIST_Z, WAIST_Z + 0.02))
     parts.append(torso)
 
     # The brown leather top, the fur belt and its iron buckle.
@@ -307,13 +307,14 @@ def limb_parts():
             # A spiked iron bracer on the club arm.
             kit.cone(bracer.bm, e + d * 0.03, w - d * 0.006, 0.058, 0.05, 8)
             bracer.paint(list(bracer.bm.faces), IRON)
+            spike_part = Part("bracer.spikes", IRON_DARK, "forearm.R", region="arm.R")
             outward = Vector((-1, 0.2, 0)).normalized()
             for along in (0.3, 0.55, 0.8):
                 p = e + (w - e) * along + outward * 0.05
-                spike = kit.cone(bracer.bm, p, p + outward * 0.04, 0.012, 0.001, 5)
-                bracer.paint(faces_of(spike), IRON_DARK)
+                kit.cone(spike_part.bm, p, p + outward * 0.04, 0.012, 0.001, 5)
+            parts.append(spike_part)
         else:
-            verts = kit.cone(bracer.bm, e + d * 0.05, w - d * 0.006, 0.052, 0.046, 8)
+            verts = kit.cone(bracer.bm, e + d * 0.03, w - d * 0.006, 0.058, 0.05, 8)
             for face in faces_of(verts):
                 if int(((face.calc_center_median() - e).dot(d)) * 70) % 3 == 0:
                     bracer.paint([face], LEATHER_DARK)

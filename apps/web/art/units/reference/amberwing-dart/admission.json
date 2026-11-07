@@ -1,0 +1,32 @@
+{
+  "id": "amberwing-dart",
+  "passed": true,
+  "problems": [],
+  "measures": {
+    "front": {
+      "backgroundEdge": 0.955,
+      "offPalette": 0.028,
+      "fill": 0.973
+    },
+    "three-quarter": {
+      "backgroundEdge": 0.979,
+      "offPalette": 0.018,
+      "fill": 0.96
+    },
+    "side": {
+      "backgroundEdge": 0.989,
+      "offPalette": 0.048,
+      "fill": 0.975
+    },
+    "back": {
+      "backgroundEdge": 0.957,
+      "offPalette": 0.04,
+      "fill": 0.973
+    },
+    "details": {
+      "backgroundEdge": 0.869,
+      "offPalette": 0.028,
+      "fill": 0.965
+    }
+  }
+}

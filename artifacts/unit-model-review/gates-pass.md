@@ -4,10 +4,11 @@ Date: 2026-11-07. Pull request [#194](https://github.com/rifandani/heynbord/pull
 
 The Unit Model Review of PR 194 failed on 16 units. This record covers the 6 units that failed a Review Gate: Crag Rhino, Gorehorn Red Maw, Old Frostmaw, Woolly Mammoth and Cave Bear of [#186](https://github.com/rifandani/heynbord/issues/186), and Bone Rampart of [#187](https://github.com/rifandani/heynbord/issues/187). After the fixes, all 11 Review Gates pass on each of these 6 units on a local run. Each `gates-pass/` folder beside this file has the capture and `gates.json` of that run.
 
-The other 10 units still fail. They need work that a person must approve:
+The other 10 units now pass all 11 Review Gates on a local run too. Each has an approved Turnaround from 2026-11-07:
 
-- No Unit Spec: Rimebreath Drake, Fuse Runner, Elderreed Dartmaster, Tailsweep Basilisk and Tusk Brute.
-- No Turnaround: Amberwing Dart, Boss Snikkit, Junk Walker, Rocket Barrel Rider and Grand Gearjammer.
+- Rimebreath Drake, Fuse Runner, Elderreed Dartmaster, Tailsweep Basilisk and Tusk Brute got Unit Specs. See the [Unit Spec fix record](specs-pass.md).
+- Amberwing Dart, Boss Snikkit, Junk Walker, Rocket Barrel Rider and Grand Gearjammer got model fixes. See the [machine gate fix record](machines-pass.md).
+- The Turnaround intake record is in [turnarounds-2026-11-07/report.md](turnarounds-2026-11-07/report.md).
 
 ## Results
 
@@ -63,3 +64,11 @@ The `interior-difference` limit is 0.28. These local values are near it, and a L
 - `bun run lint`: passes.
 
 No CI run of these changes is recorded here.
+
+## Five new Unit Specs
+
+The [Unit Spec fix record](specs-pass.md) gives the five units, all gate values, palette and geometry changes, Source Contracts and validation. Each passes the ten gates that do not need a Turnaround. Each still has an error in `interior-difference`, because no admitted Turnaround exists.
+
+## Amberwing Dart and machines
+
+The [machine gate fix record](machines-pass.md) gives the fixes and all gate values for Amberwing Dart, Boss Snikkit, Junk Walker, Rocket Barrel Rider and Grand Gearjammer. Each passes the ten gates that do not need an admitted Turnaround. The record also gives the interior checks against the pending views.

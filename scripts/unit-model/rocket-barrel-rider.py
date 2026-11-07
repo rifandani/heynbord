@@ -56,7 +56,7 @@ plan = body_plans.BODY_PLANS["machine"]
 
 # --- Palette (the card painting) ----------------------------------------------
 
-SKIN = hex_color("#c4bfb4")
+SKIN = hex_color("#c6b6ab")
 EAR = hex_color("#e8a08a")
 CHEEK = hex_color("#dca898")
 HAIR = hex_color("#f0eadc")
@@ -80,7 +80,7 @@ BOOT = hex_color("#5e3a22")
 BARREL = hex_color("#b2402c")
 BARREL_DARK = hex_color("#923424")
 STAR = hex_color("#f0e4cc")
-IRON = hex_color("#4a4440")
+IRON = hex_color("#4c403c")
 IRON_DARK = hex_color("#2e2a28")
 RIVET = hex_color("#8a8278")
 ROPE = hex_color("#c8a46a")
@@ -88,7 +88,7 @@ FLAME_OUT = hex_color("#ff6a1c")
 FLAME_MID = hex_color("#ffa830")
 FLAME_CORE = hex_color("#fff2b0")
 BLAST = hex_color("#ffb838")
-BLAST_DARK = hex_color("#e05418")
+BLAST_DARK = hex_color("#ea6f2d")
 SMOKE = hex_color("#6a6058")
 
 # --- Proportions ---------------------------------------------------------------
@@ -217,6 +217,9 @@ def head_parts():
     # A leather cap with ear flaps, and brass goggles up on the front.
     cap = Part("cap", CAP, "head", shade=0.06)
     kit.sphere(cap.bm, HEAD_C + Vector((0, 0.006, 0.026)), (0.076, 0.074, 0.06), 12, 8)
+    # A leather rear panel covers the hair roots below the cap rim.
+    rear = kit.sphere(cap.bm, HEAD_C + Vector((0, 0.047, 0.026)), (0.071, 0.06, 0.064), 12, 8)
+    cap.paint(faces_of(rear), CAP_DARK)
     seam = kit.torus(cap.bm, HEAD_C + Vector((0, 0.006, 0.026)), (1, 0, 0), 0.074, 0.004, 14, 3)
     cap.paint(faces_of(seam), CAP_DARK)
     for sign in (1, -1):

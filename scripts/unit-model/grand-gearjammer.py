@@ -51,24 +51,24 @@ plan = body_plans.BODY_PLANS["machine"]
 
 WOOD = hex_color("#6a4428")
 WOOD_DARK = hex_color("#4a2e1a")
-IRON = hex_color("#5a5650")
-IRON_DARK = hex_color("#3a3733")
+IRON = hex_color("#61544f")
+IRON_DARK = hex_color("#423935")
 RUST = hex_color("#8a5a34")
-BRASS = hex_color("#d2a046")
-BRASS_DARK = hex_color("#93692a")
+BRASS = hex_color("#dca759")
+BRASS_DARK = hex_color("#946930")
 GLOW = hex_color("#a8ff3e")
 GLOW_DARK = hex_color("#5fae22")
-RED = hex_color("#b0362c")
-SKIN = hex_color("#8fa25a")
+RED = hex_color("#984b36")
+SKIN = hex_color("#d2af90")
 SKIN_DARK = hex_color("#687a3c")
 EAR = hex_color("#d79a8a")
-HAIR = hex_color("#ecebe6")
+HAIR = hex_color("#f9f7e5")
 EYES = hex_color("#f2c040")
 PUPIL = hex_color("#1d140e")
 MOUTH = hex_color("#4a2a26")
 LENS = hex_color("#2c3a46")
 CLOTH = hex_color("#6a4a30")
-VEST = hex_color("#8a3a2a")
+VEST = hex_color("#883c2a")
 CANVAS = hex_color("#b8a47c")
 CLOCK = hex_color("#f2ead6")
 FLASH = hex_color("#ffd36a")
@@ -139,6 +139,9 @@ def wheel_parts():
 def cart_parts():
     parts = []
     cart = Part("cart", WOOD, "cart", shade=0.12)
+    # The rear pivot has a sleeve with three rings. Its top is inside the chassis.
+    pivot = Vector((0, TABLE.carrier_y, TABLE.carrier_z))
+    kit.tube(cart.bm, [pivot + Z * step for step in (-0.025, 0, 0.025)], [0.022] * 3, 8)
     # The chassis and the deck.
     kit.box(cart.bm, (0, -0.01, 0.2), (0.36, 0.6, 0.1))
     deck = kit.box(cart.bm, (0, 0.0, 0.28), (0.4, 0.58, 0.1))
@@ -218,7 +221,7 @@ def cannon_parts():
     for angle in range(0, 360, 60):
         a = math.radians(angle)
         out = Vector((math.cos(a), 0, math.sin(a))) * 0.08
-        spike = kit.cone(flash.bm, tip, tip + Vector((0, -0.05, 0)) + out, 0.024, 0.002, 4)
+        spike = kit.cone(flash.bm, tip + out * 0.025, tip + Vector((0, -0.05, 0)) + out, 0.024, 0.002, 4)
         flash.paint(faces_of(spike), FLASH_HOT)
     parts.append(flash)
     return parts
@@ -244,22 +247,26 @@ def gear_parts():
     parts = [gear]
 
     flag = Part("flag", RED, "flag", shade=0.08)
-    top = c + Vector((0.03, 0, GEAR_R))
-    pole = kit.cone(flag.bm, Vector((c.x + 0.03, c.y + 0.02, c.z)), top + Vector((0, 0.02, 0.2)), 0.007, 0.006, 4)
-    flag.paint(faces_of(pole), WOOD_DARK)
-    grid_front = []
-    grid_back = []
-    for row in range(3):
-        z = top.z + 0.19 - row * 0.06
-        line_f, line_b = [], []
-        for column in range(4):
-            y = c.y + 0.02 + column * 0.05
-            wave = 0.012 * math.sin(column * 1.7)
-            line_f.append((top.x + wave - 0.003, y, z - 0.02 * column * row / 2))
-            line_b.append((top.x + wave + 0.003, y, z - 0.02 * column * row / 2))
-        grid_front.append(line_f)
-        grid_back.append(line_b)
-    kit.panel(flag, grid_front, grid_back, lambda face_side, row, column: RED)
+    # The rear standard faces front and back, as in the approved views.
+    top = Vector((0, c.y + 0.02, c.z + GEAR_R + 0.18))
+    pole = kit.cone(flag.bm, (0, top.y, DECK_Z), top + Z * 0.02, 0.008, 0.006, 6)
+    flag.paint(faces_of(pole), BRASS_DARK)
+    bar = kit.cone(flag.bm, top + Vector((-0.145, 0, -0.035)), top + Vector((0.145, 0, -0.035)), 0.007, 0.007, 6)
+    flag.paint(faces_of(bar), BRASS)
+    for sign in (1, -1):
+        grid_front, grid_back = [], []
+        for row in range(4):
+            line_f, line_b = [], []
+            for column in range(4):
+                x = sign * (0.025 + column * 0.035)
+                wave = 0.008 * math.sin(column * 1.3 + row)
+                z = top.z - 0.04 - row * 0.06 - (0.012 * (column % 2) if row == 3 else 0)
+                line_f.append((x, top.y + wave - 0.003, z))
+                line_b.append((x, top.y + wave + 0.003, z))
+            # A right-handed panel on either side of the mast.
+            grid_front.append(line_f if sign > 0 else list(reversed(line_f)))
+            grid_back.append(line_b if sign > 0 else list(reversed(line_b)))
+        kit.panel(flag, grid_front, grid_back, lambda face_side, row, column: RED)
     parts.append(flag)
     return parts
 

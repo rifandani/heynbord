@@ -1,0 +1,75 @@
+{
+  "unit": "amberwing-dart",
+  "admitted": false,
+  "note": "This measurement uses pending Turnaround views. It is not an admitted Review Gate result.",
+  "exitCode": 0,
+  "referenceSha256": {
+    "front": "4b6dfef50a2abec30df01354d30bed753a97ff6f51ea69425e13f606c67dcf99",
+    "back": "419997f20cbd1c9af436a494bd79d99f89be3881931851dc0f9e3cdd50561388"
+  },
+  "report": {
+    "limit": 0.28,
+    "bodies": [
+      {
+        "view": "front",
+        "renderRaised": 0.0,
+        "baselineRaised": 0.0
+      },
+      {
+        "view": "back",
+        "renderRaised": 0.0,
+        "baselineRaised": 0.0
+      }
+    ],
+    "bands": [
+      {
+        "view": "front",
+        "band": "head",
+        "status": "pass",
+        "difference": 0.23627305961944461,
+        "cellsCompared": 323,
+        "detail": "measured"
+      },
+      {
+        "view": "front",
+        "band": "torso",
+        "status": "pass",
+        "difference": 0.2782236691324889,
+        "cellsCompared": 2367,
+        "detail": "measured"
+      },
+      {
+        "view": "front",
+        "band": "legs",
+        "status": "pass",
+        "difference": 0.24154372742896388,
+        "cellsCompared": 442,
+        "detail": "measured"
+      },
+      {
+        "view": "back",
+        "band": "head",
+        "status": "pass",
+        "difference": 0.24226393146573608,
+        "cellsCompared": 226,
+        "detail": "measured"
+      },
+      {
+        "view": "back",
+        "band": "torso",
+        "status": "pass",
+        "difference": 0.22935573430404368,
+        "cellsCompared": 2239,
+        "detail": "measured"
+      },
+      {
+        "view": "back",
+        "band": "legs",
+        "status": "pass",
+        "difference": 0.2734465487221216,
+        "cellsCompared": 415,
+        "detail": "measured"
+      }
+    ]
+  }
+}

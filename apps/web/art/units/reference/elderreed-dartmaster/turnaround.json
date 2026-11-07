@@ -1,0 +1,22 @@
+{
+  "id": "elderreed-dartmaster",
+  "source": "apps/web/public/creature/elf/elderreed-dartmaster.webp",
+  "views": {
+    "front": "front.webp",
+    "three-quarter": "three-quarter.webp",
+    "side": "side.webp",
+    "back": "back.webp",
+    "details": "details.webp"
+  },
+  "props": [
+    "Reed blowpipe longer than she is tall with gold-metal bands",
+    "a belt case of thorn darts",
+    "a layered green cloak"
+  ],
+  "approval": {
+    "status": "approved",
+    "by": "rifandani",
+    "date": "2026-11-07",
+    "notes": "Approved all five views and this prop list by a message to the agent. Known differences: She stands with both eyes open and holds the blowpipe upright, as in the neutral model pose. The cloak is fuller and longer. The leaf layers, gold bands, braid, belt case and boot patterns differ. The rear costume is inferred. The branch, picnic and squirrels are omitted."
+  }
+}

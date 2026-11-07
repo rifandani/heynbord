@@ -1,0 +1,23 @@
+{
+  "id": "grand-gearjammer",
+  "source": "apps/web/public/creature/goblin/grand-gearjammer.webp",
+  "views": {
+    "front": "front.webp",
+    "three-quarter": "three-quarter.webp",
+    "side": "side.webp",
+    "back": "back.webp",
+    "details": "details.webp"
+  },
+  "props": [
+    "A cart with large brass gears",
+    "a gear cannon",
+    "levers",
+    "three goblins at work"
+  ],
+  "approval": {
+    "status": "approved",
+    "by": "rifandani",
+    "date": "2026-11-07",
+    "notes": "Approved all five views and this prop list by a message to the agent. Known differences: The top gear is along the length of the cart and is seen edge-on from front and back, as in the model. The cannon is idle. Crew poses, clothing pockets, wheel hubs, gear teeth, tanks and plate seams differ. The rear construction is inferred and its red cloth is more faded. The mine scene, projectiles and clock numbers are omitted."
+  }
+}

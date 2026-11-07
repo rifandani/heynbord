@@ -56,24 +56,24 @@ plan = body_plans.BODY_PLANS["biped-small"]
 
 # --- Palette (the card painting) ----------------------------------------------
 
-SKIN = hex_color("#c0bcb6")
+SKIN = hex_color("#c0b0a7")
 SKIN_DARK = hex_color("#8a867e")
 SOOT = hex_color("#6a6662")
 EAR = hex_color("#e4a08a")
 NOSE = hex_color("#d88e7e")
-HAIR = hex_color("#eee6d6")
-HAIR_DARK = hex_color("#cfc4a8")
-EYES = hex_color("#f2a838")
+HAIR = hex_color("#fff4e4")
+HAIR_DARK = hex_color("#b99f87")
+EYES = hex_color("#f2a846")
 PUPIL = hex_color("#1d140e")
 MOUTH = hex_color("#4a1e1a")
 TEETH = hex_color("#ece2c4")
 BRASS = hex_color("#d0a048")
 BRASS_DARK = hex_color("#93692a")
-LENS = hex_color("#3a2e24")
-SCARF = hex_color("#3c4a68")
-SCARF_LIGHT = hex_color("#d8c49a")
-SHIRT = hex_color("#ddd0b2")
-SHIRT_DARK = hex_color("#b4a684")
+LENS = hex_color("#65584a")
+SCARF = hex_color("#3c4a64")
+SCARF_LIGHT = hex_color("#dcc49a")
+SHIRT = hex_color("#ccb092")
+SHIRT_DARK = hex_color("#b19474")
 LEATHER = hex_color("#7a4a2a")
 LEATHER_DARK = hex_color("#4a2c1a")
 TROUSERS = hex_color("#6e5640")
@@ -83,12 +83,12 @@ BOMB = hex_color("#2e2a28")
 BOMB_LIGHT = hex_color("#4e4844")
 RUST = hex_color("#7a5236")
 FUSE = hex_color("#c8b88a")
-SPARK = hex_color("#ffd040")
+SPARK = hex_color("#ffbb50")
 SPARK_HOT = hex_color("#b8f048")
-FIRE = hex_color("#ffb030")
-FIRE_HOT = hex_color("#fff0a0")
-FIRE_DARK = hex_color("#e05a1a")
-SMOKE = hex_color("#7a726c")
+FIRE = hex_color("#ffb048")
+FIRE_HOT = hex_color("#ffeca0")
+FIRE_DARK = hex_color("#d2762a")
+SMOKE = hex_color("#7c726c")
 
 # --- Proportions ---------------------------------------------------------------
 
@@ -154,70 +154,125 @@ def head_parts():
     kit.sphere(head.bm, HEAD_C, (0.072, 0.07, 0.072), 14, 10)
     # A narrow chin and a long, pointed nose, with soot on the cheeks.
     kit.sphere(head.bm, HEAD_C + Vector((0, -0.026, -0.05)), (0.04, 0.034, 0.03), 10, 6)
-    nose = kit.tube(head.bm, [HEAD_C + Vector((0, -0.064, 0.0)), HEAD_C + Vector((0, -0.1, -0.01)), HEAD_C + Vector((0, -0.126, -0.028))], [0.016, 0.011, 0.005], 6)
+    nose = kit.tube(head.bm, [HEAD_C + Vector((0, -0.064, 0.015)), HEAD_C + Vector((0, -0.085, 0.006)), HEAD_C + Vector((0, -0.1, -0.005))], [0.016, 0.013, 0.008], 6)
     head.paint(faces_of(nose), NOSE)
     for sign, at in ((1, (0.04, -0.05, -0.022)), (-1, (-0.044, -0.046, -0.016))):
         soot = kit.sphere(head.bm, HEAD_C + Vector(at), (0.018, 0.012, 0.014), 6, 4)
         head.paint(faces_of(soot), SOOT)
     for sign in (1, -1):
-        # Very large goblin ears that stream back. Each ear is a flat leaf
-        # with its face to the side, so the camera sees it.
+        # Large ears slope down from the temples, as in the approved views.
         base = HEAD_C + Vector((0.058 * sign, 0.02, 0.008))
-        tip = HEAD_C + Vector((0.15 * sign, 0.17, 0.045))
-        ear = kit.cone(head.bm, base, tip, 0.048, 0.003, 8)
-        thin = Z.cross((tip - base).normalized()).normalized()
+        bend = HEAD_C + Vector((0.125 * sign, 0.055, -0.025))
+        tip = HEAD_C + Vector((0.205 * sign, 0.08, -0.135))
+        ear = kit.tube(head.bm, [base, bend, tip], [0.026, 0.045, 0.002], 8)
+        thin = Vector((0, 1, 0))
         for vert in ear:
             vert.co -= thin * (vert.co - base).dot(thin) * 0.7
         for face in faces_of(ear):
             face.normal_update()
-            if face.normal.x * sign > 0.3:
+            if face.normal.y < -0.3:
                 head.paint([face], EAR)
     parts.append(head)
 
     face = Part("face", MOUTH, "head", shade=0)
     # A nervous open mouth with crooked top teeth.
-    mouth_c = HEAD_C + Vector((0, -0.056, -0.038))
+    mouth_c = HEAD_C + Vector((0, -0.075, -0.022))
     kit.sphere(face.bm, mouth_c, (0.03, 0.014, 0.014), 10, 6)
     for index, x in enumerate((-0.016, -0.004, 0.009, 0.019)):
         tooth = kit.box(face.bm, mouth_c + Vector((x, -0.011, 0.006 - 0.002 * (index % 2))), (0.009, 0.006, 0.01 + 0.003 * (index % 2)))
         face.paint(faces_of(tooth), TEETH)
     # Big worried eyes that look down at the fuse.
     for sign in (1, -1):
-        center = HEAD_C + Vector((0.03 * sign, -0.058, 0.016))
-        eye = kit.sphere(face.bm, center, (0.022, 0.014, 0.023), 10, 6)
-        face.paint(faces_of(eye), EYES)
-        pupil = kit.sphere(face.bm, center + Vector((-0.004 * sign, -0.012, -0.007)), (0.008, 0.004, 0.009), 6, 4)
-        face.paint(faces_of(pupil), PUPIL)
+        center = HEAD_C + Vector((0.031 * sign, -0.074, 0.028))
+        rings = []
+        angles = (3.0, 2.7, 2.3, 1.9, 1.5, 1.1, 0.85, 0.65, 0.3, 0.12)
+        for angle in angles:
+            gaze = max(0, math.cos(angle))
+            ring_center = center + Vector((-0.002 * sign * gaze, -0.02 * math.cos(angle), -0.004 * gaze))
+            rings.append([
+                face.bm.verts.new(ring_center + Vector((0.024 * math.sin(angle) * math.cos(index * math.tau / 16), 0, 0.026 * math.sin(angle) * math.sin(index * math.tau / 16))))
+                for index in range(16)
+            ])
+        face.paint([face.bm.faces.new(list(reversed(rings[0])))], TEETH)
+        for band, (a, b) in enumerate(zip(rings, rings[1:])):
+            color = TEETH if angles[band] > 0.65 else EYES if angles[band] > 0.3 else PUPIL
+            for index in range(16):
+                next_index = (index + 1) % 16
+                polygon = face.bm.faces.new((a[index], a[next_index], b[next_index], b[index]))
+                face.paint([polygon], color)
+        face.paint([face.bm.faces.new(rings[-1])], PUPIL)
         brow = kit.tube(face.bm, [center + Vector((0.016 * sign, -0.006, 0.022)), center + Vector((-0.012 * sign, -0.012, 0.03))], [0.004, 0.004], 3)
         face.paint(faces_of(brow), SKIN_DARK)
     parts.append(face)
 
-    hair = Part("hair", HAIR, "head", shade=0.08)
+    hair = Part("hair", HAIR_DARK, "head", shade=0.08)
     # Wild white hair that sticks out in all directions.
-    kit.sphere(hair.bm, HEAD_C + Vector((0, 0.02, 0.04)), (0.078, 0.078, 0.05), 12, 7)
-    kit.sphere(hair.bm, HEAD_C + Vector((0, 0.05, -0.01)), (0.07, 0.05, 0.06), 10, 6)
+    kit.sphere(hair.bm, HEAD_C + Vector((0, 0.045, 0.045)), (0.09, 0.06, 0.045), 12, 7)
+    kit.sphere(hair.bm, HEAD_C + Vector((0, 0.065, -0.01)), (0.09, 0.065, 0.072), 10, 6)
+    kit.sphere(hair.bm, HEAD_C + Vector((0, 0.04, 0.095)), (0.05, 0.045, 0.03), 10, 6)
+    for sign in (1, -1):
+        kit.sphere(hair.bm, HEAD_C + Vector((0.075 * sign, 0.025, 0.035)), (0.025, 0.045, 0.04), 10, 6)
     for index in range(10):
         a = math.radians(-135 + index * 30)
         root = HEAD_C + Vector((0.05 * math.sin(a), 0.03 + 0.04 * math.cos(a), 0.052))
-        reach = 0.05 + 0.02 * ((index * 5) % 3)
-        tip = root + Vector((reach * 0.9 * math.sin(a), 0.04 + reach * 0.6 * math.cos(a), 0.022 - 0.022 * (index % 3)))
+        reach = 0.03 + 0.012 * ((index * 5) % 3)
+        tip = root + Vector((reach * 0.9 * math.sin(a), 0.04 + reach * 0.6 * math.cos(a), 0.006 - 0.024 * (index % 3)))
         tuft = kit.cone(hair.bm, root, tip, 0.028, 0.005, 5)
-        if index % 2:
-            hair.paint(faces_of(tuft), HAIR_DARK)
+        hair.paint(faces_of(tuft), HAIR_DARK if index % 2 else HAIR)
+    # Layered locks cover the back and fall beside the cheeks.
+    for sign in (1, -1):
+        for index in range(4):
+            root = HEAD_C + Vector(((0.056 + index * 0.008) * sign, -0.018 + index * 0.023, 0.045 - index * 0.014))
+            tip = root + Vector(((0.025 + index * 0.003) * sign, 0.008, -0.07))
+            lock = kit.cone(hair.bm, root, tip, 0.018, 0.002, 6)
+            hair.paint(faces_of(lock), HAIR_DARK if index % 2 else HAIR)
+    for index in range(9):
+        angle = math.radians(-75 + index * 18.75)
+        root = HEAD_C + Vector((0.06 * math.sin(angle), 0.02 + 0.057 * math.cos(angle), 0.035))
+        tip = HEAD_C + Vector((0.082 * math.sin(angle), 0.035 + 0.073 * math.cos(angle), -0.076 + 0.012 * (index % 2)))
+        lock = kit.tube(hair.bm, [root, root.lerp(tip, 0.55) + Vector((0, 0.012, 0)), tip], [0.016, 0.019, 0.002], 6)
+        hair.paint(faces_of(lock), HAIR_DARK if index % 2 else HAIR)
+    # Short locks break up the crown above the goggles.
+    for sign in (1, -1):
+        for index in range(4):
+            root = HEAD_C + Vector((0.012 * sign, -0.005 + index * 0.012, 0.086))
+            tip = HEAD_C + Vector(((0.068 + index * 0.012) * sign, -0.025 + index * 0.018, 0.04 - index * 0.009))
+            lock = kit.cone(hair.bm, root, tip, 0.013, 0.002, 5)
+            hair.paint(faces_of(lock), HAIR if index % 2 else HAIR_DARK)
     parts.append(hair)
 
     # Brass goggles with smoked lenses up on the forehead.
     goggles = Part("goggles", BRASS, "head", shade=0.05)
-    band = kit.torus(goggles.bm, HEAD_C + Vector((0, 0.004, 0.036)), (0, 0.25, 1), 0.077, 0.007, 16, 4)
+    band = kit.torus(goggles.bm, HEAD_C + Vector((0, 0.004, 0.06)), (0, 0.25, 1), 0.077, 0.007, 16, 4)
     goggles.paint(faces_of(band), LEATHER_DARK)
     for sign in (1, -1):
-        center = HEAD_C + Vector((0.029 * sign, -0.068, 0.054))
+        center = HEAD_C + Vector((0.033 * sign, -0.05, 0.072))
         out = Vector((0.15 * sign, -1, 0.35)).normalized()
-        kit.cone(goggles.bm, center - out * 0.006, center + out * 0.02, 0.022, 0.02, 12)
-        rim = kit.torus(goggles.bm, center + out * 0.02, out, 0.019, 0.005, 12, 3)
-        goggles.paint(faces_of(rim), BRASS_DARK)
-        lens = kit.cone(goggles.bm, center + out * 0.018, center + out * 0.022, 0.016, 0.016, 12)
-        goggles.paint(faces_of(lens), LENS)
+        # One connected rim and lens keep the brass clear at game scale.
+        u = out.cross(Z).normalized()
+        v = out.cross(u)
+        rings = []
+        for depth, radius in ((-0.006, 0.025), (0.02, 0.023), (0.022, 0.0185)):
+            rings.append([
+                goggles.bm.verts.new(center + out * depth + radius * (u * math.cos(index * math.tau / 12) + v * math.sin(index * math.tau / 12)))
+                for index in range(12)
+            ])
+        back, front, lens = rings
+        goggles.bm.faces.new(list(reversed(back)))
+        for index in range(12):
+            next_index = (index + 1) % 12
+            goggles.bm.faces.new((back[index], back[next_index], front[next_index], front[index]))
+            rim = goggles.bm.faces.new((front[index], front[next_index], lens[next_index], lens[index]))
+            goggles.paint([rim], BRASS_DARK)
+        goggles.paint([goggles.bm.faces.new(lens)], LENS)
+    # A visible leather strap crosses the back of the layered white hair.
+    strap = [HEAD_C + Vector((0.083 * math.sin(math.radians(a)), 0.035 + 0.083 * math.cos(math.radians(a)), 0.025)) for a in range(-100, 101, 20)]
+    band = kit.tube(goggles.bm, strap, [0.01] * len(strap), 5)
+    goggles.paint(faces_of(band), LEATHER_DARK)
+    buckle = kit.box(goggles.bm, HEAD_C + Vector((0, 0.121, 0.025)), (0.027, 0.006, 0.025))
+    goggles.paint(faces_of(buckle), BRASS)
+    inset = kit.box(goggles.bm, HEAD_C + Vector((0, 0.125, 0.025)), (0.018, 0.004, 0.016))
+    goggles.paint(faces_of(inset), LEATHER_DARK)
     parts.append(goggles)
 
     neck = Part("neck", SKIN, "neck")
@@ -228,25 +283,31 @@ def head_parts():
 
 def body_parts():
     parts = []
-    shirt = Part("shirt", SHIRT, torso_weights)
+    shirt = Part("shirt", SHIRT, torso_weights, shade=0.18)
     kit.cone(shirt.bm, (0, 0, 0.26), (0, 0, 0.49), 0.064, 0.058, 12, squash=0.78)
     for index in range(10):
         a = math.radians(index * 36 + 10)
         top = Vector((0.064 * math.sin(a), -0.05 * math.cos(a), 0.28))
         rag = kit.cone(shirt.bm, top, top + Vector((0.008 * math.sin(a), -0.008 * math.cos(a), -0.03 - 0.01 * (index % 3))), 0.017, 0.004, 4, squash=0.5)
         shirt.paint(faces_of(rag), SHIRT_DARK if index % 2 else SHIRT)
+    # The worn shirt has a diagonal leather shoulder strap and sewn patches.
+    strap = kit.tube(shirt.bm, [Vector((-0.049, 0.049, 0.478)), Vector((0, 0.054, 0.39)), Vector((0.05, 0.05, 0.31))], [0.012, 0.012, 0.012], 4)
+    shirt.paint(faces_of(strap), LEATHER)
+    for sign in (1, -1):
+        patch = kit.box(shirt.bm, (0.03 * sign, 0.052, 0.365 + 0.055 * sign), (0.034, 0.004, 0.042))
+        shirt.paint(faces_of(patch), SHIRT_DARK)
     parts.append(shirt)
 
     # The striped scarf: a wrap round the neck, and a long end that streams back.
     scarf = Part("scarf", SCARF, scarf_weights, shade=0.05)
-    wrap = kit.torus(scarf.bm, (0, -0.004, 0.49), (0, 0.15, 1), 0.04, 0.016, 12, 5)
+    wrap = kit.torus(scarf.bm, (0, -0.004, 0.49), (0, 0.15, 1), 0.05, 0.018, 12, 5)
     for face in faces_of(wrap):
         if int((math.atan2(face.calc_center_median().y, face.calc_center_median().x) + math.pi) / (math.pi / 4)) % 2:
             scarf.paint([face], SCARF_LIGHT)
-    tail = [SCARF_ROOT + Vector((0.01 * math.sin(i), 0.03 * i, -0.012 * i - 0.004 * i * i)) for i in range(6)]
+    tail = [SCARF_ROOT + Vector((-0.052 * i, 0.03 * i, -0.014 * i - 0.005 * i * i)) for i in range(7)]
     for index, (a, b) in enumerate(zip(tail, tail[1:])):
         along = (b - a) * 0.56
-        width = Vector((0.024 - 0.002 * index, 0, 0))
+        width = Vector((0.03 - 0.002 * index, 0, 0))
         thick = width.cross(along).normalized() * 0.005
         band = kit.slab(scarf.bm, (a + b) / 2, width, along, thick)
         scarf.paint(faces_of(band), SCARF_LIGHT if index % 2 else SCARF)
@@ -332,8 +393,9 @@ def bomb_parts():
     shine = kit.sphere(bomb.bm, BOMB_C + Vector((-0.5, -0.6, 0.5)).normalized() * BOMB_R * 0.86, (0.026, 0.022, 0.026), 6, 4)
     bomb.paint(faces_of(shine), BOMB_LIGHT)
     # Riveted brass bands, and patches of rust.
-    for normal in ((0, 0, 1), (1, 0, 0.15)):
-        band = kit.torus(bomb.bm, BOMB_C, normal, BOMB_R + 0.002, 0.005, 20, 4)
+    # The bands cross without a shared ring vertex.
+    for index, normal in enumerate(((0, 0, 1), (1, 0, 0.15))):
+        band = kit.torus(bomb.bm, BOMB_C, normal, BOMB_R + 0.002 + index * 0.001, 0.005, 20, 4)
         bomb.paint(faces_of(band), BRASS_DARK)
     for at in ((-0.6, -0.7, -0.3), (0.4, -0.8, 0.4), (-0.8, 0.2, 0.5)):
         rust = kit.sphere(bomb.bm, BOMB_C + Vector(at).normalized() * BOMB_R * 0.95, (0.018, 0.018, 0.018), 6, 4)
@@ -477,8 +539,8 @@ class Poses(clips.biped_small.Poses):
             "hips": t("hips", (Z, -6)),
             "spine": t("spine", (X, 6 + breath)),
             "chest": t("chest", (X, 2 - breath * 2), (Z, -4)),
-            "neck": t("neck", (X, 6 + look * 8)),
-            "head": t("head", (X, -4 + look * 18), (Z, 4 - look * 6), (Y, -6 * look)),
+            "neck": t("neck", (X, -4 + look * 4)),
+            "head": t("head", (X, -6 + look * 12), (Z, 4 - look * 6), (Y, -6 * look)),
             "scarf": t("scarf", (X, -6 + breath * 8), (Z, breath * 6)),
             "thigh.L": t("thigh.L", (X, -12), (Y, -6)),
             "shin.L": t("shin.L", (X, 18)),

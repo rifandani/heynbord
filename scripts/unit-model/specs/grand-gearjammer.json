@@ -1,10 +1,10 @@
 {
   "id": "grand-gearjammer",
   "bodyPlan": "machine",
-  "height": 0.929999931853463,
+  "height": 0.9299999914581052,
   "palette": {
-    "brass": "#d2a046",
-    "brass_dark": "#93692a",
+    "brass": "#dca759",
+    "brass_dark": "#946930",
     "canvas": "#b8a47c",
     "clock": "#f2ead6",
     "cloth": "#6a4a30",
@@ -14,17 +14,17 @@
     "flash_hot": "#fff3c4",
     "glow": "#a8ff3e",
     "glow_dark": "#5fae22",
-    "hair": "#ecebe6",
-    "iron": "#5a5650",
-    "iron_dark": "#3a3733",
+    "hair": "#f9f7e5",
+    "iron": "#61544f",
+    "iron_dark": "#423935",
     "lens": "#2c3a46",
     "mouth": "#4a2a26",
     "pupil": "#1d140e",
-    "red": "#b0362c",
+    "red": "#984b36",
     "rust": "#8a5a34",
-    "skin": "#8fa25a",
+    "skin": "#d2af90",
     "skin_dark": "#687a3c",
-    "vest": "#8a3a2a",
+    "vest": "#883c2a",
     "wood": "#6a4428",
     "wood_dark": "#4a2e1a"
   },
@@ -125,10 +125,10 @@
       "y1": 1
     },
     "prop": {
-      "x0": 0.33,
-      "x1": 0.87,
+      "x0": 0.22,
+      "x1": 0.79,
       "y0": 0,
-      "y1": 0.57
+      "y1": 0.63
     },
     "torso": {
       "x0": 0.08,
@@ -141,5 +141,14 @@
     "feature": "big brass cannon on top of the cart",
     "azimuthDegrees": 0
   },
-  "holedParts": ["wheel.FL", "wheel.FR", "wheel.BL", "wheel.BR", "gear"]
+  "holedParts": [
+    "wheel.FL",
+    "wheel.FR",
+    "wheel.BL",
+    "wheel.BR",
+    "gear",
+    "body",
+    "cart"
+  ],
+  "posedPairs": ["driver.arm", "gunner.arm", "scout.arm"]
 }

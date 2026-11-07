@@ -1,0 +1,18 @@
+{
+  "id": "tailsweep-basilisk",
+  "source": "apps/web/public/creature/feral/tailsweep-basilisk.webp",
+  "views": {
+    "front": "front.webp",
+    "three-quarter": "three-quarter.webp",
+    "side": "side.webp",
+    "back": "back.webp",
+    "details": "details.webp"
+  },
+  "props": ["None"],
+  "approval": {
+    "status": "approved",
+    "by": "rifandani",
+    "date": "2026-11-07",
+    "notes": "Approved all five views and this prop list by a message to the agent. The back view was made again, so that one spine row follows the center line of the back and the tail. Known differences: No carried props. The four feet are planted in a neutral pose and the club tail is held above the back. The tail curl, club spikes, back-spine pattern and scale patches differ. The rear anatomy is inferred. The flying rocks, cave and crystals are omitted."
+  }
+}

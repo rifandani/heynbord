@@ -1,0 +1,32 @@
+{
+  "id": "grand-gearjammer",
+  "passed": true,
+  "problems": [],
+  "measures": {
+    "front": {
+      "backgroundEdge": 0.998,
+      "offPalette": 0.102,
+      "fill": 0.91
+    },
+    "three-quarter": {
+      "backgroundEdge": 0.912,
+      "offPalette": 0.117,
+      "fill": 0.987
+    },
+    "side": {
+      "backgroundEdge": 0.932,
+      "offPalette": 0.111,
+      "fill": 0.967
+    },
+    "back": {
+      "backgroundEdge": 0.999,
+      "offPalette": 0.114,
+      "fill": 0.9
+    },
+    "details": {
+      "backgroundEdge": 1,
+      "offPalette": 0.109,
+      "fill": 0.773
+    }
+  }
+}

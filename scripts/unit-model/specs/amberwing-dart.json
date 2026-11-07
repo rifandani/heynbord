@@ -1,26 +1,26 @@
 {
   "id": "amberwing-dart",
   "bodyPlan": "flyer",
-  "height": 0.6598878,
+  "height": 0.7001822436846897,
   "palette": {
-    "body": "#6f8a3a",
-    "body_dark": "#4a6128",
-    "body_light": "#9cb455",
+    "body": "#ac9a52",
+    "body_dark": "#6c643b",
+    "body_light": "#c5b76d",
     "amber": "#e8a83a",
     "amber_light": "#f6cf62",
     "eye": "#f0a52e",
     "eye_dark": "#8a4a14",
-    "wing": "#d9c45a",
+    "wing": "#d9c45c",
     "wing_edge": "#e89a34",
     "wing_vein": "#8a6a26",
     "wing_green": "#b8c060",
     "repair": "#f2e6c4",
     "bark": "#6b4a2a",
     "bark_dark": "#4a321c",
-    "vine": "#5d6e2c",
-    "vine_dark": "#3f4c1e",
-    "leaf": "#7da040",
-    "leaf_light": "#a8c45a",
+    "vine": "#c1a85f",
+    "vine_dark": "#a58b47",
+    "leaf": "#909973",
+    "leaf_light": "#bfb166",
     "poison": "#9ee04a"
   },
   "parts": [
@@ -78,5 +78,45 @@
   "identity": {
     "feature": "thorn lance with a drop of poison",
     "azimuthDegrees": 30
+  },
+  "holedParts": ["vine", "tendril"],
+  "posedPairs": ["wing.F"],
+  "regions": {
+    "arm.L": {
+      "x0": 0.53,
+      "x1": 1,
+      "y0": 0,
+      "y1": 0.21
+    },
+    "arm.R": {
+      "x0": 0,
+      "x1": 0.47,
+      "y0": 0,
+      "y1": 0.21
+    },
+    "head": {
+      "x0": 0.42,
+      "x1": 0.58,
+      "y0": 0.06,
+      "y1": 0.25
+    },
+    "leg.L": {
+      "x0": 0.41,
+      "x1": 0.59,
+      "y0": 0.26,
+      "y1": 0.36
+    },
+    "prop": {
+      "x0": 0.39,
+      "x1": 0.63,
+      "y0": 0.17,
+      "y1": 1
+    },
+    "torso": {
+      "x0": 0.42,
+      "x1": 0.58,
+      "y0": 0.09,
+      "y1": 0.32
+    }
   }
 }

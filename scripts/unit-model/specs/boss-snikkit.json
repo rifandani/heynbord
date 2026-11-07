@@ -4,22 +4,22 @@
   "height": 0.9500001560944652,
   "palette": {
     "beard": "#efece4",
-    "beard_dark": "#c4bfb2",
-    "bomb": "#2e2a2c",
-    "brass": "#d4a24a",
-    "brass_dark": "#94692a",
+    "beard_dark": "#a9987b",
+    "bomb": "#241a1c",
+    "brass": "#e4a75a",
+    "brass_dark": "#97642a",
     "ear": "#e0a08e",
-    "ember": "#ff5e1a",
+    "ember": "#ec692a",
     "emerald": "#2aa860",
     "eyes": "#f4e2a6",
     "flame": "#ffa22b",
     "flame_core": "#ffe7a0",
     "fuse": "#c8a878",
     "glass": "#f2c46a",
-    "gold": "#f0c24a",
-    "gold_dark": "#b58a2a",
-    "iron": "#54463c",
-    "iron_dark": "#342c28",
+    "gold": "#f7c15c",
+    "gold_dark": "#c28943",
+    "iron": "#59493e",
+    "iron_dark": "#2c1e18",
     "mouth": "#4a1e1c",
     "pupil": "#1d140e",
     "red": "#b3322a",
@@ -28,8 +28,8 @@
     "ruby": "#c4202a",
     "rust": "#8a5232",
     "sand": "#c4823a",
-    "skin": "#9aa46a",
-    "skin_dark": "#727c46",
+    "skin": "#c9a68b",
+    "skin_dark": "#90735a",
     "spark": "#ffb43a",
     "teeth": "#f4ecd2"
   },
@@ -121,7 +121,7 @@
     "head": {
       "x0": 0,
       "x1": 1,
-      "y0": 0.18,
+      "y0": 0.04,
       "y1": 0.6
     },
     "leg.L": {
@@ -153,5 +153,5 @@
     "feature": "tall gold crown with red and green gems",
     "azimuthDegrees": 0
   },
-  "holedParts": ["hourglass"]
+  "holedParts": ["hourglass", "body", "torch"]
 }

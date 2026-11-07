@@ -1,0 +1,32 @@
+{
+  "id": "tailsweep-basilisk",
+  "passed": true,
+  "problems": [],
+  "measures": {
+    "front": {
+      "backgroundEdge": 0.989,
+      "offPalette": 0.058,
+      "fill": 0.947
+    },
+    "three-quarter": {
+      "backgroundEdge": 0.948,
+      "offPalette": 0.107,
+      "fill": 0.967
+    },
+    "side": {
+      "backgroundEdge": 0.963,
+      "offPalette": 0.118,
+      "fill": 0.967
+    },
+    "back": {
+      "backgroundEdge": 0.962,
+      "offPalette": 0.071,
+      "fill": 0.98
+    },
+    "details": {
+      "backgroundEdge": 0.827,
+      "offPalette": 0.074,
+      "fill": 0.935
+    }
+  }
+}

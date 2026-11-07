@@ -1,0 +1,32 @@
+{
+  "id": "fuse-runner",
+  "passed": true,
+  "problems": [],
+  "measures": {
+    "front": {
+      "backgroundEdge": 0.979,
+      "offPalette": 0.086,
+      "fill": 0.935
+    },
+    "three-quarter": {
+      "backgroundEdge": 0.968,
+      "offPalette": 0.109,
+      "fill": 0.96
+    },
+    "side": {
+      "backgroundEdge": 0.993,
+      "offPalette": 0.091,
+      "fill": 0.927
+    },
+    "back": {
+      "backgroundEdge": 0.984,
+      "offPalette": 0.088,
+      "fill": 0.945
+    },
+    "details": {
+      "backgroundEdge": 0.877,
+      "offPalette": 0.105,
+      "fill": 0.967
+    }
+  }
+}

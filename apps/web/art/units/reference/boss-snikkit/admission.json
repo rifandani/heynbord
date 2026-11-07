@@ -1,0 +1,32 @@
+{
+  "id": "boss-snikkit",
+  "passed": true,
+  "problems": [],
+  "measures": {
+    "front": {
+      "backgroundEdge": 0.979,
+      "offPalette": 0.098,
+      "fill": 0.96
+    },
+    "three-quarter": {
+      "backgroundEdge": 0.943,
+      "offPalette": 0.071,
+      "fill": 0.965
+    },
+    "side": {
+      "backgroundEdge": 0.962,
+      "offPalette": 0.091,
+      "fill": 0.965
+    },
+    "back": {
+      "backgroundEdge": 0.99,
+      "offPalette": 0.097,
+      "fill": 0.94
+    },
+    "details": {
+      "backgroundEdge": 0.906,
+      "offPalette": 0.093,
+      "fill": 0.92
+    }
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "id": "rocket-barrel-rider",
+  "source": "apps/web/public/creature/goblin/rocket-barrel-rider.webp",
+  "views": {
+    "front": "front.webp",
+    "three-quarter": "three-quarter.webp",
+    "side": "side.webp",
+    "back": "back.webp",
+    "details": "details.webp"
+  },
+  "props": [
+    "A powder barrel",
+    "a flame out of the back",
+    "a leather cap with goggles",
+    "a scarf"
+  ],
+  "approval": {
+    "status": "approved",
+    "by": "rifandani",
+    "date": "2026-11-07",
+    "notes": "Approved all five views and this prop list by a message to the agent. Known differences: The head is rounder and the barrel is broader. The scarf tears, cap patches, barrel burst emblem and pipe fittings differ. The flame is shorter to fit the frame. The rear rocket, barrel end and clothing pockets are inferred. The rail track and flying debris are omitted."
+  }
+}
