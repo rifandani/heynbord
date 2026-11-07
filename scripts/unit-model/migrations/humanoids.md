@@ -1,6 +1,6 @@
 # Migration: humanoids
 
-Issue #185. This record has the units, the batches and what stops the Migration. Status: **Batch 1 is on its plans, and a person approved its lists, its art and its Turnarounds. 4 of 5 units pass 11 of 11 Review Gates. bomb-lobber does not pass `interior-difference`. CI did not run.**
+Issue #185. This record has the units, the batches and what stops the Migration. Status: **Batch 1 is on its plans, and a person approved its lists, its art and its Turnarounds. 5 of 5 units pass 11 of 11 Review Gates. The new head of bomb-lobber needs approval. CI did not run.**
 
 ## Units
 
@@ -28,7 +28,7 @@ Fuse Runner and Tusk Brute are on their plans, but they have no Unit Spec yet.
 
 1. **Turnarounds.** The definition of done needs an approved Turnaround for each unit. In this scope, 6 of 65 units have one: warden-saelith and the 5 units of Batch 1. An external image model made the images, and a person approved them, so an agent cannot do this step. With no Turnaround, `interior-difference` gives an error, and an error is not a pass. So the Unit Model Review fails for each of the other 59 units. The prompts are in `apps/web/art/units/raw/turnaround/<name>/prompts.md`.
 2. **Pole bones.** 24 units need pole bones that `add_arm_ik` does not make. Add these to `body_plans/biped.py` before these units move.
-3. **One unit of Batch 1.** bomb-lobber does not pass `interior-difference`. The person decides the next step. See the results below.
+3. **One head of Batch 1.** bomb-lobber now passes `interior-difference` with a new head, but no person has seen that head. See "What a person must check".
 
 ## Batch 1
 
@@ -39,7 +39,7 @@ The batch has one unit of each race, so that it tests each plan. Skeleton is the
 | shieldbearer | `biped-medium` | 6 of 11 | 10 of 11 | 11 of 11 | Rings at hips, waist, chest and neck. Neck blend. Blue of the skirt and cape |
 | thornline-archer | `biped-medium` | 7 of 11 | 10 of 11 | 11 of 11 | Rings at hips, waist and neck. Neck and hips blends. Green of the tunic. Arrow through the ground in `death` |
 | skeleton | `biped-medium` | 7 of 11 | 10 of 11 | 11 of 11 | Teal cloth and bone colors. Body through the ground in `death` |
-| bomb-lobber | `biped-small` | 6 of 11 | 10 of 11 | 10 of 11 | Rings at waist, chest and neck. Neck blend. Neckerchief, brass, bomb and spark colors |
+| bomb-lobber | `biped-small` | 6 of 11 | 10 of 11 | 11 of 11 | Rings at waist, chest and neck. Neck blend. Neckerchief, brass, bomb and spark colors. New head for the Turnaround |
 | ashcaller-grosh | `biped-large` | 5 of 11 | 10 of 11 | 11 of 11 | New `hips` part. Rings at chest and neck. Neck blend. Skin, brass and rag colors. Staff through the ground in `death`. `staff.charms` is not a prop |
 
 In `before` and `after`, the remaining Review Gate of each unit is `interior-difference`, with an error, because no Turnaround existed. The records are in `artifacts/unit-model-review/<name>/before/gates.json`, `artifacts/unit-model-review/<name>/2026-11-06/gates.json` and `artifacts/unit-model-review/<name>/approved/gates.json`. CI did not run: this branch was not pushed. `batch-1-before.png` and `batch-1-after.png` in `artifacts/unit-model-review/migration-humanoids/` show each painting with the 4 views.
@@ -55,7 +55,7 @@ The move alone did not change a bound, a bone or a clip: after the move, `bun un
 | shieldbearer | Pass | 0.218 | 0.181 | 0.184 | 0.237 | 0.125 | 0.217 |
 | thornline-archer | Pass | 0.224 | 0.188 | 0.240 | 0.249 | 0.191 | 0.221 |
 | skeleton | Pass | 0.255 | 0.198 | 0.217 | 0.220 | 0.218 | 0.248 |
-| bomb-lobber | Fail | **0.327, fail** | 0.239 | 0.227 | 0.231 | 0.219 | 0.220 |
+| bomb-lobber | Pass | 0.262 | 0.240 | 0.228 | 0.213 | 0.234 | 0.223 |
 | ashcaller-grosh | Pass | 0.200 | 0.147 | 0.163 | 0.216 | 0.145 | 0.125 |
 
 The bands of a biped now start at the top of the head. Before this fix, they started at the top of the highest prop. `bodies` in `gates.json` gives the removed share of each image.
@@ -64,7 +64,15 @@ The bands of a biped now start at the top of the head. Before this fix, they sta
 - **ashcaller-grosh.** The staff is above the head in the model and in the Turnaround. The worst value goes from 0.222 to 0.216.
 - **thornline-archer.** The model has no prop above the head, and the Turnaround has the bow above it. So only the Turnaround changes. The worst value goes from 0.253 to 0.249.
 - **shieldbearer.** No image changes, so the values do not change.
-- **bomb-lobber.** Only the Turnaround changes, because the painted racket is above the hair. The front head band still fails, now at 0.327 on 2,495 cells. The band is on the head, so this difference is on the model and not on a prop.
+- **bomb-lobber.** Only the Turnaround changes, because the painted racket is above the hair. The front head band still failed, at 0.327 on 2,495 cells. The band is on the head, so this difference was on the model and not on a prop. A new head changes this to 0.262 on 2,916 cells. The other bands stay at 0.213 to 0.240.
+
+The new head of bomb-lobber took 3 passes, and the second pass is the model in git. The real differences were these: the face was too high, so the eyes and nose were in the band. The ears went up, and the Turnaround ears droop to the shoulders. The hair was thin at the sides. The lenses were too dark, at about `#3a2a20`, and the Turnaround lenses are about `#6e5c56`.
+
+The bands do not align exactly on this unit. Each image is fit to its own box, and the box of the Turnaround includes the racket held out at the side. So the head is at about 0.64 of the width in the Turnaround and at about 0.5 in the model. The model did not change for this reason, and the value of 0.262 includes this offset.
+
+- Pass 1: `interior-difference` was 0.261. `unit-model:clips:check` failed, because the left ear went 0.103 through the ground in `death`. The right ear also went through the net of the racket.
+- Pass 2: all checks pass, with a worst value of 0.262. The ear goes back and then down, and the clip did not change.
+- Pass 3: the strap was cleaner, and no part of the head touched the racket in `idle`. But `self-intersection` failed at the tip of the right ear, and the right side was smaller than the left. The limit is 3 passes, so this pass is not in git.
 
 This Review Gate measures luminance only. A pass does not prove that the costume is correct.
 
@@ -103,6 +111,14 @@ On 2026-11-07 rifandani approved the Batch 1 items below by a message to the age
 - **bomb-lobber spark.** `SPARK_HOT` is now a dull orange, because the fire of the painting is pale.
 - **Thin wires.** A new build has the `kit.tube` fix, so each thin tube gets its ink outline. The net of the racket of bomb-lobber is darker, and the straps of the helmet of skeleton are heavier.
 - **Shieldbearer mail.** The new rings let the mail stripes show. The stripes were one color before.
+
+**No person has approved the items of this list.**
+
+- **The new head of bomb-lobber.** It needs approval. The sheet is `artifacts/unit-model-review/migration-humanoids/batch-1-bomb-lobber-head.png`. A pass of `interior-difference` does not prove that the head looks correct.
+- **bomb-lobber right ear and racket.** In the `idle` clip, the right ear and tufts of the right side go through the net of the racket. No Review Gate reads this, and the model before this change did not have it. The racket lies where the Turnaround has the right ear, and `idle` turns the head to the racket. A fix must make the right ear shorter or change the rest pose of the racket.
+- **bomb-lobber ears and hair.** The side view of the Turnaround has a longer sweep of hair behind the head and an ear tip farther back. `death` limits both, because the head turns the left ear down to the ground in the `fallen` pose. The tufts are simple cones, and the Turnaround has soft hair.
+- **bomb-lobber height.** A tuft reaches 0.7016, so it is 0.0016 above `head_top_z`. The strap and the leather wraps of the ears are partly in their surfaces, so their edges look ragged in the sheet.
+- **bomb-lobber lenses.** `SMOKED` is now `#6e5c56`, a mean color of the Turnaround lenses. `palette` does not read this small color. The head is at delta-E 4.92 of a limit of 5.
 
 The models are still far from the paintings in ways that no Review Gate reads. For example, ashcaller-grosh has simple cloth panels where the painting has torn layers, and his right hand is not charred as in the painting.
 

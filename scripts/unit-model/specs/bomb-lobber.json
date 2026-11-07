@@ -1,7 +1,7 @@
 {
   "id": "bomb-lobber",
   "bodyPlan": "biped-small",
-  "height": 0.6950049553436849,
+  "height": 0.7016194015895402,
   "palette": {
     "bomb": "#322a29",
     "bomb_light": "#4f433f",
@@ -20,7 +20,7 @@
     "pupil": "#1d140e",
     "skin": "#c2bdb2",
     "skin_dark": "#8e887e",
-    "smoked": "#3a2a20",
+    "smoked": "#6e5c56",
     "spark": "#fac668",
     "spark_hot": "#dd8c53",
     "teeth": "#f4eedc",
@@ -107,8 +107,10 @@
     "summon": {}
   },
   "details": [
-    "big mass of wild white hair and very large ears",
-    "smoked brass goggles on the forehead",
+    "big mass of wild white hair with a puff on each side",
+    "very large ears that droop to the shoulders, with leather wraps",
+    "two open amber eyes and a wide grin",
+    "smoked brass goggles on the forehead, with a strap and a back buckle",
     "blue neckerchief and torn tan tunic with straps",
     "racket made from a barrel hoop and wire in the right hand",
     "lit bomb in the left hand",
@@ -117,51 +119,51 @@
   ],
   "regions": {
     "arm.L": {
-      "x0": 0.64,
-      "x1": 0.86,
-      "y0": 0.29,
-      "y1": 0.56
+      "x0": 0.65,
+      "x1": 0.9,
+      "y0": 0.3,
+      "y1": 0.57
     },
     "arm.R": {
-      "x0": 0.14,
-      "x1": 0.36,
-      "y0": 0.29,
+      "x0": 0.1,
+      "x1": 0.35,
+      "y0": 0.3,
       "y1": 0.58
     },
     "effect": {
-      "x0": 0.68,
-      "x1": 0.78,
-      "y0": 0.41,
+      "x0": 0.71,
+      "x1": 0.81,
+      "y0": 0.42,
       "y1": 0.46
     },
     "head": {
       "x0": 0,
       "x1": 1,
       "y0": 0,
-      "y1": 0.33
+      "y1": 0.42
     },
     "leg.L": {
       "x0": 0.52,
-      "x1": 0.73,
-      "y0": 0.57,
+      "x1": 0.76,
+      "y0": 0.58,
       "y1": 1
     },
     "leg.R": {
-      "x0": 0.27,
+      "x0": 0.24,
       "x1": 0.48,
-      "y0": 0.57,
+      "y0": 0.58,
       "y1": 1
     },
     "prop": {
-      "x0": 0.1,
-      "x1": 0.78,
+      "x0": 0.05,
+      "x1": 0.81,
       "y0": 0.13,
       "y1": 0.75
     },
     "torso": {
-      "x0": 0.28,
-      "x1": 0.74,
-      "y0": 0.28,
+      "x0": 0.26,
+      "x1": 0.77,
+      "y0": 0.29,
       "y1": 0.72
     }
   },

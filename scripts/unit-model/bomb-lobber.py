@@ -1,13 +1,14 @@
 """
 Bomb Lobber (`goblin.bombLobber`), a Unit Model (art direction 2.2).
 
-A tabletop miniature of the card painting: a plump pale goblin woman with a
-big mass of wild white hair, very large ears, a wide grin and one eye shut
-in a wink, smoked brass goggles on her forehead, a blue neckerchief, a torn
-tan tunic with leather straps, a brass canteen at her left hip, brown
-trousers with a torn hem, leather wraps on the calves and bare feet. She
-holds a big racket made from a barrel hoop and wire in her right hand and a
-lit bomb in her left hand, and a wicker basket of bombs hangs at her right
+A tabletop miniature of the card painting and its approved Turnaround: a
+plump pale goblin woman with a big mass of wild white hair, very large ears
+that droop to her shoulders, a wide grin and two open eyes (the card has a
+wink, and the Turnaround wins here), smoked brass goggles on her forehead, a
+blue neckerchief, a torn tan tunic with leather straps, a brass canteen at her
+left hip, brown trousers with a torn hem, leather wraps on the calves and bare
+feet. She holds a big racket made from a barrel hoop and wire in her right hand
+and a lit bomb in her left hand, and a wicker basket of bombs hangs at her right
 hip. Run it in Blender (see `unit_model_kit.py`). It writes
 `apps/web/art/units/raw/bomb-lobber.glb`; then
 `bun unit-model:pack bomb-lobber` packs it for the game.
@@ -70,7 +71,7 @@ TEETH = hex_color("#f4eedc")
 TONGUE = hex_color("#c85a50")
 BRASS = hex_color("#cc9b55")
 BRASS_DARK = hex_color("#946933")
-SMOKED = hex_color("#3a2a20")
+SMOKED = hex_color("#6e5c56")
 NECKERCHIEF = hex_color("#494f5c")
 TUNIC = hex_color("#c4a476")
 TUNIC_DARK = hex_color("#9a7c52")
@@ -111,7 +112,7 @@ WAIST_Z = TABLE.waist_z
 CHEST_Z = TABLE.chest_z
 SHOULDER_Z = TABLE.shoulder_z
 NECK_Z = TABLE.neck_z
-HEAD_C = Vector((0, -0.02, 0.59))
+HEAD_C = Vector((0, -0.02, 0.578))
 KNEE_Z = TABLE.knee_z
 ANKLE_Z = TABLE.ankle_z
 LEG_X = TABLE.hip_x
@@ -158,69 +159,112 @@ def torso_weights(co):
 # --- Parts ---------------------------------------------------------------------
 
 
+def flatten(verts, root, normal, share):
+    """Presses `verts` toward the plane through `root` with this `normal`."""
+    for vert in verts:
+        vert.co -= normal * (vert.co - root).dot(normal) * (1 - share)
+    for face in faces_of(verts):
+        face.normal_update()
+
+
+def ear(part, sign):
+    """A big leaf of an ear, with a leather wrap. It goes back from the head and then droops to the shoulder."""
+    path = [
+        HEAD_C + Vector((0.066 * sign, 0.008, -0.016)),
+        HEAD_C + Vector((0.094 * sign, 0.07, -0.04)),
+        HEAD_C + Vector((0.118 * sign, 0.118, -0.105)),
+        HEAD_C + Vector((0.165 * sign, 0.066, -0.172)),
+    ]
+    along = (path[-1] - path[0]).normalized()
+    normal = Vector((0.92 * sign, -0.35, 0.18))
+    normal = (normal - along * normal.dot(along)).normalized()
+    blade = kit.tube(part.bm, path, [0.02, 0.036, 0.022, 0.002], 8)
+    flatten(blade, path[0], normal, 0.3)
+    for face in faces_of(blade):
+        part.paint([face], EAR if face.normal.y < 0 else CHEEK)
+    wrap_at = path[1].lerp(path[2], 0.35)
+    wrap = kit.cone(part.bm, wrap_at - along * 0.012, wrap_at + along * 0.012, 0.034, 0.032, 8)
+    flatten(wrap, path[0], normal, 0.4)
+    part.paint(faces_of(wrap), LEATHER)
+
+
 def head_parts():
     parts = []
     head = Part("head", SKIN, "head", shade=0.1)
-    kit.sphere(head.bm, HEAD_C, (0.078, 0.074, 0.074), 14, 10)
+    kit.sphere(head.bm, HEAD_C, (0.082, 0.076, 0.08), 14, 10)
     # Round cheeks, a round chin and a short, round nose.
     for sign in (1, -1):
-        cheek = kit.sphere(head.bm, HEAD_C + Vector((0.038 * sign, -0.046, -0.024)), (0.03, 0.026, 0.026), 8, 6)
+        cheek = kit.sphere(head.bm, HEAD_C + Vector((0.046 * sign, -0.05, -0.03)), (0.03, 0.024, 0.024), 8, 6)
         head.paint(faces_of(cheek), CHEEK)
-    kit.sphere(head.bm, HEAD_C + Vector((0, -0.03, -0.05)), (0.046, 0.038, 0.032), 10, 6)
-    nose = kit.sphere(head.bm, HEAD_C + Vector((0, -0.08, -0.004)), (0.018, 0.022, 0.018), 8, 6)
+    kit.sphere(head.bm, HEAD_C + Vector((0, -0.03, -0.055)), (0.05, 0.04, 0.03), 10, 6)
+    nose = kit.sphere(head.bm, HEAD_C + Vector((0, -0.08, -0.028)), (0.014, 0.016, 0.012), 8, 6)
     head.paint(faces_of(nose), CHEEK)
     for sign in (1, -1):
-        # Very large goblin ears, out to the sides and up.
-        ear = kit.cone(head.bm, HEAD_C + Vector((0.068 * sign, 0.012, 0.01)), HEAD_C + Vector((0.21 * sign, 0.04, 0.07)), 0.044, 0.003, 7, squash=0.3)
-        for face in faces_of(ear):
-            if face.normal.y < -0.3:
-                head.paint([face], EAR)
+        ear(head, sign)
     parts.append(head)
 
     face = Part("face", MOUTH, "head", shade=0)
     # A wide open grin: the dark mouth, a row of top teeth and the tongue.
-    mouth_c = HEAD_C + Vector((0, -0.06, -0.038))
-    kit.sphere(face.bm, mouth_c, (0.036, 0.016, 0.018), 10, 6)
-    teeth = kit.box(face.bm, mouth_c + Vector((0, -0.01, 0.009)), (0.05, 0.008, 0.009))
+    mouth_c = HEAD_C + Vector((0, -0.066, -0.05))
+    kit.sphere(face.bm, mouth_c, (0.04, 0.016, 0.018), 10, 6)
+    teeth = kit.box(face.bm, mouth_c + Vector((0, -0.01, 0.009)), (0.056, 0.008, 0.009))
     face.paint(faces_of(teeth), TEETH)
     tongue = kit.sphere(face.bm, mouth_c + Vector((0, -0.008, -0.008)), (0.018, 0.008, 0.007), 6, 4)
     face.paint(faces_of(tongue), TONGUE)
-    # The left eye is open, and the right eye, on the camera side, is shut in a wink.
-    center = HEAD_C + Vector((0.032, -0.062, 0.016))
-    eye = kit.sphere(face.bm, center, (0.02, 0.012, 0.02), 10, 6)
-    face.paint(faces_of(eye), EYES)
-    pupil = kit.sphere(face.bm, center + Vector((-0.004, -0.011, 0)), (0.008, 0.004, 0.009), 6, 4)
-    face.paint(faces_of(pupil), PUPIL)
-    wink = HEAD_C + Vector((-0.032, -0.064, 0.014))
-    shut = kit.tube(face.bm, [wink + Vector((0.016, 0.002, -0.002)), wink + Vector((0, -0.004, 0.006)), wink + Vector((-0.016, 0.002, -0.004))], [0.0035, 0.004, 0.0035], 4)
-    face.paint(faces_of(shut), PUPIL)
+    # Both eyes are open, as in the approved Turnaround.
+    for sign in (1, -1):
+        center = HEAD_C + Vector((0.034 * sign, -0.062, -0.012))
+        eye = kit.sphere(face.bm, center, (0.02, 0.012, 0.02), 10, 6)
+        face.paint(faces_of(eye), EYES)
+        pupil = kit.sphere(face.bm, center + Vector((-0.003 * sign, -0.011, 0)), (0.009, 0.004, 0.01), 6, 4)
+        face.paint(faces_of(pupil), PUPIL)
     parts.append(face)
 
     hair = Part("hair", HAIR, "head", shade=0.08)
-    # A big mass of wild white hair, with tufts that stick out everywhere.
-    kit.sphere(hair.bm, HEAD_C + Vector((0, 0.025, 0.045)), (0.088, 0.084, 0.056), 12, 7)
-    kit.sphere(hair.bm, HEAD_C + Vector((0, 0.055, -0.005)), (0.08, 0.055, 0.068), 10, 6)
-    for index in range(11):
-        a = math.radians(-150 + index * 30)
-        root = HEAD_C + Vector((0.058 * math.sin(a), 0.03 + 0.045 * math.cos(a), 0.055))
-        reach = 0.05 + 0.025 * ((index * 5) % 3)
-        tip = root + Vector((reach * math.sin(a), 0.02 + reach * math.cos(a), 0.045 - 0.02 * (index % 3)))
-        tuft = kit.cone(hair.bm, root, tip, 0.032, 0.006, 5)
-        if index % 2:
+    # A big mass of wild white hair behind the head, and a puff that stands up on each side.
+    kit.sphere(hair.bm, HEAD_C + Vector((0, 0.035, 0.045)), (0.09, 0.085, 0.058), 12, 7)
+    kit.sphere(hair.bm, HEAD_C + Vector((0, 0.05, -0.012)), (0.1, 0.08, 0.085), 12, 7)
+    for sign in (1, -1):
+        puff = HEAD_C + Vector((0.085 * sign, 0.04, 0.05))
+        kit.sphere(hair.bm, puff, (0.052, 0.075, 0.05), 10, 6)
+        # Tufts stick out of each puff, from the top of the head to the side.
+        for index in range(5):
+            a = math.radians(-10 + index * 26)
+            out = Vector((math.sin(a) * sign, 0.25, math.cos(a))).normalized()
+            reach = 0.016 + 0.05 * abs(math.sin(a)) + 0.008 * (index % 2)
+            root = puff + out * 0.04
+            tuft = kit.cone(hair.bm, root, root + out * reach, 0.014, 0.003, 5)
+            if index % 3 == 2:
+                hair.paint(faces_of(tuft), HAIR_DARK)
+        # A long strand at the side of the face.
+        root = HEAD_C + Vector((0.076 * sign, -0.024, 0.02))
+        kit.cone(hair.bm, root, root + Vector((0.012 * sign, 0.006, -0.082)), 0.012, 0.003, 5)
+    # The hair hangs down behind the head, to the neck.
+    for x, drop in ((-0.06, 0.05), (-0.02, 0.06), (0.025, 0.055), (0.065, 0.045)):
+        root = HEAD_C + Vector((x, 0.095, -0.06))
+        tuft = kit.cone(hair.bm, root, root + Vector((x * 0.3, -0.012, -drop)), 0.02, 0.004, 5)
+        if x < 0:
             hair.paint(faces_of(tuft), HAIR_DARK)
     parts.append(hair)
 
-    # Smoked brass goggles up on the forehead, on a leather band.
+    # Smoked brass goggles up on the forehead. The strap goes low around the back of the hair.
     goggles = Part("goggles", BRASS, "head", shade=0.05)
-    band = kit.torus(goggles.bm, HEAD_C + Vector((0, 0.004, 0.036)), (0, 0.25, 1), 0.08, 0.007, 16, 4)
+    strap = []
+    for index in range(-6, 7):
+        a = math.radians(index * 20)
+        strap.append(HEAD_C + Vector((0.108 * math.sin(a), 0.035 + 0.1 * math.cos(a), 0.016 - 0.036 * math.cos(a))))
+    ends = [HEAD_C + Vector((0.066 * sign, -0.05, 0.05)) for sign in (-1, 1)]
+    band = kit.tube(goggles.bm, [ends[0], *strap, ends[1]], [0.008] * (len(strap) + 2), 5)
     goggles.paint(faces_of(band), LEATHER_DARK)
+    kit.box(goggles.bm, HEAD_C + Vector((0, 0.137, -0.02)), (0.03, 0.008, 0.024))
+    bridge = kit.box(goggles.bm, HEAD_C + Vector((0, -0.066, 0.055)), (0.03, 0.012, 0.012))
+    goggles.paint(faces_of(bridge), LEATHER)
     for sign in (1, -1):
-        center = HEAD_C + Vector((0.03 * sign, -0.07, 0.056))
-        out = Vector((0.15 * sign, -1, 0.35)).normalized()
-        kit.cone(goggles.bm, center - out * 0.006, center + out * 0.022, 0.024, 0.022, 12)
-        rim = kit.torus(goggles.bm, center + out * 0.022, out, 0.021, 0.005, 12, 3)
-        goggles.paint(faces_of(rim), BRASS_DARK)
-        lens = kit.cone(goggles.bm, center + out * 0.02, center + out * 0.024, 0.018, 0.018, 12)
+        center = HEAD_C + Vector((0.042 * sign, -0.045, 0.05))
+        out = Vector((0.18 * sign, -1, 0.55)).normalized()
+        kit.cone(goggles.bm, center - out * 0.006, center + out * 0.02, 0.028, 0.026, 12)
+        kit.torus(goggles.bm, center + out * 0.02, out, 0.025, 0.0035, 12, 3)
+        lens = kit.cone(goggles.bm, center + out * 0.019, center + out * 0.0235, 0.0215, 0.0215, 12)
         goggles.paint(faces_of(lens), SMOKED)
     parts.append(goggles)
 
