@@ -1,7 +1,7 @@
 {
   "name": "skeleton",
-  "passed": false,
-  "exitCode": 2,
+  "passed": true,
+  "exitCode": 0,
   "provenance": {
     "review": "approved",
     "rawSha256": "1281aa91db78131996d992f6b31d151617f72583c9a74bff98ec1a3d7175b437",
@@ -171,9 +171,74 @@
     {
       "gate": "interior-difference",
       "question": "What differs from the Turnaround inside the silhouette, banded by height?",
-      "status": "error",
-      "exitCode": 2,
-      "error": "exit code 2 with no report"
+      "status": "pass",
+      "exitCode": 0,
+      "report": {
+        "limit": 0.28,
+        "bodies": [
+          {
+            "view": "front",
+            "renderRaised": 0.189,
+            "baselineRaised": 0.1354
+          },
+          {
+            "view": "back",
+            "renderRaised": 0.1767,
+            "baselineRaised": 0.1292
+          }
+        ],
+        "bands": [
+          {
+            "view": "front",
+            "band": "head",
+            "status": "pass",
+            "difference": 0.2551641285011207,
+            "cellsCompared": 2224,
+            "detail": "measured"
+          },
+          {
+            "view": "front",
+            "band": "torso",
+            "status": "pass",
+            "difference": 0.19750028549048157,
+            "cellsCompared": 7326,
+            "detail": "measured"
+          },
+          {
+            "view": "front",
+            "band": "legs",
+            "status": "pass",
+            "difference": 0.21740242292203074,
+            "cellsCompared": 2750,
+            "detail": "measured"
+          },
+          {
+            "view": "back",
+            "band": "head",
+            "status": "pass",
+            "difference": 0.22026209393054957,
+            "cellsCompared": 2214,
+            "detail": "measured"
+          },
+          {
+            "view": "back",
+            "band": "torso",
+            "status": "pass",
+            "difference": 0.21784809302470778,
+            "cellsCompared": 7072,
+            "detail": "measured"
+          },
+          {
+            "view": "back",
+            "band": "legs",
+            "status": "pass",
+            "difference": 0.247693154162994,
+            "cellsCompared": 2620,
+            "detail": "measured"
+          }
+        ],
+        "problems": []
+      }
     },
     {
       "gate": "self-intersection",

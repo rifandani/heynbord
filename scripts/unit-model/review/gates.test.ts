@@ -1,4 +1,11 @@
-import { afterEach, beforeEach, describe, expect, test } from "bun:test";
+import {
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  setDefaultTimeout,
+  test,
+} from "bun:test";
 import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
@@ -18,6 +25,9 @@ import { TURNTABLE_VIEWS, cutoutId } from "./manifest.ts";
 import type { ExportedMesh, MeshExport } from "./mesh-export.ts";
 
 type Vector3 = readonly [number, number, number];
+
+// A run of all of the Review Gates takes about 5 seconds on a busy machine.
+setDefaultTimeout(60_000);
 
 const FIGURE_COLOR = { r: 47, g: 106, b: 53 };
 /** `FIGURE_COLOR` in linear RGB, as a Raw Export stores it. */
@@ -601,6 +611,131 @@ describe("turntable", () => {
   });
 });
 
+interface StandingFigure {
+  /** How far the top of the sword is above the head, in pixels. */
+  readonly swordRise: number;
+  readonly headGray?: number;
+}
+
+/** The bands are 19%, 36% and 45% of a body of 200 pixels. */
+const BODY = { left: 60, top: 90, width: 40, head: 38, torso: 72, legs: 90 };
+const SWORD = { left: 40, width: 6, bottom: 210 };
+
+const rectangle = (
+  left: number,
+  top: number,
+  width: number,
+  height: number,
+  gray: number
+): sharp.OverlayOptions => ({
+  input: {
+    create: {
+      width,
+      height,
+      channels: 3,
+      background: { r: gray, g: gray, b: gray },
+    },
+  },
+  left,
+  top,
+});
+
+/** A standing body with a head, a torso and legs, and a sword at its side. */
+const standing = (
+  { headGray = 90, swordRise }: StandingFigure,
+  background: sharp.Color
+): sharp.Sharp => {
+  const swordTop = BODY.top - swordRise;
+  return sharp({
+    create: { width: 200, height: 300, channels: 4, background },
+  }).composite([
+    rectangle(SWORD.left, swordTop, SWORD.width, SWORD.bottom - swordTop, 180),
+    rectangle(BODY.left, BODY.top, BODY.width, BODY.head, headGray),
+    rectangle(BODY.left, BODY.top + BODY.head, BODY.width, BODY.torso, 230),
+    rectangle(
+      BODY.left,
+      BODY.top + BODY.head + BODY.torso,
+      BODY.width,
+      BODY.legs,
+      30
+    ),
+  ]);
+};
+
+/** The cutouts show `model`, and both Turnaround views show `painted`. */
+const writeStanding = async (
+  model: StandingFigure,
+  painted: StandingFigure
+): Promise<void> => {
+  const clear = { r: 0, g: 0, b: 0, alpha: 0 };
+  const flat = { r: 128, g: 128, b: 128, alpha: 1 };
+  await Promise.all([
+    ...TURNTABLE_VIEWS.map((view) =>
+      standing(model, clear)
+        .png()
+        .toFile(path.join(directory, `${cutoutId(view)}.png`))
+    ),
+    ...["front", "back"].map((view) =>
+      standing(painted, flat)
+        .flatten()
+        .webp({ lossless: true })
+        .toFile(path.join(directory, `${view}.webp`))
+    ),
+  ]);
+};
+
+const HEAD = tube({ part: "head", region: "head", x: 0, bones: ["neck"] });
+const LOW_STAFF: MeshExport = {
+  meshes: [...FIGURE, HEAD],
+  bones: SKELETON,
+};
+const RAISED_STAFF: MeshExport = {
+  meshes: [...FIGURE, HEAD].map((mesh) =>
+    mesh.part === "staff"
+      ? {
+          ...mesh,
+          vertices: mesh.vertices.map(([x, y, z]) => [x, y + 0.4, z]),
+        }
+      : mesh
+  ),
+  bones: SKELETON,
+};
+
+const standingRecord = async (
+  meshes: MeshExport,
+  spec: UnitSpec = SPEC
+): Promise<GateRecord> =>
+  recordOf(await runGates(sources({ meshes, spec })), "interior-difference");
+
+/** A type, not an interface, so that it can compare with the report. */
+type BandRecord = Readonly<{
+  band: string;
+  status: string;
+  difference: number;
+}>;
+
+type RaisedRecord = Readonly<{ renderRaised: number; baselineRaised: number }>;
+
+const bandsOf = ({ report }: GateRecord): readonly BandRecord[] =>
+  // SAFETY: `interior` of `unit_gates.py` always returns these records.
+  report?.bands as readonly BandRecord[];
+
+const bandStatuses = (record: GateRecord): readonly string[] =>
+  bandsOf(record).map(({ band, status }) => `${band}: ${status}`);
+
+const bandValues = (record: GateRecord): readonly number[] =>
+  bandsOf(record).map(({ difference }) => Number(difference.toFixed(2)));
+
+/** The raised share of the render and of the baseline, for each view. */
+const raisedShares = ({ report }: GateRecord): readonly number[] =>
+  // SAFETY: `interior` of `unit_gates.py` always returns these records.
+  ((report?.bodies ?? []) as readonly RaisedRecord[]).flatMap(
+    ({ baselineRaised, renderRaised }) => [
+      Number(renderRaised.toFixed(2)),
+      Number(baselineRaised.toFixed(2)),
+    ]
+  );
+
 describe("interior-difference", () => {
   test("fails when the figure is far from the Turnaround inside the silhouette", async () => {
     await sharp({
@@ -634,6 +769,58 @@ describe("interior-difference", () => {
   test("gives an error, not a pass, with no Turnaround", async () => {
     const report = await runGates(sources({ turnaround: null }));
     expect(blocked(report)).toEqual(["interior-difference: error"]);
+  });
+
+  test("measures the body when the model raises a prop, and the Turnaround raises it less", async () => {
+    await writeStanding({ swordRise: 80 }, { swordRise: 20 });
+    const record = await standingRecord(RAISED_STAFF);
+    expect(bandValues(record)).toEqual([0, 0, 0, 0, 0, 0]);
+    expect(raisedShares(record)).toEqual([0.29, 0.09, 0.29, 0.09]);
+  });
+
+  test("measures the body when only the Turnaround raises a prop", async () => {
+    await writeStanding({ swordRise: 0 }, { swordRise: 80 });
+    const record = await standingRecord(LOW_STAFF);
+    expect(bandValues(record)).toEqual([0, 0, 0, 0, 0, 0]);
+    expect(raisedShares(record)).toEqual([0, 0.29, 0, 0.29]);
+  });
+
+  test("fails on a wrong head below a raised prop, in the head band only", async () => {
+    await writeStanding({ swordRise: 80, headGray: 225 }, { swordRise: 20 });
+    const record = await standingRecord(RAISED_STAFF);
+    expect(bandStatuses(record)).toEqual([
+      "head: fail",
+      "torso: pass",
+      "legs: pass",
+      "head: fail",
+      "torso: pass",
+      "legs: pass",
+    ]);
+  });
+
+  test("gives the bands of the full figure when no prop is above the head", async () => {
+    // Gray 90 and gray 39 are 51 of 255 apart, which is 0.2. The sword is in the
+    // head band with no difference, and 40 of the 46 wide columns are the head.
+    await writeStanding({ swordRise: 0 }, { swordRise: 0, headGray: 39 });
+    const record = await standingRecord(LOW_STAFF);
+    expect(bandValues(record)).toEqual([0.17, 0, 0, 0.17, 0, 0]);
+    expect(raisedShares(record)).toEqual([0, 0, 0, 0]);
+  });
+
+  test("keeps the whole render when the Raw Export has no part above the head", async () => {
+    // Tall hair at the side of a head looks the same as a raised sword.
+    await writeStanding({ swordRise: 80 }, { swordRise: 80 });
+    const record = await standingRecord(LOW_STAFF);
+    expect(raisedShares(record)).toEqual([0, 0.29, 0, 0.29]);
+  });
+
+  test("keeps both whole images for a plan that does not stand", async () => {
+    await writeStanding({ swordRise: 80 }, { swordRise: 20 });
+    const record = await standingRecord(RAISED_STAFF, {
+      ...SPEC,
+      bodyPlan: "quadruped",
+    });
+    expect(raisedShares(record)).toEqual([0, 0, 0, 0]);
   });
 });
 
@@ -1018,6 +1205,17 @@ describe("runCommand", () => {
       status: "error",
       exitCode: 2,
     });
+  });
+
+  test("keeps the report of exit code 2 in the record, and it stays an error", () => {
+    const code = `import sys; print('{"bands": [0.314]}'); sys.exit(2)`;
+    const record = runCommand(gate, { ...command(code), notes: { seen: 1 } });
+    expect(record).toMatchObject({
+      status: "error",
+      exitCode: 2,
+      report: { bands: [0.314], seen: 1 },
+    });
+    expect(record.error).not.toContain("no report");
   });
 
   test("gives an error for exit code 0 with no report", () => {

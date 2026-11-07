@@ -1,6 +1,6 @@
 # Migration: humanoids
 
-Issue #185. This record has the units, the batches and what stops the Migration. Status: **Batch 1 is on its plans, and a person approved its lists, its art and its Turnarounds. 3 of 5 units pass 11 of 11 Review Gates. skeleton and bomb-lobber do not pass `interior-difference`. CI did not run.**
+Issue #185. This record has the units, the batches and what stops the Migration. Status: **Batch 1 is on its plans, and a person approved its lists, its art and its Turnarounds. 4 of 5 units pass 11 of 11 Review Gates. bomb-lobber does not pass `interior-difference`. CI did not run.**
 
 ## Units
 
@@ -28,7 +28,7 @@ Fuse Runner and Tusk Brute are on their plans, but they have no Unit Spec yet.
 
 1. **Turnarounds.** The definition of done needs an approved Turnaround for each unit. In this scope, 6 of 65 units have one: warden-saelith and the 5 units of Batch 1. An external image model made the images, and a person approved them, so an agent cannot do this step. With no Turnaround, `interior-difference` gives an error, and an error is not a pass. So the Unit Model Review fails for each of the other 59 units. The prompts are in `apps/web/art/units/raw/turnaround/<name>/prompts.md`.
 2. **Pole bones.** 24 units need pole bones that `add_arm_ik` does not make. Add these to `body_plans/biped.py` before these units move.
-3. **Two units of Batch 1.** skeleton and bomb-lobber do not pass `interior-difference`. The person decides the next step. See the results below.
+3. **One unit of Batch 1.** bomb-lobber does not pass `interior-difference`. The person decides the next step. See the results below.
 
 ## Batch 1
 
@@ -38,7 +38,7 @@ The batch has one unit of each race, so that it tests each plan. Skeleton is the
 | --- | --- | --- | --- | --- | --- |
 | shieldbearer | `biped-medium` | 6 of 11 | 10 of 11 | 11 of 11 | Rings at hips, waist, chest and neck. Neck blend. Blue of the skirt and cape |
 | thornline-archer | `biped-medium` | 7 of 11 | 10 of 11 | 11 of 11 | Rings at hips, waist and neck. Neck and hips blends. Green of the tunic. Arrow through the ground in `death` |
-| skeleton | `biped-medium` | 7 of 11 | 10 of 11 | 10 of 11 | Teal cloth and bone colors. Body through the ground in `death` |
+| skeleton | `biped-medium` | 7 of 11 | 10 of 11 | 11 of 11 | Teal cloth and bone colors. Body through the ground in `death` |
 | bomb-lobber | `biped-small` | 6 of 11 | 10 of 11 | 10 of 11 | Rings at waist, chest and neck. Neck blend. Neckerchief, brass, bomb and spark colors |
 | ashcaller-grosh | `biped-large` | 5 of 11 | 10 of 11 | 11 of 11 | New `hips` part. Rings at chest and neck. Neck blend. Skin, brass and rag colors. Staff through the ground in `death`. `staff.charms` is not a prop |
 
@@ -53,14 +53,18 @@ The move alone did not change a bound, a bone or a clip: after the move, `bun un
 | Unit | Result | Front head | Front torso | Front legs | Back head | Back torso | Back legs |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | shieldbearer | Pass | 0.218 | 0.181 | 0.184 | 0.237 | 0.125 | 0.217 |
-| thornline-archer | Pass | 0.236 | 0.190 | 0.239 | 0.253 | 0.191 | 0.224 |
-| skeleton | Error | **0.277, error** | 0.228 | 0.180 | **0.314, fail** | 0.227 | 0.225 |
-| bomb-lobber | Fail | **0.325, fail** | 0.246 | 0.223 | 0.233 | 0.210 | 0.224 |
-| ashcaller-grosh | Pass | 0.215 | 0.143 | 0.166 | 0.222 | 0.150 | 0.126 |
+| thornline-archer | Pass | 0.224 | 0.188 | 0.240 | 0.249 | 0.191 | 0.221 |
+| skeleton | Pass | 0.255 | 0.198 | 0.217 | 0.220 | 0.218 | 0.248 |
+| bomb-lobber | Fail | **0.327, fail** | 0.239 | 0.227 | 0.231 | 0.219 | 0.220 |
+| ashcaller-grosh | Pass | 0.200 | 0.147 | 0.163 | 0.216 | 0.145 | 0.125 |
 
-- **skeleton.** The front head band has 95 cells, and the minimum is 100, so that band gives an error. The back head band has 165 cells. The bands are shares of the height of the figure, and the raised sword is part of the figure. So the top 19% has mostly the sword and not the head.
-- **skeleton record.** `gates.json` has no band values, only `exit code 2 with no report`. That text is not correct: the Python gate prints a report, and `runCommand` in `review/gates.ts` discards a report with exit code 2. The values above come from `python3 scripts/unit-model/review/unit_gates.py interior` on the same inputs.
-- **bomb-lobber.** Only the front head band fails, at 0.325 on 2,022 cells.
+The bands of a biped now start at the top of the head. Before this fix, they started at the top of the highest prop. `bodies` in `gates.json` gives the removed share of each image.
+
+- **skeleton.** The result changed from an error to a pass. The top 19% had mostly the raised sword: the front head band had 95 cells, and the back head band had 165 cells at 0.314. The band is now on the helmet and the skull, with 2,224 and 2,214 cells. A flat black, skin or white head in this band reads 0.349 to 0.563, so the pass is not empty.
+- **ashcaller-grosh.** The staff is above the head in the model and in the Turnaround. The worst value goes from 0.222 to 0.216.
+- **thornline-archer.** The model has no prop above the head, and the Turnaround has the bow above it. So only the Turnaround changes. The worst value goes from 0.253 to 0.249.
+- **shieldbearer.** No image changes, so the values do not change.
+- **bomb-lobber.** Only the Turnaround changes, because the painted racket is above the hair. The front head band still fails, now at 0.327 on 2,495 cells. The band is on the head, so this difference is on the model and not on a prop.
 
 This Review Gate measures luminance only. A pass does not prove that the costume is correct.
 

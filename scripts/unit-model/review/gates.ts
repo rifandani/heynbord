@@ -600,7 +600,12 @@ const interiorDifference = async (
   return {
     args: unitGate(
       "interior",
-      await writeInput(context, "interior.json", { pairs })
+      await writeInput(context, "interior.json", {
+        pairs,
+        meshes: context.meshesFile,
+        // The head of a standing figure is at the top. It is not at the top of a beast.
+        standing: context.sources.spec.bodyPlan.startsWith("biped"),
+      })
     ),
   };
 };
@@ -767,7 +772,9 @@ export const runCommand = (
       error:
         run.stderr?.trim() ||
         run.error?.message ||
-        `exit code ${run.status} with no report`,
+        `exit code ${run.status} ${report ? "and a report" : "with no report"}`,
+      // A Review Gate can measure, and then refuse the result. Keep the values.
+      ...(report && { report: { ...report, ...notes } }),
     };
   }
   const extra = problems?.(report) ?? [];

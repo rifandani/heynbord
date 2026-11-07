@@ -12,15 +12,18 @@ import json
 import math
 from pathlib import Path
 import re
+import statistics
+import struct
 import sys
 from typing import Any
+import zlib
 
 sys.path.insert(0, str(Path(__file__).resolve().parent / "vendor"))
 
 import chirality  # noqa: E402
 import joint_loops  # noqa: E402
 from color_metrics import ciede2000, srgb_to_lab  # noqa: E402
-from extract_pbr_evidence import load_image  # noqa: E402
+from extract_pbr_evidence import build_foreground_mask, load_image  # noqa: E402
 import interior_difference  # noqa: E402
 import turntable_gate  # noqa: E402
 
@@ -34,10 +37,16 @@ HOLE_RASTER_MARGIN = 3
 EDGE_TOLERANCE = 1e-6
 
 # The band that the interior difference reads, as a share of the figure height.
-# `interior_difference.py` gives 0.19 for the head of a standing figure.
+# `interior_difference.py` gives 0.19 for the head of a standing figure. On a biped,
+# `_without_raised_rows` first removes what is above the head, so that this is true.
 INTERIOR_BANDS = {"head": (0.0, 0.19), "torso": (0.19, 0.55), "legs": (0.55, 1.0)}
 # Fewer cells than this is not evidence. A small figure has about 1,000 in a band.
 MIN_INTERIOR_CELLS = 100
+# Half of the column on the body axis, as a share of the figure height. A head is
+# about 0.12 of the height wide, and a held prop is at the side of the body.
+BODY_AXIS_REACH = 0.06
+# A rise of less than one cell of the comparison lattice does not move a band.
+MIN_RISE = 1 / interior_difference.GRID
 # The largest mean luminance difference to the Turnaround, as a share of full
 # range. Calibrated on 2026-11-06 on Warden Saelith. The model is at 0.175 to 0.270,
 # and its worst band is the front head. Seeds of the front view: a head
@@ -177,15 +186,79 @@ def turntable(request: dict[str, Any]) -> tuple[int, dict[str, Any]]:
     return (CLEAN if report["passed"] else FAILED), report
 
 
+def _rises_above_head(meshes: list[dict[str, Any]]) -> bool:
+    """Is a part above the head? Hair at the side of a cutout can look like a prop."""
+    heights = [vertex[1] for mesh in meshes for vertex in mesh["vertices"]]
+    head = [vertex[1] for mesh in meshes if mesh["region"] == "head" for vertex in mesh["vertices"]]
+    if not head:
+        return False
+    return (max(heights) - max(head)) / (max(heights) - min(heights)) >= MIN_RISE
+
+
+def _write_png(path: Path, width: int, height: int, pixels: list[tuple[int, int, int, int]]) -> None:
+    def chunk(kind: bytes, payload: bytes) -> bytes:
+        return struct.pack(">I", len(payload)) + kind + payload + struct.pack(">I", zlib.crc32(kind + payload))
+
+    rows = b"".join(
+        b"\0" + bytes(channel for pixel in pixels[row * width : (row + 1) * width] for channel in pixel)
+        for row in range(height)
+    )
+    header = struct.pack(">IIBBBBB", width, height, 8, 6, 0, 0, 0)
+    path.write_bytes(
+        b"\x89PNG\r\n\x1a\n" + chunk(b"IHDR", header) + chunk(b"IDAT", zlib.compress(rows)) + chunk(b"IEND", b"")
+    )
+
+
+def _without_raised_rows(source: Path) -> tuple[Path, float]:
+    """
+    The image with no figure above the head, and the share of the figure height
+    that it removed.
+
+    The bands are shares of the height of the figure, so the top of the head must
+    be the top of the figure. A Turnaround has no region data, and its proportions
+    are not those of the model. So this finds the head in the silhouette: the
+    highest figure pixel near the median column of the figure. A prop at the side
+    is not on this column. An image with no rise stays the same file.
+    """
+    width, height, pixels, _warnings = load_image(source)
+    mask, _diagnostics, _mask_warnings = build_foreground_mask(width, height, pixels)
+    _left, top, _right, bottom = interior_difference._bbox_corners(mask, width, height)
+    axis = int(statistics.median(index % width for index, solid in enumerate(mask) if solid))
+    reach = int((bottom - top) * BODY_AXIS_REACH)
+    columns = range(max(0, axis - reach), min(width, axis + reach + 1))
+    head_top = next(
+        (row for row in range(top, bottom) if any(mask[row * width + column] for column in columns)), top
+    )
+    raised = (head_top - top) / (bottom - top)
+    if raised < MIN_RISE:
+        return source, 0.0
+    # The first pixel is the background of a Turnaround, and clear in a cutout.
+    target = source.with_name(f"body-{source.name}")
+    _write_png(target, width, height, [pixels[0]] * (head_top * width) + pixels[head_top * width :])
+    return target, raised
+
+
 def interior(request: dict[str, Any]) -> tuple[int, dict[str, Any]]:
     """What differs from the Turnaround inside the silhouette, banded by height?"""
     records = []
+    bodies = []
     code = CLEAN
+    standing = request["standing"]
+    raised_render = standing and _rises_above_head(_load_meshes(request["meshes"]))
     for pair in request["pairs"]:
+        baseline, baseline_raised = Path(pair["baseline"]), 0.0
+        render, render_raised = Path(pair["render"]), 0.0
+        if standing:
+            baseline, baseline_raised = _without_raised_rows(baseline)
+        if raised_render:
+            render, render_raised = _without_raised_rows(render)
+        bodies.append({
+            "view": pair["view"],
+            "renderRaised": round(render_raised, 4),
+            "baselineRaised": round(baseline_raised, 4),
+        })
         for band, (start, end) in INTERIOR_BANDS.items():
-            result = interior_difference.compare(
-                Path(pair["baseline"]), Path(pair["render"]), start, end
-            )
+            result = interior_difference.compare(baseline, render, start, end)
             difference = result["interiorDifference"]
             cells = result["cellsCompared"]
             if difference is None or cells < MIN_INTERIOR_CELLS:
@@ -204,7 +277,7 @@ def interior(request: dict[str, Any]) -> tuple[int, dict[str, Any]]:
                 "cellsCompared": cells,
                 "detail": result["status"],
             })
-    report = {"limit": MAX_INTERIOR_DIFFERENCE, "bands": records}
+    report = {"limit": MAX_INTERIOR_DIFFERENCE, "bodies": bodies, "bands": records}
     return code, report
 
 

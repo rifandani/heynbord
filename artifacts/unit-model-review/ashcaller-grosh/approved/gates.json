@@ -147,53 +147,65 @@
       "exitCode": 0,
       "report": {
         "limit": 0.28,
+        "bodies": [
+          {
+            "view": "front",
+            "renderRaised": 0.0916,
+            "baselineRaised": 0.0375
+          },
+          {
+            "view": "back",
+            "renderRaised": 0.0504,
+            "baselineRaised": 0.0207
+          }
+        ],
         "bands": [
           {
             "view": "front",
             "band": "head",
             "status": "pass",
-            "difference": 0.214546922167896,
-            "cellsCompared": 778,
+            "difference": 0.2001328579704874,
+            "cellsCompared": 1246,
             "detail": "measured"
           },
           {
             "view": "front",
             "band": "torso",
             "status": "pass",
-            "difference": 0.14325295022327816,
-            "cellsCompared": 5876,
+            "difference": 0.14651093953044272,
+            "cellsCompared": 6182,
             "detail": "measured"
           },
           {
             "view": "front",
             "band": "legs",
             "status": "pass",
-            "difference": 0.1661487931941174,
-            "cellsCompared": 4205,
+            "difference": 0.16279371409538018,
+            "cellsCompared": 4112,
             "detail": "measured"
           },
           {
             "view": "back",
             "band": "head",
             "status": "pass",
-            "difference": 0.22182494974662673,
-            "cellsCompared": 905,
+            "difference": 0.21625442610401086,
+            "cellsCompared": 1256,
             "detail": "measured"
           },
           {
             "view": "back",
             "band": "torso",
             "status": "pass",
-            "difference": 0.15023996317851482,
-            "cellsCompared": 6499,
+            "difference": 0.14474293077130837,
+            "cellsCompared": 6636,
             "detail": "measured"
           },
           {
             "view": "back",
             "band": "legs",
             "status": "pass",
-            "difference": 0.12599045244265078,
-            "cellsCompared": 4878,
+            "difference": 0.12530783223576136,
+            "cellsCompared": 4843,
             "detail": "measured"
           }
         ],

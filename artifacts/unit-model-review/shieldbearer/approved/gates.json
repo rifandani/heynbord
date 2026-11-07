@@ -133,6 +133,18 @@
       "exitCode": 0,
       "report": {
         "limit": 0.28,
+        "bodies": [
+          {
+            "view": "front",
+            "renderRaised": 0,
+            "baselineRaised": 0
+          },
+          {
+            "view": "back",
+            "renderRaised": 0,
+            "baselineRaised": 0
+          }
+        ],
         "bands": [
           {
             "view": "front",

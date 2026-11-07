@@ -133,20 +133,32 @@
       "exitCode": 0,
       "report": {
         "limit": 0.28,
+        "bodies": [
+          {
+            "view": "front",
+            "renderRaised": 0,
+            "baselineRaised": 0.0237
+          },
+          {
+            "view": "back",
+            "renderRaised": 0,
+            "baselineRaised": 0.0159
+          }
+        ],
         "bands": [
           {
             "view": "front",
             "band": "head",
             "status": "pass",
-            "difference": 0.23600971746723381,
-            "cellsCompared": 525,
+            "difference": 0.2241982937929721,
+            "cellsCompared": 633,
             "detail": "measured"
           },
           {
             "view": "front",
             "band": "torso",
             "status": "pass",
-            "difference": 0.18960039858414773,
+            "difference": 0.18789056288579445,
             "cellsCompared": 5654,
             "detail": "measured"
           },
@@ -154,32 +166,32 @@
             "view": "front",
             "band": "legs",
             "status": "pass",
-            "difference": 0.23938569166390958,
-            "cellsCompared": 2792,
+            "difference": 0.24049548309352234,
+            "cellsCompared": 2730,
             "detail": "measured"
           },
           {
             "view": "back",
             "band": "head",
             "status": "pass",
-            "difference": 0.2530295820445714,
-            "cellsCompared": 467,
+            "difference": 0.24903217697335342,
+            "cellsCompared": 520,
             "detail": "measured"
           },
           {
             "view": "back",
             "band": "torso",
             "status": "pass",
-            "difference": 0.1914603466663322,
-            "cellsCompared": 5037,
+            "difference": 0.19081481956414925,
+            "cellsCompared": 5046,
             "detail": "measured"
           },
           {
             "view": "back",
             "band": "legs",
             "status": "pass",
-            "difference": 0.22421352241021655,
-            "cellsCompared": 2898,
+            "difference": 0.22132458879454672,
+            "cellsCompared": 2862,
             "detail": "measured"
           }
         ],
