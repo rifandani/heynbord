@@ -1,0 +1,32 @@
+{
+  "id": "thornline-archer",
+  "passed": true,
+  "problems": [],
+  "measures": {
+    "front": {
+      "backgroundEdge": 0.993,
+      "offPalette": 0.03,
+      "fill": 0.95
+    },
+    "three-quarter": {
+      "backgroundEdge": 0.989,
+      "offPalette": 0.04,
+      "fill": 0.95
+    },
+    "side": {
+      "backgroundEdge": 0.988,
+      "offPalette": 0.036,
+      "fill": 0.935
+    },
+    "back": {
+      "backgroundEdge": 0.99,
+      "offPalette": 0.044,
+      "fill": 0.945
+    },
+    "details": {
+      "backgroundEdge": 0.977,
+      "offPalette": 0.057,
+      "fill": 0.975
+    }
+  }
+}

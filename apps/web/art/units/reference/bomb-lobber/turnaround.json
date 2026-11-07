@@ -1,0 +1,18 @@
+{
+  "id": "bomb-lobber",
+  "source": "apps/web/public/creature/goblin/bomb-lobber.webp",
+  "views": {
+    "front": "front.webp",
+    "three-quarter": "three-quarter.webp",
+    "side": "side.webp",
+    "back": "back.webp",
+    "details": "details.webp"
+  },
+  "props": ["racket", "basket of small round bombs", "smoked goggles"],
+  "approval": {
+    "status": "approved",
+    "by": "rifandani",
+    "date": "2026-11-07",
+    "notes": "Approved all five views and this prop list by a message to the agent. Known differences: both eyes are open and the card has a wink, the head is larger and rounder, the skin is greyer, and the bombs have no lit fuse."
+  }
+}

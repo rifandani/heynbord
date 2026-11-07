@@ -1,0 +1,32 @@
+{
+  "id": "shieldbearer",
+  "passed": true,
+  "problems": [],
+  "measures": {
+    "front": {
+      "backgroundEdge": 0.975,
+      "offPalette": 0.037,
+      "fill": 0.95
+    },
+    "three-quarter": {
+      "backgroundEdge": 0.995,
+      "offPalette": 0.055,
+      "fill": 0.927
+    },
+    "side": {
+      "backgroundEdge": 0.973,
+      "offPalette": 0.043,
+      "fill": 0.96
+    },
+    "back": {
+      "backgroundEdge": 0.978,
+      "offPalette": 0.058,
+      "fill": 0.95
+    },
+    "details": {
+      "backgroundEdge": 0.977,
+      "offPalette": 0.093,
+      "fill": 0.933
+    }
+  }
+}

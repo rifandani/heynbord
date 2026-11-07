@@ -1,0 +1,23 @@
+{
+  "id": "skeleton",
+  "source": "apps/web/public/creature/token/skeleton.webp",
+  "views": {
+    "front": "front.webp",
+    "three-quarter": "three-quarter.webp",
+    "side": "side.webp",
+    "back": "back.webp",
+    "details": "details.webp"
+  },
+  "props": [
+    "bucket helmet",
+    "chipped sword",
+    "round wooden lid",
+    "pale teal neck cloth"
+  ],
+  "approval": {
+    "status": "approved",
+    "by": "rifandani",
+    "date": "2026-11-07",
+    "notes": "Approved all five views and this prop list by a message to the agent. Known differences: the neck cloth is blue, not pale teal, the helmet may not cover one eye socket enough, and he does not look back for an ally."
+  }
+}

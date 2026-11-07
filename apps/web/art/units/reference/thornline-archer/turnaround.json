@@ -1,0 +1,18 @@
+{
+  "id": "thornline-archer",
+  "source": "apps/web/public/creature/elf/thornline-archer.webp",
+  "views": {
+    "front": "front.webp",
+    "three-quarter": "three-quarter.webp",
+    "side": "side.webp",
+    "back": "back.webp",
+    "details": "details.webp"
+  },
+  "props": ["recurved thorn bow", "poisoned arrow"],
+  "approval": {
+    "status": "approved",
+    "by": "rifandani",
+    "date": "2026-11-07",
+    "notes": "Approved all five views and this prop list by a message to the agent. Known differences: the leaf mantle is much fuller, with more gold trim, the bow is at rest and not drawn, and the green sap on the arrow is weak."
+  }
+}

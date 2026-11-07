@@ -1,6 +1,6 @@
 # Migration: humanoids
 
-Issue #185. This record has the units, the batches and what stops the Migration. Status: **Batch 1 is on its plans, and a person approved its lists and its art. No unit of the batch passes CI, because no unit of the batch has a Turnaround.**
+Issue #185. This record has the units, the batches and what stops the Migration. Status: **Batch 1 is on its plans, and a person approved its lists, its art and its Turnarounds. 3 of 5 units pass 11 of 11 Review Gates. skeleton and bomb-lobber do not pass `interior-difference`. CI did not run.**
 
 ## Units
 
@@ -26,24 +26,43 @@ Fuse Runner and Tusk Brute are on their plans, but they have no Unit Spec yet.
 
 ## What stops the Migration
 
-1. **Turnarounds.** The definition of done needs an approved Turnaround for each unit. Only warden-saelith has one in this scope. An external image model made the images, and a person approved them, so an agent cannot do this step. With no Turnaround, `interior-difference` gives an error, and an error is not a pass. So the Unit Model Review fails for each unit in the batch. The prompts are in `apps/web/art/units/raw/turnaround/<name>/prompts.md`.
+1. **Turnarounds.** The definition of done needs an approved Turnaround for each unit. In this scope, 6 of 65 units have one: warden-saelith and the 5 units of Batch 1. An external image model made the images, and a person approved them, so an agent cannot do this step. With no Turnaround, `interior-difference` gives an error, and an error is not a pass. So the Unit Model Review fails for each of the other 59 units. The prompts are in `apps/web/art/units/raw/turnaround/<name>/prompts.md`.
 2. **Pole bones.** 24 units need pole bones that `add_arm_ik` does not make. Add these to `body_plans/biped.py` before these units move.
+3. **Two units of Batch 1.** skeleton and bomb-lobber do not pass `interior-difference`. The person decides the next step. See the results below.
 
 ## Batch 1
 
 The batch has one unit of each race, so that it tests each plan. Skeleton is the undead unit, and it is a Token.
 
-| Unit | Plan | Review Gates before | Review Gates after | Defects fixed |
-| --- | --- | --- | --- | --- |
-| shieldbearer | `biped-medium` | 6 of 11 | 10 of 11 | Rings at hips, waist, chest and neck. Neck blend. Blue of the skirt and cape |
-| thornline-archer | `biped-medium` | 7 of 11 | 10 of 11 | Rings at hips, waist and neck. Neck and hips blends. Green of the tunic. Arrow through the ground in `death` |
-| skeleton | `biped-medium` | 7 of 11 | 10 of 11 | Teal cloth and bone colors. Body through the ground in `death` |
-| bomb-lobber | `biped-small` | 6 of 11 | 10 of 11 | Rings at waist, chest and neck. Neck blend. Neckerchief, brass, bomb and spark colors |
-| ashcaller-grosh | `biped-large` | 5 of 11 | 10 of 11 | New `hips` part. Rings at chest and neck. Neck blend. Skin, brass and rag colors. Staff through the ground in `death`. `staff.charms` is not a prop |
+| Unit | Plan | Review Gates before | Review Gates after | With Turnaround | Defects fixed |
+| --- | --- | --- | --- | --- | --- |
+| shieldbearer | `biped-medium` | 6 of 11 | 10 of 11 | 11 of 11 | Rings at hips, waist, chest and neck. Neck blend. Blue of the skirt and cape |
+| thornline-archer | `biped-medium` | 7 of 11 | 10 of 11 | 11 of 11 | Rings at hips, waist and neck. Neck and hips blends. Green of the tunic. Arrow through the ground in `death` |
+| skeleton | `biped-medium` | 7 of 11 | 10 of 11 | 10 of 11 | Teal cloth and bone colors. Body through the ground in `death` |
+| bomb-lobber | `biped-small` | 6 of 11 | 10 of 11 | 10 of 11 | Rings at waist, chest and neck. Neck blend. Neckerchief, brass, bomb and spark colors |
+| ashcaller-grosh | `biped-large` | 5 of 11 | 10 of 11 | 11 of 11 | New `hips` part. Rings at chest and neck. Neck blend. Skin, brass and rag colors. Staff through the ground in `death`. `staff.charms` is not a prop |
 
-The remaining Review Gate of each unit is `interior-difference`, with an error. The records are in `artifacts/unit-model-review/<name>/before/gates.json` and `artifacts/unit-model-review/<name>/2026-11-06/gates.json`. CI did not run: this branch was not pushed. `batch-1-before.png` and `batch-1-after.png` in `artifacts/unit-model-review/migration-humanoids/` show each painting with the 4 views.
+In `before` and `after`, the remaining Review Gate of each unit is `interior-difference`, with an error, because no Turnaround existed. The records are in `artifacts/unit-model-review/<name>/before/gates.json`, `artifacts/unit-model-review/<name>/2026-11-06/gates.json` and `artifacts/unit-model-review/<name>/approved/gates.json`. CI did not run: this branch was not pushed. `batch-1-before.png` and `batch-1-after.png` in `artifacts/unit-model-review/migration-humanoids/` show each painting with the 4 views.
 
 The move alone did not change a bound, a bone or a clip: after the move, `bun unit-model:contract:check` passed for all 5. A Source Contract does not record colors or geometry, so the new colors and rings of the fixes give it no change. The Source Contract then changed for 3 units, as an intentional change: the `death` and `rebirth` digests of thornline-archer, skeleton and ashcaller-grosh. `rebirth` changed because it uses the same `fallen` pose. `bun unit-model:clips:check --all` found these 3 faults. They were in the models before this issue. The Review Gates do not read them.
+
+### `interior-difference`
+
+`before` had no Turnaround, so this Review Gate gives its first result here. The limit is 0.28.
+
+| Unit | Result | Front head | Front torso | Front legs | Back head | Back torso | Back legs |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| shieldbearer | Pass | 0.218 | 0.181 | 0.184 | 0.237 | 0.125 | 0.217 |
+| thornline-archer | Pass | 0.236 | 0.190 | 0.239 | 0.253 | 0.191 | 0.224 |
+| skeleton | Error | **0.277, error** | 0.228 | 0.180 | **0.314, fail** | 0.227 | 0.225 |
+| bomb-lobber | Fail | **0.325, fail** | 0.246 | 0.223 | 0.233 | 0.210 | 0.224 |
+| ashcaller-grosh | Pass | 0.215 | 0.143 | 0.166 | 0.222 | 0.150 | 0.126 |
+
+- **skeleton.** The front head band has 95 cells, and the minimum is 100, so that band gives an error. The back head band has 165 cells. The bands are shares of the height of the figure, and the raised sword is part of the figure. So the top 19% has mostly the sword and not the head.
+- **skeleton record.** `gates.json` has no band values, only `exit code 2 with no report`. That text is not correct: the Python gate prints a report, and `runCommand` in `review/gates.ts` discards a report with exit code 2. The values above come from `python3 scripts/unit-model/review/unit_gates.py interior` on the same inputs.
+- **bomb-lobber.** Only the front head band fails, at 0.325 on 2,022 cells.
+
+This Review Gate measures luminance only. A pass does not prove that the costume is correct.
 
 ## Defects that repeat
 
@@ -70,9 +89,9 @@ The first 4 fixes make a Review Gate accept more, and each list in a Unit Spec i
 
 ## What a person must check
 
-On 2026-11-07 rifandani approved the Batch 1 items below by a message to the agent ("approved all"), except the first item. No Turnaround image exists for these 5 units, so that message cannot approve one. `turnaround.json` is not written, `interior-difference` still gives an error, and the Unit Model Review still fails for these units.
+On 2026-11-07 rifandani approved the Batch 1 items below by a message to the agent ("approved all"). The Turnarounds did not exist at that time, so a second message on the same day ("approve all") approved them.
 
-- **The Turnaround of each unit.** This is open. Then `interior-difference` runs for the first time.
+- **The Turnaround of each unit.** rifandani looked at a sheet of all 25 views and approved the 5 Turnarounds and their prop lists. The known differences are in the `notes` of each `turnaround.json`. The approval does not change the results of `interior-difference`.
 - `posedPairs` and `holedParts` of each Unit Spec. I read them from the failures of the Review Gates and from the build script, and I did not check each one against a Turnaround.
 - `regions` of each Unit Spec. These are measures of the current model, so they do not prove that the model is good.
 - **ashcaller-grosh skin.** The model was green, and the painting has a warm tan skin. The new color passes `palette`, but it is redder than the painting. `palette` rejected `#a57652`, a color that I sampled from the face.

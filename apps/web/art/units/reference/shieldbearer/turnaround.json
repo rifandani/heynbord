@@ -1,0 +1,23 @@
+{
+  "id": "shieldbearer",
+  "source": "apps/web/public/creature/human/shieldbearer.webp",
+  "views": {
+    "front": "front.webp",
+    "three-quarter": "three-quarter.webp",
+    "side": "side.webp",
+    "back": "back.webp",
+    "details": "details.webp"
+  },
+  "props": [
+    "large round shield",
+    "short sword",
+    "simple steel cap",
+    "mail shirt"
+  ],
+  "approval": {
+    "status": "approved",
+    "by": "rifandani",
+    "date": "2026-11-07",
+    "notes": "Approved all five views and this prop list by a message to the agent. Known differences: the cap is taller, the shield marks differ, and hair length differs between the side and back views. The back emblem and cloth are inferred."
+  }
+}
