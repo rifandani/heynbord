@@ -141,6 +141,15 @@ SPARK_C = BOMB_C + Vector((0.006, -0.01, BOMB_R + 0.03))
 
 BASKET_C = Vector((-0.088, 0.045, 0.22))
 
+# The hoop stands beside the right ear and the right puff at rest, so these do
+# not mirror the left side. The bend of the right ear goes in and back, and its
+# leaf lies along the hoop, so the ear passes under the rim.
+EAR_BEND = {1: Vector((0.118, 0.118, -0.105)), -1: Vector((-0.09, 0.14, -0.12))}
+EAR_TIP = {1: Vector((0.165, 0.066, -0.172)), -1: Vector((-0.165, 0.08, -0.172))}
+EAR_FACE = {1: Vector((0.92, -0.35, 0.18)), -1: Vector((-0.92, 0.7, 0.18))}
+# The lowest tuft on the right goes back over the hoop.
+RIGHT_LOW_TUFT = Vector((-0.6, 0.75, 0.25)).normalized()
+
 PROP_BONES = [
     ("bomb", tuple(BOMB_C), tuple(BOMB_C + Z * 0.04), "hand.L"),
     ("spark", tuple(SPARK_C), tuple(SPARK_C + Z * 0.03), "bomb"),
@@ -172,11 +181,11 @@ def ear(part, sign):
     path = [
         HEAD_C + Vector((0.066 * sign, 0.008, -0.016)),
         HEAD_C + Vector((0.094 * sign, 0.07, -0.04)),
-        HEAD_C + Vector((0.118 * sign, 0.118, -0.105)),
-        HEAD_C + Vector((0.165 * sign, 0.066, -0.172)),
+        HEAD_C + EAR_BEND[sign],
+        HEAD_C + EAR_TIP[sign],
     ]
     along = (path[-1] - path[0]).normalized()
-    normal = Vector((0.92 * sign, -0.35, 0.18))
+    normal = EAR_FACE[sign]
     normal = (normal - along * normal.dot(along)).normalized()
     blade = kit.tube(part.bm, path, [0.02, 0.036, 0.022, 0.002], 8)
     flatten(blade, path[0], normal, 0.3)
@@ -232,6 +241,8 @@ def head_parts():
             a = math.radians(-10 + index * 26)
             out = Vector((math.sin(a) * sign, 0.25, math.cos(a))).normalized()
             reach = 0.016 + 0.05 * abs(math.sin(a)) + 0.008 * (index % 2)
+            if sign == -1 and index == 4:
+                out = RIGHT_LOW_TUFT
             root = puff + out * 0.04
             tuft = kit.cone(hair.bm, root, root + out * reach, 0.014, 0.003, 5)
             if index % 3 == 2:

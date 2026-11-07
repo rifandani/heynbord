@@ -4,8 +4,8 @@
   "exitCode": 0,
   "provenance": {
     "review": "approved",
-    "rawSha256": "f4538c74b8f8b0a94c4139ed9abc90ef132faa5d7f654f140a47577fd2481b58",
-    "publishedSha256": "e191a4e47b4854a34e11ee05670a4f725bf28e8d4f2f87c8679e109149cb6630",
+    "rawSha256": "726ff0fc4a7ae654e1570fc925fa6fc4910a335f1dbebdda5636cdf4ad3d6849",
+    "publishedSha256": "d68a79679de3d85679041b0faa685c66f31bd73a013a6fc116d2a1abd983bc47",
     "gatesSourceCommit": "a669e9a97cea4452b1c2310c5cca6aa0f6657c1f"
   },
   "inputProblems": [],
@@ -23,16 +23,16 @@
             "isReference": true,
             "segmented": true,
             "holed": false,
-            "interiorHolePixelCount": 512,
-            "interiorHoleFraction": 0.009051373616660184,
-            "largestHolePixelCount": 359,
+            "interiorHolePixelCount": 510,
+            "interiorHoleFraction": 0.009057649273612049,
+            "largestHolePixelCount": 351,
             "largestHoleBBox": {
-              "x": 91,
+              "x": 92,
               "y": 213,
-              "width": 15,
+              "width": 14,
               "height": 58
             },
-            "areaFraction": 0.3714799831879794,
+            "areaFraction": 0.36857195224130707,
             "ratio": 1,
             "degenerate": false
           },
@@ -42,17 +42,17 @@
             "isReference": false,
             "segmented": true,
             "holed": false,
-            "interiorHolePixelCount": 351,
-            "interiorHoleFraction": 0.00788391994788976,
-            "largestHolePixelCount": 349,
+            "interiorHolePixelCount": 367,
+            "interiorHoleFraction": 0.008124681764849128,
+            "largestHolePixelCount": 346,
             "largestHoleBBox": {
-              "x": 158,
+              "x": 155,
               "y": 395,
               "width": 25,
               "height": 22
             },
-            "areaFraction": 0.29237811285068827,
-            "ratio": 0.7870628999752501,
+            "areaFraction": 0.29568365102639294,
+            "ratio": 0.8022413241928036,
             "degenerate": false
           },
           {
@@ -61,17 +61,17 @@
             "isReference": false,
             "segmented": true,
             "holed": false,
-            "interiorHolePixelCount": 422,
-            "interiorHoleFraction": 0.007256719343799976,
-            "largestHolePixelCount": 265,
+            "interiorHolePixelCount": 511,
+            "interiorHoleFraction": 0.00893044390073401,
+            "largestHolePixelCount": 270,
             "largestHoleBBox": {
-              "x": 197,
+              "x": 199,
               "y": 215,
               "width": 13,
               "height": 40
             },
-            "areaFraction": 0.3819021225176001,
-            "ratio": 1.0280557225188276,
+            "areaFraction": 0.3745548806032677,
+            "ratio": 1.016232728306042,
             "degenerate": false
           },
           {
@@ -80,17 +80,17 @@
             "isReference": false,
             "segmented": true,
             "holed": true,
-            "interiorHolePixelCount": 607,
-            "interiorHoleFraction": 0.013456294752710101,
-            "largestHolePixelCount": 606,
+            "interiorHolePixelCount": 741,
+            "interiorHoleFraction": 0.016182219213382542,
+            "largestHolePixelCount": 604,
             "largestHoleBBox": {
-              "x": 118,
+              "x": 122,
               "y": 391,
-              "width": 29,
+              "width": 30,
               "height": 41
             },
-            "areaFraction": 0.2962396238310392,
-            "ratio": 0.7974578368631333,
+            "areaFraction": 0.29974209258483453,
+            "ratio": 0.8132525840940575,
             "degenerate": false
           }
         ],
@@ -140,15 +140,15 @@
             "part": "body",
             "azimuth": 0,
             "allowed": true,
-            "pixels": 480,
-            "fraction": 0.0361
+            "pixels": 476,
+            "fraction": 0.0316
           },
           {
             "part": "body",
             "azimuth": 180,
             "allowed": true,
             "pixels": 481,
-            "fraction": 0.0359
+            "fraction": 0.0316
           }
         ],
         "problems": []
@@ -178,48 +178,48 @@
             "view": "front",
             "band": "head",
             "status": "pass",
-            "difference": 0.26163473530955844,
-            "cellsCompared": 2916,
+            "difference": 0.2621966222646677,
+            "cellsCompared": 2847,
             "detail": "measured"
           },
           {
             "view": "front",
             "band": "torso",
             "status": "pass",
-            "difference": 0.23986359559129997,
-            "cellsCompared": 7731,
+            "difference": 0.24112865890178817,
+            "cellsCompared": 7691,
             "detail": "measured"
           },
           {
             "view": "front",
             "band": "legs",
             "status": "pass",
-            "difference": 0.22771219148165425,
-            "cellsCompared": 5507,
+            "difference": 0.22788891560455365,
+            "cellsCompared": 5491,
             "detail": "measured"
           },
           {
             "view": "back",
             "band": "head",
             "status": "pass",
-            "difference": 0.21306649159227228,
-            "cellsCompared": 2970,
+            "difference": 0.21096328400603842,
+            "cellsCompared": 2909,
             "detail": "measured"
           },
           {
             "view": "back",
             "band": "torso",
             "status": "pass",
-            "difference": 0.23426655393447146,
-            "cellsCompared": 7148,
+            "difference": 0.2374625302147689,
+            "cellsCompared": 7112,
             "detail": "measured"
           },
           {
             "view": "back",
             "band": "legs",
             "status": "pass",
-            "difference": 0.2228557120610177,
-            "cellsCompared": 4675,
+            "difference": 0.22455428858963766,
+            "cellsCompared": 4640,
             "detail": "measured"
           }
         ],
@@ -369,7 +369,7 @@
             "worstRegions": [],
             "normalSource": "vertexNormals",
             "normalFallbackCount": 0,
-            "epsilon": 0.00024070767074760874,
+            "epsilon": 0.0002575160887361029,
             "rayDirectionCount": 3
           },
           {
@@ -407,7 +407,7 @@
             "worstRegions": [],
             "normalSource": "vertexNormals",
             "normalFallbackCount": 0,
-            "epsilon": 0.00008965355893003147,
+            "epsilon": 0.0000880650471468422,
             "rayDirectionCount": 3
           },
           {
@@ -768,7 +768,7 @@
             "worstRegions": [],
             "normalSource": "vertexNormals",
             "normalFallbackCount": 0,
-            "epsilon": 0.00007866749115027386,
+            "epsilon": 0.00008603418896755593,
             "rayDirectionCount": 3
           },
           {
@@ -3255,9 +3255,9 @@
             "bone": "upperarm.R",
             "radius": 0.038091,
             "minLoops": 3,
-            "loops": 62,
-            "vertexCount": 145,
-            "axialSpan": 0.074041,
+            "loops": 61,
+            "vertexCount": 146,
+            "axialSpan": 0.0736,
             "passes": true
           },
           {
@@ -3373,7 +3373,7 @@
         "measured": {
           "azimuth": 0,
           "projectedExtent": {
-            "width": 0.3764423727989197,
+            "width": 0.37380000948905945,
             "height": 0.7026193849742413
           },
           "sampledVertexCount": 3569,
@@ -3383,60 +3383,51 @@
               "x0": 0,
               "x1": 1,
               "y0": 0,
-              "y1": 0.4222,
+              "y1": 0.4226,
               "vertexCount": 1369,
               "areaFraction": 0.38358,
               "blobs": [
                 {
-                  "vertexCount": 1323,
-                  "centroidX": 0.5002,
-                  "centroidY": 0.1751,
-                  "x0": 0.1048,
-                  "x1": 0.8952,
+                  "vertexCount": 1333,
+                  "centroidX": 0.4962,
+                  "centroidY": 0.175,
+                  "x0": 0,
+                  "x1": 0.8945,
                   "y0": 0,
-                  "y1": 0.3477
+                  "y1": 0.3613
                 },
                 {
                   "vertexCount": 13,
-                  "centroidX": 0.9387,
+                  "centroidX": 0.9383,
                   "centroidY": 0.421,
-                  "x0": 0.9354,
-                  "x1": 0.9412,
+                  "x0": 0.9349,
+                  "x1": 0.9408,
                   "y0": 0.4193,
                   "y1": 0.4222
                 },
                 {
                   "vertexCount": 13,
-                  "centroidX": 0.0613,
-                  "centroidY": 0.421,
-                  "x0": 0.0588,
-                  "x1": 0.0646,
-                  "y0": 0.4193,
-                  "y1": 0.4222
+                  "centroidX": 0.0548,
+                  "centroidY": 0.4206,
+                  "x0": 0.0535,
+                  "x1": 0.0566,
+                  "y0": 0.4189,
+                  "y1": 0.4226
                 },
                 {
                   "vertexCount": 10,
                   "centroidX": 0.9937,
                   "centroidY": 0.0813,
-                  "x0": 0.9867,
+                  "x0": 0.9866,
                   "x1": 1,
-                  "y0": 0.0437,
-                  "y1": 0.1184
-                },
-                {
-                  "vertexCount": 10,
-                  "centroidX": 0.0063,
-                  "centroidY": 0.0813,
-                  "x0": 0,
-                  "x1": 0.0133,
                   "y0": 0.0437,
                   "y1": 0.1184
                 }
               ]
             },
             "torso": {
-              "x0": 0.2581,
-              "x1": 0.7683,
+              "x0": 0.2528,
+              "x1": 0.7667,
               "y0": 0.286,
               "y1": 0.721,
               "vertexCount": 488,
@@ -3444,18 +3435,18 @@
               "blobs": [
                 {
                   "vertexCount": 488,
-                  "centroidX": 0.5409,
+                  "centroidX": 0.5377,
                   "centroidY": 0.5486,
-                  "x0": 0.2581,
-                  "x1": 0.7683,
+                  "x0": 0.2528,
+                  "x1": 0.7667,
                   "y0": 0.286,
                   "y1": 0.721
                 }
               ]
             },
             "prop": {
-              "x0": 0.0511,
-              "x1": 0.813,
+              "x0": 0.0444,
+              "x1": 0.8117,
               "y0": 0.1347,
               "y1": 0.7524,
               "vertexCount": 956,
@@ -3463,36 +3454,36 @@
               "blobs": [
                 {
                   "vertexCount": 579,
-                  "centroidX": 0.2704,
+                  "centroidX": 0.2653,
                   "centroidY": 0.6403,
-                  "x0": 0.1175,
-                  "x1": 0.415,
+                  "x0": 0.1112,
+                  "x1": 0.4109,
                   "y0": 0.5057,
                   "y1": 0.7524
                 },
                 {
                   "vertexCount": 270,
-                  "centroidX": 0.1247,
+                  "centroidX": 0.1185,
                   "centroidY": 0.2606,
-                  "x0": 0.0511,
-                  "x1": 0.1924,
+                  "x0": 0.0444,
+                  "x1": 0.1867,
                   "y0": 0.1347,
                   "y1": 0.3906
                 },
                 {
                   "vertexCount": 107,
-                  "centroidX": 0.7383,
+                  "centroidX": 0.7364,
                   "centroidY": 0.5135,
-                  "x0": 0.6652,
-                  "x1": 0.813,
+                  "x0": 0.6629,
+                  "x1": 0.8117,
                   "y0": 0.4595,
                   "y1": 0.5735
                 }
               ]
             },
             "arm.L": {
-              "x0": 0.653,
-              "x1": 0.8979,
+              "x0": 0.6506,
+              "x1": 0.8972,
               "y0": 0.2977,
               "y1": 0.5689,
               "vertexCount": 154,
@@ -3500,18 +3491,18 @@
               "blobs": [
                 {
                   "vertexCount": 154,
-                  "centroidX": 0.7785,
+                  "centroidX": 0.7769,
                   "centroidY": 0.4902,
-                  "x0": 0.653,
-                  "x1": 0.8979,
+                  "x0": 0.6506,
+                  "x1": 0.8972,
                   "y0": 0.2977,
                   "y1": 0.5689
                 }
               ]
             },
             "leg.L": {
-              "x0": 0.5186,
-              "x1": 0.7577,
+              "x0": 0.5152,
+              "x1": 0.756,
               "y0": 0.5787,
               "y1": 1,
               "vertexCount": 199,
@@ -3519,18 +3510,18 @@
               "blobs": [
                 {
                   "vertexCount": 199,
-                  "centroidX": 0.6381,
+                  "centroidX": 0.6356,
                   "centroidY": 0.9016,
-                  "x0": 0.5186,
-                  "x1": 0.7577,
+                  "x0": 0.5152,
+                  "x1": 0.756,
                   "y0": 0.5787,
                   "y1": 1
                 }
               ]
             },
             "arm.R": {
-              "x0": 0.1018,
-              "x1": 0.3474,
+              "x0": 0.0955,
+              "x1": 0.3428,
               "y0": 0.2963,
               "y1": 0.5792,
               "vertexCount": 154,
@@ -3538,18 +3529,18 @@
               "blobs": [
                 {
                   "vertexCount": 154,
-                  "centroidX": 0.2221,
+                  "centroidX": 0.2166,
                   "centroidY": 0.4954,
-                  "x0": 0.1018,
-                  "x1": 0.3474,
+                  "x0": 0.0955,
+                  "x1": 0.3428,
                   "y0": 0.2963,
                   "y1": 0.5792
                 }
               ]
             },
             "leg.R": {
-              "x0": 0.2423,
-              "x1": 0.4814,
+              "x0": 0.237,
+              "x1": 0.4777,
               "y0": 0.5787,
               "y1": 1,
               "vertexCount": 199,
@@ -3557,18 +3548,18 @@
               "blobs": [
                 {
                   "vertexCount": 199,
-                  "centroidX": 0.3619,
+                  "centroidX": 0.3574,
                   "centroidY": 0.9016,
-                  "x0": 0.2423,
-                  "x1": 0.4814,
+                  "x0": 0.237,
+                  "x1": 0.4777,
                   "y0": 0.5787,
                   "y1": 1
                 }
               ]
             },
             "effect": {
-              "x0": 0.7057,
-              "x1": 0.8141,
+              "x0": 0.7037,
+              "x1": 0.8128,
               "y0": 0.4187,
               "y1": 0.4625,
               "vertexCount": 50,
@@ -3576,10 +3567,10 @@
               "blobs": [
                 {
                   "vertexCount": 50,
-                  "centroidX": 0.7551,
+                  "centroidX": 0.7533,
                   "centroidY": 0.4392,
-                  "x0": 0.7057,
-                  "x1": 0.8141,
+                  "x0": 0.7037,
+                  "x1": 0.8128,
                   "y0": 0.4187,
                   "y1": 0.4625
                 }
@@ -3613,18 +3604,18 @@
                 "y1": 0.57
               },
               "actual": {
-                "x0": 0.653,
-                "x1": 0.8979,
+                "x0": 0.6506,
+                "x1": 0.8972,
                 "y0": 0.2977,
                 "y1": 0.5689
               },
               "deltas": {
-                "x0": 0.003,
-                "x1": -0.0021,
+                "x0": 0.0006,
+                "x1": -0.0028,
                 "y0": -0.0023,
                 "y1": -0.0011
               },
-              "worstDelta": 0.003,
+              "worstDelta": 0.0028,
               "tolerance": 0.04
             },
             {
@@ -3633,23 +3624,23 @@
               "regions": ["arm.R"],
               "expected": {
                 "x0": 0.1,
-                "x1": 0.35,
+                "x1": 0.34,
                 "y0": 0.3,
                 "y1": 0.58
               },
               "actual": {
-                "x0": 0.1018,
-                "x1": 0.3474,
+                "x0": 0.0955,
+                "x1": 0.3428,
                 "y0": 0.2963,
                 "y1": 0.5792
               },
               "deltas": {
-                "x0": 0.0018,
-                "x1": -0.0026,
+                "x0": -0.0045,
+                "x1": 0.0028,
                 "y0": -0.0037,
                 "y1": -0.0008
               },
-              "worstDelta": 0.0037,
+              "worstDelta": 0.0045,
               "tolerance": 0.04
             },
             {
@@ -3657,24 +3648,24 @@
               "status": "pass",
               "regions": ["effect"],
               "expected": {
-                "x0": 0.71,
+                "x0": 0.7,
                 "x1": 0.81,
                 "y0": 0.42,
                 "y1": 0.46
               },
               "actual": {
-                "x0": 0.7057,
-                "x1": 0.8141,
+                "x0": 0.7037,
+                "x1": 0.8128,
                 "y0": 0.4187,
                 "y1": 0.4625
               },
               "deltas": {
-                "x0": -0.0043,
-                "x1": 0.0041,
+                "x0": 0.0037,
+                "x1": 0.0028,
                 "y0": -0.0013,
                 "y1": 0.0025
               },
-              "worstDelta": 0.0043,
+              "worstDelta": 0.0037,
               "tolerance": 0.04
             },
             {
@@ -3691,15 +3682,15 @@
                 "x0": 0,
                 "x1": 1,
                 "y0": 0,
-                "y1": 0.4222
+                "y1": 0.4226
               },
               "deltas": {
                 "x0": 0,
                 "x1": 0,
                 "y0": 0,
-                "y1": 0.0022
+                "y1": 0.0026
               },
-              "worstDelta": 0.0022,
+              "worstDelta": 0.0026,
               "tolerance": 0.04
             },
             {
@@ -3713,18 +3704,18 @@
                 "y1": 1
               },
               "actual": {
-                "x0": 0.5186,
-                "x1": 0.7577,
+                "x0": 0.5152,
+                "x1": 0.756,
                 "y0": 0.5787,
                 "y1": 1
               },
               "deltas": {
-                "x0": -0.0014,
-                "x1": -0.0023,
+                "x0": -0.0048,
+                "x1": -0.004,
                 "y0": -0.0013,
                 "y1": 0
               },
-              "worstDelta": 0.0023,
+              "worstDelta": 0.0048,
               "tolerance": 0.04
             },
             {
@@ -3738,18 +3729,18 @@
                 "y1": 1
               },
               "actual": {
-                "x0": 0.2423,
-                "x1": 0.4814,
+                "x0": 0.237,
+                "x1": 0.4777,
                 "y0": 0.5787,
                 "y1": 1
               },
               "deltas": {
-                "x0": 0.0023,
-                "x1": 0.0014,
+                "x0": -0.003,
+                "x1": -0.0023,
                 "y0": -0.0013,
                 "y1": 0
               },
-              "worstDelta": 0.0023,
+              "worstDelta": 0.003,
               "tolerance": 0.04
             },
             {
@@ -3757,20 +3748,20 @@
               "status": "pass",
               "regions": ["prop"],
               "expected": {
-                "x0": 0.05,
+                "x0": 0.04,
                 "x1": 0.81,
                 "y0": 0.13,
                 "y1": 0.75
               },
               "actual": {
-                "x0": 0.0511,
-                "x1": 0.813,
+                "x0": 0.0444,
+                "x1": 0.8117,
                 "y0": 0.1347,
                 "y1": 0.7524
               },
               "deltas": {
-                "x0": 0.0011,
-                "x1": 0.003,
+                "x0": 0.0044,
+                "x1": 0.0017,
                 "y0": 0.0047,
                 "y1": 0.0024
               },
@@ -3782,20 +3773,20 @@
               "status": "pass",
               "regions": ["torso"],
               "expected": {
-                "x0": 0.26,
+                "x0": 0.25,
                 "x1": 0.77,
                 "y0": 0.29,
                 "y1": 0.72
               },
               "actual": {
-                "x0": 0.2581,
-                "x1": 0.7683,
+                "x0": 0.2528,
+                "x1": 0.7667,
                 "y0": 0.286,
                 "y1": 0.721
               },
               "deltas": {
-                "x0": -0.0019,
-                "x1": -0.0017,
+                "x0": 0.0028,
+                "x1": -0.0033,
                 "y0": -0.004,
                 "y1": 0.001
               },
@@ -3931,7 +3922,7 @@
               {
                 "lab": [89.8, -0.6, 10.4],
                 "share": 0.278,
-                "deltaE": 4.1
+                "deltaE": 4.09
               }
             ]
           },
